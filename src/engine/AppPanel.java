@@ -56,10 +56,10 @@ public final class AppPanel extends JPanel implements Runnable {
 
             this.app.update(Time.getDeltaTime());
 
-            this.app.ctx.renderer.begin();
-            this.app.ctx.renderer.clear(Color.BLACK);
+            Application.getContext().getRenderer().begin();
+            Application.getContext().getRenderer().clear(Color.BLACK);
             this.app.draw();
-            this.app.ctx.renderer.end();
+            Application.getContext().getRenderer().end();
         }
     }
 

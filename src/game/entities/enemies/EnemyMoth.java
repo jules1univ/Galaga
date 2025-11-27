@@ -1,11 +1,9 @@
 package game.entities.enemies;
 
-import engine.AppContext;
-
 public class EnemyMoth extends Enemy {
 
-    public EnemyMoth(AppContext ctx, float startX, float startY, float size, int value, float speed) {
-        super(ctx, EnemyType.MOTH, startX, startY, size, value, speed);
+    public EnemyMoth(float startX, float startY, float size, int value, float speed) {
+        super(EnemyType.MOTH, startX, startY, size, value, speed);
     }
 
     @Override

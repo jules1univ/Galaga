@@ -1,13 +1,19 @@
 package engine;
 
 public abstract class Application {
-    protected AppContext ctx;
+    private static AppContext<?> context;
+
     protected AppFrame frame;
     protected AppPanel panel;
 
     protected final int width;
     protected final int height;
     protected String title;
+
+    @SuppressWarnings("unchecked")
+    public static <State> AppContext<State> getContext() {
+        return (AppContext<State>) context;
+    }
 
     public Application(String title, int width, int height) {
         this.width = width;
@@ -17,10 +23,10 @@ public abstract class Application {
         this.frame = new AppFrame(this);
         this.panel = new AppPanel(this);
 
-        this.ctx = new AppContext(this.frame);
+        context = new AppContext<>(this.frame);
 
         this.frame.setPanel(this.panel);
-        this.ctx.input.attachListeners(this.panel);
+        context.getInput().attachListeners(this.panel);
     }
 
     protected final void setTitle(String title) {

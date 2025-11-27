@@ -1,11 +1,9 @@
 package game.entities.enemies;
 
-import engine.AppContext;
-
 public class EnemyButterFly extends Enemy {
 
-    public EnemyButterFly(AppContext ctx, float startX, float startY, float size, int value, float speed) {
-        super(ctx, EnemyType.BUTTERFLY, startX, startY, size, value, speed);
+    public EnemyButterFly(float startX, float startY, float size, int value, float speed) {
+        super(EnemyType.BUTTERFLY, startX, startY, size, value, speed);
     }
 
     @Override

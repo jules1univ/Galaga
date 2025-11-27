@@ -1,18 +1,19 @@
 package game.entities.enemies;
 
-import engine.AppContext;
 import engine.entity.Direction;
 import engine.entity.SpriteEntity;
-import game.Game;
+import game.Galaga;
 
-public abstract class Enemy extends SpriteEntity<EnemyType> {
+public abstract class Enemy extends SpriteEntity {
 
     protected float hitBoxSize;
     protected float speed;
     protected int value;
+    protected EnemyType type;
 
-    public Enemy(AppContext ctx, EnemyType type, float startX, float startY, float size, int value, float speed) {
-        super(ctx);
+    public Enemy(EnemyType type, float startX, float startY, float size, int value,
+            float speed) {
+        super();
         this.direction = Direction.DOWN;
         this.type = type;
 
@@ -29,7 +30,7 @@ public abstract class Enemy extends SpriteEntity<EnemyType> {
         String name = this.type.name().toLowerCase();
         String path = String.format(".\\resources\\sprites\\%s.spr", name);
 
-        this.sprite = this.loadFromSprite(name, path, Game.DEFAULT_SPRITE_SCALE);
+        this.sprite = this.loadFromSprite(name, path, Galaga.DEFAULT_SPRITE_SCALE);
         return this.sprite != null;
     }
 }

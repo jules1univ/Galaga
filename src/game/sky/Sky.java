@@ -4,24 +4,22 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import engine.AppContext;
 import engine.entity.Entity;
-import game.Game;
+import game.Galaga;
 
-public class Sky extends Entity<SkyObjectType> {
+public class Sky extends Entity {
     private List<Star> stars = new ArrayList<>();
     private int size;
 
-    public Sky(AppContext ctx, int gridSize) {
-        super(ctx);
+    public Sky(int gridSize) {
+        super();
         this.size = gridSize;
-        this.type = SkyObjectType.SKY;
     }
 
     @Override
     public boolean init() {
-        int width = this.ctx.frame.getWidth();
-        int height = this.ctx.frame.getHeight();
+        int width = Galaga.getContext().getFrame().getWidth();
+        int height = Galaga.getContext().getFrame().getHeight();
 
         for (int x = 0; x < width; x += this.size) {
             for (int y = 0; y < height; y += this.size) {
@@ -36,7 +34,7 @@ public class Sky extends Entity<SkyObjectType> {
                             (int) (Math.random() * 256),
                             (int) (Math.random() * 256));
 
-                    Star star = new Star(this.ctx, pointX, pointY, (int) Game.DEFAULT_SPRITE_SCALE, color);
+                    Star star = new Star(pointX, pointY, (int) Galaga.DEFAULT_SPRITE_SCALE, color);
                     star.init();
                     this.stars.add(star);
                 }

@@ -1,11 +1,9 @@
 package game.entities.enemies;
 
-import engine.AppContext;
-
 public class EnemyBee extends Enemy {
 
-    public EnemyBee(AppContext ctx, float startX, float startY, float size, int value, float speed) {
-        super(ctx, EnemyType.BEE, startX, startY, size, value, speed);
+    public EnemyBee(float startX, float startY, float size, int value, float speed) {
+        super(EnemyType.BEE, startX, startY, size, value, speed);
     }
 
     @Override

@@ -103,7 +103,7 @@ public final class Renderer {
         return this;
     }
 
-    public Renderer drawSpriteEntity(SpriteEntity<?> e, boolean centered) {
+    public Renderer drawSpriteEntity(SpriteEntity e, boolean centered) {
         Sprite sprite = e.getSprite();
         if (sprite == null || sprite.getImage() == null) {
             return this;

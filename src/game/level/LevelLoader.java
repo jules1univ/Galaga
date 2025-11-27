@@ -6,15 +6,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import engine.AppContext;
+import game.Galaga;
 import game.entities.enemies.EnemyType;
 
 public class LevelLoader {
     private HashMap<String, Level> levels = new HashMap<>();
-    private AppContext ctx;
 
-    public LevelLoader(AppContext ctx) {
-        this.ctx = ctx;
+    public LevelLoader() {
     }
 
     private Level parseHeader(String lineHeader) {
@@ -24,7 +22,7 @@ public class LevelLoader {
         }
 
         try {
-            return new Level(this.ctx, header[0],
+            return new Level(header[0],
                     Float.parseFloat(header[1]),
                     Integer.parseInt(header[2]),
                     Integer.parseInt(header[3]));
@@ -41,10 +39,10 @@ public class LevelLoader {
         String enemyType = data[0];
         try {
             float startXPercent = Float.parseFloat(data[1]);
-            float startX = (1.f - startXPercent) * this.ctx.frame.getWidth();
+            float startX = (1.f - startXPercent) * Galaga.getContext().getFrame().getWidth();
 
             float startYPercent = Float.parseFloat(data[2]);
-            float startY = (1.f - startYPercent) * this.ctx.frame.getHeight();
+            float startY = (1.f - startYPercent) * Galaga.getContext().getFrame().getHeight();
 
             float size = Float.parseFloat(data[3]);
             int value = Integer.parseInt(data[4]);
@@ -89,19 +87,6 @@ public class LevelLoader {
         }
 
         return null;
-    }
-
-    public void setup(String name) {
-        if (!this.levels.containsKey(name)) {
-            return;
-        }
-
-        for (EnemyType type : EnemyType.values()) {
-            this.ctx.entityManager.filterByType(type).forEach(e -> this.ctx.entityManager.remove(e.getId()));
-        }
-
-        Level level = this.levels.get(name);
-        level.getEnemies().forEach(e -> this.ctx.entityManager.add(e));
     }
 
     public List<String> getLevelNames() {

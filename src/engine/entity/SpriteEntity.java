@@ -1,15 +1,15 @@
 package engine.entity;
 
-import engine.AppContext;
+import engine.Application;
 import engine.graphics.sprite.Sprite;
 import engine.graphics.sprite.SpriteManager;
 
-public abstract class SpriteEntity<Type extends Enum<Type>> extends Entity<Type> {
+public abstract class SpriteEntity extends Entity {
     protected Sprite sprite;
     protected Direction direction;
 
-    public SpriteEntity(AppContext ctx) {
-        super(ctx);
+    public SpriteEntity() {
+        super();
     }
 
     public final Sprite getSprite() {
@@ -33,7 +33,7 @@ public abstract class SpriteEntity<Type extends Enum<Type>> extends Entity<Type>
 
     @Override
     public void draw() {
-        this.ctx.renderer.drawSpriteEntity(this, true);
+        Application.getContext().getRenderer().drawSpriteEntity(this, true);
     }
 
 }

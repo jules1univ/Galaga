@@ -2,10 +2,10 @@ package game.sky;
 
 import java.awt.Color;
 
-import engine.AppContext;
 import engine.entity.Entity;
+import game.Galaga;
 
-public class Star extends Entity<SkyObjectType> {
+public class Star extends Entity {
 
     private static final float MAX_BLINK_DELAY = 10.0f;
     private static final float MIN_BLINK_DELAY = 3.0f;
@@ -14,10 +14,8 @@ public class Star extends Entity<SkyObjectType> {
     private float blinkDelay;
     private boolean active;
 
-    public Star(AppContext ctx, float x, float y, float size, Color color) {
-        super(ctx);
-        this.type = SkyObjectType.STAR;
-
+    public Star(float x, float y, float size, Color color) {
+        super();
         this.x = x;
         this.y = y;
         this.width = size;
@@ -47,7 +45,7 @@ public class Star extends Entity<SkyObjectType> {
         if (!this.active) {
             return;
         }
-        this.ctx.renderer.drawRect(this.x, this.y, this.width, this.height, this.color);
+        Galaga.getContext().getRenderer().drawRect(this.x, this.y, this.width, this.height, this.color);
     }
 
 }
