@@ -41,10 +41,6 @@ public final class AppPanel extends JPanel implements Runnable {
         }
 
         this.running = false;
-        try {
-            this.thread.join();
-        } catch (Exception e) {
-        }
     }
 
     @Override

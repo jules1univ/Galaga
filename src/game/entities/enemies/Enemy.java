@@ -1,22 +1,27 @@
 package game.entities.enemies;
 
 import engine.AppContext;
-import engine.entity.Entity;
-import engine.graphics.sprite.Sprite;
-import engine.graphics.sprite.SpriteEntity;
+import engine.entity.Direction;
+import engine.entity.SpriteEntity;
 import game.Game;
 
-public abstract class Enemy extends Entity<EnemyType> implements SpriteEntity {
+public abstract class Enemy extends SpriteEntity<EnemyType> {
 
-    protected Sprite sprite;
+    protected float hitBoxSize;
+    protected float speed;
+    protected int value;
 
-    public Enemy(AppContext ctx, EnemyType type) {
+    public Enemy(AppContext ctx, EnemyType type, float startX, float startY, float size, int value, float speed) {
         super(ctx);
+        this.direction = Direction.DOWN;
         this.type = type;
-    }
 
-    public Sprite getSprite() {
-        return this.sprite;
+        this.x = startX;
+        this.y = startY;
+        this.speed = speed;
+        this.hitBoxSize = size;
+
+        this.value = value;
     }
 
     @Override
@@ -26,10 +31,5 @@ public abstract class Enemy extends Entity<EnemyType> implements SpriteEntity {
 
         this.sprite = this.loadFromSprite(name, path, Game.DEFAULT_SPRITE_SCALE);
         return this.sprite != null;
-    }
-
-    @Override
-    public void draw() {
-        this.ctx.renderer.drawSpriteEntity(this);
     }
 }

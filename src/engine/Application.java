@@ -45,11 +45,8 @@ public abstract class Application {
     }
 
     public final void stop() {
-        // TODO: fix stop
-        // this.panel.stop();
-
+        this.panel.stop();
         this.frame.dispose();
-        System.exit(0);
     }
 
     protected abstract boolean init();

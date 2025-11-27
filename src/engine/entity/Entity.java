@@ -3,14 +3,11 @@ package engine.entity;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import engine.AppContext;
-import engine.graphics.GraphicsEntity;
-import engine.graphics.sprite.Sprite;
-import engine.graphics.sprite.SpriteManager;
 
-public abstract class Entity<Type extends Enum<Type>> implements GraphicsEntity {
+public abstract class Entity<Type extends Enum<Type>> {
     protected AppContext ctx;
-    protected double x, y;
-    protected double width, height;
+    protected float x, y;
+    protected float width, height;
     protected Type type;
 
     private int id;
@@ -21,54 +18,43 @@ public abstract class Entity<Type extends Enum<Type>> implements GraphicsEntity 
         this.id = next.getAndIncrement();
     }
 
-    public Type getType() {
+    public final Type getType() {
         return this.type;
     }
 
-    public int getId() {
+    public final int getId() {
         return this.id;
     }
 
-    public boolean collideWith(double x, double y, double width, double height) {
+    public final boolean collideWith(float x, float y, float width, float height) {
         return this.x < x + width &&
                 this.x + this.width > x &&
                 this.y < y + height &&
                 this.y + this.height > y;
     }
 
-    public boolean collideWith(Entity<?> e) {
+    public final boolean collideWith(Entity<?> e) {
         return this.collideWith(e.x, e.y, e.width, e.height);
     }
 
-    public boolean isOutOfBounds() {
+    public final boolean isOutOfBounds() {
         return !this.collideWith(0, 0, this.ctx.frame.getWidth(), this.ctx.frame.getHeight());
     }
 
-    public double getOffsetX() {
+    public final float getOffsetX() {
         return this.x;
     }
 
-    public double getOffsetY() {
+    public final float getOffsetY() {
         return this.y;
     }
 
-    public double getWidth() {
+    public final float getWidth() {
         return this.width;
     }
 
-    public double getHeight() {
+    public final float getHeight() {
         return this.height;
-    }
-
-    protected Sprite loadFromSprite(String name, String path, float scale) {
-        if (!SpriteManager.getInstance().load(name, path, scale)) {
-            return null;
-        }
-
-        Sprite sprite = SpriteManager.getInstance().get(name);
-        this.width = sprite.getWidth();
-        this.height = sprite.getHeight();
-        return sprite;
     }
 
     public abstract boolean init();

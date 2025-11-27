@@ -53,7 +53,7 @@ public final class EntityManager {
                 .collect(Collectors.toList());
     }
 
-    public List<Entity<?>> filterByCollision(double x, double y, double width, double height) {
+    public List<Entity<?>> filterByCollision(float x, float y, float width, float height) {
         return this.entities.values().stream().filter(e -> e.collideWith(x, y, width, height))
                 .collect(Collectors.toList());
     }

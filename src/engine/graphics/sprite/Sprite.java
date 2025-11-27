@@ -20,8 +20,7 @@ public final class Sprite {
             while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
             return false;
         }
 

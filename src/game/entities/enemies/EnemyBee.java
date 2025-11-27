@@ -1,16 +1,16 @@
 package game.entities.enemies;
 
+import engine.AppContext;
+
 public class EnemyBee extends Enemy {
 
-    public EnemyBee(engine.AppContext ctx) {
-        super(ctx, EnemyType.BEE);
+    public EnemyBee(AppContext ctx, float startX, float startY, float size, int value, float speed) {
+        super(ctx, EnemyType.BEE, startX, startY, size, value, speed);
     }
 
     @Override
     public boolean init() {
         super.init();
-        this.x = (this.ctx.frame.getWidth() - this.sprite.getWidth()) / 2;
-        this.y = 50;
         return true;
     }
 

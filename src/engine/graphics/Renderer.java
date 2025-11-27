@@ -9,8 +9,9 @@ import java.util.HashMap;
 import java.awt.FontMetrics;
 
 import engine.AppFrame;
+import engine.entity.Direction;
+import engine.entity.SpriteEntity;
 import engine.graphics.sprite.Sprite;
-import engine.graphics.sprite.SpriteEntity;
 import engine.graphics.sprite.SpriteManager;
 
 public final class Renderer {
@@ -79,40 +80,59 @@ public final class Renderer {
         return this;
     }
 
-    public Renderer drawRect(int x, int y, int width, int height, Color color) {
+    public Renderer drawRect(float x, float y, float width, float height, Color color) {
         this.g.setColor(color);
-        this.g.fillRect(x, y, width, height);
+        this.g.fillRect((int) x, (int) y, (int) width, (int) height);
         return this;
     }
 
-    public Renderer drawSprite(String name, int x, int y) {
+    public Renderer drawSprite(String name, float x, float y) {
         BufferedImage img = SpriteManager.getInstance().get(name).getImage();
         if (img == null) {
             return this;
         }
-        this.g.drawImage(img, x, y, (int) (img.getWidth()), (int) (img.getHeight()), null);
+        this.g.drawImage(img, (int) x, (int) y, (int) img.getWidth(), (int) img.getHeight(), null);
         return this;
     }
 
-    public Renderer drawSprite(Sprite sprite, int x, int y) {
+    public Renderer drawSprite(Sprite sprite, float x, float y) {
         if (sprite == null || sprite.getImage() == null) {
             return this;
         }
-        this.g.drawImage(sprite.getImage(), x, y, null);
+        this.g.drawImage(sprite.getImage(), (int) x, (int) y, null);
         return this;
     }
 
-    public Renderer drawSpriteEntity(SpriteEntity e) {
+    public Renderer drawSpriteEntity(SpriteEntity<?> e, boolean centered) {
         Sprite sprite = e.getSprite();
         if (sprite == null || sprite.getImage() == null) {
             return this;
         }
-        this.g.drawImage(sprite.getImage(),
-                (int) (e.getOffsetX()),
-                (int) (e.getOffsetY()),
-                (int) (e.getWidth()),
-                (int) (e.getHeight()),
-                null);
+        Direction dir = e.getDirection();
+        BufferedImage img = sprite.getImage();
+
+        int x = (int) e.getOffsetX();
+        int y = (int) e.getOffsetY();
+        int width = (int) e.getWidth();
+        int height = (int) e.getHeight();
+
+        if (centered) {
+            x = (x - width / 2);
+            y = (y - height / 2);
+        }
+
+        int dx1 = x, dy1 = y, dx2 = x + width, dy2 = y + height;
+        int sx1 = 0, sy1 = 0, sx2 = img.getWidth(), sy2 = img.getHeight();
+
+        if (dir == Direction.DOWN) {
+            dy1 = y + height;
+            dy2 = y;
+        } else if (dir == Direction.LEFT) {
+            dx1 = x + width;
+            dx2 = x;
+        }
+
+        this.g.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
         return this;
     }
 }
