@@ -45,16 +45,16 @@ public class Level {
         return enemies;
     }
 
-    public boolean addEnemy(EnemyType type, float startX, float startY, float size, int value, float speed) {
+    public boolean addEnemy(EnemyType type, float endX, float endY, float size, int value, float speed) {
         switch (type) {
             case EnemyType.BEE:
-                enemies.add(new EnemyBee(startX, startY, size, value, speed));
+                enemies.add(new EnemyBee(endX, endY, size, value, speed));
                 break;
             case EnemyType.BUTTERFLY:
-                enemies.add(new EnemyButterFly(startX, startY, size, value, speed));
+                enemies.add(new EnemyButterFly(endX, endY, size, value, speed));
                 break;
             case EnemyType.MOTH:
-                enemies.add(new EnemyMoth(startX, startY, size, value, speed));
+                enemies.add(new EnemyMoth(endX, endY, size, value, speed));
                 break;
             default:
                 return false;

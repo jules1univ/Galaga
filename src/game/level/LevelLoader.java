@@ -38,19 +38,21 @@ public class LevelLoader {
         }
         String enemyType = data[0];
         try {
-            float startXPercent = Float.parseFloat(data[1]);
-            float startX = (1.f - startXPercent) * Galaga.getContext().getFrame().getWidth();
+            float endXPercent = Float.parseFloat(data[1]);
+            float endX = (1.f - endXPercent) * Galaga.getContext().getFrame().getWidth();
 
-            float startYPercent = Float.parseFloat(data[2]);
-            float startY = (1.f - startYPercent) * Galaga.getContext().getFrame().getHeight();
+            float endYPercent = Float.parseFloat(data[2]);
+            float endY = (1.f - endYPercent) * Galaga.getContext().getFrame().getHeight();
 
             float size = Float.parseFloat(data[3]);
             int value = Integer.parseInt(data[4]);
-            float speed = Float.parseFloat(data[5]);
+
+            // TODO: turn this into a constant
+            float speed = Float.parseFloat(data[5]) * 50000.f;
 
             EnemyType type = EnemyType.valueOf(enemyType.toUpperCase());
 
-            return level.addEnemy(type, startX, startY, size, value, speed);
+            return level.addEnemy(type, endX, endY, size, value, speed);
         } catch (Exception e) {
             return false;
         }
@@ -91,5 +93,9 @@ public class LevelLoader {
 
     public List<String> getLevelNames() {
         return this.levels.keySet().stream().toList();
+    }
+
+    public Level getLevel(String name) {
+        return this.levels.get(name);
     }
 }

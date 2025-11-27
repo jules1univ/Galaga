@@ -7,7 +7,7 @@ import engine.entity.SpriteEntity;
 import game.Galaga;
 
 public class Player extends SpriteEntity {
-    private static final float PLAYER_SPEED = 200.f;
+    private static final float PLAYER_SPEED = 600.f;
 
     public Player() {
         super();
@@ -34,9 +34,17 @@ public class Player extends SpriteEntity {
             this.x += PLAYER_SPEED * dt;
         }
 
+        this.x = Math.clamp(this.x, this.sprite.getWidth(),
+                Galaga.getContext().getFrame().getWidth() - this.sprite.getWidth());
+
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_SPACE)) {
 
         }
+    }
+
+    @Override
+    public void draw() {
+        super.draw();
     }
 
 }

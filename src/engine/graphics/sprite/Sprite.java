@@ -94,13 +94,12 @@ public final class Sprite {
 
     private Color charToColor(char c) {
         return switch (c) {
-            case 'N' -> Color.BLACK;
             case 'W' -> Color.WHITE;
             case 'B' -> Color.BLUE;
             case 'R' -> Color.RED;
             case 'Y' -> Color.YELLOW;
             case 'G' -> Color.GREEN;
-            default -> new Color(0, 0, 0, 0);
+            default -> new Color(0, 0, 0, 0); // BLACK = transparent
         };
     }
 

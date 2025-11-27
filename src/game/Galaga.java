@@ -1,10 +1,12 @@
 package game;
 
 import java.awt.Color;
+import java.util.List;
 
 import engine.AppContext;
 import engine.Application;
 import engine.utils.Time;
+import game.entities.enemies.Enemy;
 import game.entities.player.Player;
 import game.level.LevelLoader;
 import game.sky.Sky;
@@ -16,6 +18,10 @@ public class Galaga extends Application {
     private static final int WINDOW_WIDTH = 700;
     private static final int WINDOW_HEIGHT = 700;
     private LevelLoader levelLoader;
+
+    private Sky sky;
+    private Player player;
+    private List<Enemy> enemies;
 
     @SuppressWarnings("unchecked")
     public static AppContext<GalagaState> getContext() {
@@ -40,19 +46,29 @@ public class Galaga extends Application {
             return false;
         }
 
-        getContext().getState().sky = new Sky(DEFAULT_SKY_GRID_SIZE);
-        getContext().getState().sky.init();
+        getContext().getRenderer().setFont("Arial Bold", 24);
 
-        getContext().getState().player = new Player();
-        getContext().getState().player.init();
+        this.sky = new Sky(DEFAULT_SKY_GRID_SIZE);
+        this.sky.init();
 
+        this.player = new Player();
+        this.player.init();
+
+        this.enemies = this.levelLoader.getLevel(level1).getEnemies();
+        for (Enemy enemy : this.enemies) {
+            enemy.init();
+        }
         return true;
     }
 
     @Override
     protected void update(double dt) {
-        getContext().getState().sky.update(dt);
-        getContext().getState().player.update(dt);
+        this.sky.update(dt);
+        this.player.update(dt);
+
+        for (Enemy enemy : this.enemies) {
+            enemy.update(dt);
+        }
 
         if (getContext().getInput().isKeyDown(java.awt.event.KeyEvent.VK_ESCAPE)) {
             this.stop();
@@ -61,9 +77,14 @@ public class Galaga extends Application {
 
     @Override
     protected void draw() {
-        getContext().getState().sky.draw();
+        this.sky.draw();
 
-        getContext().getState().player.draw();
+        this.player.draw();
+
+        for (Enemy enemy : this.enemies) {
+            enemy.draw();
+        }
+
         getContext().getRenderer().drawText(String.format("FPS: %.2f", Time.getFrameRate()), 10, 10, Color.WHITE);
     }
 
