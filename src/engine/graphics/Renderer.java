@@ -64,7 +64,7 @@ public final class Renderer {
             String[] names = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
             if (!Arrays.asList(names).contains(fontName)) {
                 Log.warning("Font '" + fontName + "' not found. Using default font.");
-                fontName = "Default";
+                fontName = names[0];
             }
 
             font = new Font(fontName, Font.PLAIN, size);
@@ -72,18 +72,20 @@ public final class Renderer {
         }
 
         this.g.setFont(font);
-        this.fontMetrics = g.getFontMetrics();
+        this.fontMetrics = this.g.getFontMetrics(font);
 
         return this;
     }
 
     public int getTextWidth(String text) {
-        return this.fontMetrics.stringWidth(text);
+        return this.fontMetrics.stringWidth(text) + this.fontMetrics.getAscent()*2;
     }
 
     public Renderer drawText(String text, int x, int y, Color color) {
         this.g.setColor(color);
-        this.g.drawString(text, x, y + this.fontMetrics.getHeight() * 2);
+
+        // FIXME: hacky way to align text properly
+        this.g.drawString(text, x + this.fontMetrics.getAscent(), y + this.fontMetrics.getAscent() + this.fontMetrics.getLeading() + this.fontMetrics.getHeight());
         return this;
     }
 
@@ -102,7 +104,7 @@ public final class Renderer {
         BufferedImage img = sprite.getImage();
 
         int x = (int) (offsetX - (img.getWidth() * scale) / 2);
-        int y = (int)  (offsetY - (img.getHeight() * scale) / 2);
+        int y = (int) (offsetY - (img.getHeight() * scale) / 2);
 
         this.g.drawImage(img, x, y, (int) (img.getWidth() * scale), (int) (img.getHeight() * scale), null);
         return this;

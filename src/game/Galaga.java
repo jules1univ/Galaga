@@ -83,6 +83,10 @@ public class Galaga extends Application {
         if (getContext().getInput().isKeyDown(KeyEvent.VK_ESCAPE)) {
             this.stop();
         }
+
+        
+        this.hud.update(dt);
+        this.fud.update(dt);
     }
 
     @Override

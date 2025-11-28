@@ -14,8 +14,8 @@ public class Text extends Entity {
 
     private String text;
 
-    private boolean centerX;
-    private boolean centerY;
+    private TextPosition horizontal;
+    private TextPosition vertical;
 
     public Text(String text, float x, float y, int size, Color color) {
         this.text = text;
@@ -36,26 +36,32 @@ public class Text extends Entity {
         return this.text;
     }
 
-    public void setCenter(boolean horizontal, boolean vertical) {
-        this.centerX = horizontal;
-        this.centerY = vertical;
+    public void setCenter(TextPosition horizontal, TextPosition vertical) {
+        this.horizontal = horizontal;
+        this.vertical = vertical;
         this.updateTextPosition();
     }
 
     private void updateTextPosition() {
         int textWidth = Galaga.getContext().getRenderer().getTextWidth(this.text);
 
-        if (this.centerX) {
+        if (this.horizontal == TextPosition.CENTER) {
+            this.x = this.initialX - textWidth/2;
+        } else if(this.horizontal == TextPosition.END) {
             this.x = this.initialX - textWidth;
-        } else {
+        }else{
             this.x = this.initialX;
         }
 
-        if (this.centerY) {
-            this.y = this.initialY - this.size / 2;
+        if (this.vertical == TextPosition.CENTER) {
+            this.y = this.initialY - this.size/2;
+        } else if(this.vertical == TextPosition.BEGIN) {
+            this.y = this.initialY - this.size;
         } else {
             this.y = this.initialY;
         }
+
+
     }
 
     @Override

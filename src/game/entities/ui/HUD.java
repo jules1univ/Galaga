@@ -23,18 +23,18 @@ public class HUD extends Entity {
         this.height = Config.HUD_HEIGHT;
         this.width = Galaga.getContext().getFrame().getWidth();
         this.x = 0;
-        this.y = 0;
+        this.y = this.height/2;
 
         this.fps = new Text("FPS: 0", this.width, this.height/2, Config.TEXT_FONT_SIZE, Color.WHITE);
-        this.fps.setCenter(true, true);
+        this.fps.setCenter(TextPosition.END, TextPosition.CENTER);
 
 
         // TODO: load score from game state
         this.score = new Text("SCORE: 0", this.width/2, this.height/2, Config.TEXT_FONT_SIZE, Color.WHITE);
-        this.score.setCenter(true, true);
+        this.score.setCenter(TextPosition.CENTER, TextPosition.CENTER);
 
         this.bestScore = new Text("BEST: 0", 0, this.height/2, Config.TEXT_FONT_SIZE, Color.WHITE);
-        this.bestScore.setCenter(false, true);
+        this.bestScore.setCenter(TextPosition.BEGIN, TextPosition.CENTER);
 
         return true;
     }
@@ -49,7 +49,6 @@ public class HUD extends Entity {
         this.fps.draw();
         this.score.draw();
         this.bestScore.draw();
-
     }
 
 }
