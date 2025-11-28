@@ -38,21 +38,23 @@ public class LevelLoader {
         }
         String enemyType = data[0];
         try {
-            float endXPercent = Float.parseFloat(data[1]);
-            float endX = (1.f - endXPercent) * Galaga.getContext().getFrame().getWidth();
+            float lockXPercent = Float.parseFloat(data[1]);
+            float lockX = (1.f - lockXPercent) * Galaga.getContext().getFrame().getWidth();
 
-            float endYPercent = Float.parseFloat(data[2]);
-            float endY = (1.f - endYPercent) * Galaga.getContext().getFrame().getHeight();
+            float lockYPercent = Float.parseFloat(data[2]);
+            float lockY = (1.f - lockYPercent) * Galaga.getContext().getFrame().getHeight();
 
-            float size = Float.parseFloat(data[3]);
+            // we no longer use size for enemies => sprite have their own fixed size
+            // float size = Float.parseFloat(data[3]);
+
             int value = Integer.parseInt(data[4]);
 
             // TODO: turn this into a constant
-            float speed = Float.parseFloat(data[5]) * 50000.f;
+            float speed = Float.parseFloat(data[5]) * 1000.f;
 
             EnemyType type = EnemyType.valueOf(enemyType.toUpperCase());
 
-            return level.addEnemy(type, endX, endY, size, value, speed);
+            return level.addEnemy(type, lockX, lockY, value, speed);
         } catch (Exception e) {
             return false;
         }

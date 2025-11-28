@@ -7,9 +7,9 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.awt.FontMetrics;
+import java.awt.geom.AffineTransform;
 
 import engine.AppFrame;
-import engine.entity.Direction;
 import engine.entity.SpriteEntity;
 import engine.graphics.sprite.Sprite;
 import engine.graphics.sprite.SpriteManager;
@@ -30,8 +30,8 @@ public final class Renderer {
         this.g = backBuffer.createGraphics();
 
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+        g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
 
         this.setFont("Default", 12);
     }
@@ -46,8 +46,6 @@ public final class Renderer {
         if (fg == null) {
             return;
         }
-        fg.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
         fg.drawImage(backBuffer, 0, 0, null);
         fg.dispose();
     }
@@ -108,31 +106,29 @@ public final class Renderer {
         if (sprite == null || sprite.getImage() == null) {
             return this;
         }
-        Direction dir = e.getDirection();
         BufferedImage img = sprite.getImage();
 
         int x = (int) e.getOffsetX();
         int y = (int) e.getOffsetY();
-        int width = (int) e.getWidth();
-        int height = (int) e.getHeight();
 
         if (centered) {
-            x = (x - width / 2);
-            y = (y - height / 2);
+            x = (x - (int) e.getWidth() / 2);
+            y = (y - (int) e.getHeight() / 2);
         }
 
-        int dx1 = x, dy1 = y, dx2 = x + width, dy2 = y + height;
-        int sx1 = 0, sy1 = 0, sx2 = img.getWidth(), sy2 = img.getHeight();
-
-        if (dir == Direction.DOWN) {
-            dy1 = y + height;
-            dy2 = y;
-        } else if (dir == Direction.LEFT) {
-            dx1 = x + width;
-            dx2 = x;
+        if (e.getAngle() == 0.0f) {
+            this.g.drawImage(img, x, y, (int) e.getWidth(), (int) e.getHeight(), null);
+            return this;
         }
 
-        this.g.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null);
+        double cx = x + ((double) e.getWidth()) / 2.0;
+        double cy = y + ((double) e.getHeight()) / 2.0;
+
+        AffineTransform old = g.getTransform();
+        g.rotate(Math.toRadians(e.getAngle()), cx, cy);
+        this.g.drawImage(img, x, y, (int) e.getWidth(), (int) e.getHeight(), null);
+        g.setTransform(old);
+
         return this;
     }
 }

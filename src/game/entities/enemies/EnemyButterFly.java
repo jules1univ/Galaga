@@ -2,8 +2,8 @@ package game.entities.enemies;
 
 public class EnemyButterFly extends Enemy {
 
-    public EnemyButterFly(float endX, float endY, float size, int value, float speed) {
-        super(EnemyType.BUTTERFLY, endX, endY, size, value, speed);
+    public EnemyButterFly(float lockX, float lockY, int value, float speed) {
+        super(EnemyType.BUTTERFLY, lockX, lockY, value, speed);
     }
 
     @Override

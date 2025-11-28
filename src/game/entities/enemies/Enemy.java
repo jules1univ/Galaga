@@ -1,37 +1,30 @@
 package game.entities.enemies;
 
-import engine.entity.Direction;
 import engine.entity.SpriteEntity;
 import game.Galaga;
 
 public abstract class Enemy extends SpriteEntity {
 
-    private static final float DEFAULT_ENEMY_START_X = 350.0f;
-    private static final float DEFAULT_ENEMY_START_Y = -50.0f;
-
-    protected float hitBoxSize;
     protected float speed;
     protected int value;
     protected EnemyType type;
 
-    protected float endX;
-    protected float endY;
+    protected float lockX;
+    protected float lockY;
 
-    public Enemy(EnemyType type, float endX, float endY, float size, int value,
+    public Enemy(EnemyType type, float lockX, float lockY, int value,
             float speed) {
         super();
-        this.direction = Direction.DOWN;
         this.type = type;
 
-        this.x = DEFAULT_ENEMY_START_X;
-        this.y = DEFAULT_ENEMY_START_Y;
+        this.angle = 180.f;
+        this.x = -(float) Math.random() * Galaga.getContext().getFrame().getWidth();
+        this.y = -(float) Math.random() * Galaga.getContext().getFrame().getHeight();
 
-        this.endX = endX;
-        this.endY = endY;
+        this.lockX = lockX;
+        this.lockY = lockY;
 
         this.speed = speed;
-        this.hitBoxSize = size;
-
         this.value = value;
     }
 
@@ -46,13 +39,15 @@ public abstract class Enemy extends SpriteEntity {
 
     @Override
     public void update(double dt) {
-        float directionX = this.endX - this.x;
-        float directionY = this.endY - this.y;
+        float directionX = this.lockX - this.x;
+        float directionY = this.lockY - this.y;
         float length = (float) Math.sqrt(directionX * directionX + directionY * directionY);
 
-        if (length != 0) {
-            directionX /= length;
-            directionY /= length;
+        if (length <= 3.f) {
+            this.x = this.lockX;
+            this.y = this.lockY;
+            this.angle = 180.f;
+            return;
         }
 
         this.x += directionX * this.speed * dt;

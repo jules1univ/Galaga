@@ -2,7 +2,6 @@ package game.entities.player;
 
 import java.awt.event.KeyEvent;
 
-import engine.entity.Direction;
 import engine.entity.SpriteEntity;
 import game.Galaga;
 
@@ -11,7 +10,7 @@ public class Player extends SpriteEntity {
 
     public Player() {
         super();
-        this.direction = Direction.UP;
+        this.angle = 0.f;
     }
 
     @Override

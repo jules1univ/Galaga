@@ -8,12 +8,12 @@ import engine.Application;
 import engine.utils.Time;
 import game.entities.enemies.Enemy;
 import game.entities.player.Player;
+import game.entities.sky.Sky;
 import game.level.LevelLoader;
-import game.sky.Sky;
 
 public class Galaga extends Application {
     public static final float DEFAULT_SPRITE_SCALE = 2.5f;
-    public static final int DEFAULT_SKY_GRID_SIZE = 50;
+    public static final int DEFAULT_SKY_GRID_SIZE = 80;
 
     private static final int WINDOW_WIDTH = 700;
     private static final int WINDOW_HEIGHT = 700;

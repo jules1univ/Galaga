@@ -9,11 +9,13 @@ public final class AppFrame extends JFrame {
         super(app.getTitle());
 
         this.setSize(app.getWidth(), app.getHeight());
-        this.setTitle(app.getTitle());
+
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setPreferredSize(new Dimension(app.getWidth(), app.getHeight()));
+
         this.setResizable(false);
         this.setFocusTraversalKeysEnabled(false);
-        this.setPreferredSize(new Dimension(app.getWidth(), app.getHeight()));
+        this.requestFocusInWindow();
     }
 
     public void setPanel(AppPanel panel) {

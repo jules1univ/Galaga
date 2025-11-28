@@ -1,4 +1,4 @@
-package game.sky;
+package game.entities.sky;
 
 import java.awt.Color;
 import java.util.ArrayList;

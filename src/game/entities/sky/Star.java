@@ -1,4 +1,4 @@
-package game.sky;
+package game.entities.sky;
 
 import java.awt.Color;
 
@@ -9,15 +9,22 @@ public class Star extends Entity {
 
     private static final float MAX_BLINK_DELAY = 10.0f;
     private static final float MIN_BLINK_DELAY = 3.0f;
+    private static final float DEFAULT_MOVE_SPEED = 200.0f;
+
     private Color color;
     private float time;
     private float blinkDelay;
     private boolean active;
 
+    private float initialY;
+
     public Star(float x, float y, float size, Color color) {
         super();
+
         this.x = x;
         this.y = y;
+        this.initialY = y;
+
         this.width = size;
         this.height = size;
         this.color = color;
@@ -35,9 +42,13 @@ public class Star extends Entity {
         this.time += dt;
         if (this.time > this.blinkDelay) {
             this.time = 0.0f;
-            this.blinkDelay = MIN_BLINK_DELAY + (float) Math.random() * MAX_BLINK_DELAY;
             this.active = !this.active;
+            this.y = this.initialY;
+
+            // Not updated to save performance
+            // this.blinkDelay = MIN_BLINK_DELAY + (float) Math.random() * MAX_BLINK_DELAY;
         }
+        this.y += dt * DEFAULT_MOVE_SPEED;
     }
 
     @Override

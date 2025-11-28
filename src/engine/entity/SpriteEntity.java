@@ -6,7 +6,7 @@ import engine.graphics.sprite.SpriteManager;
 
 public abstract class SpriteEntity extends Entity {
     protected Sprite sprite;
-    protected Direction direction;
+    protected float angle;
 
     public SpriteEntity() {
         super();
@@ -16,8 +16,8 @@ public abstract class SpriteEntity extends Entity {
         return this.sprite;
     }
 
-    public final Direction getDirection() {
-        return this.direction;
+    public final float getAngle() {
+        return this.angle;
     }
 
     protected final Sprite loadFromSprite(String name, String path, float scale) {
