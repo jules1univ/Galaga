@@ -1,3 +1,1 @@
 # Galaga
-
-> Sacha et Jules
