@@ -1,5 +1,7 @@
 package game.entities.ui;
 
+import java.awt.Color;
+
 import engine.entity.Entity;
 import engine.graphics.sprite.Sprite;
 import engine.graphics.sprite.SpriteManager;
@@ -9,6 +11,8 @@ import game.Galaga;
 public class FUD extends Entity {
 
     private Sprite ship;
+    private int shipHalfScaledHeight;
+    private int shipScaledWidth;
 
     public FUD() {
 
@@ -17,18 +21,20 @@ public class FUD extends Entity {
     @Override
     public boolean init() {
 
-        if(!SpriteManager.getInstance().load(Config.SHIP_SPRITE_NAME, Config.SHIP_PATH))
-        {
+        if (!SpriteManager.getInstance().load(Config.SHIP_SPRITE_NAME, Config.SHIP_PATH)) {
             return false;
         }
-        this.ship = SpriteManager.getInstance().get(Config.SHIP_SPRITE_NAME);        
-
+        this.ship = SpriteManager.getInstance().get(Config.SHIP_SPRITE_NAME);
 
         this.height = Config.FUD_HEIGHT;
         this.width = Galaga.getContext().getFrame().getWidth();
 
         this.x = 0;
         this.y = Galaga.getContext().getFrame().getHeight() - this.height;
+
+        this.shipScaledWidth = (int) (this.ship.getWidth() * Config.DEFAULT_SPRITE_ICON_DOWNSCALE_FACTOR);
+        this.shipHalfScaledHeight = (int) (this.ship.getHeight() * Config.DEFAULT_SPRITE_ICON_DOWNSCALE_FACTOR);
+
         return true;
     }
 
@@ -38,16 +44,17 @@ public class FUD extends Entity {
 
     @Override
     public void draw() {
-        // TODO: load number of life from global state => player
         int life = Galaga.getContext().getState().player.getLife();
-        int margin = 10;
-        int space = margin;
-
+        
+        // TODO: maybe inline this to save performance?
+        int margin = 20;
+        int space = this.shipScaledWidth + margin;
         for (int i = 0; i < life; i++) {
-            Galaga.getContext().getRenderer()
-            .drawSprite(this.ship,this.x + space, this.y - this.ship.getHeight()/2, Config.DEFAULT_SPRITE_SCALE/2);
-            space += this.ship.getWidth() * (Config.DEFAULT_SPRITE_SCALE/2) + margin;
+            Galaga.getContext().getRenderer().drawSprite(this.ship, this.x + space, this.y + this.shipHalfScaledHeight,
+                    Config.DEFAULT_SPRITE_ICON_DOWNSCALE_FACTOR);
+            space += this.shipScaledWidth + margin;
         }
+
     }
 
 }

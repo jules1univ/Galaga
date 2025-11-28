@@ -25,8 +25,8 @@ public abstract class SpriteEntity extends Entity {
         return this.scale;
     }
 
-    protected final Sprite loadFromSprite(String name, String path, float scale) {
-        if (!SpriteManager.getInstance().load(name, path, scale)) {
+    protected final Sprite loadFromSprite(String name, String path) {
+        if (!SpriteManager.getInstance().load(name, path, this.scale)) {
             return null;
         }
 

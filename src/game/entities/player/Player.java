@@ -13,8 +13,8 @@ public class Player extends SpriteEntity {
     public Player() {
         super();
         this.life = Config.PLAYER_INITIAL_LIFE;
-        this.angle = 0.f;
         this.scale = Config.DEFAULT_SPRITE_SCALE;
+        this.angle = 0.f;
     }
 
     public int getLife() {
@@ -23,10 +23,10 @@ public class Player extends SpriteEntity {
 
     @Override
     public boolean init() {
-        this.sprite = this.loadFromSprite(Config.SHIP_SPRITE_NAME, Config.SHIP_PATH, Config.DEFAULT_SPRITE_SCALE);
+        this.sprite = this.loadFromSprite(Config.SHIP_SPRITE_NAME, Config.SHIP_PATH);
 
         this.x = (Galaga.getContext().getFrame().getWidth() - this.sprite.getWidth()) / 2;
-        this.y = Galaga.getContext().getFrame().getHeight() - this.sprite.getHeight() - 10;
+        this.y = Galaga.getContext().getFrame().getHeight() - this.sprite.getHeight() - Config.FUD_HEIGHT;
 
         return this.sprite != null;
     }

@@ -98,7 +98,7 @@ public final class Renderer {
         BufferedImage img = sprite.getImage();
 
         int x = (int) (offsetX - (img.getWidth() * scale) / 2);
-        int y = (int) (offsetY - (img.getHeight() * scale) / 2);
+        int y = (int)  (offsetY - (img.getHeight() * scale) / 2);
 
         this.g.drawImage(img, x, y, (int) (img.getWidth() * scale), (int) (img.getHeight() * scale), null);
         return this;
@@ -112,24 +112,20 @@ public final class Renderer {
         }
         BufferedImage img = sprite.getImage();
 
-        float scale = e.getScale();
-        int scaledWidth = (int) (e.getWidth() * scale);
-        int scaledHeight = (int) (e.getHeight() * scale);
-
-        int x = (int) (e.getOffsetX() - scaledWidth/2);
-        int y = (int) (e.getOffsetY() - scaledHeight/2);
+        int x = (int) (e.getOffsetX() - e.getWidth() / 2);
+        int y = (int) (e.getOffsetY() - e.getHeight() / 2);
 
         if (e.getAngle() == 0.0f) {
-            this.g.drawImage(img, x, y, scaledWidth, scaledHeight, null);
+            this.g.drawImage(img, x, y, (int) e.getWidth(), (int) e.getHeight(), null);
             return this;
         }
 
-        double cx = x + scaledWidth/2;
-        double cy = y + scaledHeight/2;
+        double cx = x + e.getWidth() / 2;
+        double cy = y + e.getHeight() / 2;
 
         AffineTransform old = this.g.getTransform();
         this.g.rotate(Math.toRadians(e.getAngle()), cx, cy);
-        this.g.drawImage(img, x, y, scaledWidth, scaledHeight, null);
+        this.g.drawImage(img, x, y, (int) e.getWidth(), (int) e.getHeight(), null);
         this.g.setTransform(old);
 
         return this;

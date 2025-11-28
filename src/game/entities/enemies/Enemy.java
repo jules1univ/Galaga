@@ -35,7 +35,7 @@ public abstract class Enemy extends SpriteEntity {
         String name = this.type.name().toLowerCase();
         String path = String.format(Config.ENEMY_BASE_PATH + "%s.spr", name);
 
-        this.sprite = this.loadFromSprite(name, path, Config.DEFAULT_SPRITE_SCALE);
+        this.sprite = this.loadFromSprite(name, path);
         return this.sprite != null;
     }
 
