@@ -1,7 +1,7 @@
 package engine.utils.logger;
 
 public enum LogStatus {
-    DEFAULT,
+    MESSAGE,
     WARNING,
     ERROR
 }

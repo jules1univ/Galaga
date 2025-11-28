@@ -51,23 +51,32 @@ public class Galaga extends Application {
         getContext().getRenderer().setFont("Consolas", 18);
 
         this.sky = new Sky(Config.DEFAULT_SKY_GRID_SIZE);
-        this.sky.init();
+        if(!this.sky.init()) {
+            return false;
+        }
 
         getContext().getState().player = new Player();
         this.player = getContext().getState().player;
-        this.player.init();
+        if(!this.player.init()) {
+            return false;
+        }
 
         this.enemies = this.levelLoader.getLevel( this.levelLoader.getLevelNames().get(0)).getEnemies();
         for (Enemy enemy : this.enemies) {
-            enemy.init();
+            if(!enemy.init()) {
+                return false;
+            }
         }
 
         this.fud = new FUD();
-        this.fud.init();
+        if(!this.fud.init()) {
+            return false;
+        }
 
         this.hud = new HUD();
-        this.hud.init();
-
+        if(!this.hud.init()) {
+            return false;
+        }
         return true;
     }
 
@@ -84,7 +93,7 @@ public class Galaga extends Application {
             this.stop();
         }
 
-        
+
         this.hud.update(dt);
         this.fud.update(dt);
     }

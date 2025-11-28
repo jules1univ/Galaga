@@ -10,11 +10,16 @@ public class Player extends SpriteEntity {
 
     private int life;
     private int score;
+    private int completedLevels;
 
     public Player() {
         super();
         this.life = Config.PLAYER_INITIAL_LIFE;
         this.scale = Config.DEFAULT_SPRITE_SCALE;
+
+        this.completedLevels = 0;
+        this.score = 0;
+        
         this.angle = 0.f;
     }
 
@@ -26,6 +31,10 @@ public class Player extends SpriteEntity {
         return this.score;
     }
 
+    public int getCompletedLevels() {
+        return this.completedLevels;
+    }
+    
     @Override
     public boolean init() {
         this.sprite = this.loadFromSprite(Config.SHIP_SPRITE_NAME, Config.SHIP_PATH);

@@ -6,10 +6,15 @@ public class Config {
 
     public static final String SHIP_SPRITE_NAME = "ship";
     public static final String SHIP_PATH = ".\\resources\\sprites\\ship.spr";
-    public static final String ENEMY_BASE_PATH = ".\\resources\\sprites\\";
+
+    public static final String MEDAL_SPRITE_NAME = "medal";
+    public static final String MEDAL_PATH = ".\\resources\\sprites\\medal.spr";
+
+    public static final String ENEMY_BASE_PATH = ".\\resources\\sprites\\%s.spr";
+    public static final String LEVEL_BASE_PATH = ".\\resources\\levels\\level%d.lvl";
 
     public static final float DEFAULT_SPRITE_SCALE = 3.f;
-    public static final float DEFAULT_SPRITE_ICON_DOWNSCALE_FACTOR = .5f;
+    public static final float DEFAULT_SPRITE_ICON_DOWNSCALE_FACTOR = .7f;
     public static final int DEFAULT_SKY_GRID_SIZE = 80;
 
     public static final int WINDOW_WIDTH = 700;

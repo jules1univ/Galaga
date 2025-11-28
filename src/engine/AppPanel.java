@@ -43,6 +43,7 @@ public final class AppPanel extends JPanel implements Runnable {
 
         Log.message("Application is closing");
         this.running = false;
+        Application.getContext().getFrame().dispose();
     }
 
     @Override

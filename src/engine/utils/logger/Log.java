@@ -19,7 +19,7 @@ public class Log {
     }
 
     public static void message(String message) {
-        log(message, LogStatus.DEFAULT);
+        log(message, LogStatus.MESSAGE);
     }
 
     public static void warning(String message) {
