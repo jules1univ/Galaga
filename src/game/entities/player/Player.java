@@ -9,6 +9,7 @@ import game.Galaga;
 public class Player extends SpriteEntity {
 
     private int life;
+    private int score;
 
     public Player() {
         super();
@@ -19,6 +20,10 @@ public class Player extends SpriteEntity {
 
     public int getLife() {
         return this.life;
+    }
+
+    public int getScore() {
+        return this.score;
     }
 
     @Override

@@ -29,7 +29,6 @@ public class HUD extends Entity {
         this.fps.setCenter(TextPosition.END, TextPosition.CENTER);
 
 
-        // TODO: load score from game state
         this.score = new Text("SCORE: 0", this.width/2, this.height/2, Config.TEXT_FONT_SIZE, Color.WHITE);
         this.score.setCenter(TextPosition.CENTER, TextPosition.CENTER);
 
@@ -42,6 +41,8 @@ public class HUD extends Entity {
     @Override
     public void update(double dt) {
         this.fps.setText(String.format("FPS: %.2f", Time.getFrameRate()));
+        this.score.setText(String.format("SCORE: %d", Galaga.getContext().getState().player.getScore()));
+        this.bestScore.setText(String.format("BEST: %d", Galaga.getContext().getState().bestScore));
     }
 
     @Override
