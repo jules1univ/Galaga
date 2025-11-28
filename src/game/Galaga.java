@@ -5,6 +5,7 @@ import java.util.List;
 
 import engine.AppContext;
 import engine.Application;
+import engine.graphics.sprite.SpriteManager;
 import game.entities.enemies.Enemy;
 import game.entities.player.Player;
 import game.entities.sky.Sky;
@@ -77,6 +78,8 @@ public class Galaga extends Application {
         if(!this.hud.init()) {
             return false;
         }
+
+        getContext().getFrame().setIconImage(SpriteManager.getInstance().get(Config.MEDAL_SPRITE_NAME).getImage());
         return true;
     }
 
