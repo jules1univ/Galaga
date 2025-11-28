@@ -77,6 +77,10 @@ public final class Renderer {
         return this;
     }
 
+    public int getTextWidth(String text) {
+        return this.fontMetrics.stringWidth(text);
+    }
+
     public Renderer drawText(String text, int x, int y, Color color) {
         this.g.setColor(color);
         this.g.drawString(text, x, y + this.fontMetrics.getHeight() * 2);

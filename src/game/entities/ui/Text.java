@@ -6,28 +6,56 @@ import game.Galaga;
 
 public class Text extends Entity {
 
+    private final Color color;
+    private final int size;
+
+    private final float initialY;
+    private final float initialX;
+
     private String text;
-    private Color color;
-    private int size;
-    private float initialY;
+
+    private boolean centerX;
+    private boolean centerY;
 
     public Text(String text, float x, float y, int size, Color color) {
-        this.initialY = y;
-        
-        this.x = x;
-        this.y = y;
+        this.text = text;
 
+        this.initialY = y;
+        this.initialX = x;
+        
         this.size = size;
         this.color = color;
     }
 
     public void setText(String text) {
         this.text = text;
-        this.y = this.initialY - this.size;
+        this.updateTextPosition();
     }
 
     public String getText() {
         return this.text;
+    }
+
+    public void setCenter(boolean horizontal, boolean vertical) {
+        this.centerX = horizontal;
+        this.centerY = vertical;
+        this.updateTextPosition();
+    }
+
+    private void updateTextPosition() {
+        int textWidth = Galaga.getContext().getRenderer().getTextWidth(this.text);
+
+        if (this.centerX) {
+            this.x = this.initialX - textWidth;
+        } else {
+            this.x = this.initialX;
+        }
+
+        if (this.centerY) {
+            this.y = this.initialY - this.size / 2;
+        } else {
+            this.y = this.initialY;
+        }
     }
 
     @Override

@@ -1,7 +1,5 @@
 package game.entities.ui;
 
-import java.awt.Color;
-
 import engine.entity.Entity;
 import engine.graphics.sprite.Sprite;
 import engine.graphics.sprite.SpriteManager;
