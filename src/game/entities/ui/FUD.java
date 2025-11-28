@@ -39,10 +39,11 @@ public class FUD extends Entity {
     @Override
     public void draw() {
         // TODO: load number of life from global state => player
+        int life = Galaga.getContext().getState().player.getLife();
         int margin = 10;
         int space = margin;
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < life; i++) {
             Galaga.getContext().getRenderer()
             .drawSprite(this.ship,this.x + space, this.y - this.ship.getHeight()/2, Config.DEFAULT_SPRITE_SCALE/2);
             space += this.ship.getWidth() * (Config.DEFAULT_SPRITE_SCALE/2) + margin;
