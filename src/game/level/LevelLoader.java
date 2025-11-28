@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import engine.utils.logger.Log;
 import game.Galaga;
 import game.entities.enemies.EnemyType;
 
@@ -18,7 +19,7 @@ public class LevelLoader {
     private Level parseHeader(String lineHeader) {
         String[] header = lineHeader.split(" ");
         if (header.length < 4 || this.levels.containsKey(header[0])) {
-            // TODO: log invalid level header
+            Log.error("Level header is invalid or level already exists: " + lineHeader);
             return null;
         }
 
@@ -28,7 +29,7 @@ public class LevelLoader {
                     Integer.parseInt(header[2]),
                     Integer.parseInt(header[3]));
         } catch (Exception e) {
-            // TODO: log error parsing level header
+            Log.error("Level header parsing failed: " + e.getMessage());
             return null;
         }
     }
@@ -36,7 +37,7 @@ public class LevelLoader {
     private boolean parseEnemy(String lineEnemy, Level level) {
         String[] data = lineEnemy.split(" ");
         if (data.length < 6) {
-            // TODO: log invalid enemy data
+            Log.error("Level enemy data is invalid: " + lineEnemy);
             return false;
         }
         String enemyType = data[0];
@@ -59,7 +60,7 @@ public class LevelLoader {
 
             return level.addEnemy(type, lockX, lockY, value, speed);
         } catch (Exception e) {
-            // TODO: log error parsing enemy data
+            Log.error("Level enemy parsing failed: " + e.getMessage());
             return false;
         }
     }
@@ -73,7 +74,7 @@ public class LevelLoader {
                 lines.add(line);
             }
         } catch (Exception e) {
-            // TODO: log error reading level file
+            Log.error("Level loading failed for file: " + path + " - " + e.getMessage());
             return null;
         }
 

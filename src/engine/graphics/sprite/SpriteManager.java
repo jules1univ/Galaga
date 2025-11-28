@@ -19,6 +19,10 @@ public final class SpriteManager {
     }
 
     public boolean load(String name, String path, float scale) {
+        if (sprites.containsKey(name)) {
+            return true;
+        }
+
         Sprite sprite = new Sprite();
         if (!sprite.load(path, scale)) {
             return false;

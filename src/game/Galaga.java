@@ -1,5 +1,6 @@
 package game;
 
+import java.awt.event.KeyEvent;
 import java.awt.Color;
 import java.util.List;
 
@@ -12,11 +13,6 @@ import game.entities.sky.Sky;
 import game.level.LevelLoader;
 
 public class Galaga extends Application {
-    public static final float DEFAULT_SPRITE_SCALE = 2.5f;
-    public static final int DEFAULT_SKY_GRID_SIZE = 80;
-
-    private static final int WINDOW_WIDTH = 700;
-    private static final int WINDOW_HEIGHT = 700;
     private LevelLoader levelLoader;
 
     private Sky sky;
@@ -24,7 +20,7 @@ public class Galaga extends Application {
     private List<Enemy> enemies;
 
     @SuppressWarnings("unchecked")
-    public static AppContext<GalagaState> getContext() {
+    public static AppContext<State> getContext() {
         return Application.getContext();
     }
 
@@ -34,27 +30,30 @@ public class Galaga extends Application {
     }
 
     public Galaga() {
-        super("Galaga - @jules1univ", WINDOW_WIDTH, WINDOW_HEIGHT);
-        getContext().setState(new GalagaState());
+        super("Galaga - @jules1univ", Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT);
+        getContext().setState(new State());
     }
 
     @Override
     protected boolean init() {
         this.levelLoader = new LevelLoader();
-        String level1 = this.levelLoader.load(".\\resources\\levels\\level1.lvl");
-        if (level1 == null) {
+        
+        if(this.levelLoader.load(Config.LEVEL_1_PATH) == null) {
+            return false;
+        }
+        if(this.levelLoader.load(Config.LEVEL_2_PATH) == null) {
             return false;
         }
 
-        getContext().getRenderer().setFont("Consolas", 24);
+        getContext().getRenderer().setFont("Consolas", 18);
 
-        this.sky = new Sky(DEFAULT_SKY_GRID_SIZE);
+        this.sky = new Sky(Config.DEFAULT_SKY_GRID_SIZE);
         this.sky.init();
 
         this.player = new Player();
         this.player.init();
 
-        this.enemies = this.levelLoader.getLevel(level1).getEnemies();
+        this.enemies = this.levelLoader.getLevel( this.levelLoader.getLevelNames().get(0)).getEnemies();
         for (Enemy enemy : this.enemies) {
             enemy.init();
         }
@@ -70,7 +69,7 @@ public class Galaga extends Application {
             enemy.update(dt);
         }
 
-        if (getContext().getInput().isKeyDown(java.awt.event.KeyEvent.VK_ESCAPE)) {
+        if (getContext().getInput().isKeyDown(KeyEvent.VK_ESCAPE)) {
             this.stop();
         }
     }

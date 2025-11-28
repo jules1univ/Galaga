@@ -1,6 +1,7 @@
 package game.entities.enemies;
 
 import engine.entity.SpriteEntity;
+import game.Config;
 import game.Galaga;
 
 public abstract class Enemy extends SpriteEntity {
@@ -31,9 +32,9 @@ public abstract class Enemy extends SpriteEntity {
     @Override
     public boolean init() {
         String name = this.type.name().toLowerCase();
-        String path = String.format(".\\resources\\sprites\\%s.spr", name);
+        String path = String.format(Config.ENEMY_BASE_PATH + "%s.spr", name);
 
-        this.sprite = this.loadFromSprite(name, path, Galaga.DEFAULT_SPRITE_SCALE);
+        this.sprite = this.loadFromSprite(name, path, Config.DEFAULT_SPRITE_SCALE);
         return this.sprite != null;
     }
 

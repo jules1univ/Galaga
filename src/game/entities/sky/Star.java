@@ -4,12 +4,9 @@ import java.awt.Color;
 
 import engine.entity.Entity;
 import game.Galaga;
+import game.Config;
 
 public class Star extends Entity {
-
-    private static final float MAX_BLINK_DELAY = 10.0f;
-    private static final float MIN_BLINK_DELAY = 3.0f;
-    private static final float DEFAULT_MOVE_SPEED = 200.0f;
 
     private Color color;
     private float time;
@@ -32,7 +29,7 @@ public class Star extends Entity {
 
     @Override
     public boolean init() {
-        this.blinkDelay = MIN_BLINK_DELAY + (float) Math.random() * MAX_BLINK_DELAY;
+        this.blinkDelay = Config.STAR_MIN_BLINK_DELAY + (float) Math.random() * Config.STAR_MAX_BLINK_DELAY;
         this.active = Math.random() > 0.5;
         return true;
     }
@@ -48,7 +45,7 @@ public class Star extends Entity {
             // Not updated to save performance
             // this.blinkDelay = MIN_BLINK_DELAY + (float) Math.random() * MAX_BLINK_DELAY;
         }
-        this.y += dt * DEFAULT_MOVE_SPEED;
+        this.y += dt * Config.STAR_MOVE_SPEED;
     }
 
     @Override

@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 
+import engine.utils.logger.Log;
+
 public final class Sprite {
 
     private BufferedImage image = null;
@@ -21,7 +23,7 @@ public final class Sprite {
                 lines.add(line);
             }
         } catch (Exception e) {
-            // TODO: log error reading sprite file
+            Log.error("Sprite loading failed for file: " + path + " - " + e.getMessage());
             return false;
         }
 
@@ -29,14 +31,14 @@ public final class Sprite {
         int width = lines.get(0).length();
 
         if (height == 0 || width == 0) {
-            // TODO: log invalid sprite dimensions
+            Log.error("Sprite dimensions are zero for file: " + path);
             return false;
         }
 
         boolean isValidSpriteSize = lines.stream().filter(line -> line.length() == width).toList()
                 .size() == height;
         if (!isValidSpriteSize) {
-            // TODO: log inconsistent sprite size
+            Log.error("Sprite size is inconsistent in file: " + path);
             return false;
         }
 
@@ -53,7 +55,7 @@ public final class Sprite {
 
         if (scale <= 1) {
             this.image = base;
-            // TODO: log sprite loaded
+            Log.message("Sprite loaded successfully: " + path);
             return true;
         }
 
@@ -79,7 +81,7 @@ public final class Sprite {
         }
 
         this.image = scaled;
-        // TODO: log sprite loaded with scaling
+        Log.message("Sprite loaded and scaled successfully: " + path);
         return true;
     }
 

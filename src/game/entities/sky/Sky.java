@@ -6,6 +6,7 @@ import java.util.List;
 
 import engine.entity.Entity;
 import game.Galaga;
+import game.Config;
 
 public class Sky extends Entity {
     private List<Star> stars = new ArrayList<>();
@@ -34,7 +35,7 @@ public class Sky extends Entity {
                             (int) (Math.random() * 256),
                             (int) (Math.random() * 256));
 
-                    Star star = new Star(pointX, pointY, (int) Galaga.DEFAULT_SPRITE_SCALE, color);
+                    Star star = new Star(pointX, pointY, (int) Config.DEFAULT_SPRITE_SCALE, color);
                     star.init();
                     this.stars.add(star);
                 }

@@ -10,11 +10,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.awt.FontMetrics;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 
 import engine.AppFrame;
 import engine.entity.SpriteEntity;
 import engine.graphics.sprite.Sprite;
 import engine.graphics.sprite.SpriteManager;
+import engine.utils.logger.Log;
 
 public final class Renderer {
 
@@ -34,8 +36,6 @@ public final class Renderer {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
-
-        this.setFont("Default", 12);
     }
 
     public void begin() {
@@ -65,7 +65,7 @@ public final class Renderer {
         } else {
             String[] names = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
             if (!Arrays.asList(names).contains(fontName)) {
-                // TODO: log warning about font not found
+                Log.warning("Font '" + fontName + "' not found. Using default font.");
                 fontName = "Default";
             }
 
@@ -80,9 +80,8 @@ public final class Renderer {
     }
 
     public Renderer drawText(String text, int x, int y, Color color) {
-        g.setColor(color);
-        // TODO: fix this hacky vertical alignment
-        g.drawString(text, x + fontMetrics.getHeight() / 2, y + fontMetrics.getHeight() * 2);
+        this.g.setColor(color);
+        this.g.drawString(text, x, y + this.fontMetrics.getHeight() * 2);
         return this;
     }
 
@@ -95,7 +94,7 @@ public final class Renderer {
     public Renderer drawSprite(String name, float x, float y) {
         BufferedImage img = SpriteManager.getInstance().get(name).getImage();
         if (img == null) {
-            // TODO: log missing sprite
+            Log.warning("Sprite '" + name + "' not found.");
             return this;
         }
         this.g.drawImage(img, (int) x, (int) y, (int) img.getWidth(), (int) img.getHeight(), null);
@@ -104,7 +103,7 @@ public final class Renderer {
 
     public Renderer drawSprite(Sprite sprite, float x, float y) {
         if (sprite == null || sprite.getImage() == null) {
-            // TODO: log missing sprite
+            Log.warning("Attempted to draw null sprite.");
             return this;
         }
         this.g.drawImage(sprite.getImage(), (int) x, (int) y, null);
@@ -114,7 +113,7 @@ public final class Renderer {
     public Renderer drawSpriteEntity(SpriteEntity e, boolean centered) {
         Sprite sprite = e.getSprite();
         if (sprite == null || sprite.getImage() == null) {
-            // TODO: log missing sprite
+            Log.warning("Attempted to draw null sprite entity.");
             return this;
         }
         BufferedImage img = sprite.getImage();
@@ -135,10 +134,10 @@ public final class Renderer {
         double cx = x + ((double) e.getWidth()) / 2.0;
         double cy = y + ((double) e.getHeight()) / 2.0;
 
-        AffineTransform old = g.getTransform();
-        g.rotate(Math.toRadians(e.getAngle()), cx, cy);
+        AffineTransform old = this.g.getTransform();
+        this.g.rotate(Math.toRadians(e.getAngle()), cx, cy);
         this.g.drawImage(img, x, y, (int) e.getWidth(), (int) e.getHeight(), null);
-        g.setTransform(old);
+        this.g.setTransform(old);
 
         return this;
     }

@@ -1,6 +1,7 @@
 package engine;
 
 import engine.utils.Time;
+import engine.utils.logger.Log;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -40,19 +41,19 @@ public final class AppPanel extends JPanel implements Runnable {
             return;
         }
 
-        // TODO: log thread stopping
+        Log.message("Application is closing");
         this.running = false;
     }
 
     @Override
     public void run() {
         if (!this.app.init()) {
-            // TODO: log init failure
+            Log.error("Application failed to initialize");
             this.stop();
             return;
         }
 
-        // TODO: log thread started
+        Log.message("Application started successfully");
         Time.reset();
         while (this.running) {
             Time.update();
