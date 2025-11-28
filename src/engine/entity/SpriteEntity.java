@@ -7,6 +7,7 @@ import engine.graphics.sprite.SpriteManager;
 public abstract class SpriteEntity extends Entity {
     protected Sprite sprite;
     protected float angle;
+    protected float scale;
 
     public SpriteEntity() {
         super();
@@ -18,6 +19,10 @@ public abstract class SpriteEntity extends Entity {
 
     public final float getAngle() {
         return this.angle;
+    }
+
+    public final float getScale() {
+        return this.scale;
     }
 
     protected final Sprite loadFromSprite(String name, String path, float scale) {
@@ -33,7 +38,7 @@ public abstract class SpriteEntity extends Entity {
 
     @Override
     public void draw() {
-        Application.getContext().getRenderer().drawSpriteEntity(this, true);
+        Application.getContext().getRenderer().drawSpriteEntity(this);
     }
 
 }

@@ -1,15 +1,15 @@
 package game;
 
 import java.awt.event.KeyEvent;
-import java.awt.Color;
 import java.util.List;
 
 import engine.AppContext;
 import engine.Application;
-import engine.utils.Time;
 import game.entities.enemies.Enemy;
 import game.entities.player.Player;
 import game.entities.sky.Sky;
+import game.entities.ui.FUD;
+import game.entities.ui.HUD;
 import game.level.LevelLoader;
 
 public class Galaga extends Application {
@@ -18,6 +18,9 @@ public class Galaga extends Application {
     private Sky sky;
     private Player player;
     private List<Enemy> enemies;
+
+    private FUD fud;
+    private HUD hud;
 
     @SuppressWarnings("unchecked")
     public static AppContext<State> getContext() {
@@ -57,6 +60,13 @@ public class Galaga extends Application {
         for (Enemy enemy : this.enemies) {
             enemy.init();
         }
+
+        this.fud = new FUD();
+        this.fud.init();
+
+        this.hud = new HUD();
+        this.hud.init();
+
         return true;
     }
 
@@ -84,7 +94,8 @@ public class Galaga extends Application {
             enemy.draw();
         }
 
-        getContext().getRenderer().drawText(String.format("FPS: %.2f", Time.getFrameRate()), 10, 10, Color.WHITE);
+        this.hud.draw();
+        this.fud.draw();
     }
 
 }

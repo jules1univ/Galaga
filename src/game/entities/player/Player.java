@@ -11,11 +11,12 @@ public class Player extends SpriteEntity {
     public Player() {
         super();
         this.angle = 0.f;
+        this.scale = Config.DEFAULT_SPRITE_SCALE;
     }
 
     @Override
     public boolean init() {
-        this.sprite = this.loadFromSprite("ship", Config.SHIP_PATH, Config.DEFAULT_SPRITE_SCALE);
+        this.sprite = this.loadFromSprite(Config.SHIP_SPRITE_NAME, Config.SHIP_PATH, Config.DEFAULT_SPRITE_SCALE);
 
         this.x = (Galaga.getContext().getFrame().getWidth() - this.sprite.getWidth()) / 2;
         this.y = Galaga.getContext().getFrame().getHeight() - this.sprite.getHeight() - 10;
@@ -37,7 +38,7 @@ public class Player extends SpriteEntity {
                 Galaga.getContext().getFrame().getWidth() - this.sprite.getWidth());
 
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_SPACE)) {
-
+            // TODO: shoot bullets
         }
     }
 

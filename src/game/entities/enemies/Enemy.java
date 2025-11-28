@@ -17,7 +17,8 @@ public abstract class Enemy extends SpriteEntity {
             float speed) {
         super();
         this.type = type;
-
+        this.scale = Config.DEFAULT_SPRITE_SCALE;
+        
         this.angle = 180.f;
         this.x = -(float) Math.random() * Galaga.getContext().getFrame().getWidth();
         this.y = -(float) Math.random() * Galaga.getContext().getFrame().getHeight();

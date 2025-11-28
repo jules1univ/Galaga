@@ -59,9 +59,12 @@ public final class Sprite {
             return true;
         }
 
+
+        
+
         BufferedImage scaled = new BufferedImage(
-                (int) (width * scale),
-                (int) (height * scale),
+                (int) Math.round(width * scale),
+                (int) Math.round(height * scale),
                 BufferedImage.TYPE_INT_ARGB);
 
         for (int y = 0; y < height; y++) {

@@ -10,12 +10,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.awt.FontMetrics;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
 
 import engine.AppFrame;
 import engine.entity.SpriteEntity;
 import engine.graphics.sprite.Sprite;
-import engine.graphics.sprite.SpriteManager;
 import engine.utils.logger.Log;
 
 public final class Renderer {
@@ -91,26 +89,22 @@ public final class Renderer {
         return this;
     }
 
-    public Renderer drawSprite(String name, float x, float y) {
-        BufferedImage img = SpriteManager.getInstance().get(name).getImage();
-        if (img == null) {
-            Log.warning("Sprite '" + name + "' not found.");
-            return this;
-        }
-        this.g.drawImage(img, (int) x, (int) y, (int) img.getWidth(), (int) img.getHeight(), null);
-        return this;
-    }
-
-    public Renderer drawSprite(Sprite sprite, float x, float y) {
+    public Renderer drawSprite(Sprite sprite, float offsetX, float offsetY, float scale) {
         if (sprite == null || sprite.getImage() == null) {
             Log.warning("Attempted to draw null sprite.");
             return this;
         }
-        this.g.drawImage(sprite.getImage(), (int) x, (int) y, null);
+
+        BufferedImage img = sprite.getImage();
+
+        int x = (int) (offsetX - (img.getWidth() * scale) / 2);
+        int y = (int) (offsetY - (img.getHeight() * scale) / 2);
+
+        this.g.drawImage(img, x, y, (int) (img.getWidth() * scale), (int) (img.getHeight() * scale), null);
         return this;
     }
 
-    public Renderer drawSpriteEntity(SpriteEntity e, boolean centered) {
+    public Renderer drawSpriteEntity(SpriteEntity e) {
         Sprite sprite = e.getSprite();
         if (sprite == null || sprite.getImage() == null) {
             Log.warning("Attempted to draw null sprite entity.");
@@ -118,25 +112,24 @@ public final class Renderer {
         }
         BufferedImage img = sprite.getImage();
 
-        int x = (int) e.getOffsetX();
-        int y = (int) e.getOffsetY();
+        float scale = e.getScale();
+        int scaledWidth = (int) (e.getWidth() * scale);
+        int scaledHeight = (int) (e.getHeight() * scale);
 
-        if (centered) {
-            x = (x - (int) e.getWidth() / 2);
-            y = (y - (int) e.getHeight() / 2);
-        }
+        int x = (int) (e.getOffsetX() - scaledWidth/2);
+        int y = (int) (e.getOffsetY() - scaledHeight/2);
 
         if (e.getAngle() == 0.0f) {
-            this.g.drawImage(img, x, y, (int) e.getWidth(), (int) e.getHeight(), null);
+            this.g.drawImage(img, x, y, scaledWidth, scaledHeight, null);
             return this;
         }
 
-        double cx = x + ((double) e.getWidth()) / 2.0;
-        double cy = y + ((double) e.getHeight()) / 2.0;
+        double cx = x + scaledWidth/2;
+        double cy = y + scaledHeight/2;
 
         AffineTransform old = this.g.getTransform();
         this.g.rotate(Math.toRadians(e.getAngle()), cx, cy);
-        this.g.drawImage(img, x, y, (int) e.getWidth(), (int) e.getHeight(), null);
+        this.g.drawImage(img, x, y, scaledWidth, scaledHeight, null);
         this.g.setTransform(old);
 
         return this;
