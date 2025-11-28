@@ -8,10 +8,17 @@ import game.Galaga;
 
 public class Player extends SpriteEntity {
 
+    private int life;
+
     public Player() {
         super();
+        this.life = Config.PLAYER_INITIAL_LIFE;
         this.angle = 0.f;
         this.scale = Config.DEFAULT_SPRITE_SCALE;
+    }
+
+    public int getLife() {
+        return this.life;
     }
 
     @Override

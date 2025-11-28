@@ -53,7 +53,8 @@ public class Galaga extends Application {
         this.sky = new Sky(Config.DEFAULT_SKY_GRID_SIZE);
         this.sky.init();
 
-        this.player = new Player();
+        getContext().getState().player = new Player();
+        this.player = getContext().getState().player;
         this.player.init();
 
         this.enemies = this.levelLoader.getLevel( this.levelLoader.getLevelNames().get(0)).getEnemies();

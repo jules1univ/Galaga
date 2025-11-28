@@ -1,5 +1,7 @@
 package game;
 
-public class State {
+import game.entities.player.Player;
 
+public class State {
+    public Player player;
 }

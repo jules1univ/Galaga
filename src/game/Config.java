@@ -18,6 +18,7 @@ public class Config {
     public static final float FUD_HEIGHT = 30.f;
 
     public static final float PLAYER_SPEED = 600.f;
+    public static final int PLAYER_INITIAL_LIFE = 3;
 
     public static final float STAR_MAX_BLINK_DELAY = 10.0f;
     public static final float STAR_MIN_BLINK_DELAY = 3.0f;
