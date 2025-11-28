@@ -24,5 +24,8 @@ public class Config {
     public static final float STAR_MIN_BLINK_DELAY = 3.0f;
     public static final float STAR_MOVE_SPEED = 200.0f;
 
+    public static final int TEXT_FONT_SIZE = 18;
+    public static final int TITLE_FONT_SIZE = 36;
+
 
 }

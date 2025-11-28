@@ -9,6 +9,7 @@ import game.Galaga;
 
 public class HUD extends Entity {
 
+
     public HUD() {
 
     }
