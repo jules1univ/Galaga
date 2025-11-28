@@ -6,10 +6,4 @@ public class EnemyBee extends Enemy {
         super(EnemyType.BEE, lockX, lockY, value, speed);
     }
 
-    @Override
-    public boolean init() {
-        super.init();
-        return true;
-    }
-
 }

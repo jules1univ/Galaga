@@ -1,18 +1,18 @@
 package engine;
 
 import engine.graphics.Renderer;
-import engine.input.InputManager;
+import engine.input.InputKeyListener;
 
 public final class AppContext<GameState> {
     private final AppFrame frame;
     private final Renderer renderer;
-    private final InputManager input;
+    private final InputKeyListener input;
     private GameState state;
 
     public AppContext(AppFrame frame) {
         this.frame = frame;
         this.renderer = new Renderer(frame);
-        this.input = new InputManager();
+        this.input = new InputKeyListener();
     }
 
     public void setState(GameState state) {
@@ -27,7 +27,7 @@ public final class AppContext<GameState> {
         return this.renderer;
     }
 
-    public InputManager getInput() {
+    public InputKeyListener getInput() {
         return this.input;
     }
 

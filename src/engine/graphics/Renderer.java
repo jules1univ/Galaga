@@ -3,8 +3,10 @@ package engine.graphics;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.awt.FontMetrics;
 import java.awt.geom.AffineTransform;
@@ -61,6 +63,12 @@ public final class Renderer {
         if (this.fonts.containsKey(fid)) {
             font = this.fonts.get(fid);
         } else {
+            String[] names = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+            if (!Arrays.asList(names).contains(fontName)) {
+                // TODO: log warning about font not found
+                fontName = "Default";
+            }
+
             font = new Font(fontName, Font.PLAIN, size);
             this.fonts.put(fid, font);
         }
@@ -87,6 +95,7 @@ public final class Renderer {
     public Renderer drawSprite(String name, float x, float y) {
         BufferedImage img = SpriteManager.getInstance().get(name).getImage();
         if (img == null) {
+            // TODO: log missing sprite
             return this;
         }
         this.g.drawImage(img, (int) x, (int) y, (int) img.getWidth(), (int) img.getHeight(), null);
@@ -95,6 +104,7 @@ public final class Renderer {
 
     public Renderer drawSprite(Sprite sprite, float x, float y) {
         if (sprite == null || sprite.getImage() == null) {
+            // TODO: log missing sprite
             return this;
         }
         this.g.drawImage(sprite.getImage(), (int) x, (int) y, null);
@@ -104,6 +114,7 @@ public final class Renderer {
     public Renderer drawSpriteEntity(SpriteEntity e, boolean centered) {
         Sprite sprite = e.getSprite();
         if (sprite == null || sprite.getImage() == null) {
+            // TODO: log missing sprite
             return this;
         }
         BufferedImage img = sprite.getImage();

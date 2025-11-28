@@ -6,10 +6,4 @@ public class EnemyButterFly extends Enemy {
         super(EnemyType.BUTTERFLY, lockX, lockY, value, speed);
     }
 
-    @Override
-    public boolean init() {
-        super.init();
-        return true;
-    }
-
 }

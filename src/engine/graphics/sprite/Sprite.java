@@ -21,6 +21,7 @@ public final class Sprite {
                 lines.add(line);
             }
         } catch (Exception e) {
+            // TODO: log error reading sprite file
             return false;
         }
 
@@ -28,12 +29,14 @@ public final class Sprite {
         int width = lines.get(0).length();
 
         if (height == 0 || width == 0) {
+            // TODO: log invalid sprite dimensions
             return false;
         }
 
         boolean isValidSpriteSize = lines.stream().filter(line -> line.length() == width).toList()
                 .size() == height;
         if (!isValidSpriteSize) {
+            // TODO: log inconsistent sprite size
             return false;
         }
 
@@ -50,6 +53,7 @@ public final class Sprite {
 
         if (scale <= 1) {
             this.image = base;
+            // TODO: log sprite loaded
             return true;
         }
 
@@ -75,6 +79,7 @@ public final class Sprite {
         }
 
         this.image = scaled;
+        // TODO: log sprite loaded with scaling
         return true;
     }
 

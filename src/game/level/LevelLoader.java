@@ -18,6 +18,7 @@ public class LevelLoader {
     private Level parseHeader(String lineHeader) {
         String[] header = lineHeader.split(" ");
         if (header.length < 4 || this.levels.containsKey(header[0])) {
+            // TODO: log invalid level header
             return null;
         }
 
@@ -27,6 +28,7 @@ public class LevelLoader {
                     Integer.parseInt(header[2]),
                     Integer.parseInt(header[3]));
         } catch (Exception e) {
+            // TODO: log error parsing level header
             return null;
         }
     }
@@ -34,6 +36,7 @@ public class LevelLoader {
     private boolean parseEnemy(String lineEnemy, Level level) {
         String[] data = lineEnemy.split(" ");
         if (data.length < 6) {
+            // TODO: log invalid enemy data
             return false;
         }
         String enemyType = data[0];
@@ -56,6 +59,7 @@ public class LevelLoader {
 
             return level.addEnemy(type, lockX, lockY, value, speed);
         } catch (Exception e) {
+            // TODO: log error parsing enemy data
             return false;
         }
     }
@@ -69,6 +73,7 @@ public class LevelLoader {
                 lines.add(line);
             }
         } catch (Exception e) {
+            // TODO: log error reading level file
             return null;
         }
 

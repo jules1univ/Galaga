@@ -26,7 +26,7 @@ public abstract class Application {
         context = new AppContext<>(this.frame);
 
         this.frame.setPanel(this.panel);
-        context.getInput().attachListeners(this.panel);
+        this.panel.addKeyListener(context.getInput());
     }
 
     protected final void setTitle(String title) {

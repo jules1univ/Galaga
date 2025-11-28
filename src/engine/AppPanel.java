@@ -40,16 +40,19 @@ public final class AppPanel extends JPanel implements Runnable {
             return;
         }
 
+        // TODO: log thread stopping
         this.running = false;
     }
 
     @Override
     public void run() {
         if (!this.app.init()) {
+            // TODO: log init failure
             this.stop();
             return;
         }
 
+        // TODO: log thread started
         Time.reset();
         while (this.running) {
             Time.update();

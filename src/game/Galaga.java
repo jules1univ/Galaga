@@ -46,7 +46,7 @@ public class Galaga extends Application {
             return false;
         }
 
-        getContext().getRenderer().setFont("Arial Bold", 24);
+        getContext().getRenderer().setFont("Consolas", 24);
 
         this.sky = new Sky(DEFAULT_SKY_GRID_SIZE);
         this.sky.init();

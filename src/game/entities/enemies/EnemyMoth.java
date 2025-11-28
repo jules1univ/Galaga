@@ -6,10 +6,4 @@ public class EnemyMoth extends Enemy {
         super(EnemyType.MOTH, lockX, lockY, value, speed);
     }
 
-    @Override
-    public boolean init() {
-        super.init();
-        return true;
-    }
-
 }
