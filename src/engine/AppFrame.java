@@ -1,9 +1,15 @@
 package engine;
 
+import engine.graphics.Renderer;
+import engine.input.InputKeyListener;
+
 import javax.swing.JFrame;
 import java.awt.Dimension;
 
 public final class AppFrame extends JFrame {
+    private AppPanel panel;
+    private Renderer renderer;
+    private InputKeyListener input;
 
     public AppFrame(Application app) {
         super(app.getTitle());
@@ -16,12 +22,34 @@ public final class AppFrame extends JFrame {
         this.setFocusTraversalKeysEnabled(false);
         this.requestFocusInWindow();
 
-    }
 
-    public void setPanel(AppPanel panel) {
-        this.setContentPane(panel);
+        this.panel = new AppPanel(app);
+        this.panel.addKeyListener(this.input);
+        this.setContentPane(this.panel);
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+        
+        this.input = new InputKeyListener();
+        this.panel.addKeyListener(this.input);
+
+        this.renderer = new Renderer(this);
+    }
+
+    public Renderer getRenderer() {
+        return this.renderer;
+    }
+
+    public InputKeyListener getInput() {
+        return this.input;
+    }
+
+    public void start() {
+        this.panel.start();
+    }
+
+    public void stop() {
+        this.panel.stop();
+        this.dispose();
     }
 }

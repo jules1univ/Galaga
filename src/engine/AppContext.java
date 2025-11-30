@@ -7,12 +7,13 @@ public final class AppContext<GameState> {
     private final AppFrame frame;
     private final Renderer renderer;
     private final InputKeyListener input;
+
     private GameState state;
 
-    public AppContext(AppFrame frame) {
-        this.frame = frame;
-        this.renderer = new Renderer(frame);
-        this.input = new InputKeyListener();
+    public AppContext(Application app) {
+        this.frame = new AppFrame(app);
+        this.renderer = this.frame.getRenderer();
+        this.input = this.frame.getInput();
     }
 
     public void setState(GameState state) {

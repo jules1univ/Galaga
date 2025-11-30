@@ -2,12 +2,14 @@ package game.entities.ui;
 
 import java.awt.Color;
 
-import engine.entity.Entity;
+import engine.ui.UIElement;
+import engine.ui.text.Text;
+import engine.ui.text.TextPosition;
 import engine.utils.Time;
 import game.Config;
 import game.Galaga;
 
-public class HUD extends Entity {
+public class HUD extends UIElement {
 
 
     private Text fps;

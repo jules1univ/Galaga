@@ -1,10 +1,10 @@
-package game.entities.ui;
+package engine.ui.text;
 
 import java.awt.Color;
-import engine.entity.Entity;
+import engine.ui.UIElement;
 import game.Galaga;
 
-public class Text extends Entity {
+public final class Text extends UIElement {
 
     private final Color color;
     private final int size;
@@ -18,6 +18,7 @@ public class Text extends Entity {
     private TextPosition vertical;
 
     public Text(String text, float x, float y, int size, Color color) {
+        super();
         this.text = text;
 
         this.initialY = y;
@@ -25,6 +26,8 @@ public class Text extends Entity {
         
         this.size = size;
         this.color = color;
+        this.horizontal = TextPosition.BEGIN;
+        this.vertical = TextPosition.BEGIN;
     }
 
     public void setText(String text) {

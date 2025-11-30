@@ -3,9 +3,6 @@ package engine;
 public abstract class Application {
     private static AppContext<?> context;
 
-    protected AppFrame frame;
-    protected AppPanel panel;
-
     protected final int width;
     protected final int height;
     protected String title;
@@ -20,18 +17,12 @@ public abstract class Application {
         this.height = height;
         this.title = title;
 
-        this.frame = new AppFrame(this);
-        this.panel = new AppPanel(this);
-
-        context = new AppContext<>(this.frame);
-
-        this.frame.setPanel(this.panel);
-        this.panel.addKeyListener(context.getInput());
+        context = new AppContext<>(this);
     }
 
     protected final void setTitle(String title) {
         this.title = title;
-        frame.setTitle(title);
+        getContext().getFrame().setTitle(title);
     }
 
     public final String getTitle() {
@@ -47,12 +38,11 @@ public abstract class Application {
     }
 
     public final void start() {
-        this.panel.start();
+        getContext().getFrame().start();
     }
 
     public final void stop() {
-        this.panel.stop();
-        this.frame.dispose();
+        getContext().getFrame().stop();
     }
 
     protected abstract boolean init();

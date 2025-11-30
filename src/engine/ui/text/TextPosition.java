@@ -1,4 +1,4 @@
-package game.entities.ui;
+package engine.ui.text;
 
 public enum TextPosition {
     BEGIN,
