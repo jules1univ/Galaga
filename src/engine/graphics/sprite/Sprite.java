@@ -21,8 +21,9 @@ public final class Sprite {
 
     public boolean load(String path, float scale) {
         String alias = path + scale;
-        
+
         if (CacheManager.getInstance().exists(alias)) {
+            Log.message("Sprite found in cache: " + path);
             try {
                 InputStream in = CacheManager.getInstance().load(alias);
                 this.image = ImageIO.read(in);

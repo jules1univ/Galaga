@@ -22,7 +22,7 @@ public class Galaga extends Application {
     private Player player;
     private List<Enemy> enemies;
     // TODO: add bullets
-    // TODO: add particles & create a particle system in engine 
+    // TODO: add particles & create a particle system in engine
 
     private FUD fud;
     private HUD hud;
@@ -104,6 +104,11 @@ public class Galaga extends Application {
 
     @Override
     protected void update(double dt) {
+        if (FontManager.getInstance().hasUpdate()) {
+            getContext().getRenderer().setFont(Config.DEFAULT_FONT_ALIAS);
+            FontManager.getInstance().clearUpdate();
+        }
+
         this.sky.update(dt);
         if (this.menu.isVisible()) {
             this.menu.update(dt);
@@ -134,7 +139,6 @@ public class Galaga extends Application {
             return;
         }
 
-
         this.player.draw();
 
         for (Enemy enemy : this.enemies) {
@@ -142,7 +146,6 @@ public class Galaga extends Application {
         }
 
         // TODO: draw bullets here
-
 
         // TODO: display the level name at the beginning
         // TODO: show the new medal earned when a level is completed
