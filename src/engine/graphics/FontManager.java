@@ -56,8 +56,7 @@ public class FontManager {
                 byte[] data = is.readAllBytes();
                 is.close();
 
-                if(!this.saveFontToCache(urlAlias, data))
-                {
+                if (!this.saveFontToCache(urlAlias, data)) {
                     Log.warning("Font '" + alias + "' could not be cached.");
                 }
                 font = Font.createFont(Font.TRUETYPE_FONT, new ByteArrayInputStream(data)).deriveFont(Font.PLAIN, size);

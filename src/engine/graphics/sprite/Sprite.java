@@ -59,9 +59,6 @@ public final class Sprite {
             return true;
         }
 
-
-        
-
         BufferedImage scaled = new BufferedImage(
                 (int) Math.round(width * scale),
                 (int) Math.round(height * scale),

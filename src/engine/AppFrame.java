@@ -22,14 +22,13 @@ public final class AppFrame extends JFrame {
         this.setFocusTraversalKeysEnabled(false);
         this.requestFocusInWindow();
 
-
         this.panel = new AppPanel(app);
         this.panel.addKeyListener(this.input);
         this.setContentPane(this.panel);
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
-        
+
         this.input = new InputKeyListener();
         this.panel.addKeyListener(this.input);
 

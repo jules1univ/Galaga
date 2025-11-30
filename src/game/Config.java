@@ -23,13 +23,11 @@ public class Config {
     public static final float HUD_HEIGHT = 50.f;
     public static final float FUD_HEIGHT = 50.f;
 
-
     public static final float ENEMY_START_LEFT_X_OFFSET = 50.f;
     public static final float ENEMY_START_LEFT_Y_OFFSET = 600.f;
-    
+
     public static final float ENEMY_START_RIGHT_X_OFFSET = 600.f;
     public static final float ENEMY_START_RIGHT_Y_OFFSET = 600.f;
-    
 
     public static final float PLAYER_SPEED = 600.f;
     public static final int PLAYER_INITIAL_LIFE = 3;
@@ -38,15 +36,13 @@ public class Config {
     public static final float STAR_MIN_BLINK_DELAY = 3.0f;
     public static final float STAR_MOVE_SPEED = 200.0f;
 
-
     public static final String FONT_URL = "https://st.1001fonts.net/download/font/bytebounce.medium.ttf";
     public static final String FONT_DEFAULT = "Consolas";
-    
+
     public static final String TITLE_FONT_ALIAS = "title";
     public static final int TITLE_FONT_SIZE = 72;
 
     public static final String DEFAULT_FONT_ALIAS = "default";
-    public static final int TEXT_FONT_SIZE = 18;
-
+    public static final int DEFAULT_FONT_SIZE = 24;
 
 }

@@ -1,18 +1,15 @@
 package game.entities.ui;
 
-import java.awt.Color;
-
 import engine.ui.UIElement;
-import game.Config;
 import game.Galaga;
 
 public class Menu extends UIElement {
 
-    private boolean visible = true;
+    private boolean visible;
 
     public Menu() {
         super();
-        this.visible = true;
+        this.visible = false;
     }
 
     public boolean isVisible() {
@@ -20,7 +17,7 @@ public class Menu extends UIElement {
     }
 
     @Override
-    public boolean init() {        
+    public boolean init() {
         this.width = Galaga.getContext().getFrame().getWidth();
         this.height = Galaga.getContext().getFrame().getHeight();
         return true;
@@ -28,15 +25,12 @@ public class Menu extends UIElement {
 
     @Override
     public void update(double dt) {
-    
+
     }
 
     @Override
     public void draw() {
-        Galaga.getContext().getRenderer()
-        .setFont(Config.TITLE_FONT_ALIAS)
-        .drawText("< select >",(int) this.width/2,(int) this.height/2, Color.WHITE)
-        .setFont(Config.DEFAULT_FONT_ALIAS);
+
     }
-    
+
 }

@@ -43,66 +43,68 @@ public class Galaga extends Application {
 
     @Override
     protected boolean init() {
-        boolean fdefault = FontManager.getInstance().loadFromUrl(Config.FONT_URL, Config.TEXT_FONT_SIZE, Config.DEFAULT_FONT_ALIAS);
-        if(!fdefault) {
-            FontManager.getInstance().load(Config.FONT_DEFAULT, Config.TEXT_FONT_SIZE, Config.DEFAULT_FONT_ALIAS);
+        boolean fdefault = FontManager.getInstance().loadFromUrl(Config.FONT_URL, Config.DEFAULT_FONT_SIZE,
+                Config.DEFAULT_FONT_ALIAS);
+        if (!fdefault) {
+            FontManager.getInstance().load(Config.FONT_DEFAULT, Config.DEFAULT_FONT_SIZE, Config.DEFAULT_FONT_ALIAS);
         }
-        boolean ftitle = FontManager.getInstance().loadFromUrl(Config.FONT_URL, Config.TITLE_FONT_SIZE, Config.TITLE_FONT_ALIAS);
-        if(!ftitle) {
+        boolean ftitle = FontManager.getInstance().loadFromUrl(Config.FONT_URL, Config.TITLE_FONT_SIZE,
+                Config.TITLE_FONT_ALIAS);
+        if (!ftitle) {
             FontManager.getInstance().load(Config.FONT_DEFAULT, Config.TITLE_FONT_SIZE, Config.TITLE_FONT_ALIAS);
         }
-        
 
         this.levelLoader = new LevelLoader();
-        
-        if(this.levelLoader.load(Config.LEVEL_1_PATH) == null) {
+
+        if (this.levelLoader.load(Config.LEVEL_1_PATH) == null) {
             return false;
         }
-        if(this.levelLoader.load(Config.LEVEL_2_PATH) == null) {
+        if (this.levelLoader.load(Config.LEVEL_2_PATH) == null) {
             return false;
         }
 
         this.sky = new Sky(Config.DEFAULT_SKY_GRID_SIZE);
-        if(!this.sky.init()) {
+        if (!this.sky.init()) {
             return false;
         }
 
         getContext().getState().player = new Player();
         this.player = getContext().getState().player;
-        if(!this.player.init()) {
+        if (!this.player.init()) {
             return false;
         }
 
-        this.enemies = this.levelLoader.getLevel( this.levelLoader.getLevelNames().get(0)).getEnemies();
+        this.enemies = this.levelLoader.getLevel(this.levelLoader.getLevelNames().get(0)).getEnemies();
         for (Enemy enemy : this.enemies) {
-            if(!enemy.init()) {
+            if (!enemy.init()) {
                 return false;
             }
         }
 
         this.menu = new Menu();
-        if(!this.menu.init()) {
+        if (!this.menu.init()) {
             return false;
         }
 
         this.fud = new FUD();
-        if(!this.fud.init()) {
+        if (!this.fud.init()) {
             return false;
         }
 
         this.hud = new HUD();
-        if(!this.hud.init()) {
+        if (!this.hud.init()) {
             return false;
         }
 
         getContext().getFrame().setIconImage(SpriteManager.getInstance().get(Config.MEDAL_SPRITE_NAME).getImage());
+        getContext().getRenderer().setFont(Config.DEFAULT_FONT_ALIAS);
         return true;
     }
 
     @Override
     protected void update(double dt) {
         this.sky.update(dt);
-        if(this.menu.isVisible()) {
+        if (this.menu.isVisible()) {
             this.menu.update(dt);
             return;
         }
@@ -117,7 +119,6 @@ public class Galaga extends Application {
             this.stop();
         }
 
-
         this.hud.update(dt);
         this.fud.update(dt);
     }
@@ -125,7 +126,7 @@ public class Galaga extends Application {
     @Override
     protected void draw() {
         this.sky.draw();
-        if(this.menu.isVisible()) {
+        if (this.menu.isVisible()) {
             this.menu.draw();
             return;
         }

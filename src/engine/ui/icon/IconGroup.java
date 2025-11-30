@@ -19,24 +19,21 @@ public final class IconGroup extends UIElement {
         this.alignLeft = alignLeft;
     }
 
-    public void setIcons(List<Icon> icons)
-    {
+    public void setIcons(List<Icon> icons) {
         this.icons = icons;
         this.updatePosition();
     }
 
-    public List<Icon> getIcons()
-    {
+    public List<Icon> getIcons() {
         return this.icons;
     }
 
-    private void updatePosition()
-    {
-        if(this.icons.isEmpty()) {
+    private void updatePosition() {
+        if (this.icons.isEmpty()) {
             return;
         }
 
-        int space = (int)this.icons.get(0).getWidth();
+        int space = (int) this.icons.get(0).getWidth();
         for (Icon icon : this.icons) {
             float x = Math.abs((this.alignLeft ? 0 : this.parentWidth) - (this.x + icon.getWidth() + space));
             float y = this.y + icon.getHeight() / 2;

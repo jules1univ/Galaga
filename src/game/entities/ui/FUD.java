@@ -34,7 +34,7 @@ public class FUD extends UIElement {
     }
 
     @Override
-    public boolean init() {        
+    public boolean init() {
         this.height = Config.FUD_HEIGHT;
         this.width = Galaga.getContext().getFrame().getWidth();
 
@@ -43,25 +43,26 @@ public class FUD extends UIElement {
 
         if (!SpriteManager.getInstance().load(Config.SHIP_SPRITE_NAME, Config.SHIP_PATH, Config.DEFAULT_SPRITE_SCALE)) {
             return false;
-        }        
+        }
 
         this.ship = SpriteManager.getInstance().get(Config.SHIP_SPRITE_NAME);
-        this.lifeIcons = new IconGroup(new ArrayList<>(), this.width, true, (int)this.ship.getWidth()/2);
+        this.lifeIcons = new IconGroup(new ArrayList<>(), this.width, true, (int) this.ship.getWidth() / 2);
         this.lifeIcons.setPosition(this.x, this.y);
-        
-        if(!this.lifeIcons.init()) {
+
+        if (!this.lifeIcons.init()) {
             return false;
         }
 
-        if (!SpriteManager.getInstance().load(Config.MEDAL_SPRITE_NAME, Config.MEDAL_PATH, Config.DEFAULT_SPRITE_SCALE)) {
+        if (!SpriteManager.getInstance().load(Config.MEDAL_SPRITE_NAME, Config.MEDAL_PATH,
+                Config.DEFAULT_SPRITE_SCALE)) {
             return false;
         }
 
         this.medal = SpriteManager.getInstance().get(Config.MEDAL_SPRITE_NAME);
-        this.medalIcons = new IconGroup(new ArrayList<>(), this.width, false, (int)this.medal.getWidth()/2);
+        this.medalIcons = new IconGroup(new ArrayList<>(), this.width, false, (int) this.medal.getWidth() / 2);
         this.medalIcons.setPosition(this.x, this.y);
 
-        if(!this.medalIcons.init()) {
+        if (!this.medalIcons.init()) {
             return false;
         }
 
@@ -71,16 +72,15 @@ public class FUD extends UIElement {
     @Override
     public void update(double dt) {
         int lifes = Galaga.getContext().getState().player.getLife();
-        if(this.lifeIcons.getIcons().size() != lifes) {
+        if (this.lifeIcons.getIcons().size() != lifes) {
             this.lifeIcons.setIcons(createArrayIcon(this.ship, lifes));
         }
 
         int medals = Galaga.getContext().getState().player.getMedals();
-        if(this.medalIcons.getIcons().size() != medals) {
+        if (this.medalIcons.getIcons().size() != medals) {
             this.medalIcons.setIcons(createArrayIcon(this.medal, medals));
         }
     }
-
 
     @Override
     public void draw() {

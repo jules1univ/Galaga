@@ -41,7 +41,7 @@ public final class Renderer {
     }
 
     public void end() {
-        Graphics2D fg = (Graphics2D)this.frame.getGraphics();
+        Graphics2D fg = (Graphics2D) this.frame.getGraphics();
         if (fg == null) {
             return;
         }

@@ -20,10 +20,9 @@ public final class AppPanel extends JPanel implements Runnable {
         super();
         this.app = app;
 
-
         this.setPreferredSize(new Dimension(app.getWidth(), app.getHeight()));
         this.setFocusable(true);
-        
+
         // handled manually in the renderer
         this.setDoubleBuffered(false);
     }

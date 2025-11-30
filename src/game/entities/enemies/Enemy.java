@@ -17,7 +17,7 @@ public abstract class Enemy extends SpriteEntity {
         super();
         this.type = type;
         this.scale = Config.DEFAULT_SPRITE_SCALE;
-        
+
         this.angle = 180.f;
 
         this.lockX = lockX;
@@ -35,7 +35,6 @@ public abstract class Enemy extends SpriteEntity {
         this.sprite = this.loadFromSprite(name, path);
         return this.sprite != null;
     }
-
 
     @Override
     public void draw() {
