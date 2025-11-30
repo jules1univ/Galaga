@@ -3,11 +3,8 @@ package engine.graphics;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.awt.FontMetrics;
 import java.awt.geom.AffineTransform;
 
@@ -22,7 +19,6 @@ public final class Renderer {
 
     private BufferedImage backBuffer;
     private Graphics2D g;
-    private HashMap<String, Font> fonts = new HashMap<>();
     private FontMetrics fontMetrics;
 
     public Renderer(AppFrame frame) {
@@ -31,9 +27,12 @@ public final class Renderer {
         this.backBuffer = new BufferedImage(this.frame.getWidth(), this.frame.getHeight(), BufferedImage.TYPE_INT_ARGB);
         this.g = backBuffer.createGraphics();
 
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-        g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
+        this.g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        this.g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+        this.g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
+
+        this.fontMetrics = this.g.getFontMetrics(this.g.getFont());
+
     }
 
     public void begin() {
@@ -42,11 +41,11 @@ public final class Renderer {
     }
 
     public void end() {
-        Graphics2D fg = (Graphics2D) frame.getGraphics();
+        Graphics2D fg = (Graphics2D)this.frame.getGraphics();
         if (fg == null) {
             return;
         }
-        fg.drawImage(backBuffer, 0, 0, null);
+        fg.drawImage(this.backBuffer, 0, 0, null);
         fg.dispose();
     }
 
@@ -55,37 +54,30 @@ public final class Renderer {
         this.g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
     }
 
-    public Renderer setFont(String fontName, int size) {
-        Font font;
-        String fid = fontName + "@" + size;
-        if (this.fonts.containsKey(fid)) {
-            font = this.fonts.get(fid);
-        } else {
-            String[] names = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-            if (!Arrays.asList(names).contains(fontName)) {
-                Log.warning("Font '" + fontName + "' not found. Using default font.");
-                fontName = names[0];
-            }
-
-            font = new Font(fontName, Font.PLAIN, size);
-            this.fonts.put(fid, font);
+    public Renderer setFont(Font font) {
+        if (font == null) {
+            Log.warning("Attempted to set null font.");
+            return this;
         }
-
-        this.g.setFont(font);
         this.fontMetrics = this.g.getFontMetrics(font);
-
+        this.g.setFont(font);
         return this;
     }
 
+    public Renderer setFont(String alias) {
+        return this.setFont(FontManager.getInstance().getFont(alias));
+    }
+
     public int getTextWidth(String text) {
-        return this.fontMetrics.stringWidth(text) + this.fontMetrics.getAscent()*2;
+        return this.fontMetrics.stringWidth(text) + this.fontMetrics.getAscent() * 2;
     }
 
     public Renderer drawText(String text, int x, int y, Color color) {
         this.g.setColor(color);
 
         // FIXME: hacky way to align text properly
-        this.g.drawString(text, x + this.fontMetrics.getAscent(), y + this.fontMetrics.getAscent() + this.fontMetrics.getLeading() + this.fontMetrics.getHeight());
+        this.g.drawString(text, x + this.fontMetrics.getAscent(),
+                y + this.fontMetrics.getAscent() + this.fontMetrics.getLeading() + this.fontMetrics.getHeight());
         return this;
     }
 

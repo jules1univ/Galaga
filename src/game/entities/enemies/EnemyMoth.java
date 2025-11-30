@@ -4,6 +4,11 @@ public class EnemyMoth extends Enemy {
 
     public EnemyMoth(float lockX, float lockY, int value, float speed) {
         super(EnemyType.MOTH, lockX, lockY, value, speed);
+        this.angle = 0;
+    }
+
+    @Override
+    public void update(double dt) {
     }
 
 }

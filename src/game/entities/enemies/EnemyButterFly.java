@@ -6,4 +6,10 @@ public class EnemyButterFly extends Enemy {
         super(EnemyType.BUTTERFLY, lockX, lockY, value, speed);
     }
 
+    
+
+    @Override
+    public void update(double dt) {
+    }
+
 }

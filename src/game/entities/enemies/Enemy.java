@@ -2,7 +2,6 @@ package game.entities.enemies;
 
 import engine.entity.SpriteEntity;
 import game.Config;
-import game.Galaga;
 
 public abstract class Enemy extends SpriteEntity {
 
@@ -20,8 +19,6 @@ public abstract class Enemy extends SpriteEntity {
         this.scale = Config.DEFAULT_SPRITE_SCALE;
         
         this.angle = 180.f;
-        this.x = -(float) Math.random() * Galaga.getContext().getFrame().getWidth();
-        this.y = -(float) Math.random() * Galaga.getContext().getFrame().getHeight();
 
         this.lockX = lockX;
         this.lockY = lockY;
@@ -39,22 +36,6 @@ public abstract class Enemy extends SpriteEntity {
         return this.sprite != null;
     }
 
-    @Override
-    public void update(double dt) {
-        float directionX = this.lockX - this.x;
-        float directionY = this.lockY - this.y;
-        float length = (float) Math.sqrt(directionX * directionX + directionY * directionY);
-
-        if (length <= 3.f) {
-            this.x = this.lockX;
-            this.y = this.lockY;
-            this.angle = 180.f;
-            return;
-        }
-
-        this.x += directionX * this.speed * dt;
-        this.y += directionY * this.speed * dt;
-    }
 
     @Override
     public void draw() {

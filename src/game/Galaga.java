@@ -5,12 +5,14 @@ import java.util.List;
 
 import engine.AppContext;
 import engine.Application;
+import engine.graphics.FontManager;
 import engine.graphics.sprite.SpriteManager;
 import game.entities.enemies.Enemy;
 import game.entities.player.Player;
 import game.entities.sky.Sky;
 import game.entities.ui.FUD;
 import game.entities.ui.HUD;
+import game.entities.ui.Menu;
 import game.level.LevelLoader;
 
 public class Galaga extends Application {
@@ -22,6 +24,7 @@ public class Galaga extends Application {
 
     private FUD fud;
     private HUD hud;
+    private Menu menu;
 
     @SuppressWarnings("unchecked")
     public static AppContext<State> getContext() {
@@ -40,6 +43,16 @@ public class Galaga extends Application {
 
     @Override
     protected boolean init() {
+        boolean fdefault = FontManager.getInstance().loadFromUrl(Config.FONT_URL, Config.TEXT_FONT_SIZE, Config.DEFAULT_FONT_ALIAS);
+        if(!fdefault) {
+            FontManager.getInstance().load(Config.FONT_DEFAULT, Config.TEXT_FONT_SIZE, Config.DEFAULT_FONT_ALIAS);
+        }
+        boolean ftitle = FontManager.getInstance().loadFromUrl(Config.FONT_URL, Config.TITLE_FONT_SIZE, Config.TITLE_FONT_ALIAS);
+        if(!ftitle) {
+            FontManager.getInstance().load(Config.FONT_DEFAULT, Config.TITLE_FONT_SIZE, Config.TITLE_FONT_ALIAS);
+        }
+        
+
         this.levelLoader = new LevelLoader();
         
         if(this.levelLoader.load(Config.LEVEL_1_PATH) == null) {
@@ -48,8 +61,6 @@ public class Galaga extends Application {
         if(this.levelLoader.load(Config.LEVEL_2_PATH) == null) {
             return false;
         }
-
-        getContext().getRenderer().setFont("Consolas", 18);
 
         this.sky = new Sky(Config.DEFAULT_SKY_GRID_SIZE);
         if(!this.sky.init()) {
@@ -69,6 +80,11 @@ public class Galaga extends Application {
             }
         }
 
+        this.menu = new Menu();
+        if(!this.menu.init()) {
+            return false;
+        }
+
         this.fud = new FUD();
         if(!this.fud.init()) {
             return false;
@@ -86,6 +102,11 @@ public class Galaga extends Application {
     @Override
     protected void update(double dt) {
         this.sky.update(dt);
+        if(this.menu.isVisible()) {
+            this.menu.update(dt);
+            return;
+        }
+
         this.player.update(dt);
 
         for (Enemy enemy : this.enemies) {
@@ -104,6 +125,10 @@ public class Galaga extends Application {
     @Override
     protected void draw() {
         this.sky.draw();
+        if(this.menu.isVisible()) {
+            this.menu.draw();
+            return;
+        }
 
         this.player.draw();
 
