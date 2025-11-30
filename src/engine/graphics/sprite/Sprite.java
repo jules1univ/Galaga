@@ -1,10 +1,15 @@
 package engine.graphics.sprite;
 
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.InputStream;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+
+import engine.utils.cache.CacheManager;
 import engine.utils.logger.Log;
 
 public final class Sprite {
@@ -15,6 +20,19 @@ public final class Sprite {
     }
 
     public boolean load(String path, float scale) {
+        String alias = path + scale;
+        
+        if (CacheManager.getInstance().exists(alias)) {
+            try {
+                InputStream in = CacheManager.getInstance().load(alias);
+                this.image = ImageIO.read(in);
+                Log.message("Sprite loaded from cache successfully: " + path);
+                return true;
+            } catch (Exception e) {
+                Log.error("Sprite loading from cache failed: " + e.getMessage());
+            }
+        }
+
         ArrayList<String> lines = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
@@ -55,6 +73,8 @@ public final class Sprite {
 
         if (scale <= 1) {
             this.image = base;
+            CacheManager.getInstance().save(alias, this.image);
+
             Log.message("Sprite loaded successfully: " + path);
             return true;
         }
@@ -81,6 +101,8 @@ public final class Sprite {
         }
 
         this.image = scaled;
+
+        CacheManager.getInstance().save(alias, this.image);
         Log.message("Sprite loaded and scaled successfully: " + path);
         return true;
     }

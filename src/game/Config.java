@@ -15,10 +15,11 @@ public class Config {
 
     public static final float DEFAULT_SPRITE_SCALE = 3.f;
     public static final float DEFAULT_SPRITE_ICON_DOWNSCALE_FACTOR = .7f;
-    public static final int DEFAULT_SKY_GRID_SIZE = 80;
+    public static final int DEFAULT_SKY_GRID_SIZE = 60;
 
     public static final int WINDOW_WIDTH = 700;
     public static final int WINDOW_HEIGHT = 700;
+    public static final String WINDOW_TITLE = "Galaga - @jules1univ";
 
     public static final float HUD_HEIGHT = 50.f;
     public static final float FUD_HEIGHT = 50.f;

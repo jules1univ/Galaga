@@ -25,6 +25,11 @@ public abstract class Enemy extends SpriteEntity {
 
         this.speed = speed;
         this.value = value;
+
+        // TODO: create an animation system for enemies
+        // split the enemies in 2 groupes (left/right) and animate them accordingly
+        // animate them until they reach their lock position
+        // for every new level
     }
 
     @Override
@@ -40,5 +45,4 @@ public abstract class Enemy extends SpriteEntity {
     public void draw() {
         super.draw();
     }
-
 }

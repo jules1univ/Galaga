@@ -30,7 +30,12 @@ public class Menu extends UIElement {
 
     @Override
     public void draw() {
-
+        // TODO: menu select with left/right arrows, validate with enter
+        // TODO: create a select element in engine ui
+        //  ---------------
+        //  < START >
+        //    SHIPS 
+        //    QUIT
     }
 
 }

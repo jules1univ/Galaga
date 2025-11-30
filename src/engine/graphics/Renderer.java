@@ -10,6 +10,7 @@ import java.awt.geom.AffineTransform;
 
 import engine.AppFrame;
 import engine.entity.SpriteEntity;
+import engine.graphics.font.FontManager;
 import engine.graphics.sprite.Sprite;
 import engine.utils.logger.Log;
 

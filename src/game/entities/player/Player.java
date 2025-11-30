@@ -17,10 +17,15 @@ public class Player extends SpriteEntity {
         this.life = Config.PLAYER_INITIAL_LIFE;
         this.scale = Config.DEFAULT_SPRITE_SCALE;
 
+        // TODO: add medals when level is completed
         this.medals = 0;
+
+        // TODO: when the method player.destroyEnemy(Enemy) is called add score
         this.score = 0;
         
         this.angle = 0.f;
+
+        // TODO: create a ship animation when a new level begin
     }
 
     public int getLife() {

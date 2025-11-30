@@ -5,7 +5,7 @@ import java.util.List;
 
 import engine.AppContext;
 import engine.Application;
-import engine.graphics.FontManager;
+import engine.graphics.font.FontManager;
 import engine.graphics.sprite.SpriteManager;
 import game.entities.enemies.Enemy;
 import game.entities.player.Player;
@@ -21,6 +21,8 @@ public class Galaga extends Application {
     private Sky sky;
     private Player player;
     private List<Enemy> enemies;
+    // TODO: add bullets
+    // TODO: add particles & create a particle system in engine 
 
     private FUD fud;
     private HUD hud;
@@ -37,21 +39,20 @@ public class Galaga extends Application {
     }
 
     public Galaga() {
-        super("Galaga - @jules1univ", Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT);
+        super(Config.WINDOW_TITLE, Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT);
         getContext().setState(new State());
     }
 
     @Override
     protected boolean init() {
-        boolean fdefault = FontManager.getInstance().loadFromUrl(Config.FONT_URL, Config.DEFAULT_FONT_SIZE,
-                Config.DEFAULT_FONT_ALIAS);
-        if (!fdefault) {
-            FontManager.getInstance().load(Config.FONT_DEFAULT, Config.DEFAULT_FONT_SIZE, Config.DEFAULT_FONT_ALIAS);
+        FontManager fm = FontManager.getInstance();
+        boolean fdefault = fm.loadFromUrl(Config.FONT_URL, Config.DEFAULT_FONT_SIZE, Config.DEFAULT_FONT_ALIAS);
+        if (!fdefault && !fm.load(Config.FONT_DEFAULT, Config.DEFAULT_FONT_SIZE, Config.DEFAULT_FONT_ALIAS)) {
+            return false;
         }
-        boolean ftitle = FontManager.getInstance().loadFromUrl(Config.FONT_URL, Config.TITLE_FONT_SIZE,
-                Config.TITLE_FONT_ALIAS);
-        if (!ftitle) {
-            FontManager.getInstance().load(Config.FONT_DEFAULT, Config.TITLE_FONT_SIZE, Config.TITLE_FONT_ALIAS);
+        boolean ftitle = fm.loadFromUrl(Config.FONT_URL, Config.TITLE_FONT_SIZE, Config.TITLE_FONT_ALIAS);
+        if (!ftitle && !fm.load(Config.FONT_DEFAULT, Config.TITLE_FONT_SIZE, Config.TITLE_FONT_ALIAS)) {
+            return false;
         }
 
         this.levelLoader = new LevelLoader();
@@ -115,6 +116,8 @@ public class Galaga extends Application {
             enemy.update(dt);
         }
 
+        // TODO: update bullets & collisions
+
         if (getContext().getInput().isKeyDown(KeyEvent.VK_ESCAPE)) {
             this.stop();
         }
@@ -131,12 +134,18 @@ public class Galaga extends Application {
             return;
         }
 
+
         this.player.draw();
 
         for (Enemy enemy : this.enemies) {
             enemy.draw();
         }
 
+        // TODO: draw bullets here
+
+
+        // TODO: display the level name at the beginning
+        // TODO: show the new medal earned when a level is completed
         this.hud.draw();
         this.fud.draw();
     }

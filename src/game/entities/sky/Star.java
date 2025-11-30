@@ -22,6 +22,10 @@ public class Star extends Entity {
         this.y = y;
         this.initialY = y;
 
+        this.time = 0.0f;
+        this.blinkDelay = 0.0f;
+        this.active = false;
+
         this.width = size;
         this.height = size;
         this.color = color;
@@ -30,7 +34,7 @@ public class Star extends Entity {
     @Override
     public boolean init() {
         this.blinkDelay = Config.STAR_MIN_BLINK_DELAY + (float) Math.random() * Config.STAR_MAX_BLINK_DELAY;
-        this.active = Math.random() > 0.5;
+        this.time = Config.STAR_MIN_BLINK_DELAY/2;
         return true;
     }
 
@@ -41,11 +45,11 @@ public class Star extends Entity {
             this.time = 0.0f;
             this.active = !this.active;
             this.y = this.initialY;
-
-            // Not updated to save performance
-            // this.blinkDelay = MIN_BLINK_DELAY + (float) Math.random() * MAX_BLINK_DELAY;
         }
         this.y += dt * Config.STAR_MOVE_SPEED;
+
+        // TODO: add woobly effect when player hit an enemy
+        // this.x  = this.x + (float)(Math.sin(this.y / 50.0f) * 0.5f);
     }
 
     @Override
