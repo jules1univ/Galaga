@@ -30,7 +30,8 @@ public final class ResourceManager {
         }
         try {
             this.resources.put(alias.getName() + (alias.getVariant() != null ? alias.getVariant().getName() : ""),
-                    resourceClass.getDeclaredConstructor(ResourceAlias.class, Runnable.class).newInstance(alias, callback));
+                    resourceClass.getDeclaredConstructor(ResourceAlias.class, Runnable.class).newInstance(alias,
+                            callback));
         } catch (Exception e) {
             Log.error("Resource creation failed: " + e.getMessage());
         }
@@ -75,17 +76,13 @@ public final class ResourceManager {
         return this.get(enumConst.name().toLowerCase() + variant);
     }
 
-    public void load(Runnable callback) {
+    public void load(Runnable callback, long delay) {
         this.loading = true;
         this.loadingThread = new Thread(() -> {
             int loadedCount = 0;
             for (Resource<?> res : this.resources.values()) {
                 if (res.isLoaded()) {
                     continue;
-                }
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
                 }
 
                 loadedCount++;
@@ -101,12 +98,20 @@ public final class ResourceManager {
                     Log.message("Resource loading cancelled.");
                     break;
                 }
+
+                if (delay > 0) {
+                    try {
+                        Thread.sleep(delay);
+                    } catch (Exception e) {
+                    }
+                }
             }
             this.loading = false;
             Log.message("Resources loaded successfully.");
             callback.run();
         });
         this.loadingThread.start();
+
     }
 
     public void cancel() {

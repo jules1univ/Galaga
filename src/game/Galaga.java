@@ -127,7 +127,7 @@ public class Galaga extends Application {
             if (!this.initAfterLoad()) {
                 this.stop();
             }
-        });
+        }, 200);
         return true;
     }
 
