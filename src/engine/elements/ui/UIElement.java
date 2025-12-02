@@ -9,6 +9,6 @@ public abstract class UIElement extends VisualElement{
     }
 
     public void setPosition(Position position) {
-        this.position = position;
+        this.position = position.copy();
     }
 }

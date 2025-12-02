@@ -16,11 +16,9 @@ import engine.utils.Position;
 import game.entities.enemies.Enemy;
 import game.entities.player.Player;
 import game.entities.sky.Sky;
-
-import game.entities.ui.FUD;
-import game.entities.ui.HUD;
-import game.entities.ui.Menu;
-
+import game.entities.ui.game.FUD;
+import game.entities.ui.game.HUD;
+import game.entities.ui.menu.Menu;
 import game.level.Level;
 import game.level.LevelResource;
 
@@ -95,17 +93,17 @@ public class Galaga extends Application {
     protected boolean init() {
         this.loadingText = new Text("Loading", Position.of(
                 getContext().getFrame().getWidth() / 2,
-                getContext().getFrame().getHeight() / 2), Config.SIZE_FONT_TITLE, Color.WHITE);
+                getContext().getFrame().getHeight() / 2), Config.SIZE_FONT_LARGE, Color.WHITE);
         this.loadingText.setCenter(TextPosition.CENTER, TextPosition.CENTER);
 
         Font defaultFont = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts()[0];
-        getContext().getRenderer().setFont(defaultFont, Config.SIZE_FONT_TITLE);
+        getContext().getRenderer().setFont(defaultFont, Config.SIZE_FONT_LARGE);
 
         ResourceManager rm = getContext().getResource();
         rm.register("levels", LevelResource.class);
 
         rm.add(Config.DEFAULT_FONT, "font", () -> {
-            getContext().getRenderer().setFont(getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_TITLE));
+            getContext().getRenderer().setFont(getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_LARGE));
         });
 
         rm.add(Config.SHIP_SPRITE, "sprite");
@@ -127,7 +125,7 @@ public class Galaga extends Application {
             if (!this.initAfterLoad()) {
                 this.stop();
             }
-        }, 200);
+        }, 0);
         return true;
     }
 
@@ -193,7 +191,7 @@ public class Galaga extends Application {
 
         // DEBUG DRAW TO VIEW ELEMENTS ALIGNMENT
         // getContext().getRenderer().drawGrid(Config.SIZE_SKY_GRID, Color.WHITE);
-        // getContext().getRenderer().drawCross(Color.RED);
+        //  getContext().getRenderer().drawCross(Color.RED);
     }
 
 }

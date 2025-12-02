@@ -7,7 +7,7 @@ import engine.utils.Position;
 import game.Config;
 import game.Galaga;
 
-public class Player extends SpriteEntity {
+public final class Player extends SpriteEntity {
 
     private int life;
     private int score;

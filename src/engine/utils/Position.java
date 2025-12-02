@@ -18,39 +18,68 @@ public final class Position {
     public static Position ofCenter(Position center, Size size) {
         return Position.of(
                 center.getX() - size.getWidth() / 2,
-                center.getY() - size.getHeight() / 2
-        );
+                center.getY() - size.getHeight() / 2);
     }
-    
 
     private Position(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
+    public Position add(float value)
+    {
+        this.x += value;
+        this.y += value;
+        return this;
+    }
 
-    public void addX(float dx) {
+    public Position add(Position other) {
+        this.x += other.x;
+        this.y += other.y;
+        return this;
+    
+    }
+
+    public Position addX(float dx) {
         this.x += dx;
+        return this;
+    
     }
 
-    public void addY(float dy) {
+    public Position addY(float dy) {
         this.y += dy;
+        return this;
+    
     }
 
-    public void clampX(float minX, float maxX) {
+    public Position multiply(float factor) {
+        this.x *= factor;
+        this.y *= factor;
+        return this;
+    }
+
+    public Position clampX(float minX, float maxX) {
         this.x = Math.clamp(this.x, minX, maxX);
+        return this;
+    
     }
 
-    public void clampY(float minY, float maxY) {
+    public Position clampY(float minY, float maxY) {
         this.y = Math.clamp(this.y, minY, maxY);
+        return this;
+    
     }
 
-    public void setX(float x) {
+    public Position setX(float x) {
         this.x = x;
+        return this;
+    
     }
 
-    public void setY(float y) {
+    public Position setY(float y) {
         this.y = y;
+        return this;
+    
     }
 
     public float getX() {
@@ -69,7 +98,55 @@ public final class Position {
         return (int) this.y;
     }
 
+    public float distance(Position other) {
+        float dx = this.x - other.x;
+        float dy = this.y - other.y;
+        return (float) Math.sqrt(dx * dx + dy * dy);
+    }
+
+    public float angleTo(Position other) {
+        float dx = other.x - this.x;
+        float dy = other.y - this.y;
+        return (float) Math.toDegrees(Math.atan2(dy, dx));
+    }
+
+    public Position normalize() {
+        float length = (float) Math.sqrt(this.x * this.x + this.y * this.y);
+        if (length == 0) {
+           return this;
+        }
+        this.x /= length;
+        this.y /= length;
+        return this;
+    }
+
+    public Position negate() {
+        this.x = -this.x;
+        this.y = -this.y;
+        return this;
+    }
+
+    public Position moveTo(Position target, float move) {
+        float dx = target.x - this.x;
+        float dy = target.y - this.y;
+        float distance = (float) Math.sqrt(dx * dx + dy * dy);
+        if (distance <= move || distance == 0) {
+            this.x = target.x;
+            this.y = target.y;
+        } else {
+            this.x += (dx / distance) * move;
+            this.y += (dy / distance) * move;
+        }
+        return this;
+    }
+
     public Position copy() {
         return new Position(this.x, this.y);
+    }
+
+
+    @Override
+    public String toString() {
+        return "Position(" + this.x + ", " + this.y + ")";
     }
 }

@@ -9,7 +9,7 @@ import engine.utils.Position;
 import game.Galaga;
 import game.Config;
 
-public class Sky extends Entity {
+public final class Sky extends Entity {
     private List<Star> stars = new ArrayList<>();
     private int size;
 

@@ -2,38 +2,53 @@ package engine.elements.ui.text;
 
 import java.awt.Color;
 
+import engine.Application;
 import engine.elements.ui.UIElement;
 import engine.utils.Position;
-import game.Galaga;
+import engine.utils.Size;
 
 public final class Text extends UIElement {
 
-    private final Color color;
-    private final int size;
+    private final int height;
 
-    private final Position initial;
-
+    private Color color;
     private String text;
+    private Position initial;
 
     private TextPosition horizontal;
     private TextPosition vertical;
 
-    public Text(String text, Position initial, int size, Color color) {
+    public Text(String text, Position position, int size, Color color) {
         super();
         this.text = text;
 
-        this.initial = initial.copy();
-        this.position = initial.copy();
+        this.position = position.copy();
+        this.initial = position.copy();
 
-        this.size = size;
+        this.height = size;
         this.color = color;
         this.horizontal = TextPosition.BEGIN;
         this.vertical = TextPosition.BEGIN;
     }
 
+    @Override
+    public void setPosition(Position position) {
+        super.setPosition(position);
+        this.initial = position.copy();
+        this.updateText();
+    }
+
     public void setText(String text) {
         this.text = text;
-        this.updateTextPosition();
+        this.updateText();
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public Color getColor() {
+        return this.color;
     }
 
     public String getText() {
@@ -43,32 +58,35 @@ public final class Text extends UIElement {
     public void setCenter(TextPosition horizontal, TextPosition vertical) {
         this.horizontal = horizontal;
         this.vertical = vertical;
-        this.updateTextPosition();
+        this.updateText();
     }
 
-    private void updateTextPosition() {
-        int textWidth = Galaga.getContext().getRenderer().getTextWidth(this.text);
+    private void updateText() {
+        this.size = Size.of(
+                Application.getContext().getRenderer().getTextWidth(this.text),
+                this.height);
 
         if (this.horizontal == TextPosition.CENTER) {
-            this.position.setX(this.initial.getX() - textWidth / 2);
+            this.position.setX(this.initial.getX() - this.size.getWidth() / 2);
         } else if (this.horizontal == TextPosition.END) {
-            this.position.setX(this.initial.getX() - textWidth);
+            this.position.setX(this.initial.getX() - this.size.getWidth());
         } else {
             this.position.setX(this.initial.getX());
         }
 
         if (this.vertical == TextPosition.BEGIN) {
-            this.position.setY(this.initial.getY() - this.size * 1.5f);
+            this.position.setY(this.initial.getY() - this.height * 1.5f);
         } else if (this.vertical == TextPosition.CENTER) {
-            this.position.setY(this.initial.getY() - this.size);
+            this.position.setY(this.initial.getY() - this.height);
         } else {
-            this.position.setY(this.initial.getY() - this.size / 2);
+            this.position.setY(this.initial.getY() - this.height / 2);
         }
 
     }
 
     @Override
     public boolean init() {
+        this.updateText();
         return true;
     }
 
@@ -78,7 +96,7 @@ public final class Text extends UIElement {
 
     @Override
     public void draw() {
-        Galaga.getContext().getRenderer().drawText(this.text, this.position, this.color);
+        Application.getContext().getRenderer().drawText(this.text, this.position, this.color);
     }
 
 }

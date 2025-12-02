@@ -9,19 +9,25 @@ public abstract class Enemy extends SpriteEntity {
 
     protected float speed;
     protected int value;
-    protected EnemyType type;
+    protected final EnemyType type;
+    protected final boolean leftAnimation;
 
     protected Position lock;
+    protected boolean inLock;
 
-    public Enemy(EnemyType type, Position lock, int value,
+    public Enemy(EnemyType type, boolean leftAnimation, Position lock, int value,
             float speed) {
         super();
         this.type = type;
+
         this.angle = 180.f;
         this.scale = Config.SPRITE_SCALE_DEFAULT;
 
-        this.position = lock.copy();
+        this.position = leftAnimation ? Config.POSITION_ENEMY_LEFT.copy() : Config.POSITION_ENEMY_RIGHT.copy();
+
         this.lock = lock.copy();
+        this.leftAnimation = leftAnimation;
+        this.inLock = false;
 
         this.speed = speed;
         this.value = value;

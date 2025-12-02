@@ -9,6 +9,7 @@ import java.util.List;
 
 import engine.utils.Position;
 import engine.utils.logger.Log;
+import game.Config;
 import game.Galaga;
 import game.entities.enemies.Enemy;
 import game.entities.enemies.EnemyBee;
@@ -89,23 +90,26 @@ public class Level {
             float lockY = (1.f - lockYPercent) * Galaga.getContext().getFrame().getHeight();
             
             Position lock = Position.of(lockX, lockY);
+            
+            boolean leftAnimation = lockXPercent < 0.5f;
             // we no longer use size for enemies => sprite have their own fixed size
             // float size = Float.parseFloat(data[3]);
+
 
             int value = Integer.parseInt(data[4]);
 
             // TODO: turn this into a constant
-            float speed = Float.parseFloat(data[5]) * 1000.f;
+            float speed = Float.parseFloat(data[5]) * Config.SPEED_ENEMY_FACTOR;
 
             EnemyType type = EnemyType.valueOf(enemyType.toUpperCase());
 
             switch (type) {
                 case EnemyType.BEE:
-                    return new EnemyBee(lock, value, speed);
+                    return new EnemyBee(leftAnimation, lock, value, speed);
                 case EnemyType.BUTTERFLY:
-                    return new EnemyButterFly(lock, value, speed);
+                    return new EnemyButterFly(leftAnimation,lock, value, speed);
                 case EnemyType.MOTH:
-                    return new EnemyMoth(lock, value, speed);
+                    return new EnemyMoth(leftAnimation,lock, value, speed);
                 default:
                     Log.error("Unknown enemy type: " + enemyType);
                     return null;

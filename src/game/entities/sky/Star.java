@@ -8,7 +8,7 @@ import engine.utils.Size;
 import game.Galaga;
 import game.Config;
 
-public class Star extends Entity {
+public final class Star extends Entity {
 
     private Color color;
     private float time;

@@ -16,6 +16,14 @@ public final class InputKeyListener implements KeyListener {
         return keysDown.contains(key);
     }
 
+    public boolean isKeyPressed(int key) {
+        if (keysDown.contains(key)) {
+            keysDown.remove(key);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void keyPressed(KeyEvent e) {
         keysDown.add(e.getKeyCode());

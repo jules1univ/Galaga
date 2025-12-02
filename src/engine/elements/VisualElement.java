@@ -12,11 +12,11 @@ public abstract class VisualElement {
     }
 
     public final Position getPosition() {
-        return this.position;
+        return this.position.copy();
     }
 
     public final Size getSize() {
-        return this.size;
+        return this.size.copy();
     }
 
     public abstract boolean init();

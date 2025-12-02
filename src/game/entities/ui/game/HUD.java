@@ -1,4 +1,4 @@
-package game.entities.ui;
+package game.entities.ui.game;
 
 import java.awt.Color;
 import java.awt.Font;

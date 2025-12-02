@@ -42,4 +42,13 @@ public final class Size {
     public int getIntHeight() {
         return (int) this.height;
     }
+
+    public Size copy() {
+        return new Size(this.width, this.height);
+    }
+
+    @Override   
+    public String toString() {
+        return "Size(" + this.width + ", " + this.height + ")";
+    }
 }

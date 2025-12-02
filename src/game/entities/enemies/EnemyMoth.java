@@ -4,8 +4,8 @@ import engine.utils.Position;
 
 public class EnemyMoth extends Enemy {
 
-    public EnemyMoth(Position position, int value, float speed) {
-        super(EnemyType.MOTH, position, value, speed);
+    public EnemyMoth(boolean leftAnimation, Position lock, int value, float speed) {
+        super(EnemyType.MOTH, leftAnimation, lock, value, speed);
         this.angle = 0;
     }
 
