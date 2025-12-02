@@ -1,5 +1,7 @@
 package game.entities.enemies;
 
+import engine.utils.Position;
+
 public class EnemyBee extends Enemy {
 
     private final int circleX = 325;
@@ -8,16 +10,18 @@ public class EnemyBee extends Enemy {
     private float rotateAngle = 0.f;
 
 
-    public EnemyBee(float lockX, float lockY, int value, float speed) {
-        super(EnemyType.BEE, lockX, lockY, value, speed);
+    public EnemyBee(Position position, int value, float speed) {
+        super(EnemyType.BEE, position, value, speed);
     }
 
     @Override
     public void update(double dt) {
         this.rotateAngle += this.speed * dt;
         
-        this.x = circleX + (float) Math.cos(this.rotateAngle) * radius;
-        this.y = circleY + (float) Math.sin(this.rotateAngle) * radius;
+        this.position = Position.of(
+            circleX + (float) Math.cos(this.rotateAngle) * radius,
+            circleY + (float) Math.sin(this.rotateAngle) * radius
+        );
         this.angle = (float) Math.toDegrees(this.rotateAngle) + 180;
     }
 

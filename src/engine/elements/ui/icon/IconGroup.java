@@ -1,7 +1,9 @@
-package engine.ui.icon;
+package engine.elements.ui.icon;
 
 import java.util.List;
-import engine.ui.UIElement;
+
+import engine.elements.ui.UIElement;
+import engine.utils.Position;
 
 public final class IconGroup extends UIElement {
 
@@ -33,19 +35,19 @@ public final class IconGroup extends UIElement {
             return;
         }
 
-        int space = (int) this.icons.get(0).getWidth();
+        int space = (int) this.icons.get(0).getSize().getWidth();
         for (Icon icon : this.icons) {
-            float x = Math.abs((this.alignLeft ? 0 : this.parentWidth) - (this.x + icon.getWidth() + space));
-            float y = this.y + icon.getHeight() / 2;
-
-            icon.setPosition(x, y);
-            space += icon.getWidth() + this.margin;
+            icon.setPosition(Position.of(
+                Math.abs((this.alignLeft ? 0 : this.parentWidth) - (this.position.getX() + icon.getSize().getWidth() + space)),
+                this.position.getY() + icon.getSize().getHeight() / 2
+            ));
+            space += icon.getSize().getWidth() + this.margin;
         }
     }
 
     @Override
-    public void setPosition(float x, float y) {
-        super.setPosition(x, y);
+    public void setPosition(Position position) {
+        super.setPosition(position);
         this.updatePosition();
     }
 

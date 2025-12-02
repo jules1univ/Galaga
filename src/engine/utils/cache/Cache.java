@@ -1,34 +1,22 @@
 package engine.utils.cache;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import javax.imageio.ImageIO;
-
 import engine.utils.logger.Log;
 
-public class CacheManager {
-    private static CacheManager inst = null;
+public final class Cache {
 
-    public static CacheManager getInstance() {
-        if (inst == null) {
-            inst = new CacheManager();
-        }
-        return inst;
-    }
-
-    public boolean exists(String name) {
+    public static boolean exists(String name) {
         String alias = Integer.toHexString(name.hashCode());
         File cache = new File("./cache", alias + ".cache");
         return cache.exists();
     }
 
-    public InputStream load(String name) {
+    public static InputStream load(String name) {
         try {
             String alias = Integer.toHexString(name.hashCode());
             File cache = new File("./cache", alias + ".cache");
@@ -42,7 +30,7 @@ public class CacheManager {
         return null;
     }
 
-    public void save(String name, InputStream in) {
+    public static void save(String name, InputStream in) {
         try {
             String alias = Integer.toHexString(name.hashCode());
             File dir = new File("./cache");
@@ -69,15 +57,9 @@ public class CacheManager {
         }
     }
 
-    public void save(String name, byte[] data) {
-        this.save(name, new ByteArrayInputStream(data));
+    public static void save(String name, byte[] data) {
+        save(name, new ByteArrayInputStream(data));
     }
 
-    public void save(String name, BufferedImage image) {
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            ImageIO.write(image, "png", out);
-            this.save(name, out.toByteArray());
-        } catch (Exception e) {}
-    }
 
 }

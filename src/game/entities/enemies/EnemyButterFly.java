@@ -1,9 +1,11 @@
 package game.entities.enemies;
 
+import engine.utils.Position;
+
 public class EnemyButterFly extends Enemy {
 
-    public EnemyButterFly(float lockX, float lockY, int value, float speed) {
-        super(EnemyType.BUTTERFLY, lockX, lockY, value, speed);
+    public EnemyButterFly(Position position, int value, float speed) {
+        super(EnemyType.BUTTERFLY, position, value, speed);
     }
 
     

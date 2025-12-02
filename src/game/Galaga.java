@@ -1,22 +1,28 @@
 package game;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
 import engine.AppContext;
 import engine.Application;
-import engine.graphics.font.FontManager;
-import engine.graphics.sprite.SpriteManager;
+import engine.graphics.sprite.Sprite;
+import engine.resource.ResourceManager;
+import engine.utils.Position;
 import game.entities.enemies.Enemy;
 import game.entities.player.Player;
 import game.entities.sky.Sky;
+
 import game.entities.ui.FUD;
 import game.entities.ui.HUD;
 import game.entities.ui.Menu;
-import game.level.LevelLoader;
+
+import game.level.Level;
+import game.level.LevelResource;
 
 public class Galaga extends Application {
-    private LevelLoader levelLoader;
 
     private Sky sky;
     private Player player;
@@ -27,6 +33,9 @@ public class Galaga extends Application {
     private FUD fud;
     private HUD hud;
     private Menu menu;
+
+    private volatile boolean loading = true;
+
 
     @SuppressWarnings("unchecked")
     public static AppContext<State> getContext() {
@@ -43,39 +52,13 @@ public class Galaga extends Application {
         getContext().setState(new State());
     }
 
-    @Override
-    protected boolean init() {
-        FontManager fm = FontManager.getInstance();
-        boolean fdefault = fm.loadFromUrl(Config.FONT_URL, Config.DEFAULT_FONT_SIZE, Config.DEFAULT_FONT_ALIAS);
-        if (!fdefault && !fm.load(Config.FONT_DEFAULT, Config.DEFAULT_FONT_SIZE, Config.DEFAULT_FONT_ALIAS)) {
-            return false;
-        }
-        boolean ftitle = fm.loadFromUrl(Config.FONT_URL, Config.TITLE_FONT_SIZE, Config.TITLE_FONT_ALIAS);
-        if (!ftitle && !fm.load(Config.FONT_DEFAULT, Config.TITLE_FONT_SIZE, Config.TITLE_FONT_ALIAS)) {
-            return false;
-        }
-
-        this.levelLoader = new LevelLoader();
-
-        if (this.levelLoader.load(Config.LEVEL_1_PATH) == null) {
-            return false;
-        }
-        if (this.levelLoader.load(Config.LEVEL_2_PATH) == null) {
-            return false;
-        }
-
-        this.sky = new Sky(Config.DEFAULT_SKY_GRID_SIZE);
-        if (!this.sky.init()) {
-            return false;
-        }
-
-        getContext().getState().player = new Player();
-        this.player = getContext().getState().player;
+    private boolean initAfterLoad() {
         if (!this.player.init()) {
             return false;
         }
 
-        this.enemies = this.levelLoader.getLevel(this.levelLoader.getLevelNames().get(0)).getEnemies();
+        Level level = getContext().getResource().get(Config.LEVEL_1);
+        this.enemies = level.getEnemies();
         for (Enemy enemy : this.enemies) {
             if (!enemy.init()) {
                 return false;
@@ -97,16 +80,51 @@ public class Galaga extends Application {
             return false;
         }
 
-        getContext().getFrame().setIconImage(SpriteManager.getInstance().get(Config.MEDAL_SPRITE_NAME).getImage());
-        getContext().getRenderer().setFont(Config.DEFAULT_FONT_ALIAS);
+        Sprite medal = Galaga.getContext().getResource().get(Config.MEDAL_SPRITE);
+        getContext().getFrame().setIconImage(medal.getImage());
+        getContext().getRenderer().setFont(getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_DEFAULT), 16);
+
+        this.loading = false;
+        return true;
+    }
+
+    @Override
+    protected boolean init() {
+        Font defaultFont = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts()[0];
+        getContext().getRenderer().setFont(defaultFont, 38);
+
+        ResourceManager rm = getContext().getResource();
+        rm.register("levels", LevelResource.class);
+
+        rm.add(Config.DEFAULT_FONT, "font");
+
+        rm.add(Config.SHIP_SPRITE, "sprite");
+        rm.add(Config.MEDAL_SPRITE, "sprite");
+        rm.add(Config.ENEMY_SPRITES, "sprite");
+
+        rm.add(Config.LEVEL_1, "levels");
+        rm.add(Config.LEVEL_2, "levels");
+
+        rm.load(() -> {
+            if (!this.initAfterLoad()) {
+                this.stop();
+            }
+        });
+
+        this.sky = new Sky(Config.SIZE_SKY_GRID);
+        if (!this.sky.init()) {
+            return false;
+        }
+
+        getContext().getState().player = new Player();
+        this.player = getContext().getState().player;
         return true;
     }
 
     @Override
     protected void update(double dt) {
-        if (FontManager.getInstance().hasUpdate()) {
-            getContext().getRenderer().setFont(Config.DEFAULT_FONT_ALIAS);
-            FontManager.getInstance().clearUpdate();
+        if(this.loading) {
+            return;
         }
 
         this.sky.update(dt);
@@ -133,6 +151,18 @@ public class Galaga extends Application {
 
     @Override
     protected void draw() {
+        if(this.loading) {
+            getContext().getRenderer().drawText(
+                "Loading...",
+                Position.of(
+                    (getContext().getFrame().getWidth() / 2) - 30,
+                    getContext().getFrame().getHeight() / 2
+                ),
+                Color.WHITE
+            );
+            return;
+        }
+
         this.sky.draw();
         if (this.menu.isVisible()) {
             this.menu.draw();
@@ -151,6 +181,9 @@ public class Galaga extends Application {
         // TODO: show the new medal earned when a level is completed
         this.hud.draw();
         this.fud.draw();
+
+        getContext().getRenderer().drawGrid(Config.SIZE_SKY_GRID, Color.WHITE);
+        getContext().getRenderer().drawCross(Color.RED);
     }
 
 }

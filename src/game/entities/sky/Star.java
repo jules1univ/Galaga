@@ -2,7 +2,9 @@ package game.entities.sky;
 
 import java.awt.Color;
 
-import engine.entity.Entity;
+import engine.elements.entity.Entity;
+import engine.utils.Position;
+import engine.utils.Size;
 import game.Galaga;
 import game.Config;
 
@@ -15,26 +17,24 @@ public class Star extends Entity {
 
     private float initialY;
 
-    public Star(float x, float y, float size, Color color) {
+    public Star(Position position, float size, Color color) {
         super();
 
-        this.x = x;
-        this.y = y;
-        this.initialY = y;
+        this.position = position;
+        this.initialY = position.getY();
 
         this.time = 0.0f;
         this.blinkDelay = 0.0f;
         this.active = false;
 
-        this.width = size;
-        this.height = size;
+        this.size = Size.of(size);
         this.color = color;
     }
 
     @Override
     public boolean init() {
-        this.blinkDelay = Config.STAR_MIN_BLINK_DELAY + (float) Math.random() * Config.STAR_MAX_BLINK_DELAY;
-        this.time = Config.STAR_MIN_BLINK_DELAY/2;
+        this.blinkDelay = Config.TIME_BLINKSTAR_MIN + (float) Math.random() * Config.TIME_BLINKSTAR_MAX;
+        this.time = Config.TIME_BLINKSTAR_MIN/2;
         return true;
     }
 
@@ -44,9 +44,9 @@ public class Star extends Entity {
         if (this.time > this.blinkDelay) {
             this.time = 0.0f;
             this.active = !this.active;
-            this.y = this.initialY;
+            this.position.setY(this.initialY);
         }
-        this.y += dt * Config.STAR_MOVE_SPEED;
+        this.position.addY(Config.SPEED_STAR * (float)dt);
 
         // TODO: add woobly effect when player hit an enemy
         // this.x  = this.x + (float)(Math.sin(this.y / 50.0f) * 0.5f);
@@ -57,7 +57,7 @@ public class Star extends Entity {
         if (!this.active) {
             return;
         }
-        Galaga.getContext().getRenderer().drawRect(this.x, this.y, this.width, this.height, this.color);
+        Galaga.getContext().getRenderer().drawRect(this.getPosition(), this.getSize(), this.color);
     }
 
 }

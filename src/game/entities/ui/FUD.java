@@ -3,11 +3,12 @@ package game.entities.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import engine.elements.ui.UIElement;
+import engine.elements.ui.icon.Icon;
+import engine.elements.ui.icon.IconGroup;
 import engine.graphics.sprite.Sprite;
-import engine.graphics.sprite.SpriteManager;
-import engine.ui.UIElement;
-import engine.ui.icon.Icon;
-import engine.ui.icon.IconGroup;
+import engine.utils.Position;
+import engine.utils.Size;
 import game.Config;
 import game.Galaga;
 
@@ -26,7 +27,7 @@ public class FUD extends UIElement {
     private List<Icon> createArrayIcon(Sprite sprite, int length) {
         List<Icon> icons = new ArrayList<>();
         for (int i = 0; i < length; i++) {
-            Icon icon = new Icon(sprite, Config.DEFAULT_SPRITE_ICON_DOWNSCALE_FACTOR);
+            Icon icon = new Icon(sprite, Config.SPRITE_SCALE_ICON);
             icon.init();
             icons.add(icon);
         }
@@ -35,32 +36,28 @@ public class FUD extends UIElement {
 
     @Override
     public boolean init() {
-        this.height = Config.FUD_HEIGHT;
-        this.width = Galaga.getContext().getFrame().getWidth();
+        this.size = Size.of(Galaga.getContext().getFrame().getWidth(), Config.HEIGHT_FUD);
+        this.position = Position.of(0, Galaga.getContext().getFrame().getHeight() - this.size.getHeight());
 
-        this.x = 0;
-        this.y = Galaga.getContext().getFrame().getHeight() - this.height;
-
-        if (!SpriteManager.getInstance().load(Config.SHIP_SPRITE_NAME, Config.SHIP_PATH, Config.DEFAULT_SPRITE_SCALE)) {
+        this.ship = Galaga.getContext().getResource().get(Config.SHIP_SPRITE);
+        if(this.ship == null) {
             return false;
         }
-
-        this.ship = SpriteManager.getInstance().get(Config.SHIP_SPRITE_NAME);
-        this.lifeIcons = new IconGroup(new ArrayList<>(), this.width, true, (int) this.ship.getWidth() / 2);
-        this.lifeIcons.setPosition(this.x, this.y);
+        this.lifeIcons = new IconGroup(new ArrayList<>(), this.size.getWidth(), true,
+                this.ship.getSize().getIntWidth() / 2);
+        this.lifeIcons.setPosition(this.position);
 
         if (!this.lifeIcons.init()) {
             return false;
         }
 
-        if (!SpriteManager.getInstance().load(Config.MEDAL_SPRITE_NAME, Config.MEDAL_PATH,
-                Config.DEFAULT_SPRITE_SCALE)) {
+        this.medal = Galaga.getContext().getResource().get(Config.MEDAL_SPRITE);
+        if(this.medal == null) {
             return false;
         }
-
-        this.medal = SpriteManager.getInstance().get(Config.MEDAL_SPRITE_NAME);
-        this.medalIcons = new IconGroup(new ArrayList<>(), this.width, false, (int) this.medal.getWidth() / 2);
-        this.medalIcons.setPosition(this.x, this.y);
+        this.medalIcons = new IconGroup(new ArrayList<>(), this.size.getWidth(), false,
+                this.medal.getSize().getIntWidth() / 2);
+        this.medalIcons.setPosition(this.position);
 
         if (!this.medalIcons.init()) {
             return false;

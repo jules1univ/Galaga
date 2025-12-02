@@ -4,7 +4,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import engine.entity.Entity;
+import engine.elements.entity.Entity;
+import engine.utils.Position;
 import game.Galaga;
 import game.Config;
 
@@ -35,7 +36,7 @@ public class Sky extends Entity {
                             (int) (Math.random() * 256),
                             (int) (Math.random() * 256));
 
-                    Star star = new Star(pointX, pointY, (int) Config.DEFAULT_SPRITE_SCALE, color);
+                    Star star = new Star(Position.of(pointX, pointY), (int) Config.SPRITE_SCALE_DEFAULT, color);
                     star.init();
                     this.stars.add(star);
                 }

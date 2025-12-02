@@ -3,7 +3,7 @@ package engine.utils.logger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Log {
+public final class Log {
 
     private static void log(String message, LogStatus status) {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();

@@ -1,7 +1,9 @@
 package game.entities.enemies;
 
-import engine.entity.SpriteEntity;
+import engine.elements.entity.SpriteEntity;
+import engine.utils.Position;
 import game.Config;
+import game.Galaga;
 
 public abstract class Enemy extends SpriteEntity {
 
@@ -9,19 +11,17 @@ public abstract class Enemy extends SpriteEntity {
     protected int value;
     protected EnemyType type;
 
-    protected float lockX;
-    protected float lockY;
+    protected Position lock;
 
-    public Enemy(EnemyType type, float lockX, float lockY, int value,
+    public Enemy(EnemyType type, Position lock, int value,
             float speed) {
         super();
         this.type = type;
-        this.scale = Config.DEFAULT_SPRITE_SCALE;
-
         this.angle = 180.f;
+        this.scale = Config.SPRITE_SCALE_DEFAULT;
 
-        this.lockX = lockX;
-        this.lockY = lockY;
+        this.position = lock;
+        this.lock = lock;
 
         this.speed = speed;
         this.value = value;
@@ -34,11 +34,12 @@ public abstract class Enemy extends SpriteEntity {
 
     @Override
     public boolean init() {
-        String name = this.type.name().toLowerCase();
-        String path = String.format(Config.ENEMY_BASE_PATH, name);
-
-        this.sprite = this.loadFromSprite(name, path);
-        return this.sprite != null;
+        this.sprite = Galaga.getContext().getResource().get(this.type);
+        if (this.sprite == null) {
+            return false;
+        }
+        this.size = this.sprite.getSize();
+        return true;
     }
 
     @Override

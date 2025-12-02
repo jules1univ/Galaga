@@ -1,4 +1,4 @@
-package engine.ui.text;
+package engine.elements.ui.text;
 
 public enum TextPosition {
     BEGIN,

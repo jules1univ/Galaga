@@ -2,7 +2,8 @@ package game.entities.player;
 
 import java.awt.event.KeyEvent;
 
-import engine.entity.SpriteEntity;
+import engine.elements.entity.SpriteEntity;
+import engine.utils.Position;
 import game.Config;
 import game.Galaga;
 
@@ -15,7 +16,6 @@ public class Player extends SpriteEntity {
     public Player() {
         super();
         this.life = Config.PLAYER_INITIAL_LIFE;
-        this.scale = Config.DEFAULT_SPRITE_SCALE;
 
         // TODO: add medals when level is completed
         this.medals = 0;
@@ -24,6 +24,7 @@ public class Player extends SpriteEntity {
         this.score = 0;
         
         this.angle = 0.f;
+        this.scale = Config.SPRITE_SCALE_DEFAULT;
 
         // TODO: create a ship animation when a new level begin
     }
@@ -42,26 +43,37 @@ public class Player extends SpriteEntity {
     
     @Override
     public boolean init() {
-        this.sprite = this.loadFromSprite(Config.SHIP_SPRITE_NAME, Config.SHIP_PATH);
+        this.sprite = Galaga.getContext().getResource().get(Config.SHIP_SPRITE);
+        if (this.sprite == null) {
+            return false;
+        }
+        this.size = this.sprite.getSize();
+        this.position = Position.of(
+                (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2,
+                Galaga.getContext().getFrame().getHeight() - this.getScaledSize().getHeight() - Config.HEIGHT_FUD
+        );
 
-        this.x = (Galaga.getContext().getFrame().getWidth() - this.sprite.getWidth()) / 2;
-        this.y = Galaga.getContext().getFrame().getHeight() - this.sprite.getHeight() - Config.FUD_HEIGHT;
-
-        return this.sprite != null;
+        // sprite will be recentered by default so no need to adjust position here
+        this.position.addX(this.getScaledSize().getWidth() / 2);
+        this.position.addY(this.getScaledSize().getHeight() / 2);
+        
+        return true;
     }
 
     @Override
     public void update(double dt) {
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_LEFT)) {
-            this.x -= Config.PLAYER_SPEED * dt;
+            this.position.addX(-Config.SPEED_PLAYER * (float)dt);
         }
 
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_RIGHT)) {
-            this.x += Config.PLAYER_SPEED * dt;
+            this.position.addX(Config.SPEED_PLAYER * (float)dt);
         }
 
-        this.x = Math.clamp(this.x, this.sprite.getWidth(),
-                Galaga.getContext().getFrame().getWidth() - this.sprite.getWidth());
+        this.position.clampX(
+                this.size.getWidth(),
+                Galaga.getContext().getFrame().getWidth() - this.size.getWidth()
+        );
 
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_SPACE)) {
             // TODO: shoot bullets

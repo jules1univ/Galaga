@@ -3,65 +3,52 @@ package engine.graphics.sprite;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
-import javax.imageio.ImageIO;
-
-import engine.utils.cache.CacheManager;
+import engine.utils.Size;
 import engine.utils.logger.Log;
 
 public final class Sprite {
 
-    private BufferedImage image = null;
+    private BufferedImage image;
 
-    public Sprite() {
+    private Sprite(BufferedImage image) {
+        this.image = image;
     }
 
-    public boolean load(String path, float scale) {
-        String alias = path + scale;
-
-        if (CacheManager.getInstance().exists(alias)) {
-            Log.message("Sprite found in cache: " + path);
-            try {
-                InputStream in = CacheManager.getInstance().load(alias);
-                this.image = ImageIO.read(in);
-                Log.message("Sprite loaded from cache successfully: " + path);
-                return true;
-            } catch (Exception e) {
-                Log.error("Sprite loading from cache failed: " + e.getMessage());
-            }
-        }
-
-        ArrayList<String> lines = new ArrayList<>();
-
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+    public static Sprite createSprite(InputStream in) {
+        List<String> lines = new ArrayList<>();
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String line;
             while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
         } catch (Exception e) {
-            Log.error("Sprite loading failed for file: " + path + " - " + e.getMessage());
-            return false;
+            Log.error("Sprite loading failed - " + e.getMessage());
+            return null;
         }
 
         int height = lines.size();
         int width = lines.get(0).length();
 
         if (height == 0 || width == 0) {
-            Log.error("Sprite dimensions are zero for file: " + path);
-            return false;
+            Log.error("Sprite dimensions are zero.");
+            return null;
         }
 
         boolean isValidSpriteSize = lines.stream().filter(line -> line.length() == width).toList()
                 .size() == height;
         if (!isValidSpriteSize) {
-            Log.error("Sprite size is inconsistent in file: " + path);
-            return false;
+            Log.error("Sprite size is inconsistent.");
+            return null;
         }
 
-        BufferedImage base = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage base = new BufferedImage(width, height,
+                BufferedImage.TYPE_INT_ARGB);
 
         for (int y = 0; y < height; y++) {
             String row = lines.get(y);
@@ -71,58 +58,10 @@ public final class Sprite {
                 base.setRGB(x, y, color.getRGB());
             }
         }
-
-        if (scale <= 1) {
-            this.image = base;
-            CacheManager.getInstance().save(alias, this.image);
-
-            Log.message("Sprite loaded successfully: " + path);
-            return true;
-        }
-
-        BufferedImage scaled = new BufferedImage(
-                (int) Math.round(width * scale),
-                (int) Math.round(height * scale),
-                BufferedImage.TYPE_INT_ARGB);
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-
-                int rgb = base.getRGB(x, y);
-
-                for (int dy = 0; dy < scale; dy++) {
-                    for (int dx = 0; dx < scale; dx++) {
-                        scaled.setRGB(
-                                (int) (x * scale) + dx,
-                                (int) (y * scale) + dy,
-                                rgb);
-                    }
-                }
-            }
-        }
-
-        this.image = scaled;
-
-        CacheManager.getInstance().save(alias, this.image);
-        Log.message("Sprite loaded and scaled successfully: " + path);
-        return true;
+        return new Sprite(base);
     }
 
-    public int getWidth() {
-        if (image == null) {
-            return 0;
-        }
-        return image.getWidth();
-    }
-
-    public int getHeight() {
-        if (image == null) {
-            return 0;
-        }
-        return image.getHeight();
-    }
-
-    private Color charToColor(char c) {
+    private static Color charToColor(char c) {
         return switch (c) {
             case 'W' -> Color.WHITE;
             case 'B' -> Color.BLUE;
@@ -132,6 +71,14 @@ public final class Sprite {
             default -> new Color(0, 0, 0, 0); // BLACK = transparent
         };
     }
+
+    public Size getSize() {
+        if (this.image == null) {
+            return Size.of(0, 0);
+        }
+        return Size.of(this.image.getWidth(), this.image.getHeight());
+    }
+
 
     public BufferedImage getImage() {
         return image;

@@ -1,8 +1,9 @@
-package engine.entity;
+package engine.elements.entity;
 
 import engine.Application;
 import engine.graphics.sprite.Sprite;
-import engine.graphics.sprite.SpriteManager;
+import engine.utils.Position;
+import engine.utils.Size;
 
 public abstract class SpriteEntity extends Entity {
     protected Sprite sprite;
@@ -25,20 +26,19 @@ public abstract class SpriteEntity extends Entity {
         return this.scale;
     }
 
-    protected final Sprite loadFromSprite(String name, String path) {
-        if (!SpriteManager.getInstance().load(name, path, this.scale)) {
-            return null;
-        }
+    public final Size getScaledSize() {
+        return Size.of(this.size, this.scale);
+    }
+    
 
-        Sprite sprite = SpriteManager.getInstance().get(name);
-        this.width = sprite.getWidth();
-        this.height = sprite.getHeight();
-        return sprite;
+    @Override
+    public Position getCenter() {
+        return Position.ofCenter(this.position, this.getScaledSize());
     }
 
     @Override
     public void draw() {
-        Application.getContext().getRenderer().drawSpriteEntity(this);
+        Application.getContext().getRenderer().drawSprite(this);
     }
 
 }

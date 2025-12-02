@@ -1,7 +1,9 @@
-package engine.ui.text;
+package engine.elements.ui.text;
 
 import java.awt.Color;
-import engine.ui.UIElement;
+
+import engine.elements.ui.UIElement;
+import engine.utils.Position;
 import game.Galaga;
 
 public final class Text extends UIElement {
@@ -9,20 +11,19 @@ public final class Text extends UIElement {
     private final Color color;
     private final int size;
 
-    private final float initialY;
-    private final float initialX;
+    private final Position initial;
 
     private String text;
 
     private TextPosition horizontal;
     private TextPosition vertical;
 
-    public Text(String text, float x, float y, int size, Color color) {
+    public Text(String text, Position initial, int size, Color color) {
         super();
         this.text = text;
 
-        this.initialY = y;
-        this.initialX = x;
+        this.initial = initial;
+        this.position = initial;
 
         this.size = size;
         this.color = color;
@@ -49,19 +50,19 @@ public final class Text extends UIElement {
         int textWidth = Galaga.getContext().getRenderer().getTextWidth(this.text);
 
         if (this.horizontal == TextPosition.CENTER) {
-            this.x = this.initialX - textWidth / 2;
+            this.position.setX(this.initial.getX() - textWidth / 2);
         } else if (this.horizontal == TextPosition.END) {
-            this.x = this.initialX - textWidth;
+            this.position.setX(this.initial.getX() - textWidth);
         } else {
-            this.x = this.initialX;
+            this.position.setX(this.initial.getX());
         }
 
         if (this.vertical == TextPosition.CENTER) {
-            this.y = this.initialY - this.size / 2;
+            this.position.setY(this.initial.getY() - this.size / 2);
         } else if (this.vertical == TextPosition.BEGIN) {
-            this.y = this.initialY - this.size;
+            this.position.setY(this.initial.getY() - this.size);
         } else {
-            this.y = this.initialY;
+            this.position.setY(this.initial.getY());
         }
 
     }
@@ -77,7 +78,7 @@ public final class Text extends UIElement {
 
     @Override
     public void draw() {
-        Galaga.getContext().getRenderer().drawText(this.text, (int) this.x, (int) this.y, this.color);
+        Galaga.getContext().getRenderer().drawText(this.text, this.position, this.color);
     }
 
 }

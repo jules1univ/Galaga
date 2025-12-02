@@ -1,8 +1,9 @@
-package engine.ui.icon;
+package engine.elements.ui.icon;
 
 import engine.Application;
+import engine.elements.ui.UIElement;
 import engine.graphics.sprite.Sprite;
-import engine.ui.UIElement;
+import engine.utils.Size;
 
 public final class Icon extends UIElement {
 
@@ -18,9 +19,7 @@ public final class Icon extends UIElement {
 
     @Override
     public boolean init() {
-        this.width = (int) (this.icon.getWidth() * this.scale);
-        this.height = (int) (this.icon.getHeight() * this.scale);
-
+        this.size = Size.of(this.icon.getSize(), this.scale);
         return true;
     }
 
@@ -30,7 +29,7 @@ public final class Icon extends UIElement {
 
     @Override
     public void draw() {
-        Application.getContext().getRenderer().drawSprite(this.icon, this.x, this.y, this.scale);
+        Application.getContext().getRenderer().drawSprite(this.icon, this.position, this.scale);
     }
 
 }

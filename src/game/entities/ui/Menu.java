@@ -1,6 +1,7 @@
 package game.entities.ui;
 
-import engine.ui.UIElement;
+import engine.elements.ui.UIElement;
+import engine.utils.Size;
 import game.Galaga;
 
 public class Menu extends UIElement {
@@ -18,8 +19,10 @@ public class Menu extends UIElement {
 
     @Override
     public boolean init() {
-        this.width = Galaga.getContext().getFrame().getWidth();
-        this.height = Galaga.getContext().getFrame().getHeight();
+        this.size = Size.of(
+            Galaga.getContext().getFrame().getWidth(),
+            Galaga.getContext().getFrame().getHeight()
+        );
         return true;
     }
 
