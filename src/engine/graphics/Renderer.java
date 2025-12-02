@@ -57,14 +57,20 @@ public final class Renderer {
     }
 
     public Renderer setFont(Font font, int size) {
-        if (font == null) {
-            Log.warning("Attempted to set null font.");
-            return this;
-        }
         Font derived = font.deriveFont((float) size);
         this.fontMetrics = this.g.getFontMetrics(derived);
         this.g.setFont(derived);
         return this;
+    }
+
+    public Renderer setFont(Font font) {
+        this.fontMetrics = this.g.getFontMetrics(font);
+        this.g.setFont(font);
+        return this;
+    }
+
+    public boolean isFont(Font font) {
+        return this.g.getFont().equals(font);
     }
 
     public int getTextWidth(String text) {

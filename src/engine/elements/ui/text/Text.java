@@ -22,8 +22,8 @@ public final class Text extends UIElement {
         super();
         this.text = text;
 
-        this.initial = initial;
-        this.position = initial;
+        this.initial = initial.copy();
+        this.position = initial.copy();
 
         this.size = size;
         this.color = color;
@@ -57,12 +57,12 @@ public final class Text extends UIElement {
             this.position.setX(this.initial.getX());
         }
 
-        if (this.vertical == TextPosition.CENTER) {
-            this.position.setY(this.initial.getY() - this.size / 2);
-        } else if (this.vertical == TextPosition.BEGIN) {
+        if (this.vertical == TextPosition.BEGIN) {
+            this.position.setY(this.initial.getY() - this.size * 1.5f);
+        } else if (this.vertical == TextPosition.CENTER) {
             this.position.setY(this.initial.getY() - this.size);
         } else {
-            this.position.setY(this.initial.getY());
+            this.position.setY(this.initial.getY() - this.size / 2);
         }
 
     }

@@ -27,7 +27,7 @@ public class Config {
     public static final float TIME_BLINKSTAR_MIN = 3.0f;
 
     public static final int SIZE_SKY_GRID = 50;
-    public static final int SIZE_FONT_TITLE = 72;
+    public static final int SIZE_FONT_TITLE = 32;
     public static final int SIZE_FONT_TEXT = 24;
 
     public static final Position POSITION_ENEMY_LEFT = Position.of(50.f, 600.f);

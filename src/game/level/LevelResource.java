@@ -7,8 +7,8 @@ import engine.resource.ResourceAlias;
 
 public class LevelResource extends Resource<Level>{
 
-    public LevelResource(ResourceAlias alias) {
-        super(alias);
+    public LevelResource(ResourceAlias alias, Runnable callback) {
+        super(alias, callback);
     }
 
     @Override
@@ -21,8 +21,7 @@ public class LevelResource extends Resource<Level>{
         if(level == null) {
             return false;
         }
-        this.data = level;
-        this.loaded = true;
+        this.onLoadComplete(level);
         return true;
     }
     

@@ -7,8 +7,8 @@ import engine.resource.ResourceAlias;
 
 public final class SpriteResource extends Resource<Sprite> {
 
-    public SpriteResource(ResourceAlias alias) {
-        super(alias);
+    public SpriteResource(ResourceAlias alias, Runnable callback) {
+        super(alias, callback);
     }
 
     public SpriteResource addScale(float scale) {
@@ -25,8 +25,7 @@ public final class SpriteResource extends Resource<Sprite> {
         if(sprite == null) {
             return false;
         }
-        this.data = sprite;
-        this.loaded = true;
+        this.onLoadComplete(sprite);
         return true;
     }
 

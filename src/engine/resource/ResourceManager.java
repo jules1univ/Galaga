@@ -8,6 +8,7 @@ import engine.utils.logger.Log;
 public final class ResourceManager {
     private volatile boolean loading = false;
     private volatile String status = "";
+    private volatile float progress = 0.0f;
 
     private Thread loadingThread = null;
 
@@ -22,23 +23,31 @@ public final class ResourceManager {
         this.loaders.put(loadername, resourceClass);
     }
 
-    public void add(ResourceAlias alias, String loadername) {
+    public void add(ResourceAlias alias, String loadername, Runnable callback) {
         Class<? extends Resource<?>> resourceClass = this.loaders.get(loadername);
         if (resourceClass == null) {
             Log.error("Resource loader not found: " + loadername);
         }
         try {
             this.resources.put(alias.getName() + (alias.getVariant() != null ? alias.getVariant().getName() : ""),
-                    resourceClass.getDeclaredConstructor(ResourceAlias.class).newInstance(alias));
+                    resourceClass.getDeclaredConstructor(ResourceAlias.class, Runnable.class).newInstance(alias, callback));
         } catch (Exception e) {
             Log.error("Resource creation failed: " + e.getMessage());
         }
     }
 
-    public void add(List<ResourceAlias> aliases, String loadername) {
+    public void add(List<ResourceAlias> aliases, String loadername, Runnable callback) {
         for (ResourceAlias alias : aliases) {
-            this.add(alias, loadername);
+            this.add(alias, loadername, callback);
         }
+    }
+
+    public void add(ResourceAlias alias, String loadername) {
+        this.add(alias, loadername, null);
+    }
+
+    public void add(List<ResourceAlias> aliases, String loadername) {
+        this.add(aliases, loadername, null);
     }
 
     @SuppressWarnings("unchecked")
@@ -69,21 +78,32 @@ public final class ResourceManager {
     public void load(Runnable callback) {
         this.loading = true;
         this.loadingThread = new Thread(() -> {
+            int loadedCount = 0;
             for (Resource<?> res : this.resources.values()) {
                 if (res.isLoaded()) {
                     continue;
                 }
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                }
+
+                loadedCount++;
                 this.status = res.getAlias().getName();
+                this.progress = (float) loadedCount / (float) this.resources.size();
+
                 if (!res.load()) {
                     Log.error("Failed to load resource: " + res.getAlias().getName());
                     this.resources.remove(res.getAlias().getName());
                 }
 
                 if (Thread.currentThread().isInterrupted()) {
+                    Log.message("Resource loading cancelled.");
                     break;
                 }
             }
             this.loading = false;
+            Log.message("Resources loaded successfully.");
             callback.run();
         });
         this.loadingThread.start();
@@ -98,6 +118,10 @@ public final class ResourceManager {
 
     public String getStatus() {
         return this.status;
+    }
+
+    public float getProgress() {
+        return this.progress;
     }
 
     public boolean isLoading() {

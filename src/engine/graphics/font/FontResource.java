@@ -10,8 +10,8 @@ import engine.utils.logger.Log;
 
 public final class FontResource extends Resource<Font> {
 
-    public FontResource(ResourceAlias alias) {
-        super(alias);
+    public FontResource(ResourceAlias alias, Runnable callback) {
+        super(alias, callback);
     }
 
     @Override
@@ -29,8 +29,7 @@ public final class FontResource extends Resource<Font> {
                 int size = variant.getValue();
                 font = font.deriveFont((float) size);
             }
-            this.data = font;
-            this.loaded = true;
+            this.onLoadComplete(font);
         } catch (Exception e) {
             Log.error("Font loading failed: " + e.getMessage());
             return false;

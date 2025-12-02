@@ -12,12 +12,22 @@ public abstract class Resource<ResourceData> {
     protected final ResourceAlias alias;
     protected ResourceData data;
 
+    protected Runnable callback;
     protected boolean loaded;
 
-    public Resource(ResourceAlias alias) {
+    public Resource(ResourceAlias alias, Runnable callback) {
         this.alias = alias;
         this.data = null;
         this.loaded = false;
+        this.callback = callback;
+    }
+
+    protected final void onLoadComplete(ResourceData d) {
+        this.loaded = true;
+        this.data = d;
+        if (this.callback != null) {
+            this.callback.run();
+        }
     }
 
     protected final InputStream getResourceData() {

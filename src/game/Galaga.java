@@ -8,6 +8,8 @@ import java.util.List;
 
 import engine.AppContext;
 import engine.Application;
+import engine.elements.ui.text.Text;
+import engine.elements.ui.text.TextPosition;
 import engine.graphics.sprite.Sprite;
 import engine.resource.ResourceManager;
 import engine.utils.Position;
@@ -33,9 +35,9 @@ public class Galaga extends Application {
     private FUD fud;
     private HUD hud;
     private Menu menu;
+    private Text loadingText;
 
     private volatile boolean loading = true;
-
 
     @SuppressWarnings("unchecked")
     public static AppContext<State> getContext() {
@@ -82,7 +84,8 @@ public class Galaga extends Application {
 
         Sprite medal = Galaga.getContext().getResource().get(Config.MEDAL_SPRITE);
         getContext().getFrame().setIconImage(medal.getImage());
-        getContext().getRenderer().setFont(getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_DEFAULT), 16);
+        getContext().getRenderer()
+                .setFont(getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_DEFAULT), 16);
 
         this.loading = false;
         return true;
@@ -90,13 +93,20 @@ public class Galaga extends Application {
 
     @Override
     protected boolean init() {
+        this.loadingText = new Text("Loading", Position.of(
+                getContext().getFrame().getWidth() / 2,
+                getContext().getFrame().getHeight() / 2), Config.SIZE_FONT_TITLE, Color.WHITE);
+        this.loadingText.setCenter(TextPosition.CENTER, TextPosition.CENTER);
+
         Font defaultFont = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts()[0];
-        getContext().getRenderer().setFont(defaultFont, 38);
+        getContext().getRenderer().setFont(defaultFont, Config.SIZE_FONT_TITLE);
 
         ResourceManager rm = getContext().getResource();
         rm.register("levels", LevelResource.class);
 
-        rm.add(Config.DEFAULT_FONT, "font");
+        rm.add(Config.DEFAULT_FONT, "font", () -> {
+            getContext().getRenderer().setFont(getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_TITLE));
+        });
 
         rm.add(Config.SHIP_SPRITE, "sprite");
         rm.add(Config.MEDAL_SPRITE, "sprite");
@@ -105,12 +115,6 @@ public class Galaga extends Application {
         rm.add(Config.LEVEL_1, "levels");
         rm.add(Config.LEVEL_2, "levels");
 
-        rm.load(() -> {
-            if (!this.initAfterLoad()) {
-                this.stop();
-            }
-        });
-
         this.sky = new Sky(Config.SIZE_SKY_GRID);
         if (!this.sky.init()) {
             return false;
@@ -118,12 +122,24 @@ public class Galaga extends Application {
 
         getContext().getState().player = new Player();
         this.player = getContext().getState().player;
+
+        rm.load(() -> {
+            if (!this.initAfterLoad()) {
+                this.stop();
+            }
+        });
         return true;
     }
 
     @Override
     protected void update(double dt) {
-        if(this.loading) {
+        if (this.loading) {
+            this.loadingText.setText(
+            String.format(
+            "Loading... %.2f%% (%s)",
+            getContext().getResource().getProgress() * 100.0f,
+            getContext().getResource().getStatus()
+            ));
             return;
         }
 
@@ -151,15 +167,8 @@ public class Galaga extends Application {
 
     @Override
     protected void draw() {
-        if(this.loading) {
-            getContext().getRenderer().drawText(
-                "Loading...",
-                Position.of(
-                    (getContext().getFrame().getWidth() / 2) - 30,
-                    getContext().getFrame().getHeight() / 2
-                ),
-                Color.WHITE
-            );
+        if (this.loading) {
+            this.loadingText.draw();
             return;
         }
 
@@ -182,8 +191,9 @@ public class Galaga extends Application {
         this.hud.draw();
         this.fud.draw();
 
-        getContext().getRenderer().drawGrid(Config.SIZE_SKY_GRID, Color.WHITE);
-        getContext().getRenderer().drawCross(Color.RED);
+        // DEBUG DRAW TO VIEW ELEMENTS ALIGNMENT
+        // getContext().getRenderer().drawGrid(Config.SIZE_SKY_GRID, Color.WHITE);
+        // getContext().getRenderer().drawCross(Color.RED);
     }
 
 }

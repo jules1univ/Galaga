@@ -20,8 +20,8 @@ public abstract class Enemy extends SpriteEntity {
         this.angle = 180.f;
         this.scale = Config.SPRITE_SCALE_DEFAULT;
 
-        this.position = lock;
-        this.lock = lock;
+        this.position = lock.copy();
+        this.lock = lock.copy();
 
         this.speed = speed;
         this.value = value;

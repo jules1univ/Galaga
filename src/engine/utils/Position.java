@@ -3,6 +3,10 @@ package engine.utils;
 public final class Position {
     private float x, y;
 
+    public static Position zero() {
+        return new Position(0.0f, 0.0f);
+    }
+
     public static Position of(float x, float y) {
         return new Position(x, y);
     }
@@ -63,5 +67,9 @@ public final class Position {
 
     public int getIntY() {
         return (int) this.y;
+    }
+
+    public Position copy() {
+        return new Position(this.x, this.y);
     }
 }
