@@ -25,20 +25,19 @@ public class HUD extends UIElement {
     @Override
     public boolean init() {
         this.size = Size.of(Galaga.getContext().getFrame().getWidth(), Config.HEIGHT_HUD);
-        this.position = Position.of(0, this.size.getHeight() / 2);
+        this.position = Position.of(0,  0);
 
         this.textFont = Galaga.getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_DEFAULT);
 
-        int margin = 10;
-        this.fps = new Text("FPS: 0", Position.of(this.size.getWidth(), this.size.getHeight() / 2),
+        this.fps = new Text("FPS: 0", Position.of(this.size.getWidth(), 0),
                 Color.WHITE, this.textFont);
-        this.fps.setCenter(TextPosition.END, TextPosition.CENTER);
+        this.fps.setCenter(TextPosition.END, TextPosition.END);
 
-        this.score = new Text("SCORE: 0", Position.of(Size.half(this.size)), Color.WHITE, this.textFont);
-        this.score.setCenter(TextPosition.CENTER, TextPosition.CENTER);
+        this.score = new Text("SCORE: 0", Position.of(this.size.getWidth()/2, 0), Color.WHITE, this.textFont);
+        this.score.setCenter(TextPosition.CENTER, TextPosition.END);
 
-        this.bestScore = new Text("BEST: 0", Position.of(margin, this.size.getHeight() / 2), Color.WHITE, this.textFont);
-        this.bestScore.setCenter(TextPosition.BEGIN, TextPosition.CENTER);
+        this.bestScore = new Text("BEST: 0", Position.of(0, 0), Color.WHITE, this.textFont);
+        this.bestScore.setCenter(TextPosition.DEFAULT, TextPosition.END);
 
         return true;
     }

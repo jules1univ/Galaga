@@ -80,11 +80,11 @@ public final class Text extends UIElement {
 
         switch (this.vertical) {
             case BEGIN ->
-                this.position.setY(this.initial.getY() + this.size.getHeight());
+                this.position.setY(this.initial.getY() - this.size.getHeight());
             case CENTER ->
                 this.position.setY(this.initial.getY() + this.size.getHeight()/2);
             case END ->
-                this.position.setY(this.initial.getY() - this.size.getHeight());
+                this.position.setY(this.initial.getY() + this.size.getHeight());
             default ->
                 this.position.setY(this.initial.getY());
         }
