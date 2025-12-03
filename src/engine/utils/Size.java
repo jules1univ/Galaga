@@ -5,6 +5,10 @@ public final class Size {
     public float width;
     public float height;
 
+    public static Size zero() {
+        return new Size(0.f, 0.f);
+    }
+
     public static Size of(float width, float height) {
         return new Size(width, height);
     }

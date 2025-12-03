@@ -1,16 +1,14 @@
 package engine.elements.ui.text;
 
-import java.awt.Color;
-
 import engine.Application;
 import engine.elements.ui.UIElement;
 import engine.utils.Position;
-import engine.utils.Size;
+import java.awt.Color;
+import java.awt.Font;
 
 public final class Text extends UIElement {
 
-    private final int height;
-
+    private Font font;
     private Color color;
     private String text;
     private Position initial;
@@ -18,14 +16,14 @@ public final class Text extends UIElement {
     private TextPosition horizontal;
     private TextPosition vertical;
 
-    public Text(String text, Position position, int size, Color color) {
+    public Text(String text, Position position, Color color, Font font) {
         super();
         this.text = text;
 
         this.position = position.copy();
         this.initial = position.copy();
 
-        this.height = size;
+        this.font = font;
         this.color = color;
         this.horizontal = TextPosition.BEGIN;
         this.vertical = TextPosition.BEGIN;
@@ -40,6 +38,11 @@ public final class Text extends UIElement {
 
     public void setText(String text) {
         this.text = text;
+        this.updateText();
+    }
+
+    public void setFont(Font font) {
+        this.font = font;
         this.updateText();
     }
 
@@ -62,24 +65,28 @@ public final class Text extends UIElement {
     }
 
     private void updateText() {
-        this.size = Size.of(
-                Application.getContext().getRenderer().getTextWidth(this.text),
-                this.height);
+        this.size = Application.getContext().getRenderer().getTextSize(this.text, this.font);
 
-        if (this.horizontal == TextPosition.CENTER) {
-            this.position.setX(this.initial.getX() - this.size.getWidth() / 2);
-        } else if (this.horizontal == TextPosition.END) {
-            this.position.setX(this.initial.getX() - this.size.getWidth());
-        } else {
-            this.position.setX(this.initial.getX());
+        switch (this.horizontal) {
+            case BEGIN ->
+                this.position.setX(this.initial.getX() + this.size.getWidth());
+            case CENTER ->
+                this.position.setX(this.initial.getX() - this.size.getWidth() / 2);
+            case END ->
+                this.position.setX(this.initial.getX() - this.size.getWidth());
+            default ->
+                this.position.setX(this.initial.getX());
         }
 
-        if (this.vertical == TextPosition.BEGIN) {
-            this.position.setY(this.initial.getY() - this.height * 1.5f);
-        } else if (this.vertical == TextPosition.CENTER) {
-            this.position.setY(this.initial.getY() - this.height);
-        } else {
-            this.position.setY(this.initial.getY() - this.height / 2);
+        switch (this.vertical) {
+            case BEGIN ->
+                this.position.setY(this.initial.getY() + this.size.getHeight());
+            case CENTER ->
+                this.position.setY(this.initial.getY() + this.size.getHeight()/2);
+            case END ->
+                this.position.setY(this.initial.getY() - this.size.getHeight());
+            default ->
+                this.position.setY(this.initial.getY());
         }
 
     }
@@ -96,7 +103,7 @@ public final class Text extends UIElement {
 
     @Override
     public void draw() {
-        Application.getContext().getRenderer().drawText(this.text, this.position, this.color);
+        Application.getContext().getRenderer().drawText(this.text, this.position, this.color, this.font);
     }
 
 }

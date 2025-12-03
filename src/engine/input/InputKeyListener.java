@@ -5,7 +5,7 @@ import java.awt.event.KeyListener;
 import java.util.HashSet;
 
 public final class InputKeyListener implements KeyListener {
-    private HashSet<Integer> keysDown = new HashSet<>();
+    private final HashSet<Integer> keysDown = new HashSet<>();
     private StringBuilder sb = new StringBuilder();
     private boolean recordTyping = false;
 

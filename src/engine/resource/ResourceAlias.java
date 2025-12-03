@@ -64,12 +64,13 @@ public class ResourceAlias {
 
     private ResourceAlias(String name, String path, String url) {
         this.name = name;
-        try {
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            this.path = new File(classLoader.getResource(path).toURI());
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Resource path is invalid: " + path);
-        }
+        // try {
+        //     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        //     this.path = new File(classLoader.getResource(path).toURI());
+        // } catch (Exception e) {
+        //     throw new IllegalArgumentException("Resource path is invalid: " + path);
+        // }
+        this.path = new File(new File(".").getAbsolutePath(), path);
         this.url = URI.create(url);
     }
 

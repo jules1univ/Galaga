@@ -19,6 +19,7 @@ public class Config {
         public static final float HEIGHT_HUD = 50.f;
         public static final float HEIGHT_FUD = 50.f;
 
+        public static final long SPEED_LOADING = 0;
         public static final float SPEED_PLAYER = 600.f;
         public static final float SPEED_STAR = 200.0f;
         public static final float SPEED_ENEMY_FACTOR = 1000.f;
@@ -34,7 +35,7 @@ public class Config {
         public static final Position POSITION_ENEMY_LEFT = Position.of(0.f, 600.f);
         public static final Position POSITION_ENEMY_RIGHT = Position.of(700.f, 600.f);
 
-        public static final String VARIANT_FONT_DEFAULT = "default";
+        public static final String VARIANT_FONT_DEFAULT = "text";
         public static final String VARIANT_FONT_LARGE = "large";
         public static final String VARIANT_FONT_XLARGE = "xlarge";
 

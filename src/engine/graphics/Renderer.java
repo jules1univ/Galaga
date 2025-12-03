@@ -1,27 +1,25 @@
 package engine.graphics;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.awt.FontMetrics;
-import java.awt.geom.AffineTransform;
-
 import engine.AppFrame;
 import engine.elements.entity.SpriteEntity;
 import engine.graphics.sprite.Sprite;
 import engine.utils.Position;
 import engine.utils.Size;
 import engine.utils.logger.Log;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 
 public final class Renderer {
 
     private final AppFrame frame;
 
-    private BufferedImage backBuffer;
-    private Graphics2D g;
-    private FontMetrics fontMetrics;
+    private final BufferedImage backBuffer;
+    private final Graphics2D g;
 
     public Renderer(AppFrame frame) {
         this.frame = frame;
@@ -32,9 +30,6 @@ public final class Renderer {
         this.g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         this.g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         this.g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
-
-        this.fontMetrics = this.g.getFontMetrics(this.g.getFont());
-
     }
 
     public void begin() {
@@ -56,34 +51,31 @@ public final class Renderer {
         this.g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
     }
 
-    public Renderer setFont(Font font, int size) {
-        Font derived = font.deriveFont((float) size);
-        this.fontMetrics = this.g.getFontMetrics(derived);
-        this.g.setFont(derived);
-        return this;
-    }
-
-    public Renderer setFont(Font font) {
-        this.fontMetrics = this.g.getFontMetrics(font);
+    public Size getTextSize(String text, Font font) {
+        if(font == null || text == null || text.isEmpty()) {
+            Log.warning("Attempted to get size of null or empty text.");
+            return Size.zero();
+        }
         this.g.setFont(font);
-        return this;
+        Rectangle2D rect = font.getStringBounds(text, this.g.getFontRenderContext());
+        return Size.of(
+                (float) rect.getWidth(),
+                (float) rect.getHeight());
     }
 
-    public boolean isFont(Font font) {
-        return this.g.getFont().equals(font);
-    }
-
-    public int getTextWidth(String text) {
-        return this.fontMetrics.stringWidth(text) + this.fontMetrics.getAscent() * 2;
-    }
-
-    public Renderer drawText(String text, Position position, Color color) {
+    public Renderer drawText(String text, Position position, Color color, Font font) {
+        if(font == null || text == null || text.isEmpty()) {
+            Log.warning("Attempted to draw null or empty text.");
+            return this;
+        }
         this.g.setColor(color);
+        this.g.setFont(font);
 
-        // FIXME: hacky way to align text properly
-        this.g.drawString(text, position.getIntX() + this.fontMetrics.getAscent(),
-                position.getIntY() + this.fontMetrics.getAscent() + this.fontMetrics.getLeading()
-                        + this.fontMetrics.getHeight());
+        this.g.drawString(text, position.getIntX(), position.getIntY());     
+
+        // DEBUG TEXT BOX
+        Size size = this.getTextSize(text, font);
+        this.g.drawRect(position.getIntX(), position.getIntY() - size.getIntHeight(), size.getIntWidth(), size.getIntHeight());
         return this;
     }
 
@@ -158,9 +150,9 @@ public final class Renderer {
 
         int centerX = this.frame.getWidth() / 2;
         int centerY = this.frame.getHeight() / 2;
-        
+
         this.g.drawLine(centerX, 0, centerX, this.frame.getHeight());
-        this.g.drawLine(0,  centerY, this.frame.getWidth(), centerY);
+        this.g.drawLine(0, centerY, this.frame.getWidth(), centerY);
 
         return this;
     }

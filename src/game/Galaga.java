@@ -4,7 +4,9 @@ import engine.AppContext;
 import engine.Application;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
+import engine.graphics.font.FontResource;
 import engine.graphics.sprite.Sprite;
+import engine.resource.Resource;
 import engine.resource.ResourceManager;
 import engine.resource.ResourceVariant;
 import engine.utils.Position;
@@ -82,29 +84,30 @@ public class Galaga extends Application {
 
         Sprite medal = Galaga.getContext().getResource().get(Config.MEDAL_SPRITE);
         getContext().getFrame().setIconImage(medal.getImage());
-        getContext().getRenderer()
-                .setFont(getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_DEFAULT), 16);
-
         this.loading = false;
         return true;
     }
 
     @Override
     protected boolean init() {
+        Font[] defaultFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+        if (defaultFonts.length == 0) {
+            return false;
+        }
+
+        Font defaultFont = defaultFonts[0].deriveFont(Config.SIZE_FONT_LARGE);
         this.loadingText = new Text("Loading", Position.of(
                 getContext().getFrame().getWidth() / 2,
-                getContext().getFrame().getHeight() / 2), Config.SIZE_FONT_LARGE, Color.WHITE);
+                getContext().getFrame().getHeight() / 2), Color.WHITE, defaultFont);
         this.loadingText.setCenter(TextPosition.CENTER, TextPosition.CENTER);
-
-        Font defaultFont = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts()[0];
-        getContext().getRenderer().setFont(defaultFont, Config.SIZE_FONT_LARGE);
 
         ResourceManager rm = getContext().getResource();
         rm.register("levels", LevelResource.class);
 
-        rm.add(Config.DEFAULT_FONT, "font", (ResourceVariant variant) -> {
-            if(variant != null && variant.getName().equals(Config.VARIANT_FONT_LARGE)) {
-                getContext().getRenderer().setFont(getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_LARGE));
+        rm.add(Config.DEFAULT_FONT, "font", (ResourceVariant variant, Resource<?> rawRes) -> {
+            if (variant != null && variant.getName().equals(Config.VARIANT_FONT_LARGE)) {
+                FontResource font = (FontResource) rawRes;
+                this.loadingText.setFont(font.getData());
             }
         });
 
@@ -127,7 +130,7 @@ public class Galaga extends Application {
             if (!this.load()) {
                 this.stop();
             }
-        }, 0);
+        }, Config.SPEED_LOADING);
         return true;
     }
 
@@ -135,11 +138,11 @@ public class Galaga extends Application {
     protected void update(double dt) {
         if (this.loading) {
             this.loadingText.setText(
-            String.format(
-            "Loading... %.2f%% (%s)",
-            getContext().getResource().getProgress() * 100.0f,
-            getContext().getResource().getStatus()
-            ));
+                    String.format(
+                            "Loading... %.2f%% (%s)",
+                            getContext().getResource().getProgress() * 100.0f,
+                            getContext().getResource().getStatus()
+                    ));
             return;
         }
 
@@ -156,7 +159,6 @@ public class Galaga extends Application {
         }
 
         // TODO: update bullets & collisions
-
         if (getContext().getInput().isKeyDown(KeyEvent.VK_ESCAPE)) {
             this.stop();
         }
@@ -175,6 +177,7 @@ public class Galaga extends Application {
         this.sky.draw();
         if (this.menu.isVisible()) {
             this.menu.draw();
+            getContext().getRenderer().drawCross(Color.RED);
             return;
         }
 
@@ -185,7 +188,6 @@ public class Galaga extends Application {
         }
 
         // TODO: draw bullets here
-
         // TODO: display the level name at the beginning
         // TODO: show the new medal earned when a level is completed
         this.hud.draw();

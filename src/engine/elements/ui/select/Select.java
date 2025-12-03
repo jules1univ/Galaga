@@ -1,10 +1,11 @@
 package engine.elements.ui.select;
 
-import java.awt.Color;
-
 import engine.Application;
 import engine.elements.ui.UIElement;
 import engine.utils.Position;
+import engine.utils.Size;
+import java.awt.Color;
+import java.awt.Font;
 
 public abstract class Select<T extends UIElement> extends UIElement {
 
@@ -15,24 +16,35 @@ public abstract class Select<T extends UIElement> extends UIElement {
     protected T[] options;
     protected int index;
 
+    protected Font font;
     protected T element;
     protected Color color;
 
-    public Select(T[] options, int defaultIndex, boolean showArrows, Color color) {
+    public Select(T[] options, int defaultIndex, boolean showArrows, Color color, Font font) {
         super();
 
         this.index = defaultIndex;
         this.showArrows = showArrows;
         this.color = color;
+        this.font = font;
 
         this.options = options;
         this.element = this.options[this.index];
     }
 
-    public Select(int defaultIndex, boolean showArrows, Color color) {
+    public Select(int defaultIndex, boolean showArrows, Color color, Font font) {
         super();
         this.index = defaultIndex;
         this.showArrows = showArrows;
+        this.color = color;
+        this.font = font;
+    }
+
+    public void setFont(Font font) {
+        this.font = font;
+    }
+
+    public void setColor(Color color) {
         this.color = color;
     }
 
@@ -46,21 +58,23 @@ public abstract class Select<T extends UIElement> extends UIElement {
     }
 
     private void updateArrowPosition() {
-        int maxWidth = 0;
+        int margin = 10;
+        Size arrowSize = Application.getContext().getRenderer().getTextSize("<", this.font);
+        Size sizeMax = Size.zero();
         for (T el : this.options) {
-            int width = el.getSize().getIntWidth();
-            if (width > maxWidth) {
-                maxWidth = width;
+            Size elsize = el.getSize();
+            if (elsize.getIntWidth() > sizeMax.getIntWidth()) {
+                sizeMax = elsize;
             }
         }
 
         this.arrowLeft = Position.of(
-                this.element.getPosition().getX() - maxWidth / 2,
-                this.element.getPosition().getY());
+                this.position.getX() - sizeMax.getWidth()/2 - arrowSize.getWidth() - margin,
+                this.position.getY() + sizeMax.getHeight()/2);
 
         this.arrowRight = Position.of(
-                this.element.getPosition().getX() + maxWidth/2 + maxWidth/8,
-                this.element.getPosition().getY());
+                this.position.getX() + sizeMax.getWidth()/2 + margin,
+                this.position.getY() + sizeMax.getHeight()/2);
     }
 
     public void toogleArrows() {
@@ -102,11 +116,11 @@ public abstract class Select<T extends UIElement> extends UIElement {
         Application.getContext().getRenderer().drawText(
                 "<",
                 this.arrowLeft,
-                this.color);
+                this.color, this.font);
         Application.getContext().getRenderer().drawText(
                 ">",
                 this.arrowRight,
-                this.color);
+                this.color, this.font);
     }
 
 }

@@ -1,8 +1,5 @@
 package game.entities.ui.game;
 
-import java.awt.Color;
-import java.awt.Font;
-
 import engine.elements.ui.UIElement;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
@@ -11,13 +8,15 @@ import engine.utils.Size;
 import engine.utils.Time;
 import game.Config;
 import game.Galaga;
+import java.awt.Color;
+import java.awt.Font;
 
 public class HUD extends UIElement {
 
     private Text fps;
     private Text score;
     private Text bestScore;
-    private Font defaultFont;
+    private Font textFont;
 
     public HUD() {
 
@@ -28,18 +27,18 @@ public class HUD extends UIElement {
         this.size = Size.of(Galaga.getContext().getFrame().getWidth(), Config.HEIGHT_HUD);
         this.position = Position.of(0, this.size.getHeight() / 2);
 
-        this.defaultFont = Galaga.getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_DEFAULT);
+        this.textFont = Galaga.getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_DEFAULT);
 
+        int margin = 10;
         this.fps = new Text("FPS: 0", Position.of(this.size.getWidth(), this.size.getHeight() / 2),
-                Config.SIZE_FONT_TEXT, Color.WHITE);
-        this.fps.setCenter(TextPosition.END, TextPosition.END);
+                Color.WHITE, this.textFont);
+        this.fps.setCenter(TextPosition.END, TextPosition.CENTER);
 
-        this.score = new Text("SCORE: 0", Position.of(Size.half(this.size)), Config.SIZE_FONT_TEXT, Color.WHITE);
-        this.score.setCenter(TextPosition.CENTER, TextPosition.END);
+        this.score = new Text("SCORE: 0", Position.of(Size.half(this.size)), Color.WHITE, this.textFont);
+        this.score.setCenter(TextPosition.CENTER, TextPosition.CENTER);
 
-        this.bestScore = new Text("BEST: 0", Position.of(0, this.size.getHeight() / 2), Config.SIZE_FONT_TEXT,
-                Color.WHITE);
-        this.bestScore.setCenter(TextPosition.BEGIN, TextPosition.END);
+        this.bestScore = new Text("BEST: 0", Position.of(margin, this.size.getHeight() / 2), Color.WHITE, this.textFont);
+        this.bestScore.setCenter(TextPosition.BEGIN, TextPosition.CENTER);
 
         return true;
     }
@@ -53,10 +52,6 @@ public class HUD extends UIElement {
 
     @Override
     public void draw() {
-        if (!Galaga.getContext().getRenderer().isFont(this.defaultFont)) {
-            Galaga.getContext().getRenderer().setFont(this.defaultFont);
-        }
-
         this.fps.draw();
         this.score.draw();
         this.bestScore.draw();

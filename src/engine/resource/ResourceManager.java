@@ -1,7 +1,7 @@
 package engine.resource;
 
 import engine.utils.logger.Log;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public final class ResourceManager {
@@ -11,8 +11,8 @@ public final class ResourceManager {
 
     private Thread loadingThread = null;
 
-    private final HashMap<String, Class<? extends Resource<?>>> loaders = new HashMap<>();
-    private final HashMap<String, Resource<?>> resources = new HashMap<>();
+    private final LinkedHashMap<String, Class<? extends Resource<?>>> loaders = new LinkedHashMap<>();
+    private final LinkedHashMap<String, Resource<?>> resources = new LinkedHashMap<>();
 
     public ResourceManager() {
 
@@ -92,7 +92,7 @@ public final class ResourceManager {
 
                 if (!res.load()) {
                     failedCount++;
-                    Log.error("Failed to load resource: " + res.getAlias().getName());
+                    Log.error("Failed to load resource: " + res.getAlias().getFullName());
                 }
 
                 if (Thread.currentThread().isInterrupted()) {

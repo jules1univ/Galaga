@@ -1,12 +1,11 @@
 package engine.resource;
 
+import engine.utils.cache.Cache;
+import engine.utils.logger.Log;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URI;
-
-import engine.utils.cache.Cache;
-import engine.utils.logger.Log;
 
 public abstract class Resource<ResourceData> {
     protected final ResourceAlias alias;
@@ -26,31 +25,31 @@ public abstract class Resource<ResourceData> {
         this.loaded = true;
         this.data = d;
         if (this.callback != null) {
-            this.callback.run(this.alias.getVariant());
+            this.callback.run(this.alias.getVariant(), this);
         }
     }
 
     protected final InputStream getResourceData() {
         if(Cache.exists(this.alias.getFullName()))
         {
-            Log.message("Resource '"+ this.alias.getName() + "' found in cache.");
+            Log.message("Resource '"+ this.alias.getFullName() + "' found in cache.");
             return Cache.load(this.alias.getFullName());
         }
 
         File file = this.alias.getPath();
         if (file.exists()) {
             try {
-                Log.message("Resource '"+ this.alias.getName() + "' found in local file system.");
+                Log.message("Resource '"+ this.alias.getFullName() + "' found in local file system.");
                 return new FileInputStream(file);
             } catch (Exception e) {
-                Log.error("Resource '"+this.alias.getName() +"'file loading failed: " + e.getMessage());
+                Log.error("Resource '"+this.alias.getFullName() +"'file loading failed: " + e.getMessage());
             }
         }
 
 
         URI url = this.alias.getUrl();
         if(url.toString().isEmpty()) {
-            Log.error("Resource '"+ this.alias.getName() + "' has no url to load from.");
+            Log.error("Resource '"+ this.alias.getFullName() + "' has no url to load from.");
             return null;
         }
         try{
