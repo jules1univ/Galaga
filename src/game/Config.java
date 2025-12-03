@@ -1,11 +1,10 @@
 package game;
 
-import java.util.List;
-
 import engine.resource.ResourceAlias;
 import engine.resource.ResourceVariant;
 import engine.utils.Position;
 import game.entities.enemies.EnemyType;
+import java.util.List;
 
 public class Config {
         public static final int WINDOW_WIDTH = 700;
@@ -41,7 +40,7 @@ public class Config {
 
         public static final List<ResourceAlias> DEFAULT_FONT = ResourceAlias.file(
                         "font",
-                        ".\\resources\\fonts\\default.ttf",
+                        "resources/fonts/default.ttf",
                         "https://st.1001fonts.net/download/font/bytebounce.medium.ttf").variant(
                                         ResourceVariant.of(Config.VARIANT_FONT_DEFAULT, Config.SIZE_FONT_TEXT),
                                         ResourceVariant.of(Config.VARIANT_FONT_LARGE, Config.SIZE_FONT_LARGE),
@@ -49,25 +48,25 @@ public class Config {
 
         public static final ResourceAlias SHIP_SPRITE = ResourceAlias.file(
                         "ship",
-                        ".\\resources\\sprites\\ship.spr",
+                        "resources/sprites/ship.spr",
                         "");
 
         public static final ResourceAlias MEDAL_SPRITE = ResourceAlias.file(
                         "medal",
-                        ".\\resources\\sprites\\medal.spr",
+                        "resources/sprites/medal.spr",
                         "");
 
         public static final List<ResourceAlias> ENEMY_SPRITES = ResourceAlias.folder(EnemyType.class,
-                        ".\\resources\\sprites\\%s.spr", "%s");
+                        "resources/sprites/%s.spr", "%s");
 
         public static final ResourceAlias LEVEL_1 = ResourceAlias.file(
                         "level1",
-                        ".\\resources\\levels\\level1.lvl",
+                        "resources/levels/level1.lvl",
                         "");
 
         public static final ResourceAlias LEVEL_2 = ResourceAlias.file(
                         "level2",
-                        ".\\resources\\levels\\level2.lvl",
+                        "resources/levels/level2.lvl",
                         "");
 
 }

@@ -1,17 +1,12 @@
 package game;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.awt.event.KeyEvent;
-import java.util.List;
-
 import engine.AppContext;
 import engine.Application;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
 import engine.graphics.sprite.Sprite;
 import engine.resource.ResourceManager;
+import engine.resource.ResourceVariant;
 import engine.utils.Position;
 import game.entities.enemies.Enemy;
 import game.entities.player.Player;
@@ -21,6 +16,11 @@ import game.entities.ui.game.HUD;
 import game.entities.ui.menu.Menu;
 import game.level.Level;
 import game.level.LevelResource;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+import java.awt.event.KeyEvent;
+import java.util.List;
 
 public class Galaga extends Application {
 
@@ -52,7 +52,7 @@ public class Galaga extends Application {
         getContext().setState(new State());
     }
 
-    private boolean initAfterLoad() {
+    private boolean load() {
         if (!this.player.init()) {
             return false;
         }
@@ -102,8 +102,10 @@ public class Galaga extends Application {
         ResourceManager rm = getContext().getResource();
         rm.register("levels", LevelResource.class);
 
-        rm.add(Config.DEFAULT_FONT, "font", () -> {
-            getContext().getRenderer().setFont(getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_LARGE));
+        rm.add(Config.DEFAULT_FONT, "font", (ResourceVariant variant) -> {
+            if(variant != null && variant.getName().equals(Config.VARIANT_FONT_LARGE)) {
+                getContext().getRenderer().setFont(getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_LARGE));
+            }
         });
 
         rm.add(Config.SHIP_SPRITE, "sprite");
@@ -122,7 +124,7 @@ public class Galaga extends Application {
         this.player = getContext().getState().player;
 
         rm.load(() -> {
-            if (!this.initAfterLoad()) {
+            if (!this.load()) {
                 this.stop();
             }
         }, 0);

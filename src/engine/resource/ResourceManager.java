@@ -1,9 +1,8 @@
 package engine.resource;
 
+import engine.utils.logger.Log;
 import java.util.HashMap;
 import java.util.List;
-
-import engine.utils.logger.Log;
 
 public final class ResourceManager {
     private volatile boolean loading = false;
@@ -12,8 +11,8 @@ public final class ResourceManager {
 
     private Thread loadingThread = null;
 
-    private HashMap<String, Class<? extends Resource<?>>> loaders = new HashMap<>();
-    private HashMap<String, Resource<?>> resources = new HashMap<>();
+    private final HashMap<String, Class<? extends Resource<?>>> loaders = new HashMap<>();
+    private final HashMap<String, Resource<?>> resources = new HashMap<>();
 
     public ResourceManager() {
 
@@ -23,25 +22,26 @@ public final class ResourceManager {
         this.loaders.put(loadername, resourceClass);
     }
 
-    public void add(ResourceAlias alias, String loadername, Runnable callback) {
+    public void add(ResourceAlias alias, String loadername, ResourceCallback callback) {
         Class<? extends Resource<?>> resourceClass = this.loaders.get(loadername);
         if (resourceClass == null) {
             Log.error("Resource loader not found: " + loadername);
         }
         try {
-            this.resources.put(alias.getName() + (alias.getVariant() != null ? alias.getVariant().getName() : ""),
-                    resourceClass.getDeclaredConstructor(ResourceAlias.class, Runnable.class).newInstance(alias,
+            this.resources.put(alias.getFullName(),
+                    resourceClass.getDeclaredConstructor(ResourceAlias.class, ResourceCallback.class).newInstance(alias,
                             callback));
         } catch (Exception e) {
             Log.error("Resource creation failed: " + e.getMessage());
         }
     }
-
-    public void add(List<ResourceAlias> aliases, String loadername, Runnable callback) {
+    public void add(List<ResourceAlias> aliases, String loadername, ResourceCallback callback) {
         for (ResourceAlias alias : aliases) {
             this.add(alias, loadername, callback);
         }
     }
+
+    
 
     public void add(ResourceAlias alias, String loadername) {
         this.add(alias, loadername, null);
@@ -80,6 +80,7 @@ public final class ResourceManager {
         this.loading = true;
         this.loadingThread = new Thread(() -> {
             int loadedCount = 0;
+            int failedCount = 0;
             for (Resource<?> res : this.resources.values()) {
                 if (res.isLoaded()) {
                     continue;
@@ -90,8 +91,8 @@ public final class ResourceManager {
                 this.progress = (float) loadedCount / (float) this.resources.size();
 
                 if (!res.load()) {
+                    failedCount++;
                     Log.error("Failed to load resource: " + res.getAlias().getName());
-                    this.resources.remove(res.getAlias().getName());
                 }
 
                 if (Thread.currentThread().isInterrupted()) {
@@ -107,7 +108,11 @@ public final class ResourceManager {
                 }
             }
             this.loading = false;
-            Log.message("Resources loaded successfully.");
+            if(failedCount > 0) {
+                Log.error("Resource loading completed with "+failedCount +"  failed resources.");
+            } else {
+                Log.message("All resources loaded successfully.");
+            }
             callback.run();
         });
         this.loadingThread.start();

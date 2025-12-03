@@ -8,11 +8,12 @@ import java.util.List;
 import java.util.Set;
 
 public class ResourceAlias {
+
     private static Set<String> aliases = new HashSet<>();
 
-    private String name;
-    private File path;
-    private URI url;
+    private final String name;
+    private final File path;
+    private final URI url;
     private ResourceVariant variant = null;
 
     public static ResourceAlias file(String name, String path, String url) {
@@ -25,7 +26,6 @@ public class ResourceAlias {
         return alias;
     }
 
-    
     public static <E extends Enum<E>> List<ResourceAlias> folder(String[] names, String path, String url) {
         List<ResourceAlias> alias = new ArrayList<>();
         for (String name : names) {
@@ -43,7 +43,7 @@ public class ResourceAlias {
         return alias;
     }
 
-    public static <E extends Enum<E>>  List<ResourceAlias> folder(Class<E> enumClass, String path, String url, ResourceVariant ...variants) {
+    public static <E extends Enum<E>> List<ResourceAlias> folder(Class<E> enumClass, String path, String url, ResourceVariant... variants) {
         List<ResourceAlias> aliasFinal = new ArrayList<>();
 
         for (E enumConst : enumClass.getEnumConstants()) {
@@ -54,19 +54,22 @@ public class ResourceAlias {
         return aliasFinal;
     }
 
-    
-    public List<ResourceAlias> variant(ResourceVariant ...variants)
-    {   
+    public List<ResourceAlias> variant(ResourceVariant... variants) {
         List<ResourceAlias> alias = new ArrayList<>();
-        for (ResourceVariant variant : variants) {
-            alias.add(new ResourceAlias(this, variant));
+        for (ResourceVariant vrt : variants) {
+            alias.add(new ResourceAlias(this, vrt));
         }
         return alias;
     }
 
     private ResourceAlias(String name, String path, String url) {
         this.name = name;
-        this.path = new File(path);
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            this.path = new File(classLoader.getResource(path).toURI());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Resource path is invalid: " + path);
+        }
         this.url = URI.create(url);
     }
 
@@ -76,7 +79,6 @@ public class ResourceAlias {
         this.url = base.url;
         this.variant = variant;
     }
-
 
     public String getName() {
         return this.name;
@@ -90,6 +92,12 @@ public class ResourceAlias {
         return this.url;
     }
 
+    public String getFullName() {
+        if (this.variant != null) {
+            return this.name + this.variant.getName();
+        }
+        return this.name;
+    }
 
     public ResourceVariant getVariant() {
         return this.variant;

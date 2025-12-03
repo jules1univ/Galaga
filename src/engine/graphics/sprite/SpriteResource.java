@@ -4,10 +4,11 @@ import java.io.InputStream;
 
 import engine.resource.Resource;
 import engine.resource.ResourceAlias;
+import engine.resource.ResourceCallback;
 
 public final class SpriteResource extends Resource<Sprite> {
 
-    public SpriteResource(ResourceAlias alias, Runnable callback) {
+    public SpriteResource(ResourceAlias alias, ResourceCallback callback) {
         super(alias, callback);
     }
 

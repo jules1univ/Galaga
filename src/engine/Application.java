@@ -1,6 +1,7 @@
 package engine;
 
 public abstract class Application {
+
     private static AppContext<?> context;
 
     protected final int width;

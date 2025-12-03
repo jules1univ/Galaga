@@ -2,8 +2,8 @@ package engine.resource;
 
 public class ResourceVariant {
 
-    private String name;
-    private Object value;
+    private final String name;
+    private final Object value;
 
     public static ResourceVariant of(String name, Object value) {
         return new ResourceVariant(name, value);

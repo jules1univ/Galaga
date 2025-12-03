@@ -5,12 +5,13 @@ import java.io.InputStream;
 
 import engine.resource.Resource;
 import engine.resource.ResourceAlias;
+import engine.resource.ResourceCallback;
 import engine.resource.ResourceVariant;
 import engine.utils.logger.Log;
 
 public final class FontResource extends Resource<Font> {
 
-    public FontResource(ResourceAlias alias, Runnable callback) {
+    public FontResource(ResourceAlias alias, ResourceCallback callback) {
         super(alias, callback);
     }
 

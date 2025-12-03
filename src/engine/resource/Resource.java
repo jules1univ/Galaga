@@ -12,10 +12,10 @@ public abstract class Resource<ResourceData> {
     protected final ResourceAlias alias;
     protected ResourceData data;
 
-    protected Runnable callback;
+    protected ResourceCallback callback;
     protected boolean loaded;
 
-    public Resource(ResourceAlias alias, Runnable callback) {
+    public Resource(ResourceAlias alias, ResourceCallback callback) {
         this.alias = alias;
         this.data = null;
         this.loaded = false;
@@ -26,31 +26,36 @@ public abstract class Resource<ResourceData> {
         this.loaded = true;
         this.data = d;
         if (this.callback != null) {
-            this.callback.run();
+            this.callback.run(this.alias.getVariant());
         }
     }
 
     protected final InputStream getResourceData() {
-        if(Cache.exists(this.alias.getName()))
+        if(Cache.exists(this.alias.getFullName()))
         {
             Log.message("Resource '"+ this.alias.getName() + "' found in cache.");
-            return Cache.load(this.alias.getName());
+            return Cache.load(this.alias.getFullName());
         }
 
         File file = this.alias.getPath();
         if (file.exists()) {
             try {
-                Log.message("Resource '"+ this.alias.getName() + "' found : " + file);
+                Log.message("Resource '"+ this.alias.getName() + "' found in local file system.");
                 return new FileInputStream(file);
             } catch (Exception e) {
-                Log.error("Resource file loading failed: " + e.getMessage());
+                Log.error("Resource '"+this.alias.getName() +"'file loading failed: " + e.getMessage());
             }
         }
 
+
         URI url = this.alias.getUrl();
+        if(url.toString().isEmpty()) {
+            Log.error("Resource '"+ this.alias.getName() + "' has no url to load from.");
+            return null;
+        }
         try{
             InputStream in = url.toURL().openStream();
-            Cache.save(this.alias.getName(), in);
+            Cache.save(this.alias.getFullName(), in);
             return url.toURL().openStream();
         }catch(Exception e) {
             Log.error("Resource url loading failed: " + e.getMessage());

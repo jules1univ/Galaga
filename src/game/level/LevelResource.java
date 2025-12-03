@@ -4,10 +4,11 @@ import java.io.InputStream;
 
 import engine.resource.Resource;
 import engine.resource.ResourceAlias;
+import engine.resource.ResourceCallback;
 
 public class LevelResource extends Resource<Level>{
 
-    public LevelResource(ResourceAlias alias, Runnable callback) {
+    public LevelResource(ResourceAlias alias, ResourceCallback callback) {
         super(alias, callback);
     }
 

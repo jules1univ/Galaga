@@ -2,11 +2,9 @@ package engine;
 
 import engine.utils.Time;
 import engine.utils.logger.Log;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-
 import javax.swing.JPanel;
 
 public final class AppPanel extends JPanel implements Runnable {

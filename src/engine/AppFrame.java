@@ -2,13 +2,12 @@ package engine;
 
 import engine.graphics.Renderer;
 import engine.input.InputKeyListener;
-
-import javax.swing.JFrame;
 import java.awt.Dimension;
+import javax.swing.JFrame;
 
 public final class AppFrame extends JFrame {
-    private AppPanel panel;
-    private Renderer renderer;
+    private final AppPanel panel;
+    private final Renderer renderer;
     private InputKeyListener input;
 
     public AppFrame(Application app) {
