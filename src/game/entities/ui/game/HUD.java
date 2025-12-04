@@ -30,9 +30,11 @@ public class HUD extends UIElement {
         this.textFont = Galaga.getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_TEXT);
 
         int margin = 20;
-        this.fps = new Text("FPS: 0", Position.of(this.size.getWidth() - margin, this.size.getHeight()),
+        this.fps = new Text("", Position.of(this.size.getWidth() - margin, this.size.getHeight()),
                 Color.WHITE, this.textFont);
-        this.fps.setFixSize("FPS: 0.00", true);
+        
+        // hack fix to avoid resizing when fps change
+        this.fps.setFixSize("FPS: 0.0000", true);
         this.fps.setCenter(TextPosition.END, TextPosition.CENTER);
 
         this.score = new Text("SCORE: 0", Position.of(this.size.getWidth()/2, this.size.getHeight()), Color.WHITE, this.textFont);
