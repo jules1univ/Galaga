@@ -74,8 +74,8 @@ public final class Renderer {
         this.g.drawString(text, position.getIntX(), position.getIntY());     
 
         // DEBUG TEXT BOX
-        Size size = this.getTextSize(text, font);
-        this.g.drawRect(position.getIntX(), position.getIntY() - size.getIntHeight(), size.getIntWidth(), size.getIntHeight());
+        // Size size = this.getTextSize(text, font);
+        // this.g.drawRect(position.getIntX(), position.getIntY() - size.getIntHeight(), size.getIntWidth(), size.getIntHeight());
         return this;
     }
 

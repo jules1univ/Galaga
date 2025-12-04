@@ -35,15 +35,14 @@ public class Config {
         public static final Position POSITION_ENEMY_LEFT = Position.of(0.f, 600.f);
         public static final Position POSITION_ENEMY_RIGHT = Position.of(700.f, 600.f);
 
-        public static final String VARIANT_FONT_DEFAULT = "text";
+        public static final String VARIANT_FONT_TEXT = "text";
         public static final String VARIANT_FONT_LARGE = "large";
         public static final String VARIANT_FONT_XLARGE = "xlarge";
 
         public static final List<ResourceAlias> DEFAULT_FONT = ResourceAlias.file(
                         "font",
                         "resources/fonts/default.ttf",
-                        "https://st.1001fonts.net/download/font/bytebounce.medium.ttf").variant(
-                                        ResourceVariant.of(Config.VARIANT_FONT_DEFAULT, Config.SIZE_FONT_TEXT),
+                        "https://st.1001fonts.net/download/font/bytebounce.medium.ttf").variant(ResourceVariant.of(Config.VARIANT_FONT_TEXT, Config.SIZE_FONT_TEXT),
                                         ResourceVariant.of(Config.VARIANT_FONT_LARGE, Config.SIZE_FONT_LARGE),
                                         ResourceVariant.of(Config.VARIANT_FONT_XLARGE, Config.SIZE_FONT_XLARGE));
 

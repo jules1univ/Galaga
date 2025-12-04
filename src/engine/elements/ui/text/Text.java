@@ -11,7 +11,9 @@ public final class Text extends UIElement {
     private Font font;
     private Color color;
     private String text;
+
     private Position initial;
+    private boolean fixedSize = false;
 
     private TextPosition horizontal;
     private TextPosition vertical;
@@ -27,6 +29,11 @@ public final class Text extends UIElement {
         this.color = color;
         this.horizontal = TextPosition.BEGIN;
         this.vertical = TextPosition.BEGIN;
+    }
+
+    public void setFixSize(String text, boolean enable) {
+        this.setText(text);
+        this.fixedSize = enable;
     }
 
     @Override
@@ -65,11 +72,11 @@ public final class Text extends UIElement {
     }
 
     private void updateText() {
-        this.size = Application.getContext().getRenderer().getTextSize(this.text, this.font);
+        if (!this.fixedSize) {
+            this.size = Application.getContext().getRenderer().getTextSize(this.text, this.font);
+        }
 
         switch (this.horizontal) {
-            case BEGIN ->
-                this.position.setX(this.initial.getX() + this.size.getWidth());
             case CENTER ->
                 this.position.setX(this.initial.getX() - this.size.getWidth() / 2);
             case END ->
@@ -79,10 +86,8 @@ public final class Text extends UIElement {
         }
 
         switch (this.vertical) {
-            case BEGIN ->
-                this.position.setY(this.initial.getY() - this.size.getHeight());
             case CENTER ->
-                this.position.setY(this.initial.getY() + this.size.getHeight()/2);
+                this.position.setY(this.initial.getY() + this.size.getHeight() / 2);
             case END ->
                 this.position.setY(this.initial.getY() + this.size.getHeight());
             default ->

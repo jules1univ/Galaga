@@ -177,7 +177,6 @@ public class Galaga extends Application {
         this.sky.draw();
         if (this.menu.isVisible()) {
             this.menu.draw();
-            getContext().getRenderer().drawCross(Color.RED);
             return;
         }
 
