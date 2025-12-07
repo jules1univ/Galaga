@@ -52,7 +52,7 @@ public class Menu extends UIElement {
             this.gameMode.prev();
         } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
             this.gameMode.next();
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER, KeyEvent.VK_SPACE)) {
             // TODO Select mode (Multiplayer/Solo)
             this.visible = false;
         }

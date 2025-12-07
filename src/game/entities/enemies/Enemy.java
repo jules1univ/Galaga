@@ -2,6 +2,7 @@ package game.entities.enemies;
 
 import engine.elements.entity.SpriteEntity;
 import engine.utils.Position;
+import engine.utils.logger.Log;
 import game.Config;
 import game.Galaga;
 
@@ -13,7 +14,7 @@ public abstract class Enemy extends SpriteEntity {
     protected final EnemyType type;
     protected final Position lock;
 
-    private int index;
+    protected int index;
     private float indexTimer;
 
     protected EnemyState state;
@@ -56,7 +57,6 @@ public abstract class Enemy extends SpriteEntity {
 
         this.position.moveTo(this.lock, scaledSpeed);        
         this.angle = this.lock.angleTo(this.position) + 90.f;
-
         if (this.isInLockPosition()) {
             this.angle = 0.f;
             this.position = this.lock.copy();
@@ -77,16 +77,18 @@ public abstract class Enemy extends SpriteEntity {
 
     @Override
     public final void update(double dt) {
+        if(this.index == 0 && this.type == EnemyType.BEE)
+        {
+                Log.message(this.index + " " + this.state);
+        }
         switch (this.state) {
             case ENTER_LEVEL -> {
-                if(this.index == Config.POSITION_ENEMY_INDEX_NOTSET)
-                {
+                if (this.index == Config.POSITION_ENEMY_INDEX_NOTSET) {
                     break;
                 }
-                if(this.indexTimer < this.index * Config.SPEED_ENEMY_ENTER_DELAY)
-                {
-                    this.indexTimer += (float)dt;
-                }else{
+                if (this.indexTimer < this.index * Config.SPEED_ENEMY_ENTER_DELAY) {
+                    this.indexTimer += (float) dt;
+                } else {
                     this.indexTimer = 0;
                     this.state = EnemyState.RETURNING;
                 }
@@ -102,10 +104,9 @@ public abstract class Enemy extends SpriteEntity {
                     break;
                 }
 
-                if(this.indexTimer < this.index * Config.SPEED_ENEMY_UNLOCK_DELAY)
-                {
-                    this.indexTimer += (float)dt;
-                }else{
+                if (this.indexTimer < this.index * Config.SPEED_ENEMY_UNLOCK_DELAY) {
+                    this.indexTimer += (float) dt;
+                } else {
                     this.indexTimer = 0;
                     this.state = EnemyState.ATTACKING;
                 }

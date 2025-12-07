@@ -13,7 +13,7 @@ public class Config {
 
         public static final int PLAYER_INITIAL_LIFE = 3;
 
-        public static final float SPRITE_SCALE_DEFAULT = 3.f;
+        public static final float SPRITE_SCALE_DEFAULT = 2.5f;
         public static final float SPRITE_SCALE_ICON = 1.5f;
 
         public static final float HEIGHT_HUD = 50.f;
@@ -22,8 +22,9 @@ public class Config {
         public static final long SPEED_LOADING = 0;
         public static final float SPEED_PLAYER = 600.f;
         public static final float SPEED_STAR = 200.0f;
-        public static final float SPEED_ENEMY_FACTOR = 1000.f;
-        public static final float SPEED_ENEMY_UNLOCK_DELAY = 5.f;
+        public static final float SPEED_BULLET = 800.f;
+        public static final float SPEED_ENEMY_FACTOR = 500.f;
+        public static final float SPEED_ENEMY_UNLOCK_DELAY = 50.f;
         public static final float SPEED_ENEMY_ENTER_DELAY = 0.1f;
 
         public static final float TIME_BLINKSTAR_MAX = 10.0f;
@@ -36,8 +37,19 @@ public class Config {
 
         public static final int POSITION_ENEMY_INDEX_NOTSET = -1;
         public static final float POSITION_LOCK_THRESHOLD = 1.f;
-        public static final Position POSITION_ENEMY_LEFT = Position.of(0.f, 600.f);
-        public static final Position POSITION_ENEMY_RIGHT = Position.of(700.f, 600.f);
+        public static final float POSITION_NEAR_THRESHOLD = 10.f;
+        
+        
+        public static final Position POSITION_ENEMY_LEFT = Position.of(-100.f, 600.f);
+        public static final Position POSITION_ENEMY_RIGHT = Position.of(800.f, 600.f);
+        public static final List<Position> POSITION_ZIG_ZAG = List.of(
+                        Position.of(50.f, 350.f),
+                        Position.of(600.f, 400.f),
+                        Position.of(50.f, 450.f),
+                        Position.of(600.f, 500.f),
+                        Position.of(50.f, 550.f),
+                        Position.of(50.f, 600.f)
+                );
 
         public static final String VARIANT_FONT_TEXT = "text";
         public static final String VARIANT_FONT_LARGE = "large";

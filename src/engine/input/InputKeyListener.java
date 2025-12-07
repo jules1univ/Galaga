@@ -5,6 +5,7 @@ import java.awt.event.KeyListener;
 import java.util.HashSet;
 
 public final class InputKeyListener implements KeyListener {
+
     private final HashSet<Integer> keysDown = new HashSet<>();
     private StringBuilder sb = new StringBuilder();
     private boolean recordTyping = false;
@@ -16,10 +17,12 @@ public final class InputKeyListener implements KeyListener {
         return keysDown.contains(key);
     }
 
-    public boolean isKeyPressed(int key) {
-        if (keysDown.contains(key)) {
-            keysDown.remove(key);
-            return true;
+    public boolean isKeyPressed(int... keys) {
+        for (int key : keys) {
+            if (keysDown.contains(key)) {
+                keysDown.remove(key);
+                return true;
+            }
         }
         return false;
     }
