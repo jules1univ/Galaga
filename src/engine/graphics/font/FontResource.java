@@ -1,16 +1,16 @@
 package engine.graphics.font;
 
-import java.awt.Font;
-import java.io.InputStream;
-
 import engine.resource.Resource;
 import engine.resource.ResourceAlias;
 import engine.resource.ResourceCallback;
 import engine.resource.ResourceVariant;
 import engine.utils.logger.Log;
+import java.awt.Font;
+import java.io.InputStream;
 
 public final class FontResource extends Resource<Font> {
-
+    public static final String NAME = "font";
+    
     public FontResource(ResourceAlias alias, ResourceCallback callback) {
         super(alias, callback);
     }

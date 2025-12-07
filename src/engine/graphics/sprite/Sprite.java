@@ -1,5 +1,7 @@
 package engine.graphics.sprite;
 
+import engine.utils.Size;
+import engine.utils.logger.Log;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -8,12 +10,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import engine.utils.Size;
-import engine.utils.logger.Log;
-
 public final class Sprite {
 
-    private BufferedImage image;
+    private final BufferedImage image;
 
     private Sprite(BufferedImage image) {
         this.image = image;

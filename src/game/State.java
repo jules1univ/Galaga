@@ -1,10 +1,14 @@
 package game;
 
+import game.entities.bullet.BulletManager;
 import game.entities.player.Player;
+import game.level.Level;
 
 public class State {
     public int bestScore;
-    public Player player;
+    public int score;
 
-    // TODO: enemies, bullets should in state
+    public Level level;
+    public Player player;
+    public BulletManager bullets;
 }

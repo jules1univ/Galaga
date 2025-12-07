@@ -26,9 +26,10 @@ public class ResourceAlias {
         return alias;
     }
 
-    public static <E extends Enum<E>> List<ResourceAlias> folder(String[] names, String path, String url) {
+    public static <E extends Enum<E>> List<ResourceAlias> folder(String prefix, int from, int to, String path, String url) {
         List<ResourceAlias> alias = new ArrayList<>();
-        for (String name : names) {
+        for (int i = from; i <= to; i++) {
+            String name = String.format(prefix, i);
             alias.add(ResourceAlias.file(name, String.format(path, name), String.format(url, name)));
         }
         return alias;

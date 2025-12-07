@@ -32,7 +32,7 @@ public class Menu extends UIElement {
                 Galaga.getContext().getFrame().getWidth(),
                 Galaga.getContext().getFrame().getHeight());
 
-        this.titleFont = Galaga.getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_XLARGE);
+        this.titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_XLARGE);
         this.gameMode = new TextSelect(
                 new String[]{"SOLO", "MULTIPLAYER"},
                 0,

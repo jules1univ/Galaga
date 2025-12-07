@@ -2,7 +2,6 @@ package game.entities.enemies;
 
 import engine.elements.entity.SpriteEntity;
 import engine.utils.Position;
-import engine.utils.logger.Log;
 import game.Config;
 import game.Galaga;
 
@@ -55,7 +54,7 @@ public abstract class Enemy extends SpriteEntity {
         float distance = this.position.distance(this.lock);
         float scaledSpeed = this.formationSpeed * (float) dt + distance * (float) dt;
 
-        this.position.moveTo(this.lock, scaledSpeed);        
+        this.position.moveTo(this.lock, scaledSpeed);
         this.angle = this.lock.angleTo(this.position) + 90.f;
         if (this.isInLockPosition()) {
             this.angle = 0.f;
@@ -77,10 +76,7 @@ public abstract class Enemy extends SpriteEntity {
 
     @Override
     public final void update(double dt) {
-        if(this.index == 0 && this.type == EnemyType.BEE)
-        {
-                Log.message(this.index + " " + this.state);
-        }
+
         switch (this.state) {
             case ENTER_LEVEL -> {
                 if (this.index == Config.POSITION_ENEMY_INDEX_NOTSET) {

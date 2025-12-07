@@ -1,11 +1,10 @@
 package game.entities.player;
 
-import java.awt.event.KeyEvent;
-
 import engine.elements.entity.SpriteEntity;
 import engine.utils.Position;
 import game.Config;
 import game.Galaga;
+import java.awt.event.KeyEvent;
 
 public final class Player extends SpriteEntity {
 
@@ -14,19 +13,14 @@ public final class Player extends SpriteEntity {
     private int medals;
 
     public Player() {
-        super();
-        this.life = Config.PLAYER_INITIAL_LIFE;
-
-        // TODO: add medals when level is completed
-        this.medals = 0;
-
-        // TODO: when the method player.destroyEnemy(Enemy) is called add score
-        this.score = 0;
-        
+        super();      
         this.angle = 0.f;
         this.scale = Config.SPRITE_SCALE_DEFAULT;
-
-        // TODO: create a ship animation when a new level begin
+    
+    
+        this.life = Config.PLAYER_INITIAL_LIFE;
+        this.medals = 0;
+        this.score = 0;  
     }
 
     public int getLife() {
@@ -43,7 +37,7 @@ public final class Player extends SpriteEntity {
     
     @Override
     public boolean init() {
-        this.sprite = Galaga.getContext().getResource().get(Config.SHIP_SPRITE);
+        this.sprite = Galaga.getContext().getResource().get(Config.SPRITE_SHIP);
         if (this.sprite == null) {
             return false;
         }
@@ -76,7 +70,7 @@ public final class Player extends SpriteEntity {
         );
 
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_SPACE)) {
-            // TODO: shoot bullets
+            Galaga.getContext().getState().bullets.shoot(this);
         }
     }
 

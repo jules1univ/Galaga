@@ -85,6 +85,20 @@ public final class Renderer {
         return this;
     }
 
+    public Renderer drawRect(Position position, Size size, Color color, float angle) {
+        this.g.setColor(color);
+
+        double cx = position.getX() + size.getWidth() / 2;
+        double cy = position.getY() + size.getHeight() / 2;
+
+        AffineTransform old = this.g.getTransform();
+        this.g.rotate(Math.toRadians(angle), cx, cy);
+        this.drawRect(position, size, color);
+        this.g.setTransform(old);
+        
+        return this;
+    }
+
     public Renderer drawSprite(Sprite sprite, Position position, float scale) {
         if (sprite == null || sprite.getImage() == null) {
             Log.warning("Attempted to draw null sprite.");

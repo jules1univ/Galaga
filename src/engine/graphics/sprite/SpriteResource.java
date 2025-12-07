@@ -1,13 +1,13 @@
 package engine.graphics.sprite;
 
-import java.io.InputStream;
-
 import engine.resource.Resource;
 import engine.resource.ResourceAlias;
 import engine.resource.ResourceCallback;
+import java.io.InputStream;
 
 public final class SpriteResource extends Resource<Sprite> {
-
+    public static final String NAME = "sprite";
+    
     public SpriteResource(ResourceAlias alias, ResourceCallback callback) {
         super(alias, callback);
     }

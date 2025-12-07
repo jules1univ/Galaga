@@ -1,13 +1,13 @@
 package game.level;
 
-import java.io.InputStream;
-
 import engine.resource.Resource;
 import engine.resource.ResourceAlias;
 import engine.resource.ResourceCallback;
+import java.io.InputStream;
 
 public class LevelResource extends Resource<Level>{
-
+    public static final String NAME = "level";
+    
     public LevelResource(ResourceAlias alias, ResourceCallback callback) {
         super(alias, callback);
     }

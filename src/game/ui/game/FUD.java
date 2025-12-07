@@ -1,8 +1,5 @@
 package game.ui.game;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import engine.elements.ui.UIElement;
 import engine.elements.ui.icon.Icon;
 import engine.elements.ui.icon.IconGroup;
@@ -11,6 +8,8 @@ import engine.utils.Position;
 import engine.utils.Size;
 import game.Config;
 import game.Galaga;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FUD extends UIElement {
 
@@ -39,7 +38,7 @@ public class FUD extends UIElement {
         this.size = Size.of(Galaga.getContext().getFrame().getWidth(), Config.HEIGHT_FUD);
         this.position = Position.of(0, Galaga.getContext().getFrame().getHeight() - this.size.getHeight());
 
-        this.ship = Galaga.getContext().getResource().get(Config.SHIP_SPRITE);
+        this.ship = Galaga.getContext().getResource().get(Config.SPRITE_SHIP);
         if(this.ship == null) {
             return false;
         }
@@ -51,7 +50,7 @@ public class FUD extends UIElement {
             return false;
         }
 
-        this.medal = Galaga.getContext().getResource().get(Config.MEDAL_SPRITE);
+        this.medal = Galaga.getContext().getResource().get(Config.SPRITE_MEDAL);
         if(this.medal == null) {
             return false;
         }

@@ -10,15 +10,14 @@ import engine.resource.Resource;
 import engine.resource.ResourceManager;
 import engine.resource.ResourceVariant;
 import engine.utils.Position;
+import game.entities.bullet.BulletManager;
 import game.entities.enemies.Enemy;
 import game.entities.player.Player;
 import game.entities.sky.Sky;
-import game.level.Level;
 import game.level.LevelResource;
 import game.ui.game.FUD;
 import game.ui.game.HUD;
 import game.ui.menu.Menu;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -29,9 +28,8 @@ public class Galaga extends Application {
 
     private Sky sky;
     private Player player;
+    private BulletManager bullets;
     private List<Enemy> enemies;
-    // TODO: add bullets
-    // TODO: add particles & create a particle system in engine
 
     private FUD fud;
     private HUD hud;
@@ -60,13 +58,16 @@ public class Galaga extends Application {
             return false;
         }
 
-        Level level = getContext().getResource().get(Config.LEVEL_1);
-        this.enemies = level.getEnemies();
+        getContext().getState().level = getContext().getResource().get(Config.LEVELS.get(0));
+        if (getContext().getState().level == null) {
+            return false;
+        }
+        this.enemies = getContext().getState().level.getEnemies();
         for (Enemy enemy : this.enemies) {
             if (!enemy.init()) {
                 return false;
             }
-        }
+        }        
 
         this.menu = new Menu();
         if (!this.menu.init()) {
@@ -83,7 +84,7 @@ public class Galaga extends Application {
             return false;
         }
 
-        Sprite medal = Galaga.getContext().getResource().get(Config.MEDAL_SPRITE);
+        Sprite medal = Galaga.getContext().getResource().get(Config.SPRITE_MEDAL);
         getContext().getFrame().setIconImage(medal.getImage());
         this.loading = false;
         return true;
@@ -103,21 +104,20 @@ public class Galaga extends Application {
         this.loadingText.setCenter(TextPosition.CENTER, TextPosition.CENTER);
 
         ResourceManager rm = getContext().getResource();
-        rm.register("levels", LevelResource.class);
+        rm.register(LevelResource.NAME, LevelResource.class);
 
-        rm.add(Config.DEFAULT_FONT, "font", (ResourceVariant variant, Resource<?> rawRes) -> {
+        rm.add(Config.FONTS, "font", (ResourceVariant variant, Resource<?> rawRes) -> {
             if (variant != null && variant.getName().equals(Config.VARIANT_FONT_LARGE)) {
                 FontResource font = (FontResource) rawRes;
                 this.loadingText.setFont(font.getData());
             }
         });
 
-        rm.add(Config.SHIP_SPRITE, "sprite");
-        rm.add(Config.MEDAL_SPRITE, "sprite");
-        rm.add(Config.ENEMY_SPRITES, "sprite");
+        rm.add(Config.SPRITE_SHIP, "sprite");
+        rm.add(Config.SPRITE_MEDAL, "sprite");
+        rm.add(Config.SPRITES_ENEMY, "sprite");
 
-        rm.add(Config.LEVEL_1, "levels");
-        rm.add(Config.LEVEL_2, "levels");
+        rm.add(Config.LEVELS, "level");
 
         this.sky = new Sky(Config.SIZE_SKY_GRID);
         if (!this.sky.init()) {
@@ -126,6 +126,9 @@ public class Galaga extends Application {
 
         getContext().getState().player = new Player();
         this.player = getContext().getState().player;
+
+        getContext().getState().bullets = new BulletManager();
+        this.bullets = getContext().getState().bullets;
 
         rm.load(() -> {
             if (!this.load()) {
@@ -137,6 +140,10 @@ public class Galaga extends Application {
 
     @Override
     protected void update(double dt) {
+        if (getContext().getInput().isKeyDown(KeyEvent.VK_ESCAPE)) {
+            this.stop();
+        }
+
         if (this.loading) {
             this.loadingText.setText(
                     String.format(
@@ -153,16 +160,13 @@ public class Galaga extends Application {
             return;
         }
 
-        this.player.update(dt);
+        this.bullets.update(dt);
 
+        this.player.update(dt);
         for (Enemy enemy : this.enemies) {
             enemy.update(dt);
         }
 
-        // TODO: update bullets & collisions
-        if (getContext().getInput().isKeyDown(KeyEvent.VK_ESCAPE)) {
-            this.stop();
-        }
 
         this.hud.update(dt);
         this.fud.update(dt);
@@ -187,7 +191,7 @@ public class Galaga extends Application {
             enemy.draw();
         }
 
-        // TODO: draw bullets here
+        this.bullets.draw();
         // TODO: display the level name at the beginning
         // TODO: show the new medal earned when a level is completed
         this.hud.draw();

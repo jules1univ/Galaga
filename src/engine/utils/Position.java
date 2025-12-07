@@ -130,10 +130,10 @@ public final class Position {
         return this;
     }
 
-    public Position moveInDirection(float angle, float move) {
-        float angleRad = (float) Math.toRadians(angle);
-        this.x += Math.cos(angleRad) * move;
-        this.y += Math.sin(angleRad) * move;
+    public Position moveTo(float angle, float move) {
+        float rad = (float) Math.toRadians(angle);
+        this.x += Math.cos(rad) * move;
+        this.y += Math.sin(rad) * move;
         return this;
     }
 

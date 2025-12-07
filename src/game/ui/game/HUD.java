@@ -27,7 +27,7 @@ public class HUD extends UIElement {
         this.size = Size.of(Galaga.getContext().getFrame().getWidth(), Config.HEIGHT_HUD);
         this.position = Position.of(0,  0);
 
-        this.textFont = Galaga.getContext().getResource().get(Config.DEFAULT_FONT, Config.VARIANT_FONT_TEXT);
+        this.textFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_TEXT);
 
         int margin = 20;
         this.fps = new Text("", Position.of(this.size.getWidth() - margin, this.size.getHeight()),

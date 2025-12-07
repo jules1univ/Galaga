@@ -20,8 +20,8 @@ public final class AppContext<GameState> {
         this.input = this.frame.getInput();
 
         this.resource = new ResourceManager();
-        this.resource.register("font",FontResource.class);
-        this.resource.register("sprite",SpriteResource.class);
+        this.resource.register(FontResource.NAME,FontResource.class);
+        this.resource.register(SpriteResource.NAME,SpriteResource.class);
     }
 
     public void setState(GameState state) {
