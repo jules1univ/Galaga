@@ -1,14 +1,14 @@
 package engine.utils;
 
-public class AnimatedValue {
+public final class AnimatedValue {
 
+    private final float target;
+    private final float duration;
     private float value;
-    private float target;
-    private double duration;
+    
+    private float time;
 
-    private double time;
-
-    public AnimatedValue(float value, float target, double duration) {
+    public AnimatedValue(float value, float target, float duration) {
         this.value = value;
         this.target = target;
         this.duration = duration;
@@ -33,5 +33,10 @@ public class AnimatedValue {
 
     public boolean isFinished() {
         return this.time >= this.duration;
+    }
+
+    public void reset(float value) {
+        this.value = value;
+        this.time = 0.f;
     }
 }

@@ -1,12 +1,5 @@
 package game.level;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import engine.utils.Position;
 import engine.utils.logger.Log;
 import game.Config;
@@ -16,14 +9,21 @@ import game.entities.enemies.EnemyBee;
 import game.entities.enemies.EnemyButterFly;
 import game.entities.enemies.EnemyMoth;
 import game.entities.enemies.EnemyType;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Level {
-    private String name;
-    private float formationSpeed;
-    private int attackCooldown;
-    private int missileCooldown;
+    private final String name;
+    private final float formationSpeed;
+    private final int attackCooldown;
+    private final int missileCooldown;
 
-    private List<Enemy> enemies = new LinkedList<>();
+    private final List<Enemy> enemies = new LinkedList<>();
 
     public static Level createLevel(InputStream in) {
 
@@ -45,8 +45,14 @@ public class Level {
             }
 
             i++;
+            HashMap<EnemyType, Integer> mapIndex = new HashMap<>();
             while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
-                Enemy enemy = createEnemyFromLine(lines.get(i));
+                Enemy enemy = createEnemyFromLine(lines.get(i), level);
+                
+                mapIndex.putIfAbsent(enemy.getType(), 0);
+                mapIndex.put(enemy.getType(), mapIndex.get(enemy.getType()) + 1);
+                enemy.setIndex(mapIndex.get(enemy.getType()) - 1);
+
                 level.enemies.add(enemy);
                 i++;
             }
@@ -75,7 +81,7 @@ public class Level {
         }
     }
 
-    private static Enemy createEnemyFromLine(String line) {
+    private static Enemy createEnemyFromLine(String line, Level level) {
         String[] data = line.split(" ");
         if (data.length < 6) {
             Log.error("Level enemy data is invalid: " + line);
@@ -91,28 +97,27 @@ public class Level {
             
             Position lock = Position.of(lockX, lockY);
             
-            boolean leftAnimation = lockXPercent < 0.5f;
             // we no longer use size for enemies => sprite have their own fixed size
             // float size = Float.parseFloat(data[3]);
 
-
             int value = Integer.parseInt(data[4]);
-
-            // TODO: turn this into a constant
             float speed = Float.parseFloat(data[5]) * Config.SPEED_ENEMY_FACTOR;
 
             EnemyType type = EnemyType.valueOf(enemyType.toUpperCase());
-
             switch (type) {
-                case EnemyType.BEE:
-                    return new EnemyBee(leftAnimation, lock, value, speed);
-                case EnemyType.BUTTERFLY:
-                    return new EnemyButterFly(leftAnimation,lock, value, speed);
-                case EnemyType.MOTH:
-                    return new EnemyMoth(leftAnimation,lock, value, speed);
-                default:
+                case EnemyType.BEE -> {
+                    return new EnemyBee(lock, value, speed, level.getFormationSpeed(), level.getMissileCooldown());
+                }
+                case EnemyType.BUTTERFLY -> {
+                    return new EnemyButterFly(lock, value, speed, level.getFormationSpeed(), level.getMissileCooldown());
+                }
+                case EnemyType.MOTH -> {
+                    return new EnemyMoth(lock, value, speed, level.getFormationSpeed(), level.getAttackCooldown());
+                }
+                default -> {
                     Log.error("Unknown enemy type: " + enemyType);
                     return null;
+                }
             }
         } catch (Exception e) {
             Log.error("Level enemy parsing failed: " + e.getMessage());

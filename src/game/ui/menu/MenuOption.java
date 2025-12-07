@@ -1,4 +1,4 @@
-package game.entities.ui.menu;
+package game.ui.menu;
 
 public enum MenuOption {
     GAMEMODE,

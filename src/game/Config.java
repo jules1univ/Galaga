@@ -23,6 +23,8 @@ public class Config {
         public static final float SPEED_PLAYER = 600.f;
         public static final float SPEED_STAR = 200.0f;
         public static final float SPEED_ENEMY_FACTOR = 1000.f;
+        public static final float SPEED_ENEMY_UNLOCK_DELAY = 5.f;
+        public static final float SPEED_ENEMY_ENTER_DELAY = 0.1f;
 
         public static final float TIME_BLINKSTAR_MAX = 10.0f;
         public static final float TIME_BLINKSTAR_MIN = 3.0f;
@@ -32,6 +34,8 @@ public class Config {
         public static final int SIZE_FONT_LARGE = 32;
         public static final int SIZE_FONT_TEXT = 24;
 
+        public static final int POSITION_ENEMY_INDEX_NOTSET = -1;
+        public static final float POSITION_LOCK_THRESHOLD = 1.f;
         public static final Position POSITION_ENEMY_LEFT = Position.of(0.f, 600.f);
         public static final Position POSITION_ENEMY_RIGHT = Position.of(700.f, 600.f);
 

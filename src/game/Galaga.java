@@ -13,11 +13,12 @@ import engine.utils.Position;
 import game.entities.enemies.Enemy;
 import game.entities.player.Player;
 import game.entities.sky.Sky;
-import game.entities.ui.game.FUD;
-import game.entities.ui.game.HUD;
-import game.entities.ui.menu.Menu;
 import game.level.Level;
 import game.level.LevelResource;
+import game.ui.game.FUD;
+import game.ui.game.HUD;
+import game.ui.menu.Menu;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;

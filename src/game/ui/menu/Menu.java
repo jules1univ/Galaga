@@ -1,4 +1,4 @@
-package game.entities.ui.menu;
+package game.ui.menu;
 
 import engine.elements.ui.UIElement;
 import engine.elements.ui.select.TextSelect;

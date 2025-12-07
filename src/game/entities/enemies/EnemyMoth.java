@@ -4,13 +4,12 @@ import engine.utils.Position;
 
 public class EnemyMoth extends Enemy {
 
-    public EnemyMoth(boolean leftAnimation, Position lock, int value, float speed) {
-        super(EnemyType.MOTH, leftAnimation, lock, value, speed);
-        this.angle = 0;
+    public EnemyMoth(Position lock, int value, float speed, float formationSpeed, int attackCooldown) {
+        super(EnemyType.MOTH, lock, value, speed, formationSpeed);
     }
 
     @Override
-    public void update(double dt) {
+    protected void updateAction(double dt) {
     }
 
 }

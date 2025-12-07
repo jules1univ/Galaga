@@ -7,39 +7,66 @@ import game.Galaga;
 
 public abstract class Enemy extends SpriteEntity {
 
-    protected float speed;
-    protected int value;
+    protected final float speed;
+    protected final float formationSpeed;
+    protected final int value;
     protected final EnemyType type;
-    protected final boolean leftAnimation;
+    protected final Position lock;
 
-    protected Position lock;
-    protected boolean inLock;
+    private int index;
+    private float indexTimer;
 
-    public Enemy(EnemyType type, boolean leftAnimation, Position lock, int value,
-            float speed) {
+    protected EnemyState state;
+
+    public Enemy(EnemyType type, Position lock, int value, float speed, float formationSpeed) {
         super();
         this.type = type;
 
-        this.angle = 180.f;
+        this.angle = 0.f;
         this.scale = Config.SPRITE_SCALE_DEFAULT;
 
-        this.position = leftAnimation ? Config.POSITION_ENEMY_LEFT.copy() : Config.POSITION_ENEMY_RIGHT.copy();
-
+        boolean isLeft = lock.getX() < Config.WINDOW_WIDTH / 2.f;
+        this.position = isLeft ? Config.POSITION_ENEMY_LEFT.copy() : Config.POSITION_ENEMY_RIGHT.copy();
         this.lock = lock.copy();
-        this.leftAnimation = leftAnimation;
-        this.inLock = false;
 
         this.speed = speed;
+        this.formationSpeed = formationSpeed;
         this.value = value;
 
-        // TODO: create an animation system for enemies
-        // split the enemies in 2 groupes (left/right) and animate them accordingly
-        // animate them until they reach their lock position
-        // for every new level
+        this.index = Config.POSITION_ENEMY_INDEX_NOTSET;
+        this.state = EnemyState.ENTER_LEVEL;
     }
 
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public EnemyType getType() {
+        return type;
+    }
+
+    private boolean isInLockPosition() {
+        float distance = this.position.distance(this.lock);
+        return distance <= Config.POSITION_LOCK_THRESHOLD * 10;
+    }
+
+    private void animateToLockPosition(double dt) {
+        float distance = this.position.distance(this.lock);
+        float scaledSpeed = this.formationSpeed * (float) dt + distance * (float) dt;
+
+        this.position.moveTo(this.lock, scaledSpeed);        
+        this.angle = this.lock.angleTo(this.position) + 90.f;
+
+        if (this.isInLockPosition()) {
+            this.angle = 0.f;
+            this.position = this.lock.copy();
+        }
+    }
+
+    protected abstract void updateAction(double dt);
+
     @Override
-    public boolean init() {
+    public final boolean init() {
         this.sprite = Galaga.getContext().getResource().get(this.type);
         if (this.sprite == null) {
             return false;
@@ -49,7 +76,48 @@ public abstract class Enemy extends SpriteEntity {
     }
 
     @Override
-    public void draw() {
+    public final void update(double dt) {
+        switch (this.state) {
+            case ENTER_LEVEL -> {
+                if(this.index == Config.POSITION_ENEMY_INDEX_NOTSET)
+                {
+                    break;
+                }
+                if(this.indexTimer < this.index * Config.SPEED_ENEMY_ENTER_DELAY)
+                {
+                    this.indexTimer += (float)dt;
+                }else{
+                    this.indexTimer = 0;
+                    this.state = EnemyState.RETURNING;
+                }
+            }
+            case RETURNING -> {
+                this.animateToLockPosition(dt);
+                if (this.isInLockPosition()) {
+                    this.state = EnemyState.FORMATION;
+                }
+            }
+            case FORMATION -> {
+                if (this.index == Config.POSITION_ENEMY_INDEX_NOTSET) {
+                    break;
+                }
+
+                if(this.indexTimer < this.index * Config.SPEED_ENEMY_UNLOCK_DELAY)
+                {
+                    this.indexTimer += (float)dt;
+                }else{
+                    this.indexTimer = 0;
+                    this.state = EnemyState.ATTACKING;
+                }
+            }
+            case ATTACKING -> {
+                this.updateAction(dt);
+            }
+        }
+    }
+
+    @Override
+    public final void draw() {
         super.draw();
     }
 }

@@ -1,4 +1,4 @@
-package game.entities.ui.game;
+package game.ui.game;
 
 import engine.elements.ui.UIElement;
 import engine.elements.ui.text.Text;

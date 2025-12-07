@@ -105,9 +105,7 @@ public final class Position {
     }
 
     public float angleTo(Position other) {
-        float dx = other.x - this.x;
-        float dy = other.y - this.y;
-        return (float) Math.toDegrees(Math.atan2(dy, dx));
+        return (float)Math.toDegrees((float)Math.atan2(this.y - other.y, this.x - other.x));
     }
 
     public Position normalize() {
@@ -123,6 +121,12 @@ public final class Position {
     public Position negate() {
         this.x = -this.x;
         this.y = -this.y;
+        return this;
+    }
+
+    public Position abs() {
+        this.x = Math.abs(this.x);
+        this.y = Math.abs(this.y);
         return this;
     }
 

@@ -1,4 +1,4 @@
-package game.entities.ui.game;
+package game.ui.game;
 
 import java.util.ArrayList;
 import java.util.List;
