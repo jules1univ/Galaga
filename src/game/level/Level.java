@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Level {
+
     private final String name;
     private final float formationSpeed;
     private final float attackCooldown;
@@ -48,7 +49,7 @@ public class Level {
             HashMap<EnemyType, Integer> mapIndex = new HashMap<>();
             while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
                 Enemy enemy = createEnemyFromLine(lines.get(i), level);
-                
+
                 mapIndex.putIfAbsent(enemy.getType(), 1);
                 mapIndex.put(enemy.getType(), mapIndex.get(enemy.getType()) + 1);
                 enemy.setIndex(mapIndex.get(enemy.getType()) - 1);
@@ -71,8 +72,8 @@ public class Level {
 
         try {
             float formationSpeed = Float.parseFloat(header[1]);
-            float attackCooldown = Integer.parseInt(header[2]) * Config.DELAY_ENEMY_COOLDOWN_FACTOR;
-            float missileCooldown = Integer.parseInt(header[3]) * Config.DELAY_ENEMY_COOLDOWN_FACTOR;
+            float attackCooldown = Integer.parseInt(header[2]) * Config.DELAY_ENEMY_COOLDOWN_FACTOR_ATTACK;
+            float missileCooldown = Integer.parseInt(header[3]) * Config.DELAY_ENEMY_COOLDOWN_FACTOR_MISSILE;
             return new Level(header[0], formationSpeed, attackCooldown, missileCooldown);
         } catch (Exception e) {
             Log.error("Level header parsing failed: " + e.getMessage());
@@ -93,12 +94,11 @@ public class Level {
 
             float lockYPercent = Float.parseFloat(data[2]);
             float lockY = (1.f - lockYPercent) * Galaga.getContext().getFrame().getHeight();
-            
+
             Position lock = Position.of(lockX, lockY);
-            
+
             // we no longer use size for enemies => sprite have their own fixed size
             // float size = Float.parseFloat(data[3]);
-
             int value = Integer.parseInt(data[4]);
             float speed = Float.parseFloat(data[5]) * Config.SPEED_ENEMY_FACTOR;
 

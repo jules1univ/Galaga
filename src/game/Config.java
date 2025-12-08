@@ -30,7 +30,9 @@ public class Config {
     public static final float DELAY_SHOOT_PLAYER = .5f;
     public static final float DELAY_ENEMY_ROUND = 20.f;
     public static final float DELAY_ENEMY_ENTER = 0.1f;
-    public static final float DELAY_ENEMY_COOLDOWN_FACTOR = 0.001f;
+    public static final float DELAY_ENEMY_COOLDOWN_FACTOR_ATTACK = 0.01f;
+    public static final float DELAY_ENEMY_COOLDOWN_FACTOR_MISSILE = 0.001f;
+
 
     public static final float TIME_BLINKSTAR_MAX = 10.0f;
     public static final float TIME_BLINKSTAR_MIN = 3.0f;
