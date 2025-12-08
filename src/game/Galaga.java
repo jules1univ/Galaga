@@ -10,10 +10,12 @@ import engine.resource.Resource;
 import engine.resource.ResourceManager;
 import engine.resource.ResourceVariant;
 import engine.utils.Position;
+import game.entities.bullet.Bullet;
 import game.entities.bullet.BulletManager;
 import game.entities.enemies.Enemy;
 import game.entities.player.Player;
 import game.entities.sky.Sky;
+import game.level.Level;
 import game.level.LevelResource;
 import game.ui.game.FUD;
 import game.ui.game.HUD;
@@ -22,14 +24,17 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Galaga extends Application {
 
     private Sky sky;
     private Player player;
-    private BulletManager bullets;
     private List<Enemy> enemies;
+    private BulletManager bullets;
+    // private ParticlesManager particles;
+    private int levelIndex = -1;
 
     private FUD fud;
     private HUD hud;
@@ -56,21 +61,29 @@ public class Galaga extends Application {
         getContext().setState(new State());
     }
 
+    private boolean loadNextLevel() {
+        this.levelIndex++;
+        getContext().getState().level = getContext().getResource().get(Config.LEVELS.get(this.levelIndex));
+
+        Level level = getContext().getState().level;
+        if (level == null) {
+            return false;
+        }
+        this.enemies = level.getEnemies();
+        for (Enemy enemy : this.enemies) {
+            if (!enemy.init()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private boolean load() {
         if (!this.player.init()) {
             return false;
         }
 
-        getContext().getState().level = getContext().getResource().get(Config.LEVELS.get(0));
-        if (getContext().getState().level == null) {
-            return false;
-        }
-        this.enemies = getContext().getState().level.getEnemies();
-        for (Enemy enemy : this.enemies) {
-            if (!enemy.init()) {
-                return false;
-            }
-        }        
+        this.loadNextLevel();
 
         this.menu = new Menu();
         if (!this.menu.init()) {
@@ -164,12 +177,59 @@ public class Galaga extends Application {
         }
 
         this.bullets.update(dt);
-
         this.player.update(dt);
         for (Enemy enemy : this.enemies) {
             enemy.update(dt);
         }
 
+        if (!this.bullets.isEmpty()) {
+            List<Bullet> removeBullet = new ArrayList<>();
+            for (Bullet bullet : this.bullets) {
+
+                if (bullet.getShooter() == this.player) {
+                    List<Enemy> removeEnemy = new ArrayList<>();
+                    for (Enemy enemy : this.enemies) {
+                        if (enemy.collideWith(bullet)) {
+                            // this.particlesManager.emitExplosion(enemy.getCenter().copy(), Color.ORANGE);
+                            this.player.onKillEnemy(enemy);
+                            removeEnemy.add(enemy);
+                            removeBullet.add(bullet);
+                            continue;
+                        }
+
+                        if (enemy.collideWith(this.player)) {
+                            // TODO: animation on hit
+                            // this.particlesManager.emitExplosion(enemy.getCenter().copy(), Color.ORANGE);
+                            this.player.onHit();
+                            this.player.onKillEnemy(enemy);
+                            removeEnemy.add(enemy);
+                        }
+                    }
+                    this.enemies.removeAll(removeEnemy);
+                } else if (this.player.collideWith(bullet)) {
+                    // TODO: animation on hit
+                    this.player.onHit();
+                    removeBullet.add(bullet);
+                }
+            }
+            this.bullets.removeAll(removeBullet);
+
+            if (this.enemies.isEmpty()) {
+                // TODO: show level complete screen
+                this.loadNextLevel();
+            }
+        } else {
+            for (Enemy enemy : this.enemies) {
+                if (this.player.collideWith(enemy)) {
+                    this.player.onHit();
+                }
+            }
+        }
+
+        if (this.player.isDead()) {
+            // TODO: show game over screen
+            this.menu.setVisible(true);
+        }
 
         this.hud.update(dt);
         this.fud.update(dt);
@@ -198,8 +258,10 @@ public class Galaga extends Application {
         this.hud.draw();
         this.fud.draw();
 
-        //getContext().getRenderer().drawGrid(Config.SIZE_SKY_GRID, Color.WHITE);
-        //getContext().getRenderer().drawCross(Color.RED);
+        if (Application.DEBUG_MODE) {
+            // getContext().getRenderer().drawGrid(Config.SIZE_SKY_GRID, Color.WHITE);
+            // getContext().getRenderer().drawCross(Color.RED);
+        }
     }
 
 }

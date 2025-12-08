@@ -4,8 +4,10 @@ import engine.Application;
 import engine.graphics.sprite.Sprite;
 import engine.utils.Position;
 import engine.utils.Size;
+import java.awt.Color;
 
 public abstract class SpriteEntity extends Entity {
+
     protected Sprite sprite;
     protected float angle;
     protected float scale;
@@ -29,7 +31,6 @@ public abstract class SpriteEntity extends Entity {
     public final Size getScaledSize() {
         return Size.of(this.size, this.scale);
     }
-    
 
     @Override
     public Position getCenter() {
@@ -37,8 +38,19 @@ public abstract class SpriteEntity extends Entity {
     }
 
     @Override
+    public boolean collideWith(Entity entity) {
+        if(entity instanceof SpriteEntity spriteEntity) {
+            return this.collideWith(spriteEntity.getCenter().getY(), spriteEntity.getCenter().getY(), spriteEntity.getScaledSize().getWidth(), spriteEntity.getScaledSize().getHeight());
+        }
+        return super.collideWith(entity);
+    }
+
+    @Override
     public void draw() {
         Application.getContext().getRenderer().drawSprite(this);
+        if (Application.DEBUG_MODE) {
+            Application.getContext().getRenderer().drawRectOutline(this.getCenter(), this.getScaledSize(), Color.WHITE);
+        }
     }
 
 }

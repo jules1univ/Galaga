@@ -24,12 +24,13 @@ public class Config {
     public static final long SPEED_LOADING = 0;
     public static final float SPEED_PLAYER = 600.f;
     public static final float SPEED_STAR = 200.0f;
-    public static final float SPEED_BULLET = 300.f;
+    public static final float SPEED_BULLET = 500.f;
     public static final float SPEED_ENEMY_FACTOR = 500.f;
 
-    public static final float DELAY_SHOOT_PLAYER = 1.f;
-    public static final float DELAY_ENEMY_ROUND = 50.f;
+    public static final float DELAY_SHOOT_PLAYER = .5f;
+    public static final float DELAY_ENEMY_ROUND = 20.f;
     public static final float DELAY_ENEMY_ENTER = 0.1f;
+    public static final float DELAY_ENEMY_COOLDOWN_FACTOR = 0.001f;
 
     public static final float TIME_BLINKSTAR_MAX = 10.0f;
     public static final float TIME_BLINKSTAR_MIN = 3.0f;

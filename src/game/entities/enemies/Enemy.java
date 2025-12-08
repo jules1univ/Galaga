@@ -1,22 +1,26 @@
 package game.entities.enemies;
 
+import engine.Application;
 import engine.elements.entity.SpriteEntity;
 import engine.utils.Position;
 import game.Config;
 import game.Galaga;
+import java.awt.Color;
+import java.awt.Font;
 
 public abstract class Enemy extends SpriteEntity {
 
     protected final float speed;
     protected final float formationSpeed;
-    protected final int value;
+    protected final int scoreValue;
     protected final EnemyType type;
     protected final Position lock;
 
     protected int index;
     private float indexTimer;
-
     protected EnemyState state;
+
+    private Font debugFont;
 
     public Enemy(EnemyType type, Position lock, int value, float speed, float formationSpeed) {
         super();
@@ -31,18 +35,22 @@ public abstract class Enemy extends SpriteEntity {
 
         this.speed = speed;
         this.formationSpeed = formationSpeed;
-        this.value = value;
+        this.scoreValue = value;
 
         this.index = Config.POSITION_ENEMY_INDEX_NOTSET;
         this.state = EnemyState.ENTER_LEVEL;
+    }
+
+    public EnemyType getType() {
+        return type;
     }
 
     public void setIndex(int index) {
         this.index = index;
     }
 
-    public EnemyType getType() {
-        return type;
+    public int getScoreValue() {
+        return scoreValue;
     }
 
     private boolean isInLockPosition() {
@@ -71,6 +79,7 @@ public abstract class Enemy extends SpriteEntity {
             return false;
         }
         this.size = this.sprite.getSize();
+        this.debugFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_TEXT);
         return true;
     }
 
@@ -116,5 +125,12 @@ public abstract class Enemy extends SpriteEntity {
     @Override
     public final void draw() {
         super.draw();
+        if (Application.DEBUG_MODE) {
+
+            float delayPercent = Math.clamp(((this.indexTimer / Config.DELAY_ENEMY_ROUND)), 0.f, 1.f) * 100.f;
+            String debugText = String.format("%.2f%%", delayPercent);
+            Application.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
+
+        }
     }
 }

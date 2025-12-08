@@ -101,6 +101,12 @@ public final class Renderer {
         return this;
     }
 
+    public Renderer drawRectOutline(Position position, Size size, Color color) {
+        this.g.setColor(color);
+        this.g.drawRect(position.getIntX(), position.getIntY(), size.getIntWidth(), size.getIntHeight());
+        return this;
+    }
+
     public Renderer drawSprite(Sprite sprite, Position position, float scale) {
         if (sprite == null || sprite.getImage() == null) {
             Log.warning("Attempted to draw null sprite.");

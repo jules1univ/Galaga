@@ -1,9 +1,13 @@
 package game.entities.player;
 
+import engine.Application;
 import engine.elements.entity.SpriteEntity;
 import engine.utils.Position;
 import game.Config;
 import game.Galaga;
+import game.entities.enemies.Enemy;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 
 public final class Player extends SpriteEntity {
@@ -12,6 +16,7 @@ public final class Player extends SpriteEntity {
     private int score;
     private int medals;
     private float cooldownTimer = Config.DELAY_SHOOT_PLAYER;
+    private Font debugFont;
 
     public Player() {
         super();
@@ -35,6 +40,25 @@ public final class Player extends SpriteEntity {
         return this.medals;
     }
 
+    public void onKillEnemy(Enemy enemy) {
+        this.score += enemy.getScoreValue();
+    }
+
+    public void onFinishLevel() {
+        this.medals++;
+    }
+
+    public void onHit() {
+        this.life--;
+        if (this.life < 0) {
+            this.life = 0;
+        }
+    }
+
+    public boolean isDead() {
+        return this.life <= 0;
+    }
+
     @Override
     public boolean init() {
         this.sprite = Galaga.getContext().getResource().get(Config.SPRITE_SHIP);
@@ -50,6 +74,8 @@ public final class Player extends SpriteEntity {
         // sprite will be recentered by default so no need to adjust position here
         this.position.addX(this.getScaledSize().getWidth() / 2);
         this.position.addY(this.getScaledSize().getHeight() / 2);
+
+        this.debugFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_TEXT);
 
         return true;
     }
@@ -69,8 +95,8 @@ public final class Player extends SpriteEntity {
                 Galaga.getContext().getFrame().getWidth() - this.size.getWidth()
         );
 
+        this.cooldownTimer += dt;
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_SPACE)) {
-            this.cooldownTimer += dt;
             if (this.cooldownTimer >= Config.DELAY_SHOOT_PLAYER) {
                 Galaga.getContext().getState().bullets.shoot(this);
                 this.cooldownTimer = 0.f;
@@ -82,6 +108,11 @@ public final class Player extends SpriteEntity {
     @Override
     public void draw() {
         super.draw();
+        if (Application.DEBUG_MODE) {
+            float delayPercent = Math.clamp((1.f - (this.cooldownTimer / Config.DELAY_SHOOT_PLAYER)), 0.f, 1.f) * 100.f;
+            String debugText = String.format("%.2f%%", delayPercent);
+            Application.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
+        }
     }
 
 }

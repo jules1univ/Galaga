@@ -6,12 +6,12 @@ import game.Galaga;
 
 public class EnemyBee extends Enemy {
 
-    private final int missileCooldown;
+    private final float missileCooldown;
     private float missileTimer = 0.f;
 
     private int zigZagIndex = 0;
 
-    public EnemyBee(Position lock, int value, float speed, float formationSpeed, int missileCooldown) {
+    public EnemyBee(Position lock, int value, float speed, float formationSpeed, float missileCooldown) {
         super(EnemyType.BEE, lock, value, speed, formationSpeed);
         this.missileCooldown = missileCooldown;
     }

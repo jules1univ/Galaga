@@ -20,8 +20,8 @@ import java.util.List;
 public class Level {
     private final String name;
     private final float formationSpeed;
-    private final int attackCooldown;
-    private final int missileCooldown;
+    private final float attackCooldown;
+    private final float missileCooldown;
 
     private final List<Enemy> enemies = new LinkedList<>();
 
@@ -49,14 +49,13 @@ public class Level {
             while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
                 Enemy enemy = createEnemyFromLine(lines.get(i), level);
                 
-                mapIndex.putIfAbsent(enemy.getType(), 0);
+                mapIndex.putIfAbsent(enemy.getType(), 1);
                 mapIndex.put(enemy.getType(), mapIndex.get(enemy.getType()) + 1);
                 enemy.setIndex(mapIndex.get(enemy.getType()) - 1);
 
                 level.enemies.add(enemy);
                 i++;
             }
-
             return level;
         }
 
@@ -71,10 +70,10 @@ public class Level {
         }
 
         try {
-            return new Level(header[0],
-                    Float.parseFloat(header[1]),
-                    Integer.parseInt(header[2]),
-                    Integer.parseInt(header[3]));
+            float formationSpeed = Float.parseFloat(header[1]);
+            float attackCooldown = Integer.parseInt(header[2]) * Config.DELAY_ENEMY_COOLDOWN_FACTOR;
+            float missileCooldown = Integer.parseInt(header[3]) * Config.DELAY_ENEMY_COOLDOWN_FACTOR;
+            return new Level(header[0], formationSpeed, attackCooldown, missileCooldown);
         } catch (Exception e) {
             Log.error("Level header parsing failed: " + e.getMessage());
             return null;
@@ -125,8 +124,8 @@ public class Level {
         }
     }
 
-    private Level(String name, float formationSpeed, int attackCooldown,
-            int missileCooldown) {
+    private Level(String name, float formationSpeed, float attackCooldown,
+            float missileCooldown) {
         this.name = name;
         this.formationSpeed = formationSpeed;
         this.attackCooldown = attackCooldown;
@@ -141,11 +140,11 @@ public class Level {
         return formationSpeed;
     }
 
-    public int getAttackCooldown() {
+    public float getAttackCooldown() {
         return attackCooldown;
     }
 
-    public int getMissileCooldown() {
+    public float getMissileCooldown() {
         return missileCooldown;
     }
 

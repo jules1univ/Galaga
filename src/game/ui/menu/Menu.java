@@ -22,6 +22,10 @@ public class Menu extends UIElement {
         super();
     }
 
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
     public boolean isVisible() {
         return this.visible;
     }
