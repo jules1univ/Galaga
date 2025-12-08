@@ -24,10 +24,12 @@ public class Config {
     public static final long SPEED_LOADING = 0;
     public static final float SPEED_PLAYER = 600.f;
     public static final float SPEED_STAR = 200.0f;
-    public static final float SPEED_BULLET = 80.f;
+    public static final float SPEED_BULLET = 300.f;
     public static final float SPEED_ENEMY_FACTOR = 500.f;
-    public static final float SPEED_ENEMY_UNLOCK_DELAY = 50.f;
-    public static final float SPEED_ENEMY_ENTER_DELAY = 0.1f;
+
+    public static final float DELAY_SHOOT_PLAYER = 1.f;
+    public static final float DELAY_ENEMY_ROUND = 50.f;
+    public static final float DELAY_ENEMY_ENTER = 0.1f;
 
     public static final float TIME_BLINKSTAR_MAX = 10.0f;
     public static final float TIME_BLINKSTAR_MIN = 3.0f;
@@ -44,12 +46,12 @@ public class Config {
     public static final Position POSITION_ENEMY_LEFT = Position.of(-100.f, 600.f);
     public static final Position POSITION_ENEMY_RIGHT = Position.of(800.f, 600.f);
     public static final List<Position> POSITION_ZIG_ZAG = List.of(
-            Position.of(50.f, 350.f),
-            Position.of(600.f, 400.f),
-            Position.of(50.f, 450.f),
-            Position.of(600.f, 500.f),
-            Position.of(50.f, 550.f),
-            Position.of(50.f, 600.f)
+            Position.of(20.f, 350.f),
+            Position.of(680.f, 400.f),
+            Position.of(20.f, 450.f),
+            Position.of(680.f, 500.f),
+            Position.of(20.f, 550.f),
+            Position.of(680.f, 600.f)
     );
 
     public static final Color COLOR_BULLET = new Color(255, 0, 0);

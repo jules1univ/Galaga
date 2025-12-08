@@ -1,6 +1,7 @@
 package engine.graphics;
 
 import engine.AppFrame;
+import engine.Application;
 import engine.elements.entity.SpriteEntity;
 import engine.graphics.sprite.Sprite;
 import engine.utils.Position;
@@ -52,7 +53,7 @@ public final class Renderer {
     }
 
     public Size getTextSize(String text, Font font) {
-        if(font == null || text == null || text.isEmpty()) {
+        if (font == null || text == null || text.isEmpty()) {
             Log.warning("Attempted to get size of null or empty text.");
             return Size.zero();
         }
@@ -64,18 +65,19 @@ public final class Renderer {
     }
 
     public Renderer drawText(String text, Position position, Color color, Font font) {
-        if(font == null || text == null || text.isEmpty()) {
+        if (font == null || text == null || text.isEmpty()) {
             Log.warning("Attempted to draw null or empty text.");
             return this;
         }
         this.g.setColor(color);
         this.g.setFont(font);
 
-        this.g.drawString(text, position.getIntX(), position.getIntY());     
+        this.g.drawString(text, position.getIntX(), position.getIntY());
 
-        // DEBUG TEXT BOX
-        // Size size = this.getTextSize(text, font);
-        // this.g.drawRect(position.getIntX(), position.getIntY() - size.getIntHeight(), size.getIntWidth(), size.getIntHeight());
+        if (Application.DEBUG_MODE) {
+            Size size = this.getTextSize(text, font);
+            this.g.drawRect(position.getIntX(), position.getIntY() - size.getIntHeight(), size.getIntWidth(), size.getIntHeight());
+        }
         return this;
     }
 
@@ -95,7 +97,7 @@ public final class Renderer {
         this.g.rotate(Math.toRadians(angle), cx, cy);
         this.drawRect(position, size, color);
         this.g.setTransform(old);
-        
+
         return this;
     }
 

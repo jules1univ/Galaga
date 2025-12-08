@@ -118,6 +118,12 @@ public final class Position {
         return this;
     }
 
+    public Position half() {
+        this.x /= 2;
+        this.y /= 2;
+        return this;
+    }
+
     public Position negate() {
         this.x = -this.x;
         this.y = -this.y;

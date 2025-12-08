@@ -27,7 +27,7 @@ public class BulletManager extends Entity {
         for (Bullet bullet : bullets) {
             bullet.update(dt);
 
-            if (!bullet.isOutOfBounds()) {
+            if (bullet.isOutOfBounds()) {
                 toRemove.add(bullet);
             }
         }

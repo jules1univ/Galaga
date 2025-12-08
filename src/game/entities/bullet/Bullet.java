@@ -2,6 +2,7 @@ package game.entities.bullet;
 
 import engine.elements.entity.Entity;
 import engine.elements.entity.SpriteEntity;
+import engine.utils.Position;
 import engine.utils.Size;
 import game.Config;
 import game.Galaga;
@@ -13,11 +14,11 @@ public class Bullet extends Entity {
 
     public Bullet(SpriteEntity shooter) {
         super();
-        this.angle = shooter.getAngle() + 180.f;
-        this.size = Size.of(5, 30);
+        this.angle = shooter.getAngle() - 90.f;
+        this.size = Size.of(2, 20);
 
         this.shooter = shooter;
-        this.position = shooter.getPosition().copy();
+        this.position = shooter.getPosition().copy().add(Position.of(this.size).negate().half());
     }
 
     public Entity getShooter() {
@@ -36,7 +37,7 @@ public class Bullet extends Entity {
 
     @Override
     public void draw() {
-        Galaga.getContext().getRenderer().drawRect(this.position, this.size, Config.COLOR_BULLET, this.angle);
+        Galaga.getContext().getRenderer().drawRect(this.position, this.size, Config.COLOR_BULLET, this.angle + 90.f);
     }
     
 }

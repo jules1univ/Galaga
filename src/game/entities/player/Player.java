@@ -11,16 +11,16 @@ public final class Player extends SpriteEntity {
     private int life;
     private int score;
     private int medals;
+    private float cooldownTimer = Config.DELAY_SHOOT_PLAYER;
 
     public Player() {
-        super();      
+        super();
         this.angle = 0.f;
         this.scale = Config.SPRITE_SCALE_DEFAULT;
-    
-    
+
         this.life = Config.PLAYER_INITIAL_LIFE;
         this.medals = 0;
-        this.score = 0;  
+        this.score = 0;
     }
 
     public int getLife() {
@@ -34,7 +34,7 @@ public final class Player extends SpriteEntity {
     public int getMedals() {
         return this.medals;
     }
-    
+
     @Override
     public boolean init() {
         this.sprite = Galaga.getContext().getResource().get(Config.SPRITE_SHIP);
@@ -50,18 +50,18 @@ public final class Player extends SpriteEntity {
         // sprite will be recentered by default so no need to adjust position here
         this.position.addX(this.getScaledSize().getWidth() / 2);
         this.position.addY(this.getScaledSize().getHeight() / 2);
-        
+
         return true;
     }
 
     @Override
     public void update(double dt) {
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_LEFT)) {
-            this.position.addX(-Config.SPEED_PLAYER * (float)dt);
+            this.position.addX(-Config.SPEED_PLAYER * (float) dt);
         }
 
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_RIGHT)) {
-            this.position.addX(Config.SPEED_PLAYER * (float)dt);
+            this.position.addX(Config.SPEED_PLAYER * (float) dt);
         }
 
         this.position.clampX(
@@ -70,7 +70,12 @@ public final class Player extends SpriteEntity {
         );
 
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_SPACE)) {
-            Galaga.getContext().getState().bullets.shoot(this);
+            this.cooldownTimer += dt;
+            if (this.cooldownTimer >= Config.DELAY_SHOOT_PLAYER) {
+                Galaga.getContext().getState().bullets.shoot(this);
+                this.cooldownTimer = 0.f;
+            }
+
         }
     }
 

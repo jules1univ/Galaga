@@ -1,7 +1,7 @@
 package engine;
 
 public abstract class Application {
-
+    public static boolean DEBUG_MODE = false;
     private static AppContext<?> context;
 
     protected final int width;

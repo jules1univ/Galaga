@@ -82,7 +82,7 @@ public abstract class Enemy extends SpriteEntity {
                 if (this.index == Config.POSITION_ENEMY_INDEX_NOTSET) {
                     break;
                 }
-                if (this.indexTimer < this.index * Config.SPEED_ENEMY_ENTER_DELAY) {
+                if (this.indexTimer < this.index * Config.DELAY_ENEMY_ENTER) {
                     this.indexTimer += (float) dt;
                 } else {
                     this.indexTimer = 0;
@@ -100,7 +100,7 @@ public abstract class Enemy extends SpriteEntity {
                     break;
                 }
 
-                if (this.indexTimer < this.index * Config.SPEED_ENEMY_UNLOCK_DELAY) {
+                if (this.indexTimer < this.index * Config.DELAY_ENEMY_ROUND) {
                     this.indexTimer += (float) dt;
                 } else {
                     this.indexTimer = 0;

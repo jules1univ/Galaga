@@ -44,6 +44,9 @@ public class Galaga extends Application {
     }
 
     public static void main(String[] args) throws Exception {
+        if (args.length > 0 && args[0].equalsIgnoreCase("--debug")) {
+            Application.DEBUG_MODE = true;
+        }
         Galaga game = new Galaga();
         game.start();
     }
@@ -185,21 +188,18 @@ public class Galaga extends Application {
             return;
         }
 
-        this.player.draw();
+        this.bullets.draw();
 
+        this.player.draw();
         for (Enemy enemy : this.enemies) {
             enemy.draw();
         }
 
-        this.bullets.draw();
-        // TODO: display the level name at the beginning
-        // TODO: show the new medal earned when a level is completed
         this.hud.draw();
         this.fud.draw();
 
-        // DEBUG DRAW TO VIEW ELEMENTS ALIGNMENT
-        // getContext().getRenderer().drawGrid(Config.SIZE_SKY_GRID, Color.WHITE);
-        //  getContext().getRenderer().drawCross(Color.RED);
+        //getContext().getRenderer().drawGrid(Config.SIZE_SKY_GRID, Color.WHITE);
+        //getContext().getRenderer().drawCross(Color.RED);
     }
 
 }
