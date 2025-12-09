@@ -2,6 +2,7 @@ package engine.elements.entity;
 
 import engine.Application;
 import engine.graphics.sprite.Sprite;
+import engine.utils.Collision;
 import engine.utils.Position;
 import engine.utils.Size;
 import java.awt.Color;
@@ -39,10 +40,19 @@ public abstract class SpriteEntity extends Entity {
 
     @Override
     public boolean collideWith(Entity entity) {
-        if(entity instanceof SpriteEntity spriteEntity) {
-            return this.collideWith(spriteEntity.getCenter().getY(), spriteEntity.getCenter().getY(), spriteEntity.getScaledSize().getWidth(), spriteEntity.getScaledSize().getHeight());
+        if (entity instanceof SpriteEntity spriteEntity) {
+            return Collision.aabb(
+                    this.getCenter(),
+                    this.getScaledSize(),
+                    spriteEntity.getPosition(),
+                    spriteEntity.getScaledSize());
         }
-        return super.collideWith(entity);
+
+        return Collision.aabb(
+                this.position,
+                this.getScaledSize(),
+                entity.getPosition(),
+                entity.getSize());
     }
 
     @Override

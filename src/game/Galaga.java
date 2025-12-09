@@ -13,6 +13,7 @@ import engine.utils.Position;
 import game.entities.bullet.Bullet;
 import game.entities.bullet.BulletManager;
 import game.entities.enemies.Enemy;
+import game.entities.particles.ParticlesManager;
 import game.entities.player.Player;
 import game.entities.sky.Sky;
 import game.level.Level;
@@ -33,7 +34,7 @@ public class Galaga extends Application {
     private Player player;
     private List<Enemy> enemies;
     private BulletManager bullets;
-    // private ParticlesManager particles;
+    private ParticlesManager particles;
     private int levelIndex = -1;
 
     private FUD fud;
@@ -52,6 +53,11 @@ public class Galaga extends Application {
         if (args.length > 0 && args[0].equalsIgnoreCase("--debug")) {
             Application.DEBUG_MODE = true;
         }
+        if (java.lang.management.ManagementFactory.getRuntimeMXBean().
+                getInputArguments().toString().indexOf("-agentlib:jdwp") > 0) {
+            Application.DEBUG_MODE = true;
+        }
+
         Galaga game = new Galaga();
         game.start();
     }
@@ -135,6 +141,7 @@ public class Galaga extends Application {
 
         rm.add(Config.LEVELS, "level");
 
+        this.particles = new ParticlesManager();
         this.sky = new Sky(Config.SIZE_SKY_GRID);
         if (!this.sky.init()) {
             return false;
@@ -183,44 +190,37 @@ public class Galaga extends Application {
         }
 
         if (!this.bullets.isEmpty()) {
-            List<Bullet> removeBullet = new ArrayList<>();
-            for (Bullet bullet : this.bullets) {
+            List<Bullet> bulletsRemove = new ArrayList<>();
+            List<Enemy> enemiesRemove = new ArrayList<>();
 
+            for (Bullet bullet : this.bullets) {
                 if (bullet.getShooter() == this.player) {
-                    List<Enemy> removeEnemy = new ArrayList<>();
                     for (Enemy enemy : this.enemies) {
                         if (enemy.collideWith(bullet)) {
-                            // this.particlesManager.emitExplosion(enemy.getCenter().copy(), Color.ORANGE);
                             this.player.onKillEnemy(enemy);
-                            removeEnemy.add(enemy);
-                            removeBullet.add(bullet);
-                            continue;
-                        }
-
-                        if (enemy.collideWith(this.player)) {
-                            // TODO: animation on hit
-                            // this.particlesManager.emitExplosion(enemy.getCenter().copy(), Color.ORANGE);
-                            this.player.onHit();
-                            this.player.onKillEnemy(enemy);
-                            removeEnemy.add(enemy);
+                            enemiesRemove.add(enemy);
+                            bulletsRemove.add(bullet);
+                            this.particles.createExplosion(enemy);
+                            break;
                         }
                     }
-                    this.enemies.removeAll(removeEnemy);
                 } else if (this.player.collideWith(bullet)) {
-                    // TODO: animation on hit
+                    this.particles.createExplosion(this.player);
                     this.player.onHit();
-                    removeBullet.add(bullet);
+                    bulletsRemove.add(bullet);
                 }
             }
-            this.bullets.removeAll(removeBullet);
+
+            this.enemies.removeAll(enemiesRemove);
+            this.bullets.removeAll(bulletsRemove);
 
             if (this.enemies.isEmpty()) {
-                // TODO: show level complete screen
                 this.loadNextLevel();
             }
         } else {
             for (Enemy enemy : this.enemies) {
                 if (this.player.collideWith(enemy)) {
+                    this.particles.createExplosion(this.player);
                     this.player.onHit();
                 }
             }
@@ -231,6 +231,7 @@ public class Galaga extends Application {
             this.menu.setVisible(true);
         }
 
+        this.particles.update(dt);
         this.hud.update(dt);
         this.fud.update(dt);
     }
@@ -247,7 +248,7 @@ public class Galaga extends Application {
             this.menu.draw();
             return;
         }
-
+        this.particles.draw();
         this.bullets.draw();
 
         this.player.draw();

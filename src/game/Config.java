@@ -3,6 +3,7 @@ package game;
 import engine.resource.ResourceAlias;
 import engine.resource.ResourceVariant;
 import engine.utils.Position;
+import engine.utils.Size;
 import game.entities.enemies.EnemyType;
 import java.awt.Color;
 import java.util.List;
@@ -41,6 +42,7 @@ public class Config {
     public static final int SIZE_FONT_XLARGE = 48;
     public static final int SIZE_FONT_LARGE = 32;
     public static final int SIZE_FONT_TEXT = 24;
+    public static final Size SIZE_PARTICLE = Size.of(3.f, 3.f);
 
     public static final int POSITION_ENEMY_INDEX_NOTSET = -1;
     public static final float POSITION_LOCK_THRESHOLD = 1.f;

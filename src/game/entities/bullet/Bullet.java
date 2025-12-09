@@ -2,6 +2,7 @@ package game.entities.bullet;
 
 import engine.elements.entity.Entity;
 import engine.elements.entity.SpriteEntity;
+import engine.utils.Collision;
 import engine.utils.Position;
 import engine.utils.Size;
 import game.Config;
@@ -25,6 +26,13 @@ public class Bullet extends Entity {
         return shooter;
     }
 
+    
+    public boolean isOutOfBounds() {
+        return Collision.aabb(this.position, this.size,
+                Position.zero(),
+                Size.of(Galaga.getContext().getFrame().getWidth(), Galaga.getContext().getFrame().getHeight())) == false;
+    }
+
     @Override
     public boolean init() {
         return true;
@@ -40,5 +48,6 @@ public class Bullet extends Entity {
         Galaga.getContext().getRenderer().drawRect(this.position, this.size, Config.COLOR_BULLET, this.angle + 90.f);
         super.draw();
     }
-    
+
+ 
 }

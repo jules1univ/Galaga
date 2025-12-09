@@ -8,14 +8,18 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class Sprite {
 
     private final BufferedImage image;
+    private Map<Color, Integer> colorMap;
 
-    private Sprite(BufferedImage image) {
+    private Sprite(BufferedImage image, Map<Color, Integer> colorMap) {
         this.image = image;
+        this.colorMap = colorMap;
     }
 
     public static Sprite createSprite(InputStream in) {
@@ -48,16 +52,19 @@ public final class Sprite {
 
         BufferedImage base = new BufferedImage(width, height,
                 BufferedImage.TYPE_INT_ARGB);
-
+        Map<Color, Integer> colorMap = new HashMap<>();
         for (int y = 0; y < height; y++) {
             String row = lines.get(y);
             for (int x = 0; x < width; x++) {
                 char c = row.charAt(x);
                 Color color = charToColor(c);
+                
+                colorMap.putIfAbsent(color, 0);
+                colorMap.put(color, colorMap.get(color) + 1);
                 base.setRGB(x, y, color.getRGB());
             }
         }
-        return new Sprite(base);
+        return new Sprite(base, colorMap);
     }
 
     private static Color charToColor(char c) {
@@ -79,7 +86,11 @@ public final class Sprite {
     }
 
 
+    public Map<Color, Integer> getColors() {
+        return this.colorMap;
+    }
+
     public BufferedImage getImage() {
-        return image;
+        return this.image;
     }
 }
