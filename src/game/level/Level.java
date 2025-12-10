@@ -14,8 +14,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class Level {
 
@@ -47,13 +49,10 @@ public class Level {
 
             i++;
 
-            int actionIndexDelay = Config.DELAY_ACTION_INDEX;
             int actionEnterDelay = Config.DELAY_ENTER_INDEX;
+            Map<EnemyType, Integer> enemyActionIndexDelay = new HashMap<>();
             while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
-                Enemy enemy = createEnemyFromLine(lines.get(i), actionIndexDelay, actionEnterDelay, level);
-                if (!(enemy.getType() == EnemyType.MOTH && level.getAttackCooldown() <= 0.f)) {
-                    actionIndexDelay++;
-                }
+                Enemy enemy = createEnemyFromLine(lines.get(i), enemyActionIndexDelay, actionEnterDelay, level);
                 actionEnterDelay += Config.DELAY_ENTER_INDEX;
 
                 level.enemies.add(enemy);
@@ -83,7 +82,7 @@ public class Level {
         }
     }
 
-    private static Enemy createEnemyFromLine(String line, int actionIndex, int enterIndex, Level level) {
+    private static Enemy createEnemyFromLine(String line, Map<EnemyType, Integer> enemyActionIndex, int enterIndex, Level level) {
         String[] data = line.split(" ");
         if (data.length < 6) {
             Log.error("Level enemy data is invalid: " + line);
@@ -105,6 +104,13 @@ public class Level {
             float speed = Float.parseFloat(data[5]) * Config.SPEED_ENEMY_FACTOR;
 
             EnemyType type = EnemyType.valueOf(enemyType.toUpperCase());
+            enemyActionIndex.putIfAbsent(type, Config.DELAY_ACTION_INDEX);
+            int actionIndex = enemyActionIndex.get(type);
+
+            if (!(type == EnemyType.MOTH && level.getAttackCooldown() <= 0.f)) {
+                enemyActionIndex.put(type, enemyActionIndex.get(type) + 1);
+            }
+
             switch (type) {
                 case EnemyType.BEE -> {
                     return new EnemyBee(lock, actionIndex, enterIndex, value, speed, level.getFormationSpeed(), level.getMissileCooldown());
