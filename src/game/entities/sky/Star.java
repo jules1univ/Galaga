@@ -23,8 +23,8 @@ public final class Star extends Entity {
         this.position = position;
         this.initialY = position.getY();
 
-        this.time = 0.0f;
-        this.blinkDelay = 0.0f;
+        this.time = .0f;
+        this.blinkDelay = .0f;
         this.active = false;
 
         this.size = Size.of(size);
@@ -42,7 +42,7 @@ public final class Star extends Entity {
     public void update(float dt) {
         this.time += dt;
         if (this.time > this.blinkDelay) {
-            this.time = 0.0f;
+            this.time = .0f;
             this.active = !this.active;
             this.position.setY(this.initialY);
         }

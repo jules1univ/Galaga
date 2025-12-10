@@ -10,10 +10,10 @@ public class EnemyButterFly extends Enemy {
     private float missileTimer = 0.f;
     private final Position target;
 
-    public EnemyButterFly(Position lock, int value, float speed, float formationSpeed, float missileCooldown) {
-        super(EnemyType.BUTTERFLY, lock, value, speed, formationSpeed);
+    public EnemyButterFly(Position lock,int index, int value, float speed, float formationSpeed, float missileCooldown) {
+        super(EnemyType.BUTTERFLY, lock, index, value, speed, formationSpeed);
         this.missileCooldown = missileCooldown;
-        this.target = this.lock.copy().setY(Config.WINDOW_HEIGHT - Config.HEIGHT_FUD * 2);
+        this.target = this.lock.copy().setY(Config.WINDOW_HEIGHT - Config.HEIGHT_FUD);
     }
 
     @Override

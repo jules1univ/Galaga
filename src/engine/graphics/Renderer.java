@@ -130,7 +130,7 @@ public final class Renderer {
 
         Position center = e.getCenter();
         Size size = e.getScaledSize();
-        if (e.getAngle() == 0.0f) {
+        if (e.getAngle() == 0f) {
 
             this.g.drawImage(sprite.getImage(), center.getIntX(), center.getIntY(), size.getIntWidth(),
                     size.getIntHeight(),

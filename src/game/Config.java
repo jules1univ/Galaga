@@ -29,7 +29,8 @@ public class Config {
     public static final float SPEED_ENEMY_FACTOR = 500.f;
 
     public static final float DELAY_SHOOT_PLAYER = .5f;
-    public static final float DELAY_ENEMY_ENTER = 0.2f;
+    public static final float DELAY_ENEMY_ENTER = .2f;
+    public static final float DELAY_ENEMY_FORMATION = 5.f;
     public static final float DELAY_ENEMY_COOLDOWN_FACTOR_ATTACK = 0.01f;
     public static final float DELAY_ENEMY_COOLDOWN_FACTOR_MISSILE = 0.001f;
 

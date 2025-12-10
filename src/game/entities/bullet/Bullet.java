@@ -12,11 +12,13 @@ public class Bullet extends Entity {
 
     private final float angle;
     private final SpriteEntity shooter;
+    private final Size boxSize;
 
     public Bullet(SpriteEntity shooter) {
         super();
         this.angle = shooter.getAngle() - 90.f;
-        this.size = Size.of(2, 20);
+        this.boxSize = Size.of(2, 20);
+        this.size = Size.of(10, 20);
 
         this.shooter = shooter;
         this.position = shooter.getPosition().copy().add(Position.of(this.size).negate().half());
@@ -28,7 +30,7 @@ public class Bullet extends Entity {
 
     
     public boolean isOutOfBounds() {
-        return Collision.aabb(this.position, this.size,
+        return Collision.aabb(this.position, this.boxSize,
                 Position.zero(),
                 Size.of(Galaga.getContext().getFrame().getWidth(), Galaga.getContext().getFrame().getHeight())) == false;
     }
@@ -45,7 +47,7 @@ public class Bullet extends Entity {
 
     @Override
     public void draw() {
-        Galaga.getContext().getRenderer().drawRect(this.position, this.size, Config.COLOR_BULLET, this.angle + 90.f);
+        Galaga.getContext().getRenderer().drawRect(this.position, this.boxSize, Config.COLOR_BULLET, this.angle + 90.f);
         super.draw();
     }
 

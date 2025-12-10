@@ -4,7 +4,7 @@ public final class Position {
     private float x, y;
 
     public static Position zero() {
-        return new Position(0.0f, 0.0f);
+        return new Position(.0f, .0f);
     }
 
     public static Position of(float x, float y) {

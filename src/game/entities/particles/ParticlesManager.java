@@ -36,7 +36,7 @@ public class ParticlesManager {
         for (int i = 0; i < num; i++) {
             float angle = (float) (Math.random() * 360);
             float speed = (float) (10 + Math.random() * 150);
-            float duration = 0.5f + (float) (Math.random() * 1.0f);
+            float duration = .5f + (float) (Math.random() * 1.0f);
 
             Particle particle = new Particle(
                     position.copy(),

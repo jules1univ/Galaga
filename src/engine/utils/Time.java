@@ -1,8 +1,8 @@
 package engine.utils;
 
 public final class Time {
-    private static double lastTime = 0.0;
-    private static double deltaTime = 0.0;
+    private static double lastTime = .0;
+    private static double deltaTime = .0;
     private final static double TIME_TO_NANO = 1_000_000_000.0;
 
     public static void update() {

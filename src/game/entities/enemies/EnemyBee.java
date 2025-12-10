@@ -11,8 +11,8 @@ public class EnemyBee extends Enemy {
 
     private int zigZagIndex = 0;
 
-    public EnemyBee(Position lock, int value, float speed, float formationSpeed, float missileCooldown) {
-        super(EnemyType.BEE, lock, value, speed, formationSpeed);
+    public EnemyBee(Position lock, int index, int value, float speed, float formationSpeed, float missileCooldown) {
+        super(EnemyType.BEE, lock, index, value, speed, formationSpeed);
         this.missileCooldown = missileCooldown;
     }
 
@@ -31,7 +31,7 @@ public class EnemyBee extends Enemy {
 
         if (this.position.distance(target) <= Config.POSITION_NEAR_THRESHOLD) {
             this.zigZagIndex++;
-            if(this.zigZagIndex >= Config.POSITION_ZIG_ZAG.size()) {
+            if (this.zigZagIndex >= Config.POSITION_ZIG_ZAG.size()) {
                 this.zigZagIndex = 0;
                 this.state = EnemyState.RETURNING;
             }

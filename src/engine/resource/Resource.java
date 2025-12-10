@@ -4,6 +4,8 @@ import engine.utils.cache.Cache;
 import engine.utils.logger.Log;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
@@ -41,7 +43,7 @@ public abstract class Resource<ResourceData> {
             try {
                 Log.message("Resource '"+ this.alias.getFullName() + "' found in local file system.");
                 return new FileInputStream(file);
-            } catch (Exception e) {
+            } catch (FileNotFoundException e) {
                 Log.error("Resource '"+this.alias.getFullName() +"'file loading failed: " + e.getMessage());
             }
         }
@@ -56,7 +58,7 @@ public abstract class Resource<ResourceData> {
             InputStream in = url.toURL().openStream();
             Cache.save(this.alias.getFullName(), in);
             return url.toURL().openStream();
-        }catch(Exception e) {
+        }catch(IOException e) {
             Log.error("Resource url loading failed: " + e.getMessage());
         }
 

@@ -6,6 +6,8 @@ import engine.resource.ResourceCallback;
 import engine.resource.ResourceVariant;
 import engine.utils.logger.Log;
 import java.awt.Font;
+import java.awt.FontFormatException;
+import java.io.IOException;
 import java.io.InputStream;
 
 public final class FontResource extends Resource<Font> {
@@ -31,7 +33,7 @@ public final class FontResource extends Resource<Font> {
                 font = font.deriveFont((float) size);
             }
             this.onLoadComplete(font);
-        } catch (Exception e) {
+        } catch (FontFormatException | IOException e) {
             Log.error("Font loading failed: " + e.getMessage());
             return false;
         }

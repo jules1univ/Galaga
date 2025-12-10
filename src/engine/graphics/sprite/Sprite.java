@@ -5,6 +5,7 @@ import engine.utils.logger.Log;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public final class Sprite {
             while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             Log.error("Sprite loading failed - " + e.getMessage());
             return null;
         }

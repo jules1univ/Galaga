@@ -19,12 +19,13 @@ public abstract class Enemy extends SpriteEntity {
     protected final int scoreValue;
 
     protected EnemyState state;
-    protected float delay;
+    protected int index;
+    protected float indexTimer;
     protected boolean action;
 
     private Font debugFont;
 
-    public Enemy(EnemyType type, Position lock, int value, float speed, float formationSpeed) {
+    public Enemy(EnemyType type, Position lock, int index, int value, float speed, float formationSpeed) {
         super();
         this.type = type;
 
@@ -40,24 +41,30 @@ public abstract class Enemy extends SpriteEntity {
         this.scoreValue = value;
 
         this.state = EnemyState.ENTER_LEVEL;
-        this.delay = 0.f;
-    }
-
-    public void startAction(float delay) {
+        this.index = index; 
+        this.indexTimer = index * Config.DELAY_ENEMY_ENTER;
         this.action = false;
-        this.delay = delay;
     }
 
     public boolean hasDoneAction() {
         return this.action;
     }
 
+    public void resetAction() {
+        this.action = false;
+        this.indexTimer = this.index * Config.DELAY_ENEMY_FORMATION;
+    }
+
+    public EnemyState getState() {
+        return this.state;
+    }
+
     public EnemyType getType() {
-        return type;
+        return this.type;
     }
 
     public int getScoreValue() {
-        return scoreValue;
+        return this.scoreValue;
     }
 
     private boolean isInLockPosition() {
@@ -95,9 +102,9 @@ public abstract class Enemy extends SpriteEntity {
 
         switch (this.state) {
             case ENTER_LEVEL -> {
-                this.delay -= (float) dt;
-                if (this.delay <= 0 && !this.action) {
-                    this.action = true;
+                this.indexTimer -= (float) dt;
+                if (this.indexTimer <= 0 && !this.action) {
+                    this.indexTimer = this.index * Config.DELAY_ENEMY_FORMATION;
                     this.state = EnemyState.RETURNING;
                 }
             }
@@ -108,8 +115,8 @@ public abstract class Enemy extends SpriteEntity {
                 }
             }
             case FORMATION -> {
-                this.delay -= (float) dt;
-                if (this.delay <= 0 && !this.action) {
+                this.indexTimer -= (float) dt;
+                if (this.indexTimer <= 0 && !this.action) {
                     this.action = true;
                     this.state = EnemyState.ATTACKING;
                 }
@@ -125,7 +132,7 @@ public abstract class Enemy extends SpriteEntity {
         super.draw();
 
         if (Application.DEBUG_MODE) {
-            String debugText = String.format("%.2f%%", this.action ? this.delay : 0.f);
+            String debugText = String.format("%.2f%%", this.action ? this.indexTimer : 0.f);
             Application.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
         }
     }

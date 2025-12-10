@@ -11,8 +11,8 @@ public class EnemyMoth extends Enemy {
     private float attackTimer = 0.f;
     private Position target;
 
-    public EnemyMoth(Position lock, int value, float speed, float formationSpeed, float attackCooldown) {
-        super(EnemyType.MOTH, lock, value, speed, formationSpeed);
+    public EnemyMoth(Position lock, int index, int value, float speed, float formationSpeed, float attackCooldown) {
+        super(EnemyType.MOTH, lock, index, value, speed, formationSpeed);
         this.attackCooldown = attackCooldown;
     }
 
@@ -21,12 +21,11 @@ public class EnemyMoth extends Enemy {
         if (this.state != EnemyState.ATTACKING) {
             return;
         }
-        
-        if(this.attackCooldown < 0.f) {
+
+        if (this.attackCooldown < 0.f) {
             this.state = EnemyState.RETURNING;
             return;
         }
-
 
         this.attackTimer += (float) dt;
         this.target = Galaga.getContext().getState().player.getCenter().copy();

@@ -1,13 +1,14 @@
 package engine.resource;
 
 import engine.utils.logger.Log;
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 public final class ResourceManager {
     private volatile boolean loading = false;
     private volatile String status = "";
-    private volatile float progress = 0.0f;
+    private volatile float progress = .0f;
 
     private Thread loadingThread = null;
 
@@ -31,7 +32,7 @@ public final class ResourceManager {
             this.resources.put(alias.getFullName(),
                     resourceClass.getDeclaredConstructor(ResourceAlias.class, ResourceCallback.class).newInstance(alias,
                             callback));
-        } catch (Exception e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
             Log.error("Resource creation failed: " + e.getMessage());
         }
     }
@@ -103,7 +104,10 @@ public final class ResourceManager {
                 if (delay > 0) {
                     try {
                         Thread.sleep(delay);
-                    } catch (Exception e) {
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        Log.message("Resource loading cancelled.");
+                        break;
                     }
                 }
             }

@@ -9,10 +9,14 @@ import engine.graphics.sprite.Sprite;
 import engine.resource.Resource;
 import engine.resource.ResourceManager;
 import engine.resource.ResourceVariant;
+import engine.utils.Collision;
 import engine.utils.Position;
+import engine.utils.Size;
+import engine.utils.logger.Log;
 import game.entities.bullet.Bullet;
 import game.entities.bullet.BulletManager;
 import game.entities.enemies.Enemy;
+import game.entities.enemies.EnemyState;
 import game.entities.particles.ParticlesManager;
 import game.entities.player.Player;
 import game.entities.sky.Sky;
@@ -25,8 +29,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyEvent;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class Galaga extends Application {
@@ -54,7 +58,7 @@ public class Galaga extends Application {
         if (args.length > 0 && args[0].equalsIgnoreCase("--debug")) {
             Application.DEBUG_MODE = true;
         }
-        if (java.lang.management.ManagementFactory.getRuntimeMXBean().
+        if (ManagementFactory.getRuntimeMXBean().
                 getInputArguments().toString().indexOf("-agentlib:jdwp") > 0) {
             Application.DEBUG_MODE = true;
         }
@@ -71,6 +75,12 @@ public class Galaga extends Application {
     private boolean loadNextLevel() {
         this.levelIndex++;
         getContext().getState().level = getContext().getResource().get(Config.LEVELS.get(this.levelIndex));
+
+        this.player.setShooting(false);
+        if(this.levelIndex > 0)
+        {
+            this.player.onFinishLevel();
+        }
 
         Level level = getContext().getState().level;
         if (level == null) {
@@ -90,7 +100,9 @@ public class Galaga extends Application {
             return false;
         }
 
-        this.loadNextLevel();
+        if(!this.loadNextLevel()) {
+            return false;
+        }
 
         this.menu = new Menu();
         if (!this.menu.init()) {
@@ -185,8 +197,24 @@ public class Galaga extends Application {
         }
 
         this.player.update(dt);
+
+        boolean allActionDone = true;
+        boolean allInFormation = true;
         for (Enemy enemy : this.enemies) {
             enemy.update(dt);
+
+            allActionDone = allActionDone && enemy.hasDoneAction();
+            allInFormation = allInFormation && enemy.getState() == EnemyState.FORMATION;
+        }
+
+        if (allActionDone) {
+            for (Enemy enemy : this.enemies) {
+                enemy.resetAction();
+            }
+        }
+
+        if (allInFormation && !this.player.isShootingActive()) {
+            this.player.setShooting(true);
         }
 
         if (!this.bullets.isEmpty() && !this.enemies.isEmpty()) {
@@ -205,33 +233,47 @@ public class Galaga extends Application {
                         if (enemy.collideWith(bullet)) {
                             enemiesRemove.add(enemy);
                             bulletsRemove.add(bullet);
+                            this.player.onKillEnemy(enemy);
                             this.particles.createExplosion(enemy);
                             continue;
                         }
 
                         if (enemy.collideWith(this.player)) {
                             this.particles.createExplosion(this.player);
+                            this.player.onKillEnemy(enemy);
                             this.player.onHit();
                             enemiesRemove.add(enemy);
                         }
                     }
                     this.enemies.removeAll(enemiesRemove);
-                }else if(this.player.collideWith(bullet)) {
+                } else if (this.player.collideWith(bullet)) {
                     this.particles.createExplosion(this.player);
                     this.player.onHit();
                     bulletsRemove.add(bullet);
                 }
             }
             this.bullets.removeAll(bulletsRemove);
+        } else if (!this.enemies.isEmpty()) {
+            List<Enemy> enemiesRemove = new ArrayList<>();
+            for (Enemy enemy : this.enemies) {
+                if (enemy.collideWith(this.player)) {
+                    this.particles.createExplosion(this.player);
+                    this.particles.createExplosion(enemy);
+                    this.player.onHit();
+                    enemiesRemove.add(enemy);
+                }
+            }
+            this.enemies.removeAll(enemiesRemove);
         }
 
-        if (this.enemies.isEmpty()) {
-            this.loadNextLevel();
-        }
+        if (this.enemies.isEmpty() && !this.loadNextLevel()) {
+            Log.error("Failed to load next level");
+            this.stop();
+            return;
+        }   
 
         if (this.player.isDead()) {
-            // TODO: show game over screen
-            this.menu.setVisible(true);
+            throw new UnsupportedOperationException("TODO: Game Over handling");
         }
 
         this.particles.update(dt);

@@ -10,6 +10,7 @@ import game.entities.enemies.EnemyButterFly;
 import game.entities.enemies.EnemyMoth;
 import game.entities.enemies.EnemyType;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class Level {
             while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             Log.error("Level loading failed: " + e.getMessage());
             return null;
         }
@@ -46,8 +47,7 @@ public class Level {
 
             i++;
             while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
-                Enemy enemy = createEnemyFromLine(lines.get(i), level);
-                enemy.startAction(i * Config.DELAY_ENEMY_ENTER);
+                Enemy enemy = createEnemyFromLine(lines.get(i), i, level);
                 level.enemies.add(enemy);
                 i++;
             }
@@ -69,13 +69,13 @@ public class Level {
             float attackCooldown = Integer.parseInt(header[2]) * Config.DELAY_ENEMY_COOLDOWN_FACTOR_ATTACK;
             float missileCooldown = Integer.parseInt(header[3]) * Config.DELAY_ENEMY_COOLDOWN_FACTOR_MISSILE;
             return new Level(header[0], formationSpeed, attackCooldown, missileCooldown);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             Log.error("Level header parsing failed: " + e.getMessage());
             return null;
         }
     }
 
-    private static Enemy createEnemyFromLine(String line, Level level) {
+    private static Enemy createEnemyFromLine(String line, int index, Level level) {
         String[] data = line.split(" ");
         if (data.length < 6) {
             Log.error("Level enemy data is invalid: " + line);
@@ -99,20 +99,20 @@ public class Level {
             EnemyType type = EnemyType.valueOf(enemyType.toUpperCase());
             switch (type) {
                 case EnemyType.BEE -> {
-                    return new EnemyBee(lock, value, speed, level.getFormationSpeed(), level.getMissileCooldown());
+                    return new EnemyBee(lock, index, value, speed, level.getFormationSpeed(), level.getMissileCooldown());
                 }
                 case EnemyType.BUTTERFLY -> {
-                    return new EnemyButterFly(lock, value, speed, level.getFormationSpeed(), level.getMissileCooldown());
+                    return new EnemyButterFly(lock, index, value, speed, level.getFormationSpeed(), level.getMissileCooldown());
                 }
                 case EnemyType.MOTH -> {
-                    return new EnemyMoth(lock, value, speed, level.getFormationSpeed(), level.getAttackCooldown());
+                    return new EnemyMoth(lock, index, value, speed, level.getFormationSpeed(), level.getAttackCooldown());
                 }
                 default -> {
                     Log.error("Unknown enemy type: " + enemyType);
                     return null;
                 }
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             Log.error("Level enemy parsing failed: " + e.getMessage());
             return null;
         }

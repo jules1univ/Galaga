@@ -15,7 +15,10 @@ public final class Player extends SpriteEntity {
     private int life;
     private int score;
     private int medals;
-    private float cooldownTimer = Config.DELAY_SHOOT_PLAYER;
+
+    private boolean shootActive;
+    private float cooldownTimer;
+
     private Font debugFont;
 
     public Player() {
@@ -23,9 +26,19 @@ public final class Player extends SpriteEntity {
         this.angle = 0.f;
         this.scale = Config.SPRITE_SCALE_DEFAULT;
 
+        this.shootActive = false;
         this.life = Config.PLAYER_INITIAL_LIFE;
+        this.cooldownTimer = Config.DELAY_SHOOT_PLAYER;
         this.medals = 0;
         this.score = 0;
+    }
+
+    public boolean isShootingActive() {
+        return this.shootActive;
+    }
+
+    public void setShooting(boolean shootActive) {
+        this.shootActive = shootActive;
     }
 
     public int getLife() {
@@ -46,9 +59,16 @@ public final class Player extends SpriteEntity {
 
     public void onFinishLevel() {
         this.medals++;
+        this.position.setX(
+                (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2 + this.getScaledSize().getWidth() / 2
+        );
     }
 
     public void onHit() {
+        this.position.setX(
+                (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2 + this.getScaledSize().getWidth() / 2
+        );
+
         this.life--;
         if (this.life < 0) {
             this.life = 0;
@@ -57,6 +77,18 @@ public final class Player extends SpriteEntity {
 
     public boolean isDead() {
         return this.life <= 0;
+    }
+
+    public void reset() {
+        this.life = Config.PLAYER_INITIAL_LIFE;
+        this.cooldownTimer = Config.DELAY_SHOOT_PLAYER;
+
+        this.score = 0;
+        this.medals = 0;
+        this.shootActive = false;
+        this.position.setX(
+                (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2 + this.getScaledSize().getWidth() / 2
+        );
     }
 
     @Override
@@ -96,7 +128,7 @@ public final class Player extends SpriteEntity {
         );
 
         this.cooldownTimer += dt;
-        if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_SPACE)) {
+        if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_SPACE) && this.shootActive) {
             if (this.cooldownTimer >= Config.DELAY_SHOOT_PLAYER) {
                 Galaga.getContext().getState().bullets.shoot(this);
                 this.cooldownTimer = 0.f;

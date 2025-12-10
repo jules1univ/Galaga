@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 
 import engine.utils.logger.Log;
+import java.io.FileNotFoundException;
 
 public final class Cache {
 
@@ -24,7 +25,7 @@ public final class Cache {
                 Log.message("Cache loaded: " + cache.toString());
                 return new FileInputStream(cache);
             }
-        } catch (Exception e) {
+        } catch (FileNotFoundException e) {
             Log.error("Cache loading failed: " + e.getMessage());
         }
         return null;
