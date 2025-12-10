@@ -46,12 +46,16 @@ public class Level {
             }
 
             i++;
-            int actionIndex = 0;
+
+            int actionIndexDelay = Config.DELAY_ACTION_INDEX;
+            int actionEnterDelay = Config.DELAY_ENTER_INDEX;
             while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
-                Enemy enemy = createEnemyFromLine(lines.get(i), actionIndex, level);
+                Enemy enemy = createEnemyFromLine(lines.get(i), actionIndexDelay, actionEnterDelay, level);
                 if (!(enemy.getType() == EnemyType.MOTH && level.getAttackCooldown() <= 0.f)) {
-                    actionIndex++;
+                    actionIndexDelay++;
                 }
+                actionEnterDelay += Config.DELAY_ENTER_INDEX;
+
                 level.enemies.add(enemy);
                 i++;
             }
@@ -79,7 +83,7 @@ public class Level {
         }
     }
 
-    private static Enemy createEnemyFromLine(String line, int index, Level level) {
+    private static Enemy createEnemyFromLine(String line, int actionIndex, int enterIndex, Level level) {
         String[] data = line.split(" ");
         if (data.length < 6) {
             Log.error("Level enemy data is invalid: " + line);
@@ -103,13 +107,13 @@ public class Level {
             EnemyType type = EnemyType.valueOf(enemyType.toUpperCase());
             switch (type) {
                 case EnemyType.BEE -> {
-                    return new EnemyBee(lock, index, value, speed, level.getFormationSpeed(), level.getMissileCooldown());
+                    return new EnemyBee(lock, actionIndex, enterIndex, value, speed, level.getFormationSpeed(), level.getMissileCooldown());
                 }
                 case EnemyType.BUTTERFLY -> {
-                    return new EnemyButterFly(lock, index, value, speed, level.getFormationSpeed(), level.getMissileCooldown());
+                    return new EnemyButterFly(lock, actionIndex, enterIndex, value, speed, level.getFormationSpeed(), level.getMissileCooldown());
                 }
                 case EnemyType.MOTH -> {
-                    return new EnemyMoth(lock, index, value, speed, level.getFormationSpeed(), level.getAttackCooldown());
+                    return new EnemyMoth(lock, actionIndex, enterIndex, value, speed, level.getFormationSpeed(), level.getAttackCooldown());
                 }
                 default -> {
                     Log.error("Unknown enemy type: " + enemyType);

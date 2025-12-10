@@ -17,15 +17,15 @@ public abstract class Enemy extends SpriteEntity {
     protected final float formationSpeed;
 
     protected final int scoreValue;
-
     protected EnemyState state;
-    protected int index;
-    protected float indexTimer;
-    protected boolean action;
+
+    private final int actionIndex;
+    private float indexTimer;
+    private boolean action;
 
     private Font debugFont;
 
-    public Enemy(EnemyType type, Position lock, int index, int value, float speed, float formationSpeed) {
+    public Enemy(EnemyType type, Position lock, int actionIndex, int enterIndex, int value, float speed, float formationSpeed) {
         super();
         this.type = type;
 
@@ -41,9 +41,11 @@ public abstract class Enemy extends SpriteEntity {
         this.scoreValue = value;
 
         this.state = EnemyState.ENTER_LEVEL;
-        this.index = index; 
-        this.indexTimer = index * Config.DELAY_ENEMY_ENTER;
+
         this.action = false;
+        this.actionIndex = actionIndex; 
+
+        this.indexTimer = enterIndex * Config.DELAY_ENEMY_ENTER;
     }
 
     public boolean hasDoneAction() {
@@ -52,7 +54,7 @@ public abstract class Enemy extends SpriteEntity {
 
     public void resetAction() {
         this.action = false;
-        this.indexTimer = this.index * Config.DELAY_ENEMY_FORMATION;
+        this.indexTimer = this.actionIndex * Config.DELAY_ENEMY_FORMATION;
     }
 
     public EnemyState getState() {
@@ -104,7 +106,7 @@ public abstract class Enemy extends SpriteEntity {
             case ENTER_LEVEL -> {
                 this.indexTimer -= (float) dt;
                 if (this.indexTimer <= 0 && !this.action) {
-                    this.indexTimer = this.index * Config.DELAY_ENEMY_FORMATION;
+                    this.indexTimer = this.actionIndex * Config.DELAY_ENEMY_FORMATION;
                     this.state = EnemyState.RETURNING;
                 }
             }
