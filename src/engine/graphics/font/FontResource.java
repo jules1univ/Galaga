@@ -29,8 +29,8 @@ public final class FontResource extends Resource<Font> {
 
             ResourceVariant variant = this.alias.getVariant();
             if (variant != null) {
-                int size = variant.getValue();
-                font = font.deriveFont((float) size);
+                float size = variant.getValue();
+                font = font.deriveFont(size);
             }
             this.onLoadComplete(font);
         } catch (FontFormatException | IOException e) {

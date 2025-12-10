@@ -31,7 +31,9 @@ import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyEvent;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collector;
 
 public class Galaga extends Application {
 
@@ -77,8 +79,7 @@ public class Galaga extends Application {
         getContext().getState().level = getContext().getResource().get(Config.LEVELS.get(this.levelIndex));
 
         this.player.setShooting(false);
-        if(this.levelIndex > 0)
-        {
+        if (this.levelIndex > 0) {
             this.player.onFinishLevel();
         }
 
@@ -100,7 +101,7 @@ public class Galaga extends Application {
             return false;
         }
 
-        if(!this.loadNextLevel()) {
+        if (!this.loadNextLevel()) {
             return false;
         }
 
@@ -127,12 +128,19 @@ public class Galaga extends Application {
 
     @Override
     protected boolean init() {
-        Font[] defaultFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-        if (defaultFonts.length == 0) {
+
+        List<Font> defaultFonts = Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts());
+        if (defaultFonts.isEmpty()) {
             return false;
         }
 
-        Font defaultFont = defaultFonts[0].deriveFont(Config.SIZE_FONT_LARGE);
+        Font defaultFont = defaultFonts
+                .stream()
+                .filter(font -> font.getFontName().equalsIgnoreCase("arial"))
+                .findFirst()
+                .orElse(defaultFonts.get(0))
+                .deriveFont(Config.SIZE_FONT_TEXT);
+
         this.loadingText = new Text("Loading", Position.of(
                 getContext().getFrame().getWidth() / 2,
                 getContext().getFrame().getHeight() / 2), Color.WHITE, defaultFont);
@@ -270,7 +278,7 @@ public class Galaga extends Application {
             Log.error("Failed to load next level");
             this.stop();
             return;
-        }   
+        }
 
         if (this.player.isDead()) {
             throw new UnsupportedOperationException("TODO: Game Over handling");

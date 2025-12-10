@@ -22,7 +22,7 @@ public class Config {
     public static final float HEIGHT_HUD = 50.f;
     public static final float HEIGHT_FUD = 50.f;
 
-    public static final long SPEED_LOADING = 0;
+    public static final long SPEED_LOADING = 200;
     public static final float SPEED_PLAYER = 600.f;
     public static final float SPEED_STAR = 200.0f;
     public static final float SPEED_BULLET = 500.f;
@@ -39,9 +39,9 @@ public class Config {
     public static final float TIME_BLINKSTAR_MIN = 3.0f;
 
     public static final int SIZE_SKY_GRID = 50;
-    public static final int SIZE_FONT_XLARGE = 48;
-    public static final int SIZE_FONT_LARGE = 32;
-    public static final int SIZE_FONT_TEXT = 24;
+    public static final float SIZE_FONT_XLARGE = 48.f;
+    public static final float SIZE_FONT_LARGE = 32.f;
+    public static final float SIZE_FONT_TEXT = 24.f;
     public static final Size SIZE_PARTICLE = Size.of(3.f, 3.f);
 
     public static final float POSITION_LOCK_THRESHOLD = 1.f;
