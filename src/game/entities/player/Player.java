@@ -18,6 +18,7 @@ public final class Player extends SpriteEntity {
 
     private boolean shootActive;
     private float cooldownTimer;
+    private float hitTimer;
 
     private Font debugFont;
 
@@ -68,6 +69,7 @@ public final class Player extends SpriteEntity {
         this.position.setX(
                 (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2 + this.getScaledSize().getWidth() / 2
         );
+        this.hitTimer = Config.DELAY_PLAYER_HIT;
 
         this.life--;
         if (this.life < 0) {
@@ -114,6 +116,11 @@ public final class Player extends SpriteEntity {
 
     @Override
     public void update(float dt) {
+        if(this.hitTimer > 0.f){
+            this.hitTimer -= dt;
+            return;
+        }
+
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_LEFT)) {
             this.position.addX(-Config.SPEED_PLAYER * (float) dt);
         }
@@ -139,11 +146,22 @@ public final class Player extends SpriteEntity {
 
     @Override
     public void draw() {
-        super.draw();
+        if (this.hitTimer <= 0.f) {
+            super.draw();
+        }else{
+            Galaga.getContext().getRenderer().drawLoadingCircle(
+                    this.getPosition(),
+                    this.getScaledSize().getWidth() / 2.f,
+                    Color.RED,
+                    60,
+                    1.f - (this.hitTimer / Config.DELAY_PLAYER_HIT)
+            );
+        }
+
         if (Application.DEBUG_MODE) {
             float delayPercent = Math.clamp((1.f - (this.cooldownTimer / Config.DELAY_SHOOT_PLAYER)), 0.f, 1.f) * 100.f;
             String debugText = String.format("%.2f%%", delayPercent);
-            Application.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
+            Galaga.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
         }
     }
 

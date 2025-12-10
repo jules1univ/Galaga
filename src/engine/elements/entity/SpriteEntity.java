@@ -42,14 +42,14 @@ public abstract class SpriteEntity extends Entity {
     public boolean collideWith(Entity entity) {
         if (entity instanceof SpriteEntity spriteEntity) {
             return Collision.aabb(
-                    this.getCenter(),
+                    this.getPosition(),
                     this.getScaledSize(),
                     spriteEntity.getPosition(),
                     spriteEntity.getScaledSize());
         }
 
         return Collision.aabb(
-                this.position,
+                this.getPosition(),
                 this.getScaledSize(),
                 entity.getPosition(),
                 entity.getSize());

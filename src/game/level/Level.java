@@ -46,8 +46,12 @@ public class Level {
             }
 
             i++;
+            int actionIndex = 0;
             while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
-                Enemy enemy = createEnemyFromLine(lines.get(i), i, level);
+                Enemy enemy = createEnemyFromLine(lines.get(i), actionIndex, level);
+                if (!(enemy.getType() == EnemyType.MOTH && level.getAttackCooldown() <= 0.f)) {
+                    actionIndex++;
+                }
                 level.enemies.add(enemy);
                 i++;
             }

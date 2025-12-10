@@ -9,9 +9,7 @@ import engine.graphics.sprite.Sprite;
 import engine.resource.Resource;
 import engine.resource.ResourceManager;
 import engine.resource.ResourceVariant;
-import engine.utils.Collision;
 import engine.utils.Position;
-import engine.utils.Size;
 import engine.utils.logger.Log;
 import game.entities.bullet.Bullet;
 import game.entities.bullet.BulletManager;
@@ -33,7 +31,6 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collector;
 
 public class Galaga extends Application {
 
@@ -178,7 +175,7 @@ public class Galaga extends Application {
             if (!this.load()) {
                 this.stop();
             }
-        }, Config.SPEED_LOADING);
+        }, Application.DEBUG_MODE ? 0 : Config.SPEED_LOADING);
         return true;
     }
 

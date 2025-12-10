@@ -107,6 +107,29 @@ public final class Renderer {
         return this;
     }
 
+    public Renderer drawLoadingCircle(Position center, float radius, Color color, int segments, float percent) {
+        this.g.setColor(color);
+
+        float angleStep = 360.f / segments;
+        float filledAngle = 360.f * percent;
+
+        for (float angle = 0.f; angle < filledAngle; angle += angleStep) {
+            float nextAngle = Math.min(angle + angleStep, filledAngle);
+
+            int x1 = (int) (center.getX() + Math.cos(Math.toRadians(angle)) * radius);
+            int y1 = (int) (center.getY() + Math.sin(Math.toRadians(angle)) * radius);
+            int x2 = (int) (center.getX() + Math.cos(Math.toRadians(nextAngle)) * radius);
+            int y2 = (int) (center.getY() + Math.sin(Math.toRadians(nextAngle)) * radius);
+
+            int[] xPoints = {center.getIntX(), x1, x2};
+            int[] yPoints = {center.getIntY(), y1, y2};
+
+            this.g.fillPolygon(xPoints, yPoints, 3);
+        }
+
+        return this;
+    }
+
     public Renderer drawSprite(Sprite sprite, Position position, float scale) {
         if (sprite == null || sprite.getImage() == null) {
             Log.warning("Attempted to draw null sprite.");
