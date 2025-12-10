@@ -15,7 +15,7 @@ import java.util.Map;
 public final class Sprite {
 
     private final BufferedImage image;
-    private Map<Color, Integer> colorMap;
+    private final Map<Color, Integer> colorMap;
 
     private Sprite(BufferedImage image, Map<Color, Integer> colorMap) {
         this.image = image;

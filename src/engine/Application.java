@@ -48,7 +48,7 @@ public abstract class Application {
 
     protected abstract boolean init();
 
-    protected abstract void update(double dt);
+    protected abstract void update(float dt);
 
     protected abstract void draw();
 }

@@ -47,7 +47,7 @@ public class HUD extends UIElement {
     }
 
     @Override
-    public void update(double dt) {
+    public void update(float dt) {
         this.fps.setText(String.format("FPS: %.2f", Time.getFrameRate()));
         this.score.setText(String.format("SCORE: %d", Galaga.getContext().getState().player.getScore()));
         this.bestScore.setText(String.format("BEST: %d", Galaga.getContext().getState().bestScore));

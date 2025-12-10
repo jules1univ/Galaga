@@ -90,8 +90,8 @@ public final class Renderer {
     public Renderer drawRect(Position position, Size size, Color color, float angle) {
         this.g.setColor(color);
 
-        double cx = position.getX() + size.getWidth() / 2;
-        double cy = position.getY() + size.getHeight() / 2;
+        float cx = position.getX() + size.getWidth() / 2;
+        float cy = position.getY() + size.getHeight() / 2;
 
         AffineTransform old = this.g.getTransform();
         this.g.rotate(Math.toRadians(angle), cx, cy);
@@ -138,8 +138,8 @@ public final class Renderer {
             return this;
         }
 
-        double cx = center.getX() + e.getScaledSize().getWidth() / 2;
-        double cy = center.getY() + e.getScaledSize().getHeight() / 2;
+        float cx = center.getX() + e.getScaledSize().getWidth() / 2;
+        float cy = center.getY() + e.getScaledSize().getHeight() / 2;
 
         AffineTransform old = this.g.getTransform();
         this.g.rotate(Math.toRadians(e.getAngle()), cx, cy);

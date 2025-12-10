@@ -17,7 +17,7 @@ public class EnemyMoth extends Enemy {
     }
 
     @Override
-    protected void updateAction(double dt) {
+    protected void updateAction(float dt) {
         if (this.state != EnemyState.ATTACKING) {
             return;
         }

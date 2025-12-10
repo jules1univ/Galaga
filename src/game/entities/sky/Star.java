@@ -1,21 +1,21 @@
 package game.entities.sky;
 
-import java.awt.Color;
-
 import engine.elements.entity.Entity;
 import engine.utils.Position;
 import engine.utils.Size;
-import game.Galaga;
 import game.Config;
+import game.Galaga;
+import java.awt.Color;
 
 public final class Star extends Entity {
 
-    private Color color;
+    private final Color color;
+    private final float initialY;
+
     private float time;
     private float blinkDelay;
     private boolean active;
 
-    private float initialY;
 
     public Star(Position position, float size, Color color) {
         super();
@@ -39,7 +39,7 @@ public final class Star extends Entity {
     }
 
     @Override
-    public void update(double dt) {
+    public void update(float dt) {
         this.time += dt;
         if (this.time > this.blinkDelay) {
             this.time = 0.0f;

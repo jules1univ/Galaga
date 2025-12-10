@@ -14,7 +14,7 @@ public final class AnimatedValue {
         this.duration = duration;
     }
 
-    public void update(double dt) {
+    public void update(float dt) {
         this.time += dt;
         if (this.time > this.duration) {
             this.time = this.duration;

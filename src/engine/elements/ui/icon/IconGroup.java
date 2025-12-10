@@ -58,7 +58,7 @@ public final class IconGroup extends UIElement {
     }
 
     @Override
-    public void update(double dt) {
+    public void update(float dt) {
     }
 
     @Override

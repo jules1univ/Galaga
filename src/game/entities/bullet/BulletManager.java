@@ -33,20 +33,12 @@ public class BulletManager extends Entity implements  Iterable<Bullet> {
 
     @Override
     public boolean init() {
-        return true;
+        throw new UnsupportedOperationException("Do not call init on BulletManager");
     }
 
     @Override
-    public void update(double dt) {
-        List<Bullet> toRemove = new ArrayList<>();
-        for (Bullet bullet : bullets) {
-            bullet.update(dt);
-
-            if (bullet.isOutOfBounds()) {
-                toRemove.add(bullet);
-            }
-        }
-        bullets.removeAll(toRemove);
+    public void update(float dt) {
+        throw new UnsupportedOperationException("Do not call update on BulletManager");
     }
 
     @Override

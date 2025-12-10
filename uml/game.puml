@@ -56,7 +56,7 @@ class Bullet {
   +Bullet(shooter: SpriteEntity)
   +getShooter(): Entity
   +init(): boolean
-  +update(dt: double): void
+  +update(dt: float): void
   +draw(): void
 }
 
@@ -69,7 +69,7 @@ class BulletManager {
   +removeAll(removeBullet: List<Bullet>): void
   +isEmpty(): boolean
   +init(): boolean
-  +update(dt: double): void
+  +update(dt: float): void
   +draw(): void
 }
 
@@ -89,10 +89,10 @@ abstract class Enemy {
   +setIndex(index: int): void
   +getScoreValue(): int
   -isInLockPosition(): boolean
-  -animateToLockPosition(dt: double): void
-  #updateAction(dt: double): void
+  -animateToLockPosition(dt: float): void
+  #updateAction(dt: float): void
   +init(): boolean
-  +update(dt: double): void
+  +update(dt: float): void
   +draw(): void
 }
 
@@ -102,7 +102,7 @@ class EnemyBee {
   -zigZagIndex: int = 0
   --
   +EnemyBee(lock: Position, value: int, speed: float, formationSpeed: float, missileCooldown: float)
-  #updateAction(dt: double): void
+  #updateAction(dt: float): void
 }
 
 class EnemyButterFly {
@@ -111,7 +111,7 @@ class EnemyButterFly {
   -target: Position
   --
   +EnemyButterFly(lock: Position, value: int, speed: float, formationSpeed: float, missileCooldown: float)
-  #updateAction(dt: double): void
+  #updateAction(dt: float): void
 }
 
 class EnemyMoth {
@@ -120,7 +120,7 @@ class EnemyMoth {
   -target: Position
   --
   +EnemyMoth(lock: Position, value: int, speed: float, formationSpeed: float, attackCooldown: float)
-  #updateAction(dt: double): void
+  #updateAction(dt: float): void
 }
 
 class Player {
@@ -139,7 +139,7 @@ class Player {
   +onHit(): void
   +isDead(): boolean
   +init(): boolean
-  +update(dt: double): void
+  +update(dt: float): void
   +draw(): void
 }
 
@@ -149,7 +149,7 @@ class Sky {
   --
   +Sky(gridSize: int)
   +init(): boolean
-  +update(dt: double): void
+  +update(dt: float): void
   +draw(): void
 }
 
@@ -162,7 +162,7 @@ class Star {
   --
   +Star(position: Position, size: float, color: Color)
   +init(): boolean
-  +update(dt: double): void
+  +update(dt: float): void
   +draw(): void
 }
 
@@ -184,7 +184,7 @@ class Galaga {
   -loadNextLevel(): boolean
   -load(): boolean
   #init(): boolean
-  #update(dt: double): void
+  #update(dt: float): void
   #draw(): void
 }
 
@@ -230,7 +230,7 @@ class FUD {
   +FUD()
   -createArrayIcon(sprite: Sprite, length: int): List<Icon>
   +init(): boolean
-  +update(dt: double): void
+  +update(dt: float): void
   +draw(): void
 }
 
@@ -242,7 +242,7 @@ class HUD {
   --
   +HUD()
   +init(): boolean
-  +update(dt: double): void
+  +update(dt: float): void
   +draw(): void
 }
 
@@ -255,7 +255,7 @@ class Menu {
   +setVisible(visible: boolean): void
   +isVisible(): boolean
   +init(): boolean
-  +update(dt: double): void
+  +update(dt: float): void
   +draw(): void
 }
 

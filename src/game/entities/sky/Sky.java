@@ -1,21 +1,20 @@
 package game.entities.sky;
 
+import engine.elements.entity.Entity;
+import engine.utils.Position;
+import game.Config;
+import game.Galaga;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import engine.elements.entity.Entity;
-import engine.utils.Position;
-import game.Galaga;
-import game.Config;
-
 public final class Sky extends Entity {
-    private List<Star> stars = new ArrayList<>();
-    private int size;
+    private final List<Star> stars = new ArrayList<>();
+    private final int gridSize;
 
     public Sky(int gridSize) {
         super();
-        this.size = gridSize;
+        this.gridSize = gridSize;
     }
 
     @Override
@@ -23,10 +22,10 @@ public final class Sky extends Entity {
         int width = Galaga.getContext().getFrame().getWidth();
         int height = Galaga.getContext().getFrame().getHeight();
 
-        for (int x = 0; x < width; x += this.size) {
-            for (int y = 0; y < height; y += this.size) {
-                int offsetX = (int) (Math.random() * this.size);
-                int offsetY = (int) (Math.random() * this.size);
+        for (int x = 0; x < width; x += this.gridSize) {
+            for (int y = 0; y < height; y += this.gridSize) {
+                int offsetX = (int) (Math.random() * this.gridSize);
+                int offsetY = (int) (Math.random() * this.gridSize);
                 int pointX = x + offsetX;
                 int pointY = y + offsetY;
 
@@ -47,7 +46,7 @@ public final class Sky extends Entity {
     }
 
     @Override
-    public void update(double dt) {
+    public void update(float dt) {
         for (Star star : stars) {
             star.update(dt);
         }

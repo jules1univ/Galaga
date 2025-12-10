@@ -29,8 +29,7 @@ public class Config {
     public static final float SPEED_ENEMY_FACTOR = 500.f;
 
     public static final float DELAY_SHOOT_PLAYER = .5f;
-    public static final float DELAY_ENEMY_ROUND = 20.f;
-    public static final float DELAY_ENEMY_ENTER = 0.1f;
+    public static final float DELAY_ENEMY_ENTER = 0.2f;
     public static final float DELAY_ENEMY_COOLDOWN_FACTOR_ATTACK = 0.01f;
     public static final float DELAY_ENEMY_COOLDOWN_FACTOR_MISSILE = 0.001f;
 
@@ -44,7 +43,6 @@ public class Config {
     public static final int SIZE_FONT_TEXT = 24;
     public static final Size SIZE_PARTICLE = Size.of(3.f, 3.f);
 
-    public static final int POSITION_ENEMY_INDEX_NOTSET = -1;
     public static final float POSITION_LOCK_THRESHOLD = 1.f;
     public static final float POSITION_NEAR_THRESHOLD = 10.f;
 

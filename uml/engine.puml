@@ -51,7 +51,7 @@ abstract class Application {
   +start(): void
   +stop(): void
   #init(): boolean
-  #update(dt: double): void
+  #update(dt: float): void
   #draw(): void
 }
 
@@ -96,7 +96,7 @@ class Icon {
   --
   +Icon(icon: Sprite, scale: float)
   +init(): boolean
-  +update(dt: double): void
+  +update(dt: float): void
   +draw(): void
 }
 
@@ -112,7 +112,7 @@ class IconGroup {
   -updatePosition(): void
   +setPosition(position: Position): void
   +init(): boolean
-  +update(dt: double): void
+  +update(dt: float): void
   +draw(): void
 }
 
@@ -140,7 +140,7 @@ abstract class Select {
   +next(): void
   +prev(): void
   +init(): boolean
-  +update(dt: double): void
+  +update(dt: float): void
   +draw(): void
 }
 
@@ -169,7 +169,7 @@ class Text {
   +setCenter(horizontal: TextPosition, vertical: TextPosition): void
   -updateText(): void
   +init(): boolean
-  +update(dt: double): void
+  +update(dt: float): void
   +draw(): void
 }
 
@@ -186,7 +186,7 @@ abstract class VisualElement {
   +getPosition(): Position
   +getSize(): Size
   +init(): boolean
-  +update(dt: double): void
+  +update(dt: float): void
   +draw(): void
 }
 
@@ -334,7 +334,7 @@ class AnimatedValue {
   -time: float
   --
   +AnimatedValue(value: float, target: float, duration: float)
-  +update(dt: double): void
+  +update(dt: float): void
   +getValue(): float
   +isFinished(): boolean
   +reset(value: float): void
@@ -407,14 +407,14 @@ class Size {
 }
 
 class Time {
-  -{static} lastTime: double = 0
-  -{static} deltaTime: double = 0
-  -{static} TIME_TO_NANO: double = 1_000_000_000.0
+  -{static} lastTime: float = 0
+  -{static} deltaTime: float = 0
+  -{static} TIME_TO_NANO: float = 1_000_000_000.0
   --
   +{static} update(): void
   +{static} reset(): void
-  +{static} getDeltaTime(): double
-  +{static} getFrameRate(): double
+  +{static} getDeltaTime(): float
+  +{static} getFrameRate(): float
 }
 
 AppContext *-- AppFrame

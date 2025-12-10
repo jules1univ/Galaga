@@ -50,7 +50,7 @@ public class Menu extends UIElement {
     }
 
     @Override
-    public void update(double dt) {
+    public void update(float dt) {
 
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_LEFT)) {
             this.gameMode.prev();

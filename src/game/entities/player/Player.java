@@ -81,7 +81,7 @@ public final class Player extends SpriteEntity {
     }
 
     @Override
-    public void update(double dt) {
+    public void update(float dt) {
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_LEFT)) {
             this.position.addX(-Config.SPEED_PLAYER * (float) dt);
         }

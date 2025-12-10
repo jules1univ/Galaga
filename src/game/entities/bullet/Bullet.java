@@ -35,11 +35,11 @@ public class Bullet extends Entity {
 
     @Override
     public boolean init() {
-        return true;
+        throw new UnsupportedOperationException("Do not call init on Bullet");
     }
 
     @Override
-    public void update(double dt) {
+    public void update(float dt) {
         this.position.moveTo(this.angle, (float) dt * Config.SPEED_BULLET);
     }
 

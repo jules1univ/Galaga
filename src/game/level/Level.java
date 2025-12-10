@@ -13,7 +13,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,14 +45,9 @@ public class Level {
             }
 
             i++;
-            HashMap<EnemyType, Integer> mapIndex = new HashMap<>();
             while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
                 Enemy enemy = createEnemyFromLine(lines.get(i), level);
-
-                mapIndex.putIfAbsent(enemy.getType(), 1);
-                mapIndex.put(enemy.getType(), mapIndex.get(enemy.getType()) + 1);
-                enemy.setIndex(mapIndex.get(enemy.getType()) - 1);
-
+                enemy.startAction(i * Config.DELAY_ENEMY_ENTER);
                 level.enemies.add(enemy);
                 i++;
             }

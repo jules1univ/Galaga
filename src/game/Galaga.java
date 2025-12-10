@@ -26,6 +26,7 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Galaga extends Application {
@@ -162,7 +163,7 @@ public class Galaga extends Application {
     }
 
     @Override
-    protected void update(double dt) {
+    protected void update(float dt) {
         if (getContext().getInput().isKeyDown(KeyEvent.VK_ESCAPE)) {
             this.stop();
         }
@@ -183,47 +184,49 @@ public class Galaga extends Application {
             return;
         }
 
-        this.bullets.update(dt);
         this.player.update(dt);
         for (Enemy enemy : this.enemies) {
             enemy.update(dt);
         }
 
-        if (!this.bullets.isEmpty()) {
+        if (!this.bullets.isEmpty() && !this.enemies.isEmpty()) {
             List<Bullet> bulletsRemove = new ArrayList<>();
-            List<Enemy> enemiesRemove = new ArrayList<>();
 
             for (Bullet bullet : this.bullets) {
-                if (bullet.getShooter() == this.player) {
+                if (bullet.isOutOfBounds()) {
+                    bulletsRemove.add(bullet);
+                    continue;
+                }
+                bullet.update(dt);
+
+                if (bullet.getShooter() instanceof Player) {
+                    List<Enemy> enemiesRemove = new ArrayList<>();
                     for (Enemy enemy : this.enemies) {
                         if (enemy.collideWith(bullet)) {
-                            this.player.onKillEnemy(enemy);
                             enemiesRemove.add(enemy);
                             bulletsRemove.add(bullet);
                             this.particles.createExplosion(enemy);
-                            break;
+                            continue;
+                        }
+
+                        if (enemy.collideWith(this.player)) {
+                            this.particles.createExplosion(this.player);
+                            this.player.onHit();
+                            enemiesRemove.add(enemy);
                         }
                     }
-                } else if (this.player.collideWith(bullet)) {
+                    this.enemies.removeAll(enemiesRemove);
+                }else if(this.player.collideWith(bullet)) {
                     this.particles.createExplosion(this.player);
                     this.player.onHit();
                     bulletsRemove.add(bullet);
                 }
             }
-
-            this.enemies.removeAll(enemiesRemove);
             this.bullets.removeAll(bulletsRemove);
+        }
 
-            if (this.enemies.isEmpty()) {
-                this.loadNextLevel();
-            }
-        } else {
-            for (Enemy enemy : this.enemies) {
-                if (this.player.collideWith(enemy)) {
-                    this.particles.createExplosion(this.player);
-                    this.player.onHit();
-                }
-            }
+        if (this.enemies.isEmpty()) {
+            this.loadNextLevel();
         }
 
         if (this.player.isDead()) {

@@ -66,7 +66,7 @@ public class FUD extends UIElement {
     }
 
     @Override
-    public void update(double dt) {
+    public void update(float dt) {
         int lifes = Galaga.getContext().getState().player.getLife();
         if (this.lifeIcons.getIcons().size() != lifes) {
             this.lifeIcons.setIcons(createArrayIcon(this.ship, lifes));

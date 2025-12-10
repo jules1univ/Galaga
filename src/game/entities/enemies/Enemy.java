@@ -10,15 +10,17 @@ import java.awt.Font;
 
 public abstract class Enemy extends SpriteEntity {
 
-    protected final float speed;
-    protected final float formationSpeed;
-    protected final int scoreValue;
     protected final EnemyType type;
     protected final Position lock;
 
-    protected int index;
-    private float indexTimer;
+    protected final float speed;
+    protected final float formationSpeed;
+
+    protected final int scoreValue;
+
     protected EnemyState state;
+    protected float delay;
+    protected boolean action;
 
     private Font debugFont;
 
@@ -37,16 +39,21 @@ public abstract class Enemy extends SpriteEntity {
         this.formationSpeed = formationSpeed;
         this.scoreValue = value;
 
-        this.index = Config.POSITION_ENEMY_INDEX_NOTSET;
         this.state = EnemyState.ENTER_LEVEL;
+        this.delay = 0.f;
+    }
+
+    public void startAction(float delay) {
+        this.action = false;
+        this.delay = delay;
+    }
+
+    public boolean hasDoneAction() {
+        return this.action;
     }
 
     public EnemyType getType() {
         return type;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
     }
 
     public int getScoreValue() {
@@ -58,7 +65,7 @@ public abstract class Enemy extends SpriteEntity {
         return distance <= Config.POSITION_LOCK_THRESHOLD * 10;
     }
 
-    private void animateToLockPosition(double dt) {
+    private void animateToLockPosition(float dt) {
         float distance = this.position.distance(this.lock);
         float scaledSpeed = this.formationSpeed * (float) dt + distance * (float) dt;
 
@@ -70,7 +77,7 @@ public abstract class Enemy extends SpriteEntity {
         }
     }
 
-    protected abstract void updateAction(double dt);
+    protected abstract void updateAction(float dt);
 
     @Override
     public final boolean init() {
@@ -84,17 +91,13 @@ public abstract class Enemy extends SpriteEntity {
     }
 
     @Override
-    public final void update(double dt) {
+    public final void update(float dt) {
 
         switch (this.state) {
             case ENTER_LEVEL -> {
-                if (this.index == Config.POSITION_ENEMY_INDEX_NOTSET) {
-                    break;
-                }
-                if (this.indexTimer < this.index * Config.DELAY_ENEMY_ENTER) {
-                    this.indexTimer += (float) dt;
-                } else {
-                    this.indexTimer = 0;
+                this.delay -= (float) dt;
+                if (this.delay <= 0 && !this.action) {
+                    this.action = true;
                     this.state = EnemyState.RETURNING;
                 }
             }
@@ -105,14 +108,9 @@ public abstract class Enemy extends SpriteEntity {
                 }
             }
             case FORMATION -> {
-                if (this.index == Config.POSITION_ENEMY_INDEX_NOTSET) {
-                    break;
-                }
-
-                if (this.indexTimer < this.index * Config.DELAY_ENEMY_ROUND) {
-                    this.indexTimer += (float) dt;
-                } else {
-                    this.indexTimer = 0;
+                this.delay -= (float) dt;
+                if (this.delay <= 0 && !this.action) {
+                    this.action = true;
                     this.state = EnemyState.ATTACKING;
                 }
             }
@@ -125,12 +123,10 @@ public abstract class Enemy extends SpriteEntity {
     @Override
     public final void draw() {
         super.draw();
+
         if (Application.DEBUG_MODE) {
-
-            float delayPercent = Math.clamp(((this.indexTimer / Config.DELAY_ENEMY_ROUND)), 0.f, 1.f) * 100.f;
-            String debugText = String.format("%.2f%%", delayPercent);
+            String debugText = String.format("%.2f%%", this.action ? this.delay : 0.f);
             Application.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
-
         }
     }
 }

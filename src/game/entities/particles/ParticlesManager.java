@@ -49,7 +49,7 @@ public class ParticlesManager {
         }
     }
 
-    public void update(double dt) {
+    public void update(float dt) {
         ArrayList<Particle> toRemove = new ArrayList<>();
         for (Particle particle : this.particles) {
             particle.update(dt);

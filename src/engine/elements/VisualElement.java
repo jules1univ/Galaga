@@ -21,7 +21,7 @@ public abstract class VisualElement {
 
     public abstract boolean init();
 
-    public abstract void update(double dt);
+    public abstract void update(float dt);
 
     public abstract void draw();
 }
