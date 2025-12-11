@@ -10,7 +10,7 @@ public final class AppFrame extends JFrame {
     private final Renderer renderer;
     private InputKeyListener input;
 
-    public AppFrame(Application app) {
+    public AppFrame(Application<?> app) {
         super(app.getTitle());
 
         this.setSize(app.getWidth(), app.getHeight());

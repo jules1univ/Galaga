@@ -10,11 +10,11 @@ import javax.swing.JPanel;
 public final class AppPanel extends JPanel implements Runnable {
 
     private Thread thread;
-    private final Application app;
+    private final Application<?> app;
 
     private volatile boolean running = false;
 
-    public AppPanel(Application app) {
+    public AppPanel(Application<?> app) {
         super();
         this.app = app;
 

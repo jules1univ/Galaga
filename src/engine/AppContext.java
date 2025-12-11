@@ -6,15 +6,17 @@ import engine.graphics.sprite.SpriteResource;
 import engine.input.InputKeyListener;
 import engine.resource.ResourceManager;
 
-public final class AppContext<GameState> {
+public final class AppContext<GameState, T extends Enum<T>> {
     private final AppFrame frame;
+    private final Application<T> application;
     private final Renderer renderer;
     private final InputKeyListener input;
     private final ResourceManager resource;
 
     private GameState state;
 
-    public AppContext(Application app) {
+    public AppContext(Application<T> app) {
+        this.application = app;
         this.frame = new AppFrame(app);
         this.renderer = this.frame.getRenderer();
         this.input = this.frame.getInput();
@@ -30,6 +32,10 @@ public final class AppContext<GameState> {
 
     public AppFrame getFrame() {
         return this.frame;
+    }
+
+    public Application<T> getApplication() {
+        return this.application;
     }
 
     public Renderer getRenderer() {
