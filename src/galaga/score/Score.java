@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import engine.utils.logger.Log;
 
-public class Score {
+public class Score implements Comparable<Score> {
     private int value;
     
     public static Score loadScore(InputStream in)
@@ -50,7 +50,7 @@ public class Score {
         }
     }
 
-    private Score(int value)
+    public Score(int value)
     {
         this.value = value;
     }
@@ -58,6 +58,11 @@ public class Score {
 
     public int getValue() {
         return this.value;
+    }
+
+    @Override
+    public int compareTo(Score o) {
+        return Integer.compare(this.value, o.value);
     }
 
 

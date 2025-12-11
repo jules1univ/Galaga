@@ -14,6 +14,7 @@ import galaga.entities.player.Player;
 import galaga.entities.sky.Sky;
 import galaga.level.Level;
 import galaga.pages.GalagaPage;
+import galaga.score.Score;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,9 +75,9 @@ public class Game extends Page<GalagaPage> {
     @Override
     public boolean onDeactivate() {
 
-        int score = this.player.getScore();
-        int bestScore = Galaga.getContext().getResource().get(Config.BEST_SCORE);
-        if(score > bestScore) {
+        Score score = new Score(this.player.getScore());
+        Score bestScore = Galaga.getContext().getResource().get(Config.BEST_SCORE);
+        if(score.compareTo(bestScore) > 0) {
             Galaga.getContext().getResource().write(Config.BEST_SCORE, score);
         }
 
