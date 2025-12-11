@@ -37,7 +37,7 @@ public class Bullet extends Entity {
 
     @Override
     public boolean init() {
-        throw new UnsupportedOperationException("Do not call init on Bullet");
+        throw new UnsupportedOperationException("Bullet.init should not be called");
     }
 
     @Override

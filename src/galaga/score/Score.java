@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import engine.utils.logger.Log;
@@ -37,6 +38,18 @@ public class Score {
         return new Score(value);
     }
 
+    public static boolean saveScore(Score data, OutputStream out) {
+        String content = Integer.toString(data.getValue()) + "\n";
+        try {
+            out.write(content.getBytes());
+            out.flush();
+            return true;
+        } catch (IOException e) {
+            Log.error("Score saving failed: " + e.getMessage());
+            return false;
+        }
+    }
+
     private Score(int value)
     {
         this.value = value;
@@ -46,4 +59,6 @@ public class Score {
     public int getValue() {
         return this.value;
     }
+
+
 }

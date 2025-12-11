@@ -33,12 +33,12 @@ public class BulletManager extends Entity implements  Iterable<Bullet> {
 
     @Override
     public boolean init() {
-        throw new UnsupportedOperationException("Do not call init on BulletManager");
+        throw new UnsupportedOperationException("BulletManager.init should not be called");
     }
 
     @Override
     public void update(float dt) {
-        throw new UnsupportedOperationException("Do not call update on BulletManager");
+        throw new UnsupportedOperationException("BulletManager.update should not be called");
     }
 
     @Override

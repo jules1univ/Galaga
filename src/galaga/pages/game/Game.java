@@ -73,6 +73,13 @@ public class Game extends Page<GalagaPage> {
 
     @Override
     public boolean onDeactivate() {
+
+        int score = this.player.getScore();
+        int bestScore = Galaga.getContext().getResource().get(Config.BEST_SCORE);
+        if(score > bestScore) {
+            Galaga.getContext().getResource().write(Config.BEST_SCORE, score);
+        }
+
         this.state = PageState.INACTIVE;
         return true;
     }

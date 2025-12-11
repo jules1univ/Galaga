@@ -30,4 +30,8 @@ public final class SpriteResource extends Resource<Sprite> {
         return true;
     }
 
+    @Override
+    public boolean write(Sprite data) {
+        throw new UnsupportedOperationException("Sprite.write should not be called");
+    }
 }

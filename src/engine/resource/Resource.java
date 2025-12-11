@@ -5,8 +5,10 @@ import engine.utils.logger.Log;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 
 public abstract class Resource<ResourceData> {
@@ -64,6 +66,22 @@ public abstract class Resource<ResourceData> {
 
         return null;
     }
+
+    protected final OutputStream getResourceOutput() {
+        File file = this.alias.getPath();
+        try {
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            }
+            return new FileOutputStream(file);
+        } catch (IOException e) {
+            Log.error("Resource output stream creation failed: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public abstract boolean write(ResourceData data);
 
     public abstract boolean load();
 

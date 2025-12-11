@@ -1,6 +1,7 @@
 package galaga.score;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import engine.resource.Resource;
 import engine.resource.ResourceAlias;
@@ -25,5 +26,15 @@ public class ScoreResource extends Resource<Score> {
         }
         this.onLoadComplete(score);
         return true;
+    }
+
+    
+    @Override
+    public boolean write(Score data) {
+        OutputStream out = this.getResourceOutput();
+        if(out == null) {
+            return false;
+        }
+        return Score.saveScore(data, out);
     }
 }

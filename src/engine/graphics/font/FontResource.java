@@ -12,7 +12,7 @@ import java.io.InputStream;
 
 public final class FontResource extends Resource<Font> {
     public static final String NAME = "font";
-    
+
     public FontResource(ResourceAlias alias, ResourceCallback callback) {
         super(alias, callback);
     }
@@ -38,6 +38,11 @@ public final class FontResource extends Resource<Font> {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean write(Font data) {
+        throw new UnsupportedOperationException("Font.write should not be called");
     }
 
 }

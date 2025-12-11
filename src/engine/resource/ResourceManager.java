@@ -32,17 +32,17 @@ public final class ResourceManager {
             this.resources.put(alias.getFullName(),
                     resourceClass.getDeclaredConstructor(ResourceAlias.class, ResourceCallback.class).newInstance(alias,
                             callback));
-        } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException
+                | SecurityException | InvocationTargetException e) {
             Log.error("Resource creation failed: " + e.getMessage());
         }
     }
+
     public void add(List<ResourceAlias> aliases, String loadername, ResourceCallback callback) {
         for (ResourceAlias alias : aliases) {
             this.add(alias, loadername, callback);
         }
     }
-
-    
 
     public void add(ResourceAlias alias, String loadername) {
         this.add(alias, loadername, null);
@@ -75,6 +75,18 @@ public final class ResourceManager {
 
     public <T, E extends Enum<E>> T get(E enumConst, String variant) {
         return this.get(enumConst.name().toLowerCase() + variant);
+    }
+
+    public <T> boolean write(String name, T data) {
+        Resource<T> res = (Resource<T>)this.resources.get(name);
+        if (res != null && res.isLoaded()) {
+            return res.write(data);
+        }
+        return false;
+    }
+
+    public <T> boolean write(ResourceAlias alias, T data) {
+        return this.write(alias.getName(), data);
     }
 
     public void load(Runnable callback, long delay) {
@@ -112,8 +124,8 @@ public final class ResourceManager {
                 }
             }
             this.loading = false;
-            if(failedCount > 0) {
-                Log.error("Resource loading completed with "+failedCount +"  failed resources.");
+            if (failedCount > 0) {
+                Log.error("Resource loading completed with " + failedCount + "  failed resources.");
             } else {
                 Log.message("All resources loaded successfully.");
             }

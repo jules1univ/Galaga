@@ -26,4 +26,9 @@ public class LevelResource extends Resource<Level>{
         return true;
     }
     
+    
+    @Override
+    public boolean write(Level data) {
+        throw new UnsupportedOperationException("Level.write should not be called");
+    }
 }
