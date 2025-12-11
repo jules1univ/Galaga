@@ -11,8 +11,8 @@ public class EnemyBee extends Enemy {
 
     private int zigZagIndex = 0;
 
-    public EnemyBee(Position lock, int actionIndex ,int enterIndex, int value, float speed, float formationSpeed, float missileCooldown) {
-        super(EnemyType.BEE, lock, actionIndex, enterIndex, value, speed, formationSpeed);
+    public EnemyBee(EnemySetting setting, float formationSpeed, float missileCooldown) {
+        super(EnemyType.BEE, setting, formationSpeed);
         this.missileCooldown = missileCooldown;
     }
 

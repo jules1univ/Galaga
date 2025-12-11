@@ -11,8 +11,8 @@ public class EnemyMoth extends Enemy {
     private float attackTimer = 0.f;
     private Position target;
 
-    public EnemyMoth(Position lock, int actionIndex ,int enterIndex, int value, float speed, float formationSpeed, float attackCooldown) {
-        super(EnemyType.MOTH, lock, actionIndex, enterIndex, value, speed, formationSpeed);
+    public EnemyMoth(EnemySetting setting, float formationSpeed, float attackCooldown) {
+        super(EnemyType.MOTH, setting, formationSpeed);
         this.attackCooldown = attackCooldown;
     }
 

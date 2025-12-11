@@ -25,27 +25,27 @@ public abstract class Enemy extends SpriteEntity {
 
     private Font debugFont;
 
-    public Enemy(EnemyType type, Position lock, int actionIndex, int enterIndex, int value, float speed, float formationSpeed) {
+    public Enemy(EnemyType type, EnemySetting setting, float formationSpeed) {
         super();
         this.type = type;
-
+        
         this.angle = 0.f;
         this.scale = Config.SPRITE_SCALE_DEFAULT;
 
-        boolean isLeft = lock.getX() < Config.WINDOW_WIDTH / 2.f;
+        boolean isLeft = setting.getLockPosition().getX() < Config.WINDOW_WIDTH / 2.f;
         this.position = isLeft ? Config.POSITION_ENEMY_LEFT.copy() : Config.POSITION_ENEMY_RIGHT.copy();
-        this.lock = lock.copy();
+        this.lock = setting.getLockPosition().copy();
 
-        this.speed = speed;
+        this.speed = setting.getSpeed();
         this.formationSpeed = formationSpeed;
-        this.scoreValue = value;
+        this.scoreValue = setting.getScoreValue();
 
         this.state = EnemyState.ENTER_LEVEL;
 
         this.action = false;
-        this.actionIndex = actionIndex; 
+        this.actionIndex = setting.getActionIndex(); 
 
-        this.indexTimer = enterIndex * Config.DELAY_ENEMY_ENTER;
+        this.indexTimer = setting.getEnterIndex() * Config.DELAY_ENEMY_ENTER;
     }
 
     public boolean hasDoneAction() {

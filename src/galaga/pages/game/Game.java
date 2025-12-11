@@ -36,7 +36,7 @@ public class Game extends Page<GalagaPage> {
     }
 
     @Override
-    public boolean onActivate() {
+    public boolean onActivate() {        
         this.particles = new ParticlesManager();
         this.bullets = new BulletManager();
 

@@ -8,6 +8,7 @@ import galaga.entities.enemies.Enemy;
 import galaga.entities.enemies.EnemyBee;
 import galaga.entities.enemies.EnemyButterFly;
 import galaga.entities.enemies.EnemyMoth;
+import galaga.entities.enemies.EnemySetting;
 import galaga.entities.enemies.EnemyType;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class Level {
     private final float attackCooldown;
     private final float missileCooldown;
 
-    private final List<Enemy> enemies = new LinkedList<>();
+    private final List<EnemySetting> enemies = new LinkedList<>();
 
     public static Level createLevel(InputStream in) {
 
@@ -52,7 +53,7 @@ public class Level {
             int actionEnterDelay = Config.DELAY_ENTER_INDEX;
             Map<EnemyType, Integer> enemyActionIndexDelay = new HashMap<>();
             while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
-                Enemy enemy = createEnemyFromLine(lines.get(i), enemyActionIndexDelay, actionEnterDelay, level);
+                EnemySetting enemy = createEnemyFromLine(lines.get(i), enemyActionIndexDelay, actionEnterDelay, level);
                 actionEnterDelay += Config.DELAY_ENTER_INDEX;
 
                 level.enemies.add(enemy);
@@ -82,7 +83,7 @@ public class Level {
         }
     }
 
-    private static Enemy createEnemyFromLine(String line, Map<EnemyType, Integer> enemyActionIndex, int enterIndex, Level level) {
+    private static EnemySetting createEnemyFromLine(String line, Map<EnemyType, Integer> enemyActionIndex, int enterIndex, Level level) {
         String[] data = line.split(" ");
         if (data.length < 6) {
             Log.error("Level enemy data is invalid: " + line);
@@ -111,21 +112,7 @@ public class Level {
                 enemyActionIndex.put(type, enemyActionIndex.get(type) + 1);
             }
 
-            switch (type) {
-                case EnemyType.BEE -> {
-                    return new EnemyBee(lock, actionIndex, enterIndex, value, speed, level.getFormationSpeed(), level.getMissileCooldown());
-                }
-                case EnemyType.BUTTERFLY -> {
-                    return new EnemyButterFly(lock, actionIndex, enterIndex, value, speed, level.getFormationSpeed(), level.getMissileCooldown());
-                }
-                case EnemyType.MOTH -> {
-                    return new EnemyMoth(lock, actionIndex, enterIndex, value, speed, level.getFormationSpeed(), level.getAttackCooldown());
-                }
-                default -> {
-                    Log.error("Unknown enemy type: " + enemyType);
-                    return null;
-                }
-            }
+            return new EnemySetting(type, lock, actionIndex, enterIndex, value, speed);
         } catch (NumberFormatException e) {
             Log.error("Level enemy parsing failed: " + e.getMessage());
             return null;
@@ -157,6 +144,25 @@ public class Level {
     }
 
     public List<Enemy> getEnemies() {
-        return enemies;
+        List<Enemy> enemyInst = new ArrayList<>();
+        for (EnemySetting setting : this.enemies) {
+            Enemy enemy;
+            switch (setting.getType()) {
+                case BEE:
+                    enemy = new EnemyBee(setting, this.formationSpeed, this.missileCooldown);
+                    break;
+                case BUTTERFLY:
+                    enemy = new EnemyButterFly(setting, this.formationSpeed, this.missileCooldown);
+                    break;
+                case MOTH:
+                    enemy = new EnemyMoth(setting, this.formationSpeed, this.attackCooldown);
+                    break;
+                default:
+                    Log.error("Unknown enemy type: " + setting.getType());
+                    return null;
+            }
+            enemyInst.add(enemy);
+        }
+        return enemyInst;
     }
 }
