@@ -1,9 +1,7 @@
 package galaga.level;
 
-import engine.utils.Position;
 import engine.utils.logger.Log;
 import galaga.Config;
-import galaga.Galaga;
 import galaga.entities.enemies.Enemy;
 import galaga.entities.enemies.EnemyBee;
 import galaga.entities.enemies.EnemyButterFly;
@@ -16,7 +14,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +24,7 @@ public class Level {
     private final float attackCooldown;
     private final float missileCooldown;
 
-    private final List<EnemySetting> enemies = new LinkedList<>();
+    private final List<EnemySetting> enemies = new ArrayList<>();
 
     public static Level createLevel(InputStream in) {
 
@@ -53,7 +50,7 @@ public class Level {
             int actionEnterDelay = Config.DELAY_ENTER_INDEX;
             Map<EnemyType, Integer> enemyActionIndexDelay = new HashMap<>();
             while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
-                EnemySetting enemy = createEnemyFromLine(lines.get(i), enemyActionIndexDelay, actionEnterDelay, level);
+                EnemySetting enemy = EnemySetting.createEnemySetting(lines.get(i), enemyActionIndexDelay, actionEnterDelay, level);
                 actionEnterDelay += Config.DELAY_ENTER_INDEX;
 
                 level.enemies.add(enemy);
@@ -83,41 +80,6 @@ public class Level {
         }
     }
 
-    private static EnemySetting createEnemyFromLine(String line, Map<EnemyType, Integer> enemyActionIndex, int enterIndex, Level level) {
-        String[] data = line.split(" ");
-        if (data.length < 6) {
-            Log.error("Level enemy data is invalid: " + line);
-            return null;
-        }
-        String enemyType = data[0];
-        try {
-            float lockXPercent = Float.parseFloat(data[1]);
-            float lockX = (1.f - lockXPercent) * Galaga.getContext().getFrame().getWidth();
-
-            float lockYPercent = Float.parseFloat(data[2]);
-            float lockY = (1.f - lockYPercent) * Galaga.getContext().getFrame().getHeight();
-
-            Position lock = Position.of(lockX, lockY);
-
-            // we no longer use size for enemies => sprite have their own fixed size
-            // float size = Float.parseFloat(data[3]);
-            int value = Integer.parseInt(data[4]);
-            float speed = Float.parseFloat(data[5]) * Config.SPEED_ENEMY_FACTOR;
-
-            EnemyType type = EnemyType.valueOf(enemyType.toUpperCase());
-            enemyActionIndex.putIfAbsent(type, Config.DELAY_ACTION_INDEX);
-            int actionIndex = enemyActionIndex.get(type);
-
-            if (!(type == EnemyType.MOTH && level.getAttackCooldown() <= 0.f)) {
-                enemyActionIndex.put(type, enemyActionIndex.get(type) + 1);
-            }
-
-            return new EnemySetting(type, lock, actionIndex, enterIndex, value, speed);
-        } catch (NumberFormatException e) {
-            Log.error("Level enemy parsing failed: " + e.getMessage());
-            return null;
-        }
-    }
 
     private Level(String name, float formationSpeed, float attackCooldown,
             float missileCooldown) {

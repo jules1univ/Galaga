@@ -1,6 +1,6 @@
 package engine.resource;
 
-public class ResourceVariant {
+public final class ResourceVariant {
 
     private final String name;
     private final Object value;
