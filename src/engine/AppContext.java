@@ -5,6 +5,7 @@ import engine.graphics.font.FontResource;
 import engine.graphics.sprite.SpriteResource;
 import engine.input.InputKeyListener;
 import engine.resource.ResourceManager;
+import engine.sound.SoundResource;
 
 public final class AppContext<GameState, T extends Enum<T>> {
     private final AppFrame frame;
@@ -24,6 +25,7 @@ public final class AppContext<GameState, T extends Enum<T>> {
         this.resource = new ResourceManager();
         this.resource.register(FontResource.NAME,FontResource.class);
         this.resource.register(SpriteResource.NAME,SpriteResource.class);
+        this.resource.register(SoundResource.NAME, SoundResource.class);
     }
 
     public void setState(GameState state) {

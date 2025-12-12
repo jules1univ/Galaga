@@ -12,10 +12,6 @@ public final class SpriteResource extends Resource<Sprite> {
         super(alias, callback);
     }
 
-    public SpriteResource addScale(float scale) {
-        return this;
-    }
-
     @Override
     public boolean load() {
         InputStream in = this.getResourceData();
