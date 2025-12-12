@@ -40,6 +40,7 @@ public class Menu extends Page<GalagaPage> {
     @Override
     public void draw() {
         this.gameMode.draw();
+        this.shipSelect.draw();
         // TODO: menu select with left/right arrows, validate with enter
         // TODO: create a select element in engine ui
         // ---------------
@@ -60,13 +61,12 @@ public class Menu extends Page<GalagaPage> {
                 0,
                 true,
                 Color.WHITE, this.titleFont);
-        this.gameMode.setPosition(Position.of(
-                this.size.getWidth() / 2,
-                this.size.getHeight() / 2));
-
         if (!this.gameMode.init()) {
             return false;
         }
+        this.gameMode.setPosition(Position.of(
+                this.size.getWidth() / 2,
+                this.size.getHeight() / 2));
 
         Icon[] icons = new Icon[Config.SPRITES_SHIP.size()];
         for (int i = 0; i < Config.SPRITES_SHIP.size(); i++) {
@@ -79,13 +79,12 @@ public class Menu extends Page<GalagaPage> {
                 0,
                 true,
                 Color.WHITE, this.titleFont);
-        this.shipSelect.setPosition(Position.of(
-                this.size.getWidth() / 2,
-                gameMode.getPosition().getIntY() - (gameMode.getPosition().getIntY() / 2)));
-
         if (!this.shipSelect.init()) {
             return false;
         }
+        this.shipSelect.setPosition(Position.of(
+                this.size.getWidth() / 2,
+                this.gameMode.getPosition().getY() - (this.gameMode.getPosition().getY() / 2)));
 
         this.state = PageState.ACTIVE;
         return true;

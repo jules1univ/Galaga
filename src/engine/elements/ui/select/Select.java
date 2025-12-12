@@ -93,16 +93,11 @@ public abstract class Select<T extends UIElement> extends UIElement {
 
     @Override
     public boolean init() {
-        if(this.position == null) {
-            throw new IllegalStateException("Select position must be set before init");
-        }
-        
         for (T el : this.options) {
             if (!el.init()) {
                 return false;
             }
         }
-        this.updateArrowPosition();
         return true;
     }
 
