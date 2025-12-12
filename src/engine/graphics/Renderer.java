@@ -11,40 +11,47 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
+import java.awt.image.BufferStrategy;
 
 public final class Renderer {
 
     private final AppFrame frame;
-
-    private final BufferedImage backBuffer;
-    private final Graphics2D g;
+    private BufferStrategy strategy;
+    private Graphics2D g;
 
     public Renderer(AppFrame frame) {
         this.frame = frame;
+        this.frame.createBufferStrategy(3);
+        this.strategy = frame.getBufferStrategy();
+        this.g = (Graphics2D) this.strategy.getDrawGraphics();
+    }
 
-        this.backBuffer = new BufferedImage(this.frame.getWidth(), this.frame.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        this.g = backBuffer.createGraphics();
+    public boolean begin() {
+        try {
+            this.g = (Graphics2D) this.strategy.getDrawGraphics();
+            if(this.g == null) {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
 
         this.g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         this.g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         this.g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
-    }
 
-    public void begin() {
         this.g.setColor(Color.BLACK);
-        this.g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
+        this.g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
+        return true;
     }
 
     public void end() {
-        Graphics2D fg = (Graphics2D) this.frame.getGraphics();
-        if (fg == null) {
-            return;
-        }
-        fg.drawImage(this.backBuffer, 0, 0, null);
-        fg.dispose();
+        this.g.dispose();
+        this.strategy.show();
+        Toolkit.getDefaultToolkit().sync();
     }
 
     public void clear(Color color) {
@@ -76,7 +83,8 @@ public final class Renderer {
 
         if (Application.DEBUG_MODE) {
             Size size = this.getTextSize(text, font);
-            this.g.drawRect(position.getIntX(), position.getIntY() - size.getIntHeight(), size.getIntWidth(), size.getIntHeight());
+            this.g.drawRect(position.getIntX(), position.getIntY() - size.getIntHeight(), size.getIntWidth(),
+                    size.getIntHeight());
         }
         return this;
     }
@@ -121,8 +129,8 @@ public final class Renderer {
             int x2 = (int) (center.getX() + Math.cos(Math.toRadians(nextAngle)) * radius);
             int y2 = (int) (center.getY() + Math.sin(Math.toRadians(nextAngle)) * radius);
 
-            int[] xPoints = {center.getIntX(), x1, x2};
-            int[] yPoints = {center.getIntY(), y1, y2};
+            int[] xPoints = { center.getIntX(), x1, x2 };
+            int[] yPoints = { center.getIntY(), y1, y2 };
 
             this.g.fillPolygon(xPoints, yPoints, 3);
         }

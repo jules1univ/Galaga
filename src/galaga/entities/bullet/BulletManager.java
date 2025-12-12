@@ -9,8 +9,8 @@ import galaga.GalagaSound;
 import java.util.Iterator;
 
 public class BulletManager extends Entity implements  Iterable<Bullet> {
-
-    private final Bullet[] bullets = new Bullet[64];
+    
+    private final Bullet[] bullets = new Bullet[8];
     private int count = 0;
     private Sound shootSound;
 
