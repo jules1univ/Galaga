@@ -99,6 +99,10 @@ public class Game extends Page<GalagaPage> {
 
     private boolean loadNextLevel() {
         this.levelIndex++;
+        if(Config.LEVELS.size() <= this.levelIndex) {
+            // TODO procedural level generation
+            return false;
+        }
         Level level = Galaga.getContext().getResource()
                 .get(Config.LEVELS.get(this.levelIndex));
 

@@ -2,6 +2,9 @@ package galaga.entities.bullet;
 
 import engine.elements.entity.Entity;
 import engine.elements.entity.SpriteEntity;
+import engine.resource.sound.Sound;
+import galaga.Galaga;
+import galaga.GalagaSound;
 
 import java.util.Iterator;
 
@@ -9,6 +12,7 @@ public class BulletManager extends Entity implements  Iterable<Bullet> {
 
     private final Bullet[] bullets = new Bullet[64];
     private int count = 0;
+    private Sound shootSound;
 
     public BulletManager() {
         super();
@@ -18,6 +22,7 @@ public class BulletManager extends Entity implements  Iterable<Bullet> {
         if(this.count >= this.bullets.length) {
             return;
         }
+        this.shootSound.play(2.f);
         this.count++;
         this.bullets[this.count - 1] = new Bullet(shooter);
     }
@@ -63,6 +68,10 @@ public class BulletManager extends Entity implements  Iterable<Bullet> {
 
     @Override
     public boolean init() {
+        this.shootSound = Galaga.getContext().getResource().get(GalagaSound.fighter_shot1);
+        if(this.shootSound == null) {
+            return false;
+        }
         return true;
     }
 
