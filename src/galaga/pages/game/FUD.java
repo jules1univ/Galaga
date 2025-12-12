@@ -38,7 +38,7 @@ public class FUD extends UIElement {
         this.size = Size.of(Galaga.getContext().getFrame().getWidth(), Config.HEIGHT_FUD);
         this.position = Position.of(0, Galaga.getContext().getFrame().getHeight() - this.size.getHeight());
 
-        this.ship = Galaga.getContext().getResource().get(Config.SPRITE_SHIP);
+        this.ship = Galaga.getContext().getState().shipSkin;
         if(this.ship == null) {
             return false;
         }

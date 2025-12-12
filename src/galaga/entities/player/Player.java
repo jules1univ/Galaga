@@ -95,7 +95,7 @@ public final class Player extends SpriteEntity {
 
     @Override
     public boolean init() {
-        this.sprite = Galaga.getContext().getResource().get(Config.SPRITE_SHIP);
+        this.sprite = Galaga.getContext().getState().shipSkin;
         if (this.sprite == null) {
             return false;
         }

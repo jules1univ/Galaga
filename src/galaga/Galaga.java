@@ -1,10 +1,5 @@
 package galaga;
 
-import java.awt.event.KeyEvent;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import java.lang.management.ManagementFactory;
-
 import engine.AppContext;
 import engine.Application;
 import engine.elements.page.Page;
@@ -13,13 +8,16 @@ import engine.graphics.sprite.SpriteResource;
 import engine.resource.Resource;
 import engine.resource.ResourceManager;
 import engine.resource.ResourceVariant;
-
 import galaga.level.LevelResource;
 import galaga.pages.GalagaPage;
 import galaga.pages.game.Game;
 import galaga.pages.loading.Loading;
 import galaga.pages.menu.Menu;
 import galaga.score.ScoreResource;
+import java.awt.event.KeyEvent;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.lang.management.ManagementFactory;
 
 public class Galaga extends Application<GalagaPage> {
 
@@ -79,11 +77,12 @@ public class Galaga extends Application<GalagaPage> {
             }
         });
 
-        rm.add(Config.SPRITE_SHIP, SpriteResource.NAME);
         rm.add(Config.SPRITE_MEDAL, SpriteResource.NAME, (ResourceVariant variant, Resource<?> rawRes) -> {
             SpriteResource medal = (SpriteResource) rawRes;
             getContext().getFrame().setIconImage(medal.getData().getImage());
         });
+        
+        rm.add(Config.SPRITES_SHIP, SpriteResource.NAME);
         rm.add(Config.SPRITES_ENEMY, SpriteResource.NAME);
 
         rm.add(Config.LEVELS, LevelResource.NAME);

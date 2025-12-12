@@ -66,15 +66,16 @@ public class Config {
         public static final String VARIANT_FONT_LARGE = "large";
         public static final String VARIANT_FONT_XLARGE = "xlarge";
 
-        public static final ResourceAlias SPRITE_SHIP = ResourceAlias.file(
-                        "ship",
-                        "resources/sprites/ship.spr",
-                        "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sprites/ship.spr");
-
         public static final ResourceAlias SPRITE_MEDAL = ResourceAlias.file(
                         "medal",
                         "resources/sprites/medal.spr",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sprites/medal.spr");
+
+        public static final List<ResourceAlias> SPRITES_SHIP = ResourceAlias.folder(
+                        "ship_%d",
+                        1, 3,
+                        "resources/sprites/ships/%s.spr",
+                        "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sprites/ships/%s.spr");
 
         public static final List<ResourceAlias> SPRITES_ENEMY = ResourceAlias.folder(EnemyType.class,
                         "resources/sprites/%s.spr",
