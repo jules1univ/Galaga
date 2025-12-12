@@ -40,7 +40,11 @@ public class Game extends Page<GalagaPage> {
     }
 
     @Override
-    public boolean onActivate() {        
+    public boolean onActivate() {   
+        if(Galaga.getContext().getState().shipSkin == null) {
+            Galaga.getContext().getState().shipSkin = Galaga.getContext().getResource().get(Config.SPRITES_SHIP.get(0));
+        }
+        
         this.particles = new ParticlesManager();
         this.bullets = new BulletManager();
 
@@ -106,7 +110,7 @@ public class Game extends Page<GalagaPage> {
         if(this.enemies == null || this.enemies.isEmpty()) {
             return false; 
         }
-        
+
         for (Enemy enemy : this.enemies) {
             if (!enemy.init()) {
                 return false;
