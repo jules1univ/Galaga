@@ -6,9 +6,8 @@ import galaga.entities.player.Player;
 import galaga.level.Level;
 
 public class State {
-    public Sprite shipSkin;
-    
-    public Level level;
-    public Player player;
-    public BulletManager bullets;
+    public Sprite shipSkin = null;
+    public Level level = null;
+    public Player player = null;
+    public BulletManager bullets = null;
 }
