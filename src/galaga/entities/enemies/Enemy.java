@@ -5,9 +5,8 @@ import engine.elements.entity.SpriteEntity;
 import engine.utils.Position;
 import galaga.Config;
 import galaga.Galaga;
-
-import java.awt.Font;
 import java.awt.Color;
+import java.awt.Font;
 
 public abstract class Enemy extends SpriteEntity {
 
@@ -146,7 +145,8 @@ public abstract class Enemy extends SpriteEntity {
         super.draw();
 
         if (Application.DEBUG_MODE) {
-            Application.getContext().getRenderer().drawText("", this.getCenter(), Color.WHITE, this.debugFont);
+            String debugText = this.state.name();
+            Application.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
         }
     }
 }

@@ -159,7 +159,8 @@ public final class Player extends SpriteEntity {
         }
 
         if (Application.DEBUG_MODE) {
-            Galaga.getContext().getRenderer().drawText("", this.getCenter(), Color.WHITE, this.debugFont);
+            String debugText = String.format("%.2f", this.cooldownTimer);   
+            Galaga.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
         }
     }
 
