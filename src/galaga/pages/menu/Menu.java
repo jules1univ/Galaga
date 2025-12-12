@@ -67,30 +67,15 @@ public class Menu extends Page<GalagaPage> {
             switch (this.option) {
                 case GAMEMODE -> {
                     this.option = MenuOption.QUIT;
-                    this.gameMode.setShowArrows(false);
-                    this.shipSelect.setShowArrows(false);
-
-                    this.gameMode.setColor(Color.WHITE);
-                    this.shipSelect.setColor(Color.WHITE);
-                    this.quit.setColor(Color.ORANGE);
+                    this.updateMenuSelect();
                 }
                 case SHIPSKIN -> {
                     this.option = MenuOption.GAMEMODE;
-                    this.gameMode.setShowArrows(true);
-                    this.shipSelect.setShowArrows(false);
-
-                    this.shipSelect.setColor(Color.WHITE);
-                    this.quit.setColor(Color.WHITE);
-                    this.gameMode.setColor(Color.ORANGE);
+                    this.updateMenuSelect();
                 }
                 case QUIT -> {
                     this.option = MenuOption.SHIPSKIN;
-                    this.gameMode.setShowArrows(false);
-                    this.shipSelect.setShowArrows(true);
-
-                    this.gameMode.setColor(Color.WHITE);
-                    this.quit.setColor(Color.WHITE);
-                    this.shipSelect.setColor(Color.ORANGE);
+                    this.updateMenuSelect();
                 }
             }
         } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
@@ -98,30 +83,17 @@ public class Menu extends Page<GalagaPage> {
             switch (this.option) {
                 case GAMEMODE -> {
                     this.option = MenuOption.SHIPSKIN;
-                    this.gameMode.setShowArrows(false);
-                    this.shipSelect.setShowArrows(true);
+                    this.updateMenuSelect();
 
-                    this.gameMode.setColor(Color.WHITE);
-                    this.quit.setColor(Color.WHITE);
-                    this.shipSelect.setColor(Color.ORANGE);
                 }
                 case SHIPSKIN -> {
                     this.option = MenuOption.QUIT;
-                    this.gameMode.setShowArrows(false);
-                    this.shipSelect.setShowArrows(false);
+                    this.updateMenuSelect();
 
-                    this.gameMode.setColor(Color.WHITE);
-                    this.shipSelect.setColor(Color.WHITE);
-                    this.quit.setColor(Color.ORANGE);
                 }
                 case QUIT -> {
                     this.option = MenuOption.GAMEMODE;
-                    this.gameMode.setShowArrows(true);
-                    this.shipSelect.setShowArrows(false);
-
-                    this.shipSelect.setColor(Color.WHITE);
-                    this.quit.setColor(Color.WHITE);
-                    this.gameMode.setColor(Color.ORANGE);
+                    this.updateMenuSelect();
                 }
             }
         } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER, KeyEvent.VK_SPACE)) {
@@ -134,6 +106,35 @@ public class Menu extends Page<GalagaPage> {
                 }
                 default -> {
                 }
+            }
+        }
+    }
+
+    private void updateMenuSelect() {
+        switch (this.option) {
+            case GAMEMODE -> {
+                this.gameMode.setShowArrows(true);
+                this.shipSelect.setShowArrows(false);
+
+                this.gameMode.setColor(Color.ORANGE);
+                this.shipSelect.setColor(Color.WHITE);
+                this.quit.setColor(Color.WHITE);
+            }
+            case SHIPSKIN -> {
+                this.gameMode.setShowArrows(false);
+                this.shipSelect.setShowArrows(true);
+
+                this.gameMode.setColor(Color.WHITE);
+                this.shipSelect.setColor(Color.ORANGE);
+                this.quit.setColor(Color.WHITE);
+            }
+            case QUIT -> {
+                this.gameMode.setShowArrows(false);
+                this.shipSelect.setShowArrows(false);
+
+                this.gameMode.setColor(Color.WHITE);
+                this.shipSelect.setColor(Color.WHITE);
+                this.quit.setColor(Color.ORANGE);
             }
         }
     }
@@ -181,7 +182,6 @@ public class Menu extends Page<GalagaPage> {
                 (this.size.getHeight() - this.logo.getSize().getHeight() * Config.SPRITE_SCALE_ICON) / 2 - margin
                         - margin / 2);
 
-        this.option = MenuOption.GAMEMODE;
         this.gameMode = new TextSelect(
                 new String[] { "SOLO", "MULTIPLAYER" },
                 0,
@@ -225,6 +225,10 @@ public class Menu extends Page<GalagaPage> {
         }
         this.quit.setCenter(TextPosition.CENTER, TextPosition.END);
 
+
+        this.option = MenuOption.GAMEMODE;
+        this.updateMenuSelect();
+        
         this.state = PageState.ACTIVE;
         return true;
     }
