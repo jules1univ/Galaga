@@ -10,6 +10,7 @@ import engine.utils.Position;
 import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
+import galaga.entities.sky.Sky;
 import galaga.pages.GalagaPage;
 import java.awt.Color;
 import java.awt.Font;
@@ -19,6 +20,7 @@ public class Menu extends Page<GalagaPage> {
 
     private IconSelect shipSelect;
     private TextSelect gameMode;
+    private Sky sky;
     private Sprite logo;
     private Position logoPosition;
 
@@ -32,7 +34,8 @@ public class Menu extends Page<GalagaPage> {
 
     @Override
     public void update(float dt) {
-
+        this.sky.update(dt);
+        
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_LEFT)) {
             if(this.indexSelect == 0) {
                 this.gameMode.prev();   
@@ -57,7 +60,9 @@ public class Menu extends Page<GalagaPage> {
 
     @Override
     public void draw() {
-        Galaga.getContext().getRenderer().drawSprite(this.logo, this.logoPosition, Config.SPRITE_SCALE_DEFAULT);
+        this.sky.draw();
+
+        Galaga.getContext().getRenderer().drawSprite(this.logo, this.logoPosition, Config.SPRITE_SCALE_ICON);
         this.gameMode.draw();
         this.shipSelect.draw();
         // TODO: menu select with left/right arrows, validate with enter
@@ -74,7 +79,13 @@ public class Menu extends Page<GalagaPage> {
                 Galaga.getContext().getFrame().getWidth(),
                 Galaga.getContext().getFrame().getHeight());
 
+        this.sky = new Sky(Config.SIZE_SKY_GRID);
+        if (!this.sky.init()) {
+            return false;
+        }
+
         this.titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_XLARGE);
+
         
         int margin = 50;
 
@@ -82,7 +93,7 @@ public class Menu extends Page<GalagaPage> {
         this.logo = Galaga.getContext().getResource().get(Config.SPRITE_LOGO);
         this.logoPosition = Position.of(
                 (this.size.getWidth()) / 2,
-                (this.size.getHeight() - this.logo.getSize().getHeight() * Config.SPRITE_SCALE_DEFAULT)/2  - margin - margin/2);
+                (this.size.getHeight() - this.logo.getSize().getHeight() * Config.SPRITE_SCALE_ICON)/2  - margin - margin/2);
 
         this.gameMode = new TextSelect(
                 new String[] { "SOLO", "MULTIPLAYER" },

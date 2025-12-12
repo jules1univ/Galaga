@@ -31,8 +31,8 @@ def get_nearest_color(r: int,g: int, b:int, a: int) -> str:
 
 
 def main(args: list[str]) -> int:    
-    if len(args) != 3:
-        print("Usage: image_to_sprite <input_path> <output_path> <width>x<height>")
+    if len(args) < 2:
+        print("Usage: image_to_sprite <input_path> <output_path> ?(<width>x<height>|scale)")
         return 1
 
     input_path = args[0]    
@@ -49,19 +49,35 @@ def main(args: list[str]) -> int:
         print(f"Output path '{output_path}' already exists. Please provide a different file path.")
         return 1
     
-    dimensions = args[2]
-    if 'x' not in dimensions:
-        print(f"Dimensions '{dimensions}' are not in the correct format. Use <width>x<height>.")
-        return 1
-    
-    width, height = map(int, dimensions.split('x'))
-    if width <= 0 or height <= 0:
-        print(f"Dimensions '{dimensions}' must be positive integers.")
-        return 1
+    width, height = 0,0
+    scale = 1.0
+    if len(args) >= 3:
+        if 'x' in args[2]:
+            dimensions = args[2]
+            width, height = map(int, dimensions.split('x'))
+            if width <= 0 or height <= 0:
+                print(f"Dimensions '{dimensions}' must be positive integers.")
+                return 1
+            print(f"Resizing image to {width}x{height}")
+        else:
+            scale = float(args[2])
+            if scale <= 0:
+                print(f"Scale '{scale}' must be a positive number.")
+                return 1
+            print(f"Scaling image by factor {scale}")   
 
     try:
         image = Image.open(input_path).convert("RGBA")
+        
+        if scale != 1.0:
+            width = int(image.width * scale)
+            height = int(image.height * scale)
+        
+        if width == 0 or height == 0:
+            width, height = image.width, image.height
+
         image = image.resize((width, height))
+        print("Final image size:", image.width, "x", image.height)
 
         pixels = image.load()
         if pixels is None:

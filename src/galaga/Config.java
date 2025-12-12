@@ -30,12 +30,11 @@ public class Config {
         public static final float SPEED_ENEMY_FACTOR = 500.f;
         public static final float SPEED_ANGLE_ANIMATION = 400.f;
 
-        public static final int DELAY_ACTION_INDEX = 3;
         public static final int DELAY_ENTER_INDEX = 2;
         public static final float DELAY_ENEMY_ENTER = .15f;
         public static final float DELAY_SHOOT_PLAYER = .5f;
         public static final float DELAY_PLAYER_HIT = 3.f;
-        public static final float DELAY_ENEMY_FORMATION = 5.f;
+        public static final float DELAY_ENEMY_FORMATION = 2.f;
         public static final float DELAY_ENEMY_COOLDOWN_FACTOR_ATTACK = 0.01f;
         public static final float DELAY_ENEMY_COOLDOWN_FACTOR_MISSILE = 0.001f;
 

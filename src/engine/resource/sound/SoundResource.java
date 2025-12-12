@@ -1,4 +1,4 @@
-package engine.sound;
+package engine.resource.sound;
 
 import java.io.InputStream;
 import engine.resource.Resource;

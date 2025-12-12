@@ -1,11 +1,11 @@
 package engine;
 
 import engine.graphics.Renderer;
-import engine.graphics.font.FontResource;
-import engine.graphics.sprite.SpriteResource;
 import engine.input.InputKeyListener;
 import engine.resource.ResourceManager;
-import engine.sound.SoundResource;
+import engine.resource.font.FontResource;
+import engine.resource.sound.SoundResource;
+import engine.resource.sprite.SpriteResource;
 
 public final class AppContext<GameState, T extends Enum<T>> {
     private final AppFrame frame;

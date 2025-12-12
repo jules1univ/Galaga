@@ -1,5 +1,6 @@
-package engine.graphics.sprite;
+package engine.resource.sprite;
 
+import engine.graphics.sprite.Sprite;
 import engine.resource.Resource;
 import engine.resource.ResourceAlias;
 import engine.resource.ResourceCallback;

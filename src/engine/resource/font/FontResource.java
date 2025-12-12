@@ -1,4 +1,4 @@
-package engine.graphics.font;
+package engine.resource.font;
 
 import engine.resource.Resource;
 import engine.resource.ResourceAlias;
