@@ -77,8 +77,8 @@ public abstract class Select<T extends UIElement> extends UIElement {
                 this.position.getY() + sizeMax.getHeight()/2);
     }
 
-    public void toogleArrows() {
-        this.showArrows = !this.showArrows;
+    public void setShowArrows(boolean active) {
+        this.showArrows = active;
     }
 
     public T getSelected() {
