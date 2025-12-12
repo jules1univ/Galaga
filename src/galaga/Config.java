@@ -79,8 +79,8 @@ public class Config {
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sprites/ships/%s.spr");
 
         public static final List<ResourceAlias> SPRITES_ENEMY = ResourceAlias.folder(EnemyType.class,
-                        "resources/sprites/%s.spr",
-                        "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sprites/%s.spr");
+                        "resources/sprites/enemies/%s.spr",
+                        "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sprites/enemies/%s.spr");
 
         public static final List<ResourceAlias> FONTS = ResourceAlias.file(
                         "font",
