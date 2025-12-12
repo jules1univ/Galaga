@@ -81,6 +81,10 @@ public abstract class Select<T extends UIElement> extends UIElement {
         this.showArrows = !this.showArrows;
     }
 
+    public T getSelected() {
+        return this.element;
+    }
+
     public void next() {
         this.index = (this.index + 1) % this.options.length;
         this.element = this.options[this.index];
@@ -98,6 +102,7 @@ public abstract class Select<T extends UIElement> extends UIElement {
                 return false;
             }
         }
+        this.size = Application.getContext().getRenderer().getTextSize("<", this.font);
         return true;
     }
 

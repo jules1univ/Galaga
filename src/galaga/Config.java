@@ -16,6 +16,7 @@ public class Config {
 
         public static final int PLAYER_INITIAL_LIFE = 3;
 
+        public static final float SPRITE_SCALE_MENU_ICON = 3.f;
         public static final float SPRITE_SCALE_DEFAULT = 2.5f;
         public static final float SPRITE_SCALE_ICON = 1.5f;
 

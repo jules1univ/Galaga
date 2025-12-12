@@ -19,6 +19,8 @@ public class Menu extends Page<GalagaPage> {
 
     private IconSelect shipSelect;
     private TextSelect gameMode;
+    private int indexSelect;
+
     private Font titleFont;
 
     public Menu() {
@@ -29,10 +31,23 @@ public class Menu extends Page<GalagaPage> {
     public void update(float dt) {
 
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_LEFT)) {
-            this.gameMode.prev();
+            if(this.indexSelect == 0) {
+                this.gameMode.prev();   
+            } else {
+                this.shipSelect.prev();
+            }
         } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
-            this.gameMode.next();
+            if(this.indexSelect == 0) {
+                this.gameMode.next();   
+            } else {
+                this.shipSelect.next();
+            }
+        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP, KeyEvent.VK_DOWN)) {
+            this.indexSelect = (this.indexSelect + 1) % 2;
+                this.gameMode.toogleArrows();
+                this.shipSelect.toogleArrows();
         } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER, KeyEvent.VK_SPACE)) {
+            Galaga.getContext().getState().shipSkin = this.shipSelect.getSelected().getSprite();
             Galaga.getContext().getApplication().setCurrentPage(GalagaPage.GAME);
         }
     }
@@ -71,7 +86,7 @@ public class Menu extends Page<GalagaPage> {
         Icon[] icons = new Icon[Config.SPRITES_SHIP.size()];
         for (int i = 0; i < Config.SPRITES_SHIP.size(); i++) {
             Sprite ship = Galaga.getContext().getResource().get(Config.SPRITES_SHIP.get(i));
-            icons[i] = new Icon(ship, Config.SPRITE_SCALE_DEFAULT);
+            icons[i] = new Icon(ship, Config.SPRITE_SCALE_MENU_ICON);
         }
 
         this.shipSelect = new IconSelect(
@@ -86,7 +101,8 @@ public class Menu extends Page<GalagaPage> {
         int margin = 30;
         this.shipSelect.setPosition(Position.of(
                 this.size.getWidth() / 2,
-                this.gameMode.getPosition().getY() + margin));
+                this.gameMode.getPosition().getY() + this.gameMode.getSize().getHeight() + margin));
+        this.shipSelect.toogleArrows();
 
         this.state = PageState.ACTIVE;
         return true;

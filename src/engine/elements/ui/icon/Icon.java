@@ -17,6 +17,10 @@ public final class Icon extends UIElement {
         this.scale = scale;
     }
 
+    public Sprite getSprite() {
+        return this.icon;
+    }
+
     @Override
     public boolean init() {
         this.size = Size.of(this.icon.getSize(), this.scale);
