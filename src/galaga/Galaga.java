@@ -8,6 +8,7 @@ import engine.graphics.sprite.SpriteResource;
 import engine.resource.Resource;
 import engine.resource.ResourceManager;
 import engine.resource.ResourceVariant;
+import engine.sound.SoundResource;
 import galaga.level.LevelResource;
 import galaga.pages.GalagaPage;
 import galaga.pages.game.Game;
@@ -84,6 +85,7 @@ public class Galaga extends Application<GalagaPage> {
         
         rm.add(Config.SPRITES_SHIP, SpriteResource.NAME);
         rm.add(Config.SPRITES_ENEMY, SpriteResource.NAME);
+        rm.add(Config.SOUNDS, SoundResource.NAME);
 
         rm.add(Config.LEVELS, LevelResource.NAME);
         rm.add(Config.BEST_SCORE, ScoreResource.NAME);
