@@ -75,6 +75,12 @@ public final class Sprite {
             case 'R' -> Color.RED;
             case 'Y' -> Color.YELLOW;
             case 'G' -> Color.GREEN;
+            case 'C' -> Color.CYAN;
+            case 'M' -> Color.MAGENTA;
+            case 'O' -> Color.ORANGE;
+            case 'P' -> Color.PINK;
+            case 'L' -> Color.LIGHT_GRAY;
+            case 'D' -> Color.DARK_GRAY;
             default -> new Color(0, 0, 0, 0); // BLACK = transparent
         };
     }

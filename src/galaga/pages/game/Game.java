@@ -103,6 +103,10 @@ public class Game extends Page<GalagaPage> {
             return false;
         }
         this.enemies = level.getEnemies();
+        if(this.enemies == null || this.enemies.isEmpty()) {
+            return false; 
+        }
+        
         for (Enemy enemy : this.enemies) {
             if (!enemy.init()) {
                 return false;
