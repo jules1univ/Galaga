@@ -91,8 +91,8 @@ public class Config {
 
         public static final List<ResourceAlias> SOUNDS = ResourceAlias.folder(
                         GameSound.class,
-                        "resources/sounds/%s.mp3",
-                        "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sounds/%s.mp3");
+                        "resources/sounds/%s.wav",
+                        "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sounds/%s.wav");
 
         public static final List<ResourceAlias> LEVELS = ResourceAlias.folder(
                         "level%d", 1, 2,

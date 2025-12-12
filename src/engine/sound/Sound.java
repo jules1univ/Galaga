@@ -1,15 +1,13 @@
 package engine.sound;
 
+import engine.utils.logger.Log;
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-
-import engine.utils.logger.Log;
 
 public class Sound {
     private final Clip clip;
@@ -20,7 +18,11 @@ public class Sound {
             Clip clip = AudioSystem.getClip();
             clip.open(audioInput);
             return new Sound(clip);
-        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+        } catch (UnsupportedAudioFileException e) {
+            Log.error("Sound format not supported: " + e.getMessage());
+            return null;
+        }catch(IOException | LineUnavailableException e)
+        {
             Log.error("Sound loading failed: " + e.getMessage());
             return null;
         }
