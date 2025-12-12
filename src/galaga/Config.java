@@ -89,6 +89,11 @@ public class Config {
                                         ResourceVariant.of(Config.VARIANT_FONT_LARGE, Config.SIZE_FONT_LARGE),
                                         ResourceVariant.of(Config.VARIANT_FONT_XLARGE, Config.SIZE_FONT_XLARGE));
 
+        public static final List<ResourceAlias> SOUNDS = ResourceAlias.folder(
+                        GameSound.class,
+                        "resources/sounds/%s.mp3",
+                        "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sounds/%s.mp3");
+
         public static final List<ResourceAlias> LEVELS = ResourceAlias.folder(
                         "level%d", 1, 2,
                         "resources/levels/%s.lvl",
