@@ -44,7 +44,7 @@ public class Game extends Page<GalagaPage> {
         if(Galaga.getContext().getState().shipSkin == null) {
             Galaga.getContext().getState().shipSkin = Galaga.getContext().getResource().get(Config.SPRITES_SHIP.get(0));
         }
-        
+
         this.particles = new ParticlesManager();
         this.bullets = new BulletManager();
 
