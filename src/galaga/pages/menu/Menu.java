@@ -19,6 +19,9 @@ public class Menu extends Page<GalagaPage> {
 
     private IconSelect shipSelect;
     private TextSelect gameMode;
+    private Sprite logo;
+    private Position logoPosition;
+
     private int indexSelect;
 
     private Font titleFont;
@@ -54,6 +57,7 @@ public class Menu extends Page<GalagaPage> {
 
     @Override
     public void draw() {
+        Galaga.getContext().getRenderer().drawSprite(this.logo, this.logoPosition, Config.SPRITE_SCALE_DEFAULT);
         this.gameMode.draw();
         this.shipSelect.draw();
         // TODO: menu select with left/right arrows, validate with enter
@@ -71,6 +75,15 @@ public class Menu extends Page<GalagaPage> {
                 Galaga.getContext().getFrame().getHeight());
 
         this.titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_XLARGE);
+        
+        int margin = 50;
+
+
+        this.logo = Galaga.getContext().getResource().get(Config.SPRITE_LOGO);
+        this.logoPosition = Position.of(
+                (this.size.getWidth()) / 2,
+                (this.size.getHeight() - this.logo.getSize().getHeight() * Config.SPRITE_SCALE_DEFAULT)/2  - margin - margin/2);
+
         this.gameMode = new TextSelect(
                 new String[] { "SOLO", "MULTIPLAYER" },
                 0,
@@ -98,7 +111,6 @@ public class Menu extends Page<GalagaPage> {
             return false;
         }
 
-        int margin = 30;
         this.shipSelect.setPosition(Position.of(
                 this.size.getWidth() / 2,
                 this.gameMode.getPosition().getY() + this.gameMode.getSize().getHeight() + margin));

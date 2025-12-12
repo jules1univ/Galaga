@@ -72,6 +72,11 @@ public class Config {
                         "resources/sprites/medal.spr",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sprites/medal.spr");
 
+        public static final ResourceAlias SPRITE_LOGO = ResourceAlias.file(
+                        "logo",
+                        "resources/sprites/logo.spr",
+                        "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sprites/logo.spr");
+
         public static final List<ResourceAlias> SPRITES_SHIP = ResourceAlias.folder(
                         "ship_%d",
                         1, 3,

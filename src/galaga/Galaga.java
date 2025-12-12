@@ -27,7 +27,6 @@ public class Galaga extends Application<GalagaPage> {
         return Application.getContext();
     }
 
-   
     @Retention(java.lang.annotation.RetentionPolicy.SOURCE)
     @Target(java.lang.annotation.ElementType.METHOD)
     private @interface RequiresJava {
@@ -82,9 +81,10 @@ public class Galaga extends Application<GalagaPage> {
             SpriteResource medal = (SpriteResource) rawRes;
             getContext().getFrame().setIconImage(medal.getData().getImage());
         });
-        
+        rm.add(Config.SPRITE_LOGO, SpriteResource.NAME);
         rm.add(Config.SPRITES_SHIP, SpriteResource.NAME);
         rm.add(Config.SPRITES_ENEMY, SpriteResource.NAME);
+        
         rm.add(Config.SOUNDS, SoundResource.NAME);
 
         rm.add(Config.LEVELS, LevelResource.NAME);
