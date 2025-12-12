@@ -85,7 +85,13 @@ public class Galaga extends Application<GalagaPage> {
         rm.add(Config.SPRITES_SHIP, SpriteResource.NAME);
         rm.add(Config.SPRITES_ENEMY, SpriteResource.NAME);
         
-        rm.add(Config.SOUNDS, SoundResource.NAME);
+        rm.add(Config.SOUNDS, SoundResource.NAME, (ResourceVariant variant, Resource<?> rawRes) -> {
+            SoundResource sound = (SoundResource) rawRes;
+            if(GalagaSound.start_music.toString().equals(sound.getAlias().getName()))
+            {
+                sound.getData().play();
+            }
+        });
 
         rm.add(Config.LEVELS, LevelResource.NAME);
         rm.add(Config.BEST_SCORE, ScoreResource.NAME);

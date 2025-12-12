@@ -46,7 +46,11 @@ public class Game extends Page<GalagaPage> {
         }
 
         this.particles = new ParticlesManager();
+
         this.bullets = new BulletManager();
+        if(!this.bullets.init()) {
+            return false;
+        }
 
         this.sky = new Sky(Config.SIZE_SKY_GRID);
         if (!this.sky.init()) {

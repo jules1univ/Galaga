@@ -2,6 +2,7 @@ package galaga.entities.bullet;
 
 import engine.elements.entity.Entity;
 import engine.elements.entity.SpriteEntity;
+
 import java.util.Iterator;
 
 public class BulletManager extends Entity implements  Iterable<Bullet> {
@@ -62,7 +63,7 @@ public class BulletManager extends Entity implements  Iterable<Bullet> {
 
     @Override
     public boolean init() {
-        throw new UnsupportedOperationException("BulletManager.init should not be called");
+        return true;
     }
 
     @Override

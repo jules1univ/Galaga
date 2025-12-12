@@ -95,7 +95,7 @@ public class Config {
                                         ResourceVariant.of(Config.VARIANT_FONT_XLARGE, Config.SIZE_FONT_XLARGE));
 
         public static final List<ResourceAlias> SOUNDS = ResourceAlias.folder(
-                        GameSound.class,
+                        GalagaSound.class,
                         "resources/sounds/%s.wav",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sounds/%s.wav");
 

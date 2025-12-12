@@ -6,10 +6,12 @@ import engine.elements.ui.icon.Icon;
 import engine.elements.ui.select.IconSelect;
 import engine.elements.ui.select.TextSelect;
 import engine.graphics.sprite.Sprite;
+import engine.resource.sound.Sound;
 import engine.utils.Position;
 import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
+import galaga.GalagaSound;
 import galaga.entities.sky.Sky;
 import galaga.pages.GalagaPage;
 import java.awt.Color;
@@ -24,6 +26,9 @@ public class Menu extends Page<GalagaPage> {
     private Sprite logo;
     private Position logoPosition;
 
+    private Sound themeSound;
+    private Sound selectSound;
+
     private int indexSelect;
 
     private Font titleFont;
@@ -35,26 +40,30 @@ public class Menu extends Page<GalagaPage> {
     @Override
     public void update(float dt) {
         this.sky.update(dt);
-        
+
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_LEFT)) {
-            if(this.indexSelect == 0) {
-                this.gameMode.prev();   
+            if (this.indexSelect == 0) {
+                this.gameMode.prev();
             } else {
                 this.shipSelect.prev();
             }
+            this.selectSound.play(2.f);
         } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
-            if(this.indexSelect == 0) {
-                this.gameMode.next();   
+            if (this.indexSelect == 0) {
+                this.gameMode.next();
             } else {
                 this.shipSelect.next();
             }
+            this.selectSound.play(2.f);
         } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP, KeyEvent.VK_DOWN)) {
             this.indexSelect = (this.indexSelect + 1) % 2;
-                this.gameMode.toogleArrows();
-                this.shipSelect.toogleArrows();
+            this.gameMode.toogleArrows();
+            this.shipSelect.toogleArrows();
+            this.selectSound.play(2.f);
         } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER, KeyEvent.VK_SPACE)) {
             Galaga.getContext().getState().shipSkin = this.shipSelect.getSelected().getSprite();
             Galaga.getContext().getApplication().setCurrentPage(GalagaPage.GAME);
+            this.selectSound.play(2.f);
         }
     }
 
@@ -79,6 +88,17 @@ public class Menu extends Page<GalagaPage> {
                 Galaga.getContext().getFrame().getWidth(),
                 Galaga.getContext().getFrame().getHeight());
 
+        this.themeSound = Galaga.getContext().getResource().get(GalagaSound.name_entry_2nd5th);
+        if (this.themeSound == null) {
+            return false;
+        }
+        this.themeSound.play(0.2f);
+
+        this.selectSound = Galaga.getContext().getResource().get(GalagaSound.menu_select);
+        if (this.selectSound == null) {
+            return false;
+        }
+
         this.sky = new Sky(Config.SIZE_SKY_GRID);
         if (!this.sky.init()) {
             return false;
@@ -86,14 +106,13 @@ public class Menu extends Page<GalagaPage> {
 
         this.titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_XLARGE);
 
-        
         int margin = 50;
-
 
         this.logo = Galaga.getContext().getResource().get(Config.SPRITE_LOGO);
         this.logoPosition = Position.of(
                 (this.size.getWidth()) / 2,
-                (this.size.getHeight() - this.logo.getSize().getHeight() * Config.SPRITE_SCALE_ICON)/2  - margin - margin/2);
+                (this.size.getHeight() - this.logo.getSize().getHeight() * Config.SPRITE_SCALE_ICON) / 2 - margin
+                        - margin / 2);
 
         this.gameMode = new TextSelect(
                 new String[] { "SOLO", "MULTIPLAYER" },
@@ -133,6 +152,7 @@ public class Menu extends Page<GalagaPage> {
 
     @Override
     public boolean onDeactivate() {
+        this.themeSound.stop();
         this.state = PageState.INACTIVE;
         return true;
     }
