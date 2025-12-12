@@ -69,30 +69,23 @@ public class Menu extends Page<GalagaPage> {
         }
 
         Icon[] icons = new Icon[Config.SPRITES_SHIP.size()];
-        for (int i =0; i< Config.SPRITES_SHIP.size() ; i++){
+        for (int i = 0; i < Config.SPRITES_SHIP.size(); i++) {
             Sprite ship = Galaga.getContext().getResource().get(Config.SPRITES_SHIP.get(i));
             icons[i] = new Icon(ship, Config.SPRITE_SCALE_ICON);
-            icons[i].init();
         }
-        
-        
 
         this.shipSelect = new IconSelect(
-            icons,
-            0,
-            true,
-            Color.WHITE, this.titleFont
-        );
+                icons,
+                0,
+                true,
+                Color.WHITE, this.titleFont);
+        this.shipSelect.setPosition(Position.of(
+                this.size.getWidth() / 2,
+                gameMode.getPosition().getIntY() - (gameMode.getPosition().getIntY() / 2)));
+
         if (!this.shipSelect.init()) {
             return false;
         }
-
-        
-        this.shipSelect.setPosition(Position.of(
-                this.size.getWidth() / 2,
-                gameMode.getPosition().getIntY()-(gameMode.getPosition().getIntY()/2)));
-
-        
 
         this.state = PageState.ACTIVE;
         return true;
