@@ -2,19 +2,22 @@ package galaga.pages.menu;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
+import engine.elements.ui.icon.Icon;
+import engine.elements.ui.select.IconSelect;
 import engine.elements.ui.select.TextSelect;
+import engine.graphics.sprite.Sprite;
 import engine.utils.Position;
 import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.pages.GalagaPage;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 
 public class Menu extends Page<GalagaPage> {
 
+    private IconSelect shipSelect;
     private TextSelect gameMode;
     private Font titleFont;
 
@@ -64,6 +67,32 @@ public class Menu extends Page<GalagaPage> {
         if (!this.gameMode.init()) {
             return false;
         }
+
+        Icon[] icons = new Icon[Config.SPRITES_SHIP.size()];
+        for (int i =0; i< Config.SPRITES_SHIP.size() ; i++){
+            Sprite ship = Galaga.getContext().getResource().get(Config.SPRITES_SHIP.get(i));
+            icons[i] = new Icon(ship, Config.SPRITE_SCALE_ICON);
+            icons[i].init();
+        }
+        
+        
+
+        this.shipSelect = new IconSelect(
+            icons,
+            0,
+            true,
+            Color.WHITE, this.titleFont
+        );
+        if (!this.shipSelect.init()) {
+            return false;
+        }
+
+        
+        this.shipSelect.setPosition(Position.of(
+                this.size.getWidth() / 2,
+                gameMode.getPosition().getIntY()-(gameMode.getPosition().getIntY()/2)));
+
+        
 
         this.state = PageState.ACTIVE;
         return true;
