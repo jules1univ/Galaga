@@ -1,6 +1,8 @@
 package galaga;
 
 import java.awt.event.KeyEvent;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.lang.management.ManagementFactory;
 
 import engine.AppContext;
@@ -26,6 +28,14 @@ public class Galaga extends Application<GalagaPage> {
         return Application.getContext();
     }
 
+   
+    @Retention(java.lang.annotation.RetentionPolicy.SOURCE)
+    @Target(java.lang.annotation.ElementType.METHOD)
+    private @interface RequiresJava {
+        int value();
+    }
+
+    @RequiresJava(21)
     public static void main(String[] args) throws Exception {
         if (args.length > 0 && args[0].equalsIgnoreCase("--debug")) {
             Application.DEBUG_MODE = true;

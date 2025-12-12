@@ -7,15 +7,13 @@ import galaga.entities.enemies.EnemyBee;
 import galaga.entities.enemies.EnemyButterFly;
 import galaga.entities.enemies.EnemyMoth;
 import galaga.entities.enemies.EnemySetting;
-import galaga.entities.enemies.EnemyType;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class Level {
 
@@ -48,9 +46,8 @@ public class Level {
             i++;
 
             int actionEnterDelay = Config.DELAY_ENTER_INDEX;
-            Map<EnemyType, Integer> enemyActionIndexDelay = new HashMap<>();
             while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
-                EnemySetting enemy = EnemySetting.createEnemySetting(lines.get(i), enemyActionIndexDelay, actionEnterDelay, level);
+                EnemySetting enemy = EnemySetting.createEnemySetting(lines.get(i), actionEnterDelay, level);
                 actionEnterDelay += Config.DELAY_ENTER_INDEX;
 
                 level.enemies.add(enemy);
@@ -79,7 +76,6 @@ public class Level {
             return null;
         }
     }
-
 
     private Level(String name, float formationSpeed, float attackCooldown,
             float missileCooldown) {
@@ -110,21 +106,19 @@ public class Level {
         for (EnemySetting setting : this.enemies) {
             Enemy enemy;
             switch (setting.getType()) {
-                case BEE:
-                    enemy = new EnemyBee(setting, this.formationSpeed, this.missileCooldown);
-                    break;
-                case BUTTERFLY:
-                    enemy = new EnemyButterFly(setting, this.formationSpeed, this.missileCooldown);
-                    break;
-                case MOTH:
-                    enemy = new EnemyMoth(setting, this.formationSpeed, this.attackCooldown);
-                    break;
-                default:
+                case BEE -> enemy = new EnemyBee(setting, this.formationSpeed, this.missileCooldown);
+                case BUTTERFLY -> enemy = new EnemyButterFly(setting, this.formationSpeed, this.missileCooldown);
+                case MOTH -> enemy = new EnemyMoth(setting, this.formationSpeed, this.attackCooldown);
+                default -> {
                     Log.error("Unknown enemy type: " + setting.getType());
                     return null;
+                }
             }
             enemyInst.add(enemy);
         }
+
+        enemyInst.sort((a, b) -> Float.compare(b.getLockPosition().getY(), a.getLockPosition().getY()));
+        Collections.reverse(enemyInst);
         return enemyInst;
     }
 }

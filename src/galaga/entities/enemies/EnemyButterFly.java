@@ -19,6 +19,12 @@ public class EnemyButterFly extends Enemy {
         this.target = this.lock.copy().setY(Config.WINDOW_HEIGHT - Config.HEIGHT_FUD);
     }
 
+
+    @Override
+    public boolean canPerformAction() {
+        return this.missileCooldown > 0.f;
+    }
+
     @Override
     protected void updateAction(float dt) {
         if (this.state != EnemyState.ATTACKING) {

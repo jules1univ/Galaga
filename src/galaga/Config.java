@@ -27,6 +27,7 @@ public class Config {
         public static final float SPEED_STAR = 200.0f;
         public static final float SPEED_BULLET = 500.f;
         public static final float SPEED_ENEMY_FACTOR = 500.f;
+        public static final float SPEED_ANGLE_ANIMATION = 400.f;
 
         public static final int DELAY_ACTION_INDEX = 3;
         public static final int DELAY_ENTER_INDEX = 2;

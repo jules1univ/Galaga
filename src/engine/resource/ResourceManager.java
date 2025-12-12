@@ -27,7 +27,9 @@ public final class ResourceManager {
         Class<? extends Resource<?>> resourceClass = this.loaders.get(loadername);
         if (resourceClass == null) {
             Log.error("Resource loader not found: " + loadername);
+            return;
         }
+        
         try {
             this.resources.put(alias.getFullName(),
                     resourceClass.getDeclaredConstructor(ResourceAlias.class, ResourceCallback.class).newInstance(alias,
@@ -70,7 +72,10 @@ public final class ResourceManager {
     }
 
     public <T> T get(List<ResourceAlias> alias, String variant) {
-        return this.get(alias.getFirst().getName() + variant);
+        if(alias.isEmpty()) {
+            return null;
+        }
+        return this.get(alias.get(0).getName() + variant);
     }
 
     public <T, E extends Enum<E>> T get(E enumConst, String variant) {
@@ -78,6 +83,7 @@ public final class ResourceManager {
     }
 
     public <T> boolean write(String name, T data) {
+        @SuppressWarnings("unchecked")
         Resource<T> res = (Resource<T>)this.resources.get(name);
         if (res != null && res.isLoaded()) {
             return res.write(data);

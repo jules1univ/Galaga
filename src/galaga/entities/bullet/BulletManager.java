@@ -2,33 +2,62 @@ package galaga.entities.bullet;
 
 import engine.elements.entity.Entity;
 import engine.elements.entity.SpriteEntity;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 public class BulletManager extends Entity implements  Iterable<Bullet> {
 
-    private final List<Bullet> bullets = new ArrayList<>();
+    private final Bullet[] bullets = new Bullet[64];
+    private int count = 0;
 
     public BulletManager() {
+        super();
     }
 
     public void shoot(SpriteEntity shooter) {
-        this.bullets.add(new Bullet(shooter));
+        if(this.count >= this.bullets.length) {
+            return;
+        }
+        this.count++;
+        this.bullets[this.count - 1] = new Bullet(shooter);
     }
 
     
     @Override
     public Iterator<Bullet> iterator() {
-        return bullets.iterator();
+        return new Iterator<Bullet>() {
+            private int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index < count;
+            }
+
+            @Override
+            public Bullet next() {
+                return bullets[index++];
+            }
+        };
     }
 
-    public void removeAll(List<Bullet> removeBullet) {
-        this.bullets.removeAll(removeBullet);
+    public void remove(Bullet bullet) {
+        for (int i = 0; i < this.count; i++) {
+            if (this.bullets[i] == bullet) {
+                this.bullets[i] = this.bullets[this.count - 1];
+                this.bullets[this.count - 1] = null;
+                this.count--;
+                return;
+            }
+        }
+    }
+
+    public void removeAll(Iterable<Bullet> removeBullets) {
+        for (Bullet bullet : removeBullets) {
+            this.remove(bullet);
+        }
     }
 
     public boolean isEmpty() {
-        return this.bullets.isEmpty();
+        return this.count == 0;
     }
 
     @Override
@@ -43,8 +72,8 @@ public class BulletManager extends Entity implements  Iterable<Bullet> {
 
     @Override
     public void draw() {
-        for (Bullet bullet : bullets) {
-            bullet.draw();
+        for (int i = 0; i < this.count; i++) {
+            this.bullets[i].draw();
         }
     }
 

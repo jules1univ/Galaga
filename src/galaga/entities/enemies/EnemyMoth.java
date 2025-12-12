@@ -16,6 +16,12 @@ public class EnemyMoth extends Enemy {
         this.attackCooldown = attackCooldown;
     }
 
+
+    @Override
+    public boolean canPerformAction() {
+        return this.attackCooldown > 0.f;
+    }
+
     @Override
     protected void updateAction(float dt) {
         if (this.state != EnemyState.ATTACKING) {

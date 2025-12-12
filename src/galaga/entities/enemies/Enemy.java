@@ -5,8 +5,9 @@ import engine.elements.entity.SpriteEntity;
 import engine.utils.Position;
 import galaga.Config;
 import galaga.Galaga;
-import java.awt.Color;
+
 import java.awt.Font;
+import java.awt.Color;
 
 public abstract class Enemy extends SpriteEntity {
 
@@ -19,7 +20,6 @@ public abstract class Enemy extends SpriteEntity {
     protected final int scoreValue;
     protected EnemyState state;
 
-    private final int actionIndex;
     private float indexTimer;
     private boolean action;
 
@@ -28,7 +28,7 @@ public abstract class Enemy extends SpriteEntity {
     public Enemy(EnemyType type, EnemySetting setting, float formationSpeed) {
         super();
         this.type = type;
-        
+
         this.angle = 0.f;
         this.scale = Config.SPRITE_SCALE_DEFAULT;
 
@@ -43,18 +43,7 @@ public abstract class Enemy extends SpriteEntity {
         this.state = EnemyState.ENTER_LEVEL;
 
         this.action = false;
-        this.actionIndex = setting.getActionIndex(); 
-
         this.indexTimer = setting.getEnterIndex() * Config.DELAY_ENEMY_ENTER;
-    }
-
-    public boolean hasDoneAction() {
-        return this.action;
-    }
-
-    public void resetAction() {
-        this.action = false;
-        this.indexTimer = this.actionIndex * Config.DELAY_ENEMY_FORMATION;
     }
 
     public EnemyState getState() {
@@ -69,6 +58,10 @@ public abstract class Enemy extends SpriteEntity {
         return this.scoreValue;
     }
 
+    public Position getLockPosition() {
+        return this.lock;
+    }
+
     private boolean isInLockPosition() {
         float distance = this.position.distance(this.lock);
         return distance <= Config.POSITION_LOCK_THRESHOLD * 10;
@@ -81,10 +74,20 @@ public abstract class Enemy extends SpriteEntity {
         this.position.moveTo(this.lock, scaledSpeed);
         this.angle = this.lock.angleTo(this.position) + 90.f;
         if (this.isInLockPosition()) {
-            this.angle = 0.f;
             this.position = this.lock.copy();
         }
     }
+
+    public boolean hasDoneAction() {
+        return this.action;
+    }
+
+    public void resetAction() {
+        this.action = false;
+        this.indexTimer = Config.DELAY_ENEMY_FORMATION;
+    }
+
+    public abstract boolean canPerformAction();
 
     protected abstract void updateAction(float dt);
 
@@ -106,7 +109,7 @@ public abstract class Enemy extends SpriteEntity {
             case ENTER_LEVEL -> {
                 this.indexTimer -= (float) dt;
                 if (this.indexTimer <= 0 && !this.action) {
-                    this.indexTimer = this.actionIndex * Config.DELAY_ENEMY_FORMATION;
+                    this.action = true;
                     this.state = EnemyState.RETURNING;
                 }
             }
@@ -117,8 +120,17 @@ public abstract class Enemy extends SpriteEntity {
                 }
             }
             case FORMATION -> {
+                if (this.angle != 0.f) {
+                    float dtAngle = Config.SPEED_ANGLE_ANIMATION * (float) dt;
+                    if (Math.abs(this.angle) <= dtAngle) {
+                        this.angle = 0.f;
+                    } else {
+                        this.angle += (this.angle > 0.f ? -dtAngle : dtAngle);
+                    }
+                }
+
                 this.indexTimer -= (float) dt;
-                if (this.indexTimer <= 0 && !this.action) {
+                if (this.indexTimer <= 0 && !this.action && this.canPerformAction()) {
                     this.action = true;
                     this.state = EnemyState.ATTACKING;
                 }
@@ -134,8 +146,7 @@ public abstract class Enemy extends SpriteEntity {
         super.draw();
 
         if (Application.DEBUG_MODE) {
-            String debugText = String.format("%.2f%%", this.action ? this.indexTimer : 0.f);
-            Application.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
+            Application.getContext().getRenderer().drawText("", this.getCenter(), Color.WHITE, this.debugFont);
         }
     }
 }

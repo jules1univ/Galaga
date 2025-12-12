@@ -159,9 +159,7 @@ public final class Player extends SpriteEntity {
         }
 
         if (Application.DEBUG_MODE) {
-            float delayPercent = Math.clamp((1.f - (this.cooldownTimer / Config.DELAY_SHOOT_PLAYER)), 0.f, 1.f) * 100.f;
-            String debugText = String.format("%.2f%%", delayPercent);
-            Galaga.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
+            Galaga.getContext().getRenderer().drawText("", this.getCenter(), Color.WHITE, this.debugFont);
         }
     }
 

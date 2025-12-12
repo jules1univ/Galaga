@@ -17,6 +17,11 @@ public class EnemyBee extends Enemy {
     }
 
     @Override
+    public boolean canPerformAction() {
+        return this.missileCooldown > 0.f;
+    }
+
+    @Override
     protected void updateAction(float dt) {
         if (this.state != EnemyState.ATTACKING) {
             return;

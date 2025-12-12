@@ -15,7 +15,6 @@ import galaga.entities.sky.Sky;
 import galaga.level.Level;
 import galaga.pages.GalagaPage;
 import galaga.score.Score;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +22,13 @@ public class Game extends Page<GalagaPage> {
 
     private Sky sky;
     private Player player;
+
+    private final List<Enemy> enemiesRemove = new ArrayList<>();
     private List<Enemy> enemies;
+
+    private final List<Bullet> bulletsRemove = new ArrayList<>();
     private BulletManager bullets;
+
     private ParticlesManager particles;
     private int levelIndex = -1;
 
@@ -123,10 +127,8 @@ public class Game extends Page<GalagaPage> {
             allInFormation = allInFormation && enemy.getState() == EnemyState.FORMATION;
         }
 
-        if (allActionDone) {
-            for (Enemy enemy : this.enemies) {
-                enemy.resetAction();
-            }
+        if (allActionDone && allInFormation && !this.enemies.isEmpty()) {
+            this.enemies.stream().filter(enemy -> enemy.canPerformAction()).findFirst().ifPresent(enemy -> enemy.resetAction());
         }
 
         if (allInFormation && !this.player.isShootingActive()) {
@@ -134,7 +136,6 @@ public class Game extends Page<GalagaPage> {
         }
 
         if (!this.bullets.isEmpty() && !this.enemies.isEmpty()) {
-            List<Bullet> bulletsRemove = new ArrayList<>();
 
             for (Bullet bullet : this.bullets) {
                 if (bullet.isOutOfBounds()) {
@@ -144,7 +145,6 @@ public class Game extends Page<GalagaPage> {
                 bullet.update(dt);
 
                 if (bullet.getShooter() instanceof Player) {
-                    List<Enemy> enemiesRemove = new ArrayList<>();
                     for (Enemy enemy : this.enemies) {
                         if (enemy.collideWith(bullet)) {
                             enemiesRemove.add(enemy);
@@ -168,10 +168,15 @@ public class Game extends Page<GalagaPage> {
                     bulletsRemove.add(bullet);
                 }
             }
+
             this.bullets.removeAll(bulletsRemove);
-        } else if (!this.enemies.isEmpty()) {
-            List<Enemy> enemiesRemove = new ArrayList<>();
+            this.bulletsRemove.clear();
+        } else if (!this.enemies.isEmpty() && !allInFormation) {
             for (Enemy enemy : this.enemies) {
+                if(enemy.getState() == EnemyState.FORMATION) {
+                    continue;
+                }
+
                 if (enemy.collideWith(this.player)) {
                     this.particles.createExplosion(this.player);
                     this.particles.createExplosion(enemy);
@@ -179,7 +184,9 @@ public class Game extends Page<GalagaPage> {
                     enemiesRemove.add(enemy);
                 }
             }
+
             this.enemies.removeAll(enemiesRemove);
+            this.enemiesRemove.clear();
         }
 
         if (this.enemies.isEmpty() && !this.loadNextLevel()) {

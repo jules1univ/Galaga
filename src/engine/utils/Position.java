@@ -59,15 +59,14 @@ public final class Position {
     }
 
     public Position clampX(float minX, float maxX) {
-        this.x = Math.clamp(this.x, minX, maxX);
+        this.x = Math.max(minX, Math.min(this.x, maxX));
         return this;
     
     }
 
     public Position clampY(float minY, float maxY) {
-        this.y = Math.clamp(this.y, minY, maxY);
+        this.y = Math.max(minY, Math.min(this.y, maxY));
         return this;
-    
     }
 
     public Position setX(float x) {

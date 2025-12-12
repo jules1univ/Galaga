@@ -19,6 +19,7 @@ public final class ResourceVariant {
         return this.name;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T getValue() {
         return (T)this.value;
     }
