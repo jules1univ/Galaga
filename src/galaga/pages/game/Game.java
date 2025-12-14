@@ -2,6 +2,9 @@ package galaga.pages.game;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
+import engine.elements.ui.text.Text;
+import engine.elements.ui.text.TextPosition;
+import engine.utils.Position;
 import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
@@ -15,6 +18,9 @@ import galaga.entities.sky.Sky;
 import galaga.level.Level;
 import galaga.pages.GalagaPage;
 import galaga.score.Score;
+
+import java.awt.Color;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +36,10 @@ public class Game extends Page<GalagaPage> {
     private BulletManager bullets;
 
     private ParticlesManager particles;
+
     private int levelIndex = -1;
+    private float displayLevelTitle = 0.f;
+    private Text levelTitle;
 
     private FUD fud;
     private HUD hud;
@@ -71,6 +80,12 @@ public class Game extends Page<GalagaPage> {
         if (!this.hud.init()) {
             return false;
         }
+
+        Font titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_XLARGE);
+        this.levelTitle = new Text("", Position.of(
+            Galaga.getContext().getApplication().getSize()
+        ).half(), Color.CYAN, titleFont);
+        this.levelTitle.setCenter(TextPosition.CENTER, TextPosition.BEGIN);
 
         if (!this.loadNextLevel()) {
             return false;
@@ -113,6 +128,10 @@ public class Game extends Page<GalagaPage> {
         if (level == null) {
             return false;
         }
+        this.displayLevelTitle = Config.DELAY_LEVEL_TITLE;
+        this.levelTitle.setText(level.getName());
+        this.levelTitle.setColor(Color.CYAN);
+
         this.enemies = level.getEnemies();
         if (this.enemies == null || this.enemies.isEmpty()) {
             return false;
@@ -216,6 +235,16 @@ public class Game extends Page<GalagaPage> {
             Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MENU);
         }
 
+        if(this.displayLevelTitle > 0.f) {
+            this.displayLevelTitle -= dt;
+            this.levelTitle.setColor(new Color(
+                Color.CYAN.getRed(),
+                Color.CYAN.getGreen(),
+                Color.CYAN.getBlue(),
+                (int)(255.f * (this.displayLevelTitle / Config.DELAY_LEVEL_TITLE))
+            ));
+        }
+
         this.particles.update(dt);
         this.hud.update(dt);
         this.fud.update(dt);
@@ -231,6 +260,10 @@ public class Game extends Page<GalagaPage> {
         this.player.draw();
         for (Enemy enemy : this.enemies) {
             enemy.draw();
+        }
+
+        if (this.displayLevelTitle > 0.f) {
+            this.levelTitle.draw();
         }
 
         this.hud.draw();

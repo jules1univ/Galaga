@@ -2,6 +2,7 @@ package engine;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
+import engine.utils.Size;
 import engine.utils.logger.Log;
 
 import java.lang.reflect.InvocationTargetException;
@@ -41,6 +42,10 @@ public abstract class Application<T extends Enum<T>> {
 
     public final String getTitle() {
         return this.title;
+    }
+
+    public final Size getSize() {
+        return Size.of(this.width, this.height);
     }
 
     public final int getWidth() {

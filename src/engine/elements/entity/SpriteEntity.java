@@ -5,7 +5,6 @@ import engine.graphics.sprite.Sprite;
 import engine.utils.Collision;
 import engine.utils.Position;
 import engine.utils.Size;
-import engine.utils.logger.Log;
 
 import java.awt.Color;
 
