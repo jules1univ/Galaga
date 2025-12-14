@@ -103,7 +103,7 @@ public class Config {
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sounds/%s.wav");
 
         public static final List<ResourceAlias> LEVELS = ResourceAlias.folder(
-                        "level%d", 0, 2,
+                        "level%d", 1, 2,
                         "resources/levels/%s.lvl",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/levels/%s.lvl");
 

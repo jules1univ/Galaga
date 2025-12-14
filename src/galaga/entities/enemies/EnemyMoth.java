@@ -1,8 +1,6 @@
 package galaga.entities.enemies;
 
 import engine.utils.Position;
-import engine.utils.logger.Log;
-import galaga.Config;
 import galaga.Galaga;
 import galaga.entities.player.Player;
 

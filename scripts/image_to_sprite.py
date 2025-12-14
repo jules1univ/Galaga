@@ -48,6 +48,13 @@ def main(args: list[str]) -> int:
     if os.path.exists(output_path):
         print(f"Output path '{output_path}' already exists. Please provide a different file path.")
         return 1
+
+    file_output_path = output_path
+    if os.path.isdir(output_path):
+        filename = os.path.basename(input_path)
+        name, _ = os.path.splitext(filename)
+        file_output_path = os.path.join(output_path, name + ".sprite")
+        print(f"Output path is a directory. Using '{file_output_path}' as output file.")
     
     width, height = 0,0
     scale = 1.0
@@ -84,7 +91,7 @@ def main(args: list[str]) -> int:
             print(f"Failed to load pixels from image '{input_path}'.")
             return 1
         
-        with open(output_path, 'w') as f:
+        with open(file_output_path, 'w') as f:
             for y in range(height):
                 row = []
                 for x in range(width):

@@ -3,5 +3,13 @@ package galaga.entities.enemies;
 public enum EnemyType {
     BEE,
     BUTTERFLY,
-    MOTH
+    MOTH,
+
+    SCORPION,
+    BOSCONIAN,
+    GALAXIAN,
+
+    DRAGONFLY,
+    SATELLITE,
+    STARSHIP
 }
