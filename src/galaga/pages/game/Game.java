@@ -40,7 +40,7 @@ public class Game extends Page<GalagaPage> {
     private ParticlesManager particles;
 
     private int levelIndex = -1;
-    private float displayLevelTitle = 0.f;
+    private float levelTitleTime = 0.f;
     private Text levelTitle;
 
     private FUD fud;
@@ -85,7 +85,6 @@ public class Game extends Page<GalagaPage> {
             return false;
         }
 
-
         this.particles = new ParticlesManager();
 
         this.bullets = new BulletManager();
@@ -115,15 +114,17 @@ public class Game extends Page<GalagaPage> {
 
         Font titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_XLARGE);
         this.levelTitle = new Text("", Position.of(
-            Galaga.getContext().getApplication().getSize()
-        ).half(), Color.CYAN, titleFont);
+                Galaga.getContext().getApplication().getSize()).half(), Color.CYAN, titleFont);
         this.levelTitle.setCenter(TextPosition.CENTER, TextPosition.BEGIN);
 
         if (!this.loadNextLevel()) {
             return false;
         }
 
-
+        Score playerBestScore = Galaga.getContext().getResource().get(Config.BEST_SCORE);
+        if (playerBestScore != null) {
+            this.bestScore = playerBestScore.getValue();
+        }
 
         Galaga.getContext().getState().bullets = this.bullets;
         Galaga.getContext().getState().player = this.player;
@@ -167,7 +168,7 @@ public class Game extends Page<GalagaPage> {
             return false;
         }
 
-        this.displayLevelTitle = Config.DELAY_LEVEL_TITLE;
+        this.levelTitleTime = Config.DELAY_LEVEL_TITLE;
         this.levelTitle.setText(level.getName());
         this.levelTitle.setColor(Color.CYAN);
 
@@ -189,7 +190,18 @@ public class Game extends Page<GalagaPage> {
 
     @Override
     public void update(float dt) {
-        
+        if (this.player.getScore() > this.bestScore && !this.bestScorePlayed) {
+            this.levelBestScore.play();
+            this.bestScorePlayed = true;
+
+
+            this.levelTitleTime = Config.DELAY_LEVEL_TITLE;
+
+            this.levelTitle.setText("New Best Score!");
+            this.levelTitle.setColor(Color.YELLOW);
+            this.sky.setColor(Color.ORANGE);
+        }
+
         this.sky.update(dt);
         this.player.update(dt);
 
@@ -262,7 +274,7 @@ public class Game extends Page<GalagaPage> {
                 if (enemy.collideWith(this.player)) {
                     this.particles.createExplosion(this.player);
                     this.particles.createExplosion(enemy);
-                    
+
                     this.player.onHit();
                     enemy.onDie();
                     enemiesRemove.add(enemy);
@@ -284,14 +296,15 @@ public class Game extends Page<GalagaPage> {
             Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MENU);
         }
 
-        if(this.displayLevelTitle > 0.f) {
-            this.displayLevelTitle -= dt;
+        if (this.levelTitleTime > 0.f) {
+            this.levelTitleTime -= dt;
             this.levelTitle.setColor(new Color(
-                Color.CYAN.getRed(),
-                Color.CYAN.getGreen(),
-                Color.CYAN.getBlue(),
-                (int)(255.f * (this.displayLevelTitle / Config.DELAY_LEVEL_TITLE))
-            ));
+                    this.levelTitle.getColor().getRed(),
+                    this.levelTitle.getColor().getGreen(),
+                    this.levelTitle.getColor().getBlue(),
+                    (int) (255.f * (this.levelTitleTime / Config.DELAY_LEVEL_TITLE))));
+        }else if(this.sky.isActiveColor()) {
+            this.sky.restorColor();
         }
 
         this.particles.update(dt);
@@ -311,7 +324,7 @@ public class Game extends Page<GalagaPage> {
             enemy.draw();
         }
 
-        if (this.displayLevelTitle > 0.f) {
+        if (this.levelTitleTime > 0.f) {
             this.levelTitle.draw();
         }
 

@@ -10,7 +10,7 @@ import java.awt.Color;
 
 public final class Star extends Entity {
 
-    private final Color color;
+    private Color color;
     private float time;
     private float blinkDelay;
     private boolean active;
@@ -24,6 +24,10 @@ public final class Star extends Entity {
         this.time = 0f;
         this.blinkDelay = 0f;
         this.active = true;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     @Override

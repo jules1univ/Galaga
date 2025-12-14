@@ -13,9 +13,31 @@ public final class Sky extends Entity {
 
     private final List<Star> stars = new ArrayList<>();
     private final int gridSize;
+    private boolean activeColor = false;
 
     public Sky(int gridSize) {
         this.gridSize = gridSize;
+    }
+
+    public void restorColor() {
+        this.activeColor = false;
+        for (Star star : stars) {
+            int r = 180 + (int) (Math.random() * 75);
+            int g = 180 + (int) (Math.random() * 75);
+            int b = 180 + (int) (Math.random() * 75);
+            Color color = new Color(r, g, b);
+            star.setColor(color);
+        }
+    }
+
+    public void setColor(Color color) {
+        this.activeColor = true;
+        for (Star star : stars)
+            star.setColor(color);
+    }
+
+    public boolean isActiveColor() {
+        return this.activeColor;
     }
 
     @Override
