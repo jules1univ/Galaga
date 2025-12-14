@@ -13,6 +13,7 @@ import galaga.GalagaSound;
 import galaga.entities.bullet.Bullet;
 import galaga.entities.bullet.BulletManager;
 import galaga.entities.enemies.Enemy;
+import galaga.entities.enemies.EnemyMoth;
 import galaga.entities.enemies.EnemyState;
 import galaga.entities.particles.ParticlesManager;
 import galaga.entities.player.Player;
@@ -238,7 +239,6 @@ public class Game extends Page<GalagaPage> {
                             this.particles.createExplosion(enemy);
 
                             this.player.onKillEnemy(enemy);
-                            enemy.onDie();
                             enemiesRemove.add(enemy);
                             bulletsRemove.add(bullet);
 
@@ -246,18 +246,21 @@ public class Game extends Page<GalagaPage> {
                         }
 
                         if (enemy.collideWith(this.player)) {
+                            if(enemy instanceof EnemyMoth enemyMoth)
+                            {
+                                enemyMoth.capture(this.player);
+                                continue;
+                            }
                             this.particles.createExplosion(this.player);
                             this.player.onKillEnemy(enemy);
                             this.player.onHit();
 
-                            enemy.onDie();
                             enemiesRemove.add(enemy);
                         }
                     }
                     this.enemies.removeAll(enemiesRemove);
                 } else if (this.player.collideWith(bullet)) {
                     this.particles.createExplosion(this.player);
-
                     this.player.onHit();
                     bulletsRemove.add(bullet);
                 }
@@ -272,6 +275,11 @@ public class Game extends Page<GalagaPage> {
                 }
 
                 if (enemy.collideWith(this.player)) {
+                    if(enemy instanceof EnemyMoth enemyMoth)
+                    {
+                        enemyMoth.capture(this.player);
+                        continue;
+                    }
                     this.particles.createExplosion(this.player);
                     this.particles.createExplosion(enemy);
 

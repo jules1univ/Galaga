@@ -65,12 +65,12 @@ public abstract class Enemy extends SpriteEntity {
         return this.lock;
     }
 
-    private boolean isInLockPosition() {
+    protected boolean isInLockPosition() {
         float distance = this.position.distance(this.lock);
         return distance <= Config.POSITION_LOCK_THRESHOLD * 10;
     }
 
-    private void animateToLockPosition(float dt) {
+    protected void animateToLockPosition(float dt) {
         float distance = this.position.distance(this.lock);
         float scaledSpeed = this.formationSpeed * (float) dt + distance * (float) dt;
 

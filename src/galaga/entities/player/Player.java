@@ -19,6 +19,8 @@ public final class Player extends SpriteEntity {
     private int medals;
 
     private boolean shootActive;
+    private boolean moveActive;
+
     private float cooldownTimer;
     private float hitTimer;
 
@@ -32,6 +34,8 @@ public final class Player extends SpriteEntity {
         this.scale = Config.SPRITE_SCALE_DEFAULT;
 
         this.shootActive = false;
+        this.moveActive = true;
+
         this.life = Config.PLAYER_INITIAL_LIFE;
         this.cooldownTimer = Config.DELAY_SHOOT_PLAYER;
         this.medals = 0;
@@ -44,6 +48,14 @@ public final class Player extends SpriteEntity {
 
     public void setShooting(boolean shootActive) {
         this.shootActive = shootActive;
+    }
+
+    public void setMove(boolean active) {
+        this.moveActive = active;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
     }
 
     public int getLife() {
@@ -60,23 +72,28 @@ public final class Player extends SpriteEntity {
 
     public void onKillEnemy(Enemy enemy) {
         this.score += enemy.getScoreValue();
+        enemy.onDie();
+    }
+
+    private void resetPosition() {
+        this.position = Position.of(
+                (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2,
+                Galaga.getContext().getFrame().getHeight() - this.getScaledSize().getHeight() - Config.HEIGHT_FUD);
+        this.position.addX(this.getScaledSize().getWidth() / 2);
+        this.position.addY(-this.getScaledSize().getHeight() / 2);
     }
 
     public void onFinishLevel() {
         this.medals++;
-        this.position.setX(
-                (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2 + this.getScaledSize().getWidth() / 2
-        );
+        this.resetPosition();
     }
 
     public void onHit() {
         this.dieSound.play();
 
-        this.position.setX(
-                (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2 + this.getScaledSize().getWidth() / 2
-        );
+        this.resetPosition();
         this.hitTimer = Config.DELAY_PLAYER_HIT;
-        
+
         this.life--;
         if (this.life < 0) {
             this.life = 0;
@@ -95,8 +112,8 @@ public final class Player extends SpriteEntity {
         this.medals = 0;
         this.shootActive = false;
         this.position.setX(
-                (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2 + this.getScaledSize().getWidth() / 2
-        );
+                (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2
+                        + this.getScaledSize().getWidth() / 2);
     }
 
     @Override
@@ -106,14 +123,7 @@ public final class Player extends SpriteEntity {
             return false;
         }
         this.size = this.sprite.getSize();
-        this.position = Position.of(
-                (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2,
-                Galaga.getContext().getFrame().getHeight() - this.getScaledSize().getHeight() - Config.HEIGHT_FUD
-        );
-
-        // sprite will be recentered by default so no need to adjust position here
-        this.position.addX(this.getScaledSize().getWidth() / 2);
-        this.position.addY(-this.getScaledSize().getHeight() / 2);
+        this.resetPosition();
 
         this.dieSound = Galaga.getContext().getResource().get(GalagaSound.player_die);
         if (this.dieSound == null) {
@@ -127,8 +137,12 @@ public final class Player extends SpriteEntity {
 
     @Override
     public void update(float dt) {
-        if(this.hitTimer > 0.f){
+        if (this.hitTimer > 0.f) {
             this.hitTimer -= dt;
+            return;
+        }
+
+        if (!this.moveActive) {
             return;
         }
 
@@ -142,8 +156,7 @@ public final class Player extends SpriteEntity {
 
         this.position.clampX(
                 this.size.getWidth(),
-                Galaga.getContext().getFrame().getWidth() - this.size.getWidth()
-        );
+                Galaga.getContext().getFrame().getWidth() - this.size.getWidth());
 
         this.cooldownTimer += dt;
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_SPACE) && this.shootActive) {
@@ -159,18 +172,17 @@ public final class Player extends SpriteEntity {
     public void draw() {
         if (this.hitTimer <= 0.f) {
             super.draw();
-        }else{
+        } else {
             Galaga.getContext().getRenderer().drawLoadingCircle(
                     this.getPosition(),
                     this.getScaledSize().getWidth() / 2.f,
                     Color.RED,
                     60,
-                    1.f - (this.hitTimer / Config.DELAY_PLAYER_HIT)
-            );
+                    1.f - (this.hitTimer / Config.DELAY_PLAYER_HIT));
         }
 
         if (Application.DEBUG_MODE) {
-            String debugText = String.format("%.2f", this.cooldownTimer);   
+            String debugText = String.format("%.2f", this.cooldownTimer);
             Galaga.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
         }
     }
