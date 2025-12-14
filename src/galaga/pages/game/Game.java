@@ -4,10 +4,12 @@ import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
+import engine.resource.sound.Sound;
 import engine.utils.Position;
 import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
+import galaga.GalagaSound;
 import galaga.entities.bullet.Bullet;
 import galaga.entities.bullet.BulletManager;
 import galaga.entities.enemies.Enemy;
@@ -44,6 +46,14 @@ public class Game extends Page<GalagaPage> {
     private FUD fud;
     private HUD hud;
 
+    private Sound themeSound;
+    private Sound levelStart;
+    private Sound levelEnd;
+
+    private boolean bestScorePlayed = false;
+    private int bestScore = 0;
+    private Sound levelBestScore;
+
     public Game() {
         super(GalagaPage.GAME);
     }
@@ -53,6 +63,28 @@ public class Game extends Page<GalagaPage> {
         if (Galaga.getContext().getState().shipSkin == null) {
             Galaga.getContext().getState().shipSkin = Galaga.getContext().getResource().get(Config.SPRITES_SHIP.get(0));
         }
+
+        this.themeSound = Galaga.getContext().getResource().get(GalagaSound.game_theme);
+        if (this.themeSound == null) {
+            return false;
+        }
+        this.themeSound.setLoop(true);
+        this.themeSound.play(0.2f);
+
+        this.levelStart = Galaga.getContext().getResource().get(GalagaSound.level_start);
+        if (this.levelStart == null) {
+            return false;
+        }
+        this.levelEnd = Galaga.getContext().getResource().get(GalagaSound.level_end);
+        if (this.levelEnd == null) {
+            return false;
+        }
+
+        this.levelBestScore = Galaga.getContext().getResource().get(GalagaSound.level_bestscore);
+        if (this.levelBestScore == null) {
+            return false;
+        }
+
 
         this.particles = new ParticlesManager();
 
@@ -91,6 +123,8 @@ public class Game extends Page<GalagaPage> {
             return false;
         }
 
+
+
         Galaga.getContext().getState().bullets = this.bullets;
         Galaga.getContext().getState().player = this.player;
 
@@ -100,6 +134,10 @@ public class Game extends Page<GalagaPage> {
 
     @Override
     public boolean onDeactivate() {
+        this.themeSound.stop();
+        this.levelStart.stop();
+        this.levelEnd.stop();
+        this.levelBestScore.stop();
 
         Score score = new Score(this.player.getScore());
         Score bestScore = Galaga.getContext().getResource().get(Config.BEST_SCORE);
@@ -128,6 +166,7 @@ public class Game extends Page<GalagaPage> {
         if (level == null) {
             return false;
         }
+
         this.displayLevelTitle = Config.DELAY_LEVEL_TITLE;
         this.levelTitle.setText(level.getName());
         this.levelTitle.setColor(Color.CYAN);
@@ -144,11 +183,13 @@ public class Game extends Page<GalagaPage> {
         }
 
         Galaga.getContext().getState().level = level;
+        this.levelStart.play();
         return true;
     }
 
     @Override
     public void update(float dt) {
+        
         this.sky.update(dt);
         this.player.update(dt);
 

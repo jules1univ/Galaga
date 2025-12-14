@@ -119,6 +119,7 @@ public abstract class Enemy extends SpriteEntity {
         if (this.dieSound == null) {
             return false;
         }
+        this.dieSound.setCapacity(Config.SIZE_ENEMY_DIE_CAPACITY);
 
         this.debugFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_TEXT);
         return true;

@@ -160,6 +160,7 @@ public class Menu extends Page<GalagaPage> {
         if (this.themeSound == null) {
             return false;
         }
+        this.themeSound.setLoop(true);
         this.themeSound.play(0.2f);
 
         this.selectSound = Galaga.getContext().getResource().get(GalagaSound.menu_select);

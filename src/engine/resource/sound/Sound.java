@@ -53,6 +53,16 @@ public class Sound {
         this.info = info;
     }
 
+    public void setLoop(boolean loop) {
+        for (Clip clip : this.clips) {
+            if (loop) {
+                clip.loop(Clip.LOOP_CONTINUOUSLY);
+            } else {
+                clip.loop(0);
+            }
+        }
+    }
+
     public void setCapacity(int capacity) {
         while (this.clips.size() < capacity) {
             try {

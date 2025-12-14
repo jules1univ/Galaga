@@ -73,7 +73,7 @@ public final class Text extends UIElement {
 
     private void updateText() {
         if (!this.fixedSize) {
-            this.size = Application.getContext().getRenderer().getTextSize(this.text, this.font);
+            this.size = Application.getContext().getRenderer().getTextSize(this.text.length() == 0 ? "X" : this.text, this.font);
         }
 
         switch (this.horizontal) {
