@@ -55,7 +55,7 @@ public class FUD extends UIElement {
             return false;
         }
         this.medalIcons = new IconGroup(new ArrayList<>(), this.size.getWidth(), false,
-                this.medal.getSize().getIntWidth() / 2);
+                this.medal.getSize().getIntWidth());
         this.medalIcons.setPosition(this.position);
 
         if (!this.medalIcons.init()) {
@@ -72,7 +72,7 @@ public class FUD extends UIElement {
             this.lifeIcons.setIcons(createArrayIcon(this.ship, lifes));
         }
 
-        int medals = Galaga.getContext().getState().player.getMedals();
+        int medals = Galaga.getContext().getState().player.getMedals() ;
         if (this.medalIcons.getIcons().size() != medals) {
             this.medalIcons.setIcons(createArrayIcon(this.medal, medals));
         }
