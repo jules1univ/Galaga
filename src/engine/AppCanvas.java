@@ -55,8 +55,13 @@ public final class AppCanvas extends Canvas implements Runnable {
     }
 
     @Override
-    public void run() {
+    public void addNotify() {
+        super.addNotify();
         this.createBufferStrategy(3);
+    }
+
+    @Override
+    public void run() {
         BufferStrategy strategy = getBufferStrategy();
         Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
         this.renderer.set(g);
@@ -77,18 +82,29 @@ public final class AppCanvas extends Canvas implements Runnable {
 
                     g = (Graphics2D) strategy.getDrawGraphics();
                     if (g == null) {
+                        Log.error("Application graphics context is null");
+                        this.stop();
                         return;
                     }
                     this.renderer.set(g);
-                    this.app.update(Time.getDeltaTime());
 
-                    this.renderer.begin();
-                    this.app.draw();
-                    this.renderer.end();
+                    try {
+                        this.app.update(Time.getDeltaTime());
+
+                        this.renderer.begin();
+                        this.app.draw();
+                        this.renderer.end();
+                    } catch (Exception e) {
+                        Log.error("Application encountered an error during cycle: " + e.getMessage());
+                        this.stop();
+                        return;
+                    }
+
                 } while (strategy.contentsRestored());
 
                 strategy.show();
             } while (strategy.contentsLost());
+
             Toolkit.getDefaultToolkit().sync();
         }
     }
