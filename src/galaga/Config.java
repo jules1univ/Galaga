@@ -42,6 +42,7 @@ public class Config {
         public static final float TIME_BLINKSTAR_MIN = 3.0f;
 
         public static final int SIZE_SKY_GRID = 50;
+        public static final int SIZE_BULLET_CAPACITY = 16;
         public static final float SIZE_FONT_XLARGE = 48.f;
         public static final float SIZE_FONT_LARGE = 32.f;
         public static final float SIZE_FONT_TEXT = 24.f;

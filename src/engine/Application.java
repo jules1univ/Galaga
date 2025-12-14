@@ -56,6 +56,7 @@ public abstract class Application<T extends Enum<T>> {
     }
 
     public final void stop() {
+        getContext().getResource().cancel();
         getContext().getFrame().stop();
     }
 

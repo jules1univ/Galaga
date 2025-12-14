@@ -4,11 +4,9 @@ import java.io.InputStream;
 import engine.resource.Resource;
 import engine.resource.ResourceAlias;
 import engine.resource.ResourceCallback;
-import engine.resource.ResourceVariant;
 
 public class SoundResource extends Resource<Sound> {
     public static final String NAME = "sound";
-    public static final int DEFAULT_PRELOAD_COUNT = 8;
 
     public SoundResource(ResourceAlias alias, ResourceCallback callback) {
         super(alias, callback);
@@ -20,12 +18,7 @@ public class SoundResource extends Resource<Sound> {
             return false;
         }
 
-        ResourceVariant variant = this.alias.getVariant();
-        int preloadCount = SoundResource.DEFAULT_PRELOAD_COUNT;
-        if (variant != null) {
-            preloadCount = variant.getValue();
-        }
-        Sound sound = Sound.createSound(in, preloadCount);
+        Sound sound = Sound.createSound(in);
         if (sound == null) {
             return false;
         }

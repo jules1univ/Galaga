@@ -3,6 +3,7 @@ package galaga.entities.bullet;
 import engine.elements.entity.Entity;
 import engine.elements.entity.SpriteEntity;
 import engine.resource.sound.Sound;
+import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaSound;
 
@@ -10,7 +11,7 @@ import java.util.Iterator;
 
 public class BulletManager extends Entity implements  Iterable<Bullet> {
     
-    private final Bullet[] bullets = new Bullet[8];
+    private final Bullet[] bullets = new Bullet[Config.SIZE_BULLET_CAPACITY];
     private int count = 0;
     private Sound shootSound;
 
@@ -72,6 +73,7 @@ public class BulletManager extends Entity implements  Iterable<Bullet> {
         if(this.shootSound == null) {
             return false;
         }
+        this.shootSound.setCapacity(Config.SIZE_BULLET_CAPACITY);
         return true;
     }
 

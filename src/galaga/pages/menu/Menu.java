@@ -156,6 +156,11 @@ public class Menu extends Page<GalagaPage> {
                 Galaga.getContext().getFrame().getWidth(),
                 Galaga.getContext().getFrame().getHeight());
 
+        Sound startSound = Galaga.getContext().getResource().get(GalagaSound.start_music);
+        if (startSound != null) {
+            startSound.stop();
+        }
+
         this.themeSound = Galaga.getContext().getResource().get(GalagaSound.name_entry_2nd5th);
         if (this.themeSound == null) {
             return false;
@@ -166,7 +171,8 @@ public class Menu extends Page<GalagaPage> {
         if (this.selectSound == null) {
             return false;
         }
-
+        this.selectSound.setCapacity(4);
+        
         this.sky = new Sky(Config.SIZE_SKY_GRID);
         if (!this.sky.init()) {
             return false;

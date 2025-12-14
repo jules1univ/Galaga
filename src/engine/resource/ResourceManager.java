@@ -100,6 +100,7 @@ public final class ResourceManager {
         this.loadingThread = new Thread(() -> {
             int loadedCount = 0;
             int failedCount = 0;
+
             for (Resource<?> res : this.resources.values()) {
                 if (res.isLoaded()) {
                     continue;
@@ -114,18 +115,22 @@ public final class ResourceManager {
                     Log.error("Failed to load resource: " + res.getAlias().getFullName());
                 }
 
-                if (Thread.currentThread().isInterrupted()) {
+                if (Thread.currentThread().isInterrupted() || !this.loading) {
                     Log.message("Resource loading cancelled.");
-                    break;
+                    return;
                 }
 
                 if (delay > 0) {
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        Log.message("Resource loading cancelled.");
-                        break;
+                    long targetTime = System.currentTimeMillis() + delay;
+                    float targetProgress = (float) (loadedCount + (loadedCount >= this.resources.size() ? 0 :  1)) / (float) this.resources.size();
+                    while (System.currentTimeMillis() < targetTime) {
+                        try {
+                            this.progress += (targetProgress - this.progress) * 0.1f;
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
+                            Log.message("Resource loading cancelled.");
+                            return;
+                        }
                     }
                 }
             }
