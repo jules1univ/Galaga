@@ -31,23 +31,22 @@ public class HUD extends UIElement {
 
         this.textFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_TEXT);
 
-        int margin = 20;
-        this.fps = new Text("", Position.of(this.size.getWidth() - margin, this.size.getHeight()),
+        this.fps = new Text("", Position.of(this.size.getWidth(), this.size.getHeight()/2),
                 Color.WHITE, this.textFont);
         
         // hack fix to avoid resizing when fps change
-        this.fps.setFixSize("FPS: 0.0000", true);
-        this.fps.setCenter(TextPosition.END, TextPosition.CENTER);
+        this.fps.setFixSize("FPS: XXXXX.XX", true);
+        this.fps.setCenter(TextPosition.END, TextPosition.BEGIN);
 
-        this.score = new Text("SCORE: 0", Position.of(this.size.getWidth()/2, this.size.getHeight()), Color.WHITE, this.textFont);
-        this.score.setCenter(TextPosition.CENTER, TextPosition.CENTER);
+        this.score = new Text("SCORE: 0", Position.of(this.size.getWidth()/2, this.size.getHeight()/2), Color.WHITE, this.textFont);
+        this.score.setCenter(TextPosition.CENTER, TextPosition.BEGIN);
 
         Score score = Galaga.getContext().getResource().get(Config.BEST_SCORE);
         if(score == null) {
             return false;
         }
-        this.bestScore = new Text(String.format("BEST: %d", score.getValue()), Position.of(margin, this.size.getHeight()), Color.RED, this.textFont);
-        this.bestScore.setCenter(TextPosition.BEGIN, TextPosition.CENTER);
+        this.bestScore = new Text(String.format("BEST: %d", score.getValue()), Position.of(0, this.size.getHeight()/2), Color.RED, this.textFont);
+        this.bestScore.setCenter(TextPosition.BEGIN, TextPosition.BEGIN);
         return true;
     }
 

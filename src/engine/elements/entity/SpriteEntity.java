@@ -5,6 +5,8 @@ import engine.graphics.sprite.Sprite;
 import engine.utils.Collision;
 import engine.utils.Position;
 import engine.utils.Size;
+import engine.utils.logger.Log;
+
 import java.awt.Color;
 
 public abstract class SpriteEntity extends Entity {
@@ -42,14 +44,14 @@ public abstract class SpriteEntity extends Entity {
     public boolean collideWith(Entity entity) {
         if (entity instanceof SpriteEntity spriteEntity) {
             return Collision.aabb(
-                    this.getPosition(),
+                    this.getCenter(),
                     this.getScaledSize(),
-                    spriteEntity.getPosition(),
+                    spriteEntity.getCenter(),
                     spriteEntity.getScaledSize());
         }
 
         return Collision.aabb(
-                this.getPosition(),
+                this.getCenter(),
                 this.getScaledSize(),
                 entity.getPosition(),
                 entity.getSize());

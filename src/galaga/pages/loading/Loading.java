@@ -41,7 +41,7 @@ public class Loading extends Page<GalagaPage> {
         this.text = new Text("Loading", Position.of(
                 Galaga.getContext().getFrame().getWidth() / 2,
                 Galaga.getContext().getFrame().getHeight() / 2), Color.WHITE, defaultFont);
-        this.text.setCenter(TextPosition.CENTER, TextPosition.CENTER);
+        this.text.setCenter(TextPosition.CENTER, TextPosition.BEGIN);
         this.state = PageState.ACTIVE;
         return true;
     }

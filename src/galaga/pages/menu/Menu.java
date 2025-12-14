@@ -172,7 +172,7 @@ public class Menu extends Page<GalagaPage> {
             return false;
         }
         this.selectSound.setCapacity(4);
-        
+
         this.sky = new Sky(Config.SIZE_SKY_GRID);
         if (!this.sky.init()) {
             return false;

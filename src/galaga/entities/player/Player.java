@@ -107,7 +107,7 @@ public final class Player extends SpriteEntity {
 
         // sprite will be recentered by default so no need to adjust position here
         this.position.addX(this.getScaledSize().getWidth() / 2);
-        this.position.addY(this.getScaledSize().getHeight() / 2);
+        this.position.addY(-this.getScaledSize().getHeight() / 2);
 
         this.debugFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_TEXT);
 

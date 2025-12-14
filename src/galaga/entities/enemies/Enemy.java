@@ -113,6 +113,10 @@ public abstract class Enemy extends SpriteEntity {
                 }
             }
             case RETURNING -> {
+                if(Application.DEBUG_MODE) {
+                    this.position = this.lock.copy();
+                    this.state = EnemyState.FORMATION;
+                }
                 this.animateToLockPosition(dt);
                 if (this.isInLockPosition()) {
                     this.state = EnemyState.FORMATION;

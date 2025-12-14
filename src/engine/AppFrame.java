@@ -2,52 +2,53 @@ package engine;
 
 import engine.graphics.Renderer;
 import engine.input.InputKeyListener;
+
 import java.awt.Dimension;
+
 import javax.swing.JFrame;
 
 public final class AppFrame extends JFrame {
-    private final AppPanel panel;
-    private final Renderer renderer;
+    private final AppCanvas canvas;
     private InputKeyListener input;
 
     public AppFrame(Application<?> app) {
         super(app.getTitle());
 
-        this.setSize(app.getWidth(), app.getHeight());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setSize(app.getWidth(), app.getHeight());
         this.setPreferredSize(new Dimension(app.getWidth(), app.getHeight()));
-
         this.setResizable(false);
-        this.setFocusTraversalKeysEnabled(false);
-        this.requestFocusInWindow();
 
-        this.panel = new AppPanel(app);
-        this.panel.addKeyListener(this.input);
-        this.setContentPane(this.panel);
+        this.canvas = new AppCanvas(app);
+        this.add(this.canvas);
+
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
 
         this.input = new InputKeyListener();
-        this.panel.addKeyListener(this.input);
 
-        this.renderer = new Renderer(this);
-    }
+        this.setFocusTraversalKeysEnabled(false);
+        this.addKeyListener(this.input);
+        this.canvas.addKeyListener(this.input);
 
-    public Renderer getRenderer() {
-        return this.renderer;
+        this.requestFocusInWindow();
     }
 
     public InputKeyListener getInput() {
         return this.input;
     }
 
+    public Renderer getRenderer() {
+        return this.canvas.getRenderer();
+    }
+
     public void start() {
-        this.panel.start();
+        this.canvas.start();
     }
 
     public void stop() {
-        this.panel.stop();
+        this.canvas.stop();
         this.dispose();
     }
 }

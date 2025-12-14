@@ -1,6 +1,5 @@
 package engine.graphics;
 
-import engine.AppFrame;
 import engine.Application;
 import engine.elements.entity.SpriteEntity;
 import engine.graphics.sprite.Sprite;
@@ -11,52 +10,30 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferStrategy;
 
 public final class Renderer {
 
-    private final AppFrame frame;
-    private BufferStrategy strategy;
     private Graphics2D g;
 
-    public Renderer(AppFrame frame) {
-        this.frame = frame;
-        this.frame.createBufferStrategy(3);
-        this.strategy = frame.getBufferStrategy();
-        this.g = (Graphics2D) this.strategy.getDrawGraphics();
+    public Renderer() {
     }
 
-    public boolean begin() {
-        try {
-            this.g = (Graphics2D) this.strategy.getDrawGraphics();
-            if(this.g == null) {
-                return false;
-            }
-        } catch (Exception e) {
-            return false;
-        }
+    public void set(Graphics2D g) {
+        this.g = g;
+        this.g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        this.g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    }
 
-        this.g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        this.g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-        this.g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
-
+    public void begin() {
         this.g.setColor(Color.BLACK);
-        this.g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
-        return true;
+        this.g.fillRect(0, 0, Application.getContext().getFrame().getWidth(),
+                Application.getContext().getFrame().getHeight());
     }
 
     public void end() {
         this.g.dispose();
-        this.strategy.show();
-        Toolkit.getDefaultToolkit().sync();
-    }
-
-    public void clear(Color color) {
-        this.g.setColor(color);
-        this.g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
     }
 
     public Size getTextSize(String text, Font font) {
@@ -147,7 +124,8 @@ public final class Renderer {
         Size size = Size.of(sprite.getSize(), scale);
         Position center = Position.ofCenter(position, size);
 
-        this.g.drawImage(sprite.getImage(), center.getIntX(), center.getIntY(), size.getIntWidth(), size.getIntHeight(),
+        this.g.drawImage(sprite.getImage(), center.getIntX(), center.getIntY(), size.getIntWidth(),
+                size.getIntHeight(),
                 null);
         return this;
     }
@@ -184,29 +162,18 @@ public final class Renderer {
         return this;
     }
 
-    public Renderer drawGrid(int cellSize, Color color) {
+    public Renderer drawGrid(int width, int height, int cellSize, Color color) {
         this.g.setColor(color);
 
-        for (int x = 0; x < this.frame.getWidth(); x += cellSize) {
-            this.g.drawLine(x, 0, x, this.frame.getHeight());
+        for (int x = 0; x < width; x += cellSize) {
+            this.g.drawLine(x, 0, x, height);
         }
 
-        for (int y = 0; y < this.frame.getHeight(); y += cellSize) {
-            this.g.drawLine(0, y, this.frame.getWidth(), y);
+        for (int y = 0; y < height; y += cellSize) {
+            this.g.drawLine(0, y, width, y);
         }
 
         return this;
     }
 
-    public Renderer drawCross(Color color) {
-        this.g.setColor(color);
-
-        int centerX = this.frame.getWidth() / 2;
-        int centerY = this.frame.getHeight() / 2;
-
-        this.g.drawLine(centerX, 0, centerX, this.frame.getHeight());
-        this.g.drawLine(0, centerY, this.frame.getWidth(), centerY);
-
-        return this;
-    }
 }

@@ -40,15 +40,15 @@ public class Game extends Page<GalagaPage> {
     }
 
     @Override
-    public boolean onActivate() {   
-        if(Galaga.getContext().getState().shipSkin == null) {
+    public boolean onActivate() {
+        if (Galaga.getContext().getState().shipSkin == null) {
             Galaga.getContext().getState().shipSkin = Galaga.getContext().getResource().get(Config.SPRITES_SHIP.get(0));
         }
 
         this.particles = new ParticlesManager();
 
         this.bullets = new BulletManager();
-        if(!this.bullets.init()) {
+        if (!this.bullets.init()) {
             return false;
         }
 
@@ -69,17 +69,16 @@ public class Game extends Page<GalagaPage> {
 
         this.hud = new HUD();
         if (!this.hud.init()) {
-            return  false;
+            return false;
         }
 
-        if(!this.loadNextLevel())
-        {
+        if (!this.loadNextLevel()) {
             return false;
         }
 
         Galaga.getContext().getState().bullets = this.bullets;
         Galaga.getContext().getState().player = this.player;
-        
+
         this.state = PageState.ACTIVE;
         return true;
     }
@@ -89,7 +88,7 @@ public class Game extends Page<GalagaPage> {
 
         Score score = new Score(this.player.getScore());
         Score bestScore = Galaga.getContext().getResource().get(Config.BEST_SCORE);
-        if(score.compareTo(bestScore) > 0) {
+        if (score.compareTo(bestScore) > 0) {
             Galaga.getContext().getResource().write(Config.BEST_SCORE, score);
         }
 
@@ -99,7 +98,7 @@ public class Game extends Page<GalagaPage> {
 
     private boolean loadNextLevel() {
         this.levelIndex++;
-        if(Config.LEVELS.size() <= this.levelIndex) {
+        if (Config.LEVELS.size() <= this.levelIndex) {
             // TODO procedural level generation
             return false;
         }
@@ -115,8 +114,8 @@ public class Game extends Page<GalagaPage> {
             return false;
         }
         this.enemies = level.getEnemies();
-        if(this.enemies == null || this.enemies.isEmpty()) {
-            return false; 
+        if (this.enemies == null || this.enemies.isEmpty()) {
+            return false;
         }
 
         for (Enemy enemy : this.enemies) {
@@ -144,7 +143,8 @@ public class Game extends Page<GalagaPage> {
         }
 
         if (allActionDone && allInFormation && !this.enemies.isEmpty()) {
-            this.enemies.stream().filter(enemy -> enemy.canPerformAction()).findFirst().ifPresent(enemy -> enemy.resetAction());
+            this.enemies.stream().filter(enemy -> enemy.canPerformAction()).findFirst()
+                    .ifPresent(enemy -> enemy.resetAction());
         }
 
         if (allInFormation && !this.player.isShootingActive()) {
@@ -189,7 +189,7 @@ public class Game extends Page<GalagaPage> {
             this.bulletsRemove.clear();
         } else if (!this.enemies.isEmpty() && !allInFormation) {
             for (Enemy enemy : this.enemies) {
-                if(enemy.getState() == EnemyState.FORMATION) {
+                if (enemy.getState() == EnemyState.FORMATION) {
                     continue;
                 }
 

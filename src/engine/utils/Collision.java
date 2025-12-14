@@ -7,4 +7,12 @@ public class Collision {
                 && pA.getY() < pB.getY() + sB.getHeight()
                 && pA.getY() + sA.getHeight() > pB.getY();
     }
+
+    public static boolean circle(Position cA, float rA, Position cB, float rB) {
+        float dx = cA.getX() - cB.getX();
+        float dy = cA.getY() - cB.getY();
+        float dist = dx * dx + dy * dy;
+        float radSum = rA + rB;
+        return dist < radSum * radSum;
+    }
 }

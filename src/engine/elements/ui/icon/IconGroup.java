@@ -39,7 +39,7 @@ public final class IconGroup extends UIElement {
         for (Icon icon : this.icons) {
             icon.setPosition(Position.of(
                 Math.abs((this.alignLeft ? 0 : this.parentWidth) - (this.position.getX() + icon.getSize().getWidth() + space)),
-                this.position.getY() + icon.getSize().getHeight() / 2
+                this.position.getY() - icon.getSize().getHeight()
             ));
             space += icon.getSize().getWidth() + this.margin;
         }
