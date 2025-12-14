@@ -23,7 +23,7 @@ public class BulletManager extends Entity implements  Iterable<Bullet> {
         if(this.count >= this.bullets.length) {
             return;
         }
-        this.shootSound.play(2.f);
+        this.shootSound.play();
         this.count++;
         this.bullets[this.count - 1] = new Bullet(shooter);
     }
@@ -69,7 +69,7 @@ public class BulletManager extends Entity implements  Iterable<Bullet> {
 
     @Override
     public boolean init() {
-        this.shootSound = Galaga.getContext().getResource().get(GalagaSound.fighter_shot1);
+        this.shootSound = Galaga.getContext().getResource().get(GalagaSound.entity_shoot);
         if(this.shootSound == null) {
             return false;
         }

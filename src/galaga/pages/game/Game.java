@@ -182,10 +182,13 @@ public class Game extends Page<GalagaPage> {
                 if (bullet.getShooter() instanceof Player) {
                     for (Enemy enemy : this.enemies) {
                         if (enemy.collideWith(bullet)) {
+                            this.particles.createExplosion(enemy);
+
+                            this.player.onKillEnemy(enemy);
+                            enemy.onDie();
                             enemiesRemove.add(enemy);
                             bulletsRemove.add(bullet);
-                            this.player.onKillEnemy(enemy);
-                            this.particles.createExplosion(enemy);
+
                             continue;
                         }
 
@@ -193,12 +196,15 @@ public class Game extends Page<GalagaPage> {
                             this.particles.createExplosion(this.player);
                             this.player.onKillEnemy(enemy);
                             this.player.onHit();
+
+                            enemy.onDie();
                             enemiesRemove.add(enemy);
                         }
                     }
                     this.enemies.removeAll(enemiesRemove);
                 } else if (this.player.collideWith(bullet)) {
                     this.particles.createExplosion(this.player);
+
                     this.player.onHit();
                     bulletsRemove.add(bullet);
                 }
@@ -215,7 +221,9 @@ public class Game extends Page<GalagaPage> {
                 if (enemy.collideWith(this.player)) {
                     this.particles.createExplosion(this.player);
                     this.particles.createExplosion(enemy);
+                    
                     this.player.onHit();
+                    enemy.onDie();
                     enemiesRemove.add(enemy);
                 }
             }

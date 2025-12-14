@@ -1,29 +1,28 @@
 package galaga;
 
 public enum GalagaSound {
-    miss,
-    goei_stricken,
-    credit_sound,
-    stage_flag_appearance,
-    rescue_music,
-    tractor_beam_shot,
-    triple_formation_appearance,
-    fighter_shot2,
-    ingame_ambience,
-    boss_stricken_1,
-    boss_stricken_2,
-    extend_sound,
-    mistake_music,
-    name_entry_1st,
-    name_entry_2nd5th,
-    tractor_beam_capture,
-    fighter_shot1,
-    challenging_stage_perfect,
-    challenging_stage_start,
-    capture_music,
-    alien_flying,
-    challenging_stage_clear,
-    zako_stricken,
-    start_music,
-    menu_select
+    enemy_bee_die,
+    enemy_boss_die,
+    enemy_butterfly_die,
+    enemy_moth_capture,
+    enemy_moth_die,
+    
+    entity_shoot,
+    
+    game_close,
+    game_easter,
+    game_start,
+    game_theme,
+    
+    level_bestscore,
+    level_end,
+    level_start,
+    
+    menu_select,
+    menu_theme,
+    menu_theme_2,
+
+    player_add_gun,
+    player_add_life,
+    player_die,
 }

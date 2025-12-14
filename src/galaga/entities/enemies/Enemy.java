@@ -2,9 +2,12 @@ package galaga.entities.enemies;
 
 import engine.Application;
 import engine.elements.entity.SpriteEntity;
+import engine.resource.sound.Sound;
 import engine.utils.Position;
 import galaga.Config;
 import galaga.Galaga;
+import galaga.GalagaSound;
+
 import java.awt.Color;
 import java.awt.Font;
 
@@ -22,6 +25,7 @@ public abstract class Enemy extends SpriteEntity {
     private float indexTimer;
     private boolean action;
 
+    private Sound dieSound;
     private Font debugFont;
 
     public Enemy(EnemyType type, EnemySetting setting, float formationSpeed) {
@@ -86,6 +90,10 @@ public abstract class Enemy extends SpriteEntity {
         this.indexTimer = Config.DELAY_ENEMY_FORMATION;
     }
 
+    public void onDie() {
+        this.dieSound.play();
+    }
+
     public abstract boolean canPerformAction();
 
     protected abstract void updateAction(float dt);
@@ -97,6 +105,21 @@ public abstract class Enemy extends SpriteEntity {
             return false;
         }
         this.size = this.sprite.getSize();
+
+        GalagaSound sound;
+        switch (this.type) {
+            case BEE -> sound = GalagaSound.enemy_bee_die;
+            case BUTTERFLY -> sound = GalagaSound.enemy_butterfly_die;
+            case MOTH -> sound = GalagaSound.enemy_moth_die;
+            default -> {
+                return false;
+            }
+        }
+        this.dieSound = Galaga.getContext().getResource().get(sound);
+        if (this.dieSound == null) {
+            return false;
+        }
+
         this.debugFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_TEXT);
         return true;
     }
@@ -113,7 +136,7 @@ public abstract class Enemy extends SpriteEntity {
                 }
             }
             case RETURNING -> {
-                if(Application.DEBUG_MODE) {
+                if (Application.DEBUG_MODE) {
                     this.position = this.lock.copy();
                     this.state = EnemyState.FORMATION;
                 }

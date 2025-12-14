@@ -7,6 +7,7 @@ import engine.resource.Resource;
 import engine.resource.ResourceManager;
 import engine.resource.ResourceVariant;
 import engine.resource.font.FontResource;
+import engine.resource.sound.Sound;
 import engine.resource.sound.SoundResource;
 import engine.resource.sprite.SpriteResource;
 import engine.utils.logger.Log;
@@ -56,7 +57,16 @@ public class Galaga extends Application<GalagaPage> {
         this.registerPage(GalagaPage.MENU, Menu.class);
         this.registerPage(GalagaPage.GAME, Game.class);
         this.setCurrentPage(GalagaPage.MENU);
+
         return true;
+    }
+
+    @Override
+    protected void destroy() {
+        Sound closeSound = Galaga.getContext().getResource().get(GalagaSound.game_close);
+        if (closeSound != null) {
+            closeSound.play();
+        }
     }
 
     @Override
@@ -78,13 +88,6 @@ public class Galaga extends Application<GalagaPage> {
             }
         });
 
-        rm.add(Config.SOUNDS, SoundResource.NAME, (ResourceVariant variant, Resource<?> rawRes) -> {
-            SoundResource sound = (SoundResource) rawRes;
-            if (GalagaSound.start_music.toString().equals(sound.getAlias().getName())) {
-                sound.getData().play(0.1f);
-            }
-        });
-
         rm.add(Config.SPRITE_MEDAL, SpriteResource.NAME, (ResourceVariant variant, Resource<?> rawRes) -> {
             SpriteResource medal = (SpriteResource) rawRes;
             getContext().getFrame().setIconImage(medal.getData().getImage());
@@ -95,6 +98,13 @@ public class Galaga extends Application<GalagaPage> {
 
         rm.add(Config.LEVELS, LevelResource.NAME);
         rm.add(Config.BEST_SCORE, ScoreResource.NAME);
+
+        rm.add(Config.SOUNDS, SoundResource.NAME, (ResourceVariant variant, Resource<?> rawRes) -> {
+            SoundResource sound = (SoundResource) rawRes;
+            if (GalagaSound.game_start.toString().equals(sound.getAlias().getName())) {
+                sound.getData().play();
+            }
+        });
 
         rm.load(() -> {
             if (!this.load()) {

@@ -63,6 +63,7 @@ public abstract class Application<T extends Enum<T>> {
     public final void stop() {
         getContext().getResource().cancel();
         getContext().getFrame().stop();
+        this.destroy();
     }
 
     public final Page<T> getCurrentPage() {
@@ -99,6 +100,7 @@ public abstract class Application<T extends Enum<T>> {
     }
 
     protected abstract boolean init();
+    protected abstract void destroy();
 
     protected void update(float dt) {
         if (this.nextPage != null && this.currentPage.getState() == PageState.INACTIVE) {

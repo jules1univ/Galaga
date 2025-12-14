@@ -2,9 +2,11 @@ package galaga.entities.player;
 
 import engine.Application;
 import engine.elements.entity.SpriteEntity;
+import engine.resource.sound.Sound;
 import engine.utils.Position;
 import galaga.Config;
 import galaga.Galaga;
+import galaga.GalagaSound;
 import galaga.entities.enemies.Enemy;
 import java.awt.Color;
 import java.awt.Font;
@@ -19,6 +21,8 @@ public final class Player extends SpriteEntity {
     private boolean shootActive;
     private float cooldownTimer;
     private float hitTimer;
+
+    private Sound dieSound;
 
     private Font debugFont;
 
@@ -66,11 +70,13 @@ public final class Player extends SpriteEntity {
     }
 
     public void onHit() {
+        this.dieSound.play();
+
         this.position.setX(
                 (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2 + this.getScaledSize().getWidth() / 2
         );
         this.hitTimer = Config.DELAY_PLAYER_HIT;
-
+        
         this.life--;
         if (this.life < 0) {
             this.life = 0;
@@ -108,6 +114,11 @@ public final class Player extends SpriteEntity {
         // sprite will be recentered by default so no need to adjust position here
         this.position.addX(this.getScaledSize().getWidth() / 2);
         this.position.addY(-this.getScaledSize().getHeight() / 2);
+
+        this.dieSound = Galaga.getContext().getResource().get(GalagaSound.player_die);
+        if (this.dieSound == null) {
+            return false;
+        }
 
         this.debugFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_TEXT);
 

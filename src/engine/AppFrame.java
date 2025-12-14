@@ -4,6 +4,8 @@ import engine.graphics.Renderer;
 import engine.input.InputKeyListener;
 
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
@@ -33,6 +35,13 @@ public final class AppFrame extends JFrame {
         this.canvas.addKeyListener(this.input);
 
         this.requestFocusInWindow();
+
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                app.stop();
+            }
+        });
     }
 
     public InputKeyListener getInput() {

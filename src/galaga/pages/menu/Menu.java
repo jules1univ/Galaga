@@ -156,12 +156,7 @@ public class Menu extends Page<GalagaPage> {
                 Galaga.getContext().getFrame().getWidth(),
                 Galaga.getContext().getFrame().getHeight());
 
-        Sound startSound = Galaga.getContext().getResource().get(GalagaSound.start_music);
-        if (startSound != null) {
-            startSound.stop();
-        }
-
-        this.themeSound = Galaga.getContext().getResource().get(GalagaSound.name_entry_2nd5th);
+        this.themeSound = Galaga.getContext().getResource().get(GalagaSound.menu_theme);
         if (this.themeSound == null) {
             return false;
         }
