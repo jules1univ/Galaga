@@ -44,8 +44,13 @@ public final class Sprite {
             return null;
         }
 
-        boolean isValidSpriteSize = lines.stream().filter(line -> line.length() == width).toList()
-                .size() == height;
+        boolean isValidSpriteSize = true;
+        for (String line : lines) {
+            if (line.length() != width) {
+                isValidSpriteSize = false;
+                break;
+            }
+        }
         if (!isValidSpriteSize) {
             Log.error("Sprite size is inconsistent.");
             return null;
@@ -59,7 +64,7 @@ public final class Sprite {
             for (int x = 0; x < width; x++) {
                 char c = row.charAt(x);
                 Color color = charToColor(c);
-                
+
                 colorMap.putIfAbsent(color, 0);
                 colorMap.put(color, colorMap.get(color) + 1);
                 base.setRGB(x, y, color.getRGB());
@@ -91,7 +96,6 @@ public final class Sprite {
         }
         return Size.of(this.image.getWidth(), this.image.getHeight());
     }
-
 
     public Map<Color, Integer> getColors() {
         return this.colorMap;

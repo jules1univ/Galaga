@@ -1,0 +1,135 @@
+package galaga.level;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.util.List;
+
+import engine.elements.ui.text.Text;
+import engine.elements.ui.text.TextPosition;
+import engine.resource.sound.Sound;
+import engine.utils.Position;
+import galaga.Config;
+import galaga.Galaga;
+import galaga.GalagaSound;
+import galaga.entities.enemies.Enemy;
+import galaga.entities.player.Player;
+
+public class LevelManager {
+    private int index = -1;
+    private Player player;
+    private List<Enemy> enemies;
+
+    private Text title;
+    private float titleTime;
+
+    private Sound startSound;
+    private Sound endSound;
+    private Sound bestScoreSound;
+
+    public LevelManager(Player player) {
+        this.player = player;
+    }
+
+    public boolean init() {
+        this.startSound = Galaga.getContext().getResource().get(GalagaSound.level_start);
+        if (this.startSound == null) {
+            return false;
+        }
+
+        this.endSound = Galaga.getContext().getResource().get(GalagaSound.level_end);
+        if (this.endSound == null) {
+            return false;
+        }
+
+        this.bestScoreSound = Galaga.getContext().getResource().get(GalagaSound.level_bestscore);
+        if (this.bestScoreSound == null) {
+            return false;
+        }
+
+        Font titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_XLARGE);
+        if (titleFont == null) {
+            return false;
+        }
+
+        this.title = new Text("", Position.of(
+                Galaga.getContext().getApplication().getSize()).half(), Color.CYAN, titleFont);
+        this.title.setCenter(TextPosition.CENTER, TextPosition.BEGIN);
+
+        return true;
+    }
+
+    public boolean next() {
+        this.index++;
+        if (Config.LEVELS.size() <= this.index) {
+            // return this.generate();
+            return false;
+        }
+
+        Level level = Galaga.getContext().getResource()
+                .get(Config.LEVELS.get(this.index));
+        this.player.setShooting(false);
+        if (this.index > 0) {
+            this.player.onFinishLevel();
+        }
+
+        if (level == null) {
+            return false;
+        }
+
+        this.titleTime = Config.DELAY_LEVEL_TITLE;
+        this.title.setText(level.getName());
+        this.title.setColor(Color.CYAN);
+
+        this.enemies = level.getEnemies();
+        if (this.enemies == null || this.enemies.isEmpty()) {
+            return false;
+        }
+
+        for (Enemy enemy : this.enemies) {
+            if (!enemy.init()) {
+                return false;
+            }
+        }
+
+        this.startSound.play();
+        return true;
+    }
+
+    public List<Enemy> getEnemies() {
+        return this.enemies;
+    }
+
+    public void close() {
+        this.startSound.stop();
+        this.endSound.stop();
+        this.bestScoreSound.stop();
+    }
+
+    public void updateTitle(float dt) {
+        if (this.titleTime > 0.f) {
+            this.titleTime -= dt;
+            this.title.setColor(new Color(
+                    this.title.getColor().getRed(),
+                    this.title.getColor().getGreen(),
+                    this.title.getColor().getBlue(),
+                    (int) (255.f * (this.titleTime / Config.DELAY_LEVEL_TITLE))));
+        }
+    }
+
+    public boolean isTitleActive() {
+        return this.titleTime > 0.f;
+    }
+
+    public void drawTitle() {
+        this.title.draw();
+    }
+
+    public void onNewBestScore() {
+        this.bestScoreSound.play();
+
+        this.titleTime = Config.DELAY_LEVEL_TITLE;
+        this.title.setText("New Best Score!");
+        this.title.setColor(Color.YELLOW);
+    }
+
+}

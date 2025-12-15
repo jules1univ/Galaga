@@ -3,15 +3,19 @@ package galaga.entities.enemies;
 import engine.Application;
 import engine.elements.entity.SpriteEntity;
 import engine.resource.sound.Sound;
+import engine.utils.Collision;
 import engine.utils.Position;
+import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaSound;
+import galaga.entities.bullet.Bullet;
+import galaga.entities.bullet.BulletShooter;
 
 import java.awt.Color;
 import java.awt.Font;
 
-public abstract class Enemy extends SpriteEntity {
+public abstract class Enemy extends SpriteEntity implements BulletShooter {
 
     protected final EnemyType type;
     protected final Position lock;
@@ -90,8 +94,36 @@ public abstract class Enemy extends SpriteEntity {
         this.indexTimer = Config.DELAY_ENEMY_FORMATION;
     }
 
-    public void onDie() {
+    @Override
+    public Position getBulletSpawnPosition(Size bulletSize) {
+        return this.getCenter().copy().add(Position.of(
+                this.getScaledSize().getWidth() / 2 - bulletSize.getWidth() / 2,
+                0));
+    }
+
+    @Override
+    public float getBulletSpawnAngle() {
+        return this.angle;
+    }
+
+    @Override
+    public void onBulletHitSelf() {
         this.dieSound.play();
+        Galaga.getContext().getState().particles.createExplosion(this);
+    }
+
+    @Override
+    public void onBulletHitOther(BulletShooter player) {
+        player.onBulletHitSelf();
+    }
+
+    @Override
+    public boolean isBulletColliding(Bullet bullet) {
+        return Collision.aabb(bullet.getPosition(), bullet.getSize(), this.getPosition(), this.getScaledSize());
+    }
+
+    public void onCollideWithPlayer() {
+        Galaga.getContext().getState().particles.createExplosion(this);
     }
 
     public abstract boolean canPerformAction();

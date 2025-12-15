@@ -41,7 +41,7 @@ public class EnemyMoth extends Enemy {
             this.player.setPosition(this.getPosition().copy().add(Position.of(this.getSize())));
             this.animateToLockPosition(dt);
             if (this.isInLockPosition()) {
-                this.player.onHit();
+                this.player.onCollideWithEnemy(this);
                 this.player.setMove(true);
                 this.player = null;
                 this.state = EnemyState.FORMATION;

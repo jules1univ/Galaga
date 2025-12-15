@@ -3,16 +3,21 @@ package galaga.entities.player;
 import engine.Application;
 import engine.elements.entity.SpriteEntity;
 import engine.resource.sound.Sound;
+import engine.utils.Collision;
 import engine.utils.Position;
+import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaSound;
+import galaga.entities.bullet.Bullet;
+import galaga.entities.bullet.BulletShooter;
 import galaga.entities.enemies.Enemy;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 
-public final class Player extends SpriteEntity {
+public final class Player extends SpriteEntity implements BulletShooter {
 
     private int life;
     private int score;
@@ -70,11 +75,6 @@ public final class Player extends SpriteEntity {
         return this.medals;
     }
 
-    public void onKillEnemy(Enemy enemy) {
-        this.score += enemy.getScoreValue();
-        enemy.onDie();
-    }
-
     private void resetPosition() {
         this.position = Position.of(
                 (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2,
@@ -86,18 +86,6 @@ public final class Player extends SpriteEntity {
     public void onFinishLevel() {
         this.medals++;
         this.resetPosition();
-    }
-
-    public void onHit() {
-        this.dieSound.play();
-
-        this.resetPosition();
-        this.hitTimer = Config.DELAY_PLAYER_HIT;
-
-        this.life--;
-        if (this.life < 0) {
-            this.life = 0;
-        }
     }
 
     public boolean isDead() {
@@ -114,6 +102,55 @@ public final class Player extends SpriteEntity {
         this.position.setX(
                 (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2
                         + this.getScaledSize().getWidth() / 2);
+    }
+
+    private void onHit() {
+ this.dieSound.play();
+        Galaga.getContext().getState().particles.createExplosion(this);
+
+        this.resetPosition();
+        this.hitTimer = Config.DELAY_PLAYER_HIT;
+
+        this.life--;
+        if (this.life < 0) {
+            this.life = 0;
+        }
+    }
+
+    @Override
+    public Position getBulletSpawnPosition(Size bulletSize) {
+        return this.getCenter().copy().add(Position.of(
+            this.getScaledSize().getWidth() / 2 - bulletSize.getWidth() / 2,
+            0
+        ));
+    }
+
+    @Override
+    public float getBulletSpawnAngle() {
+        return this.angle;
+    }
+
+    @Override
+    public void onBulletHitSelf() {
+       this.onHit();
+    }
+
+    @Override
+    public void onBulletHitOther(BulletShooter shooter) {
+        shooter.onBulletHitSelf();
+        if (shooter instanceof Enemy enemy) {
+            this.score += enemy.getScoreValue();
+        }
+    }
+
+    public void onCollideWithEnemy(Enemy enemy) {
+        this.score += enemy.getScoreValue();
+        this.onHit();
+    }
+
+    @Override
+    public boolean isBulletColliding(Bullet bullet) {
+        return Collision.aabb(bullet.getPosition(), bullet.getSize(), this.getPosition(), this.getScaledSize());
     }
 
     @Override

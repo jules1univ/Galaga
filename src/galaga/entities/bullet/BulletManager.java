@@ -1,70 +1,40 @@
 package galaga.entities.bullet;
 
 import engine.elements.entity.Entity;
-import engine.elements.entity.SpriteEntity;
 import engine.resource.sound.Sound;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaSound;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class BulletManager extends Entity implements  Iterable<Bullet> {
     
-    private final Bullet[] bullets = new Bullet[Config.SIZE_BULLET_CAPACITY];
-    private int count = 0;
+    private final List<Bullet> bullets = new ArrayList<>();
     private Sound shootSound;
 
     public BulletManager() {
         super();
     }
 
-    public void shoot(SpriteEntity shooter) {
-        if(this.count >= this.bullets.length) {
+    public void shoot(BulletShooter shooter) {
+        if(this.bullets.size() >= Config.SIZE_BULLET_CAPACITY) {
             return;
         }
         this.shootSound.play();
-        this.count++;
-        this.bullets[this.count - 1] = new Bullet(shooter);
+        this.bullets.add(new Bullet(shooter));
     }
 
     
     @Override
     public Iterator<Bullet> iterator() {
-        return new Iterator<Bullet>() {
-            private int index = 0;
-
-            @Override
-            public boolean hasNext() {
-                return index < count;
-            }
-
-            @Override
-            public Bullet next() {
-                return bullets[index++];
-            }
-        };
-    }
-
-    public void remove(Bullet bullet) {
-        for (int i = 0; i < this.count; i++) {
-            if (this.bullets[i] == bullet) {
-                this.bullets[i] = this.bullets[this.count - 1];
-                this.bullets[this.count - 1] = null;
-                this.count--;
-                return;
-            }
-        }
-    }
-
-    public void removeAll(Iterable<Bullet> removeBullets) {
-        for (Bullet bullet : removeBullets) {
-            this.remove(bullet);
-        }
+        return this.bullets.iterator();
     }
 
     public boolean isEmpty() {
-        return this.count == 0;
+        return this.bullets.isEmpty();
     }
 
     @Override
@@ -84,8 +54,8 @@ public class BulletManager extends Entity implements  Iterable<Bullet> {
 
     @Override
     public void draw() {
-        for (int i = 0; i < this.count; i++) {
-            this.bullets[i].draw();
+        for(Bullet bullet : this.bullets) {
+            bullet.draw();
         }
     }
 

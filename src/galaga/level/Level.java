@@ -1,11 +1,10 @@
 package galaga.level;
 
+import engine.Application;
 import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.entities.enemies.Enemy;
-import galaga.entities.enemies.EnemyBee;
-import galaga.entities.enemies.EnemyButterFly;
-import galaga.entities.enemies.EnemyMoth;
+import galaga.entities.enemies.EnemyFactory;
 import galaga.entities.enemies.EnemySetting;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,10 +43,14 @@ public class Level {
 
             i++;
 
-            int actionEnterDelay = Config.DELAY_ENTER_INDEX;
+            int delayIndex = Config.DELAY_ENTER_INDEX;
+            if (Application.DEBUG_MODE) {
+                delayIndex = 0;
+            }
+            int actionEnterDelay = delayIndex;
             while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
                 EnemySetting enemy = EnemySetting.createEnemySetting(lines.get(i), actionEnterDelay, level);
-                actionEnterDelay += Config.DELAY_ENTER_INDEX;
+                actionEnterDelay += delayIndex;
 
                 level.enemies.add(enemy);
                 i++;
@@ -103,15 +106,9 @@ public class Level {
     public List<Enemy> getEnemies() {
         List<Enemy> enemyInst = new ArrayList<>();
         for (EnemySetting setting : this.enemies) {
-            Enemy enemy;
-            switch (setting.getType()) {
-                case BEE -> enemy = new EnemyBee(setting, this.formationSpeed, this.missileCooldown);
-                case BUTTERFLY -> enemy = new EnemyButterFly(setting, this.formationSpeed, this.missileCooldown);
-                case MOTH -> enemy = new EnemyMoth(setting, this.formationSpeed, this.attackCooldown);
-                default -> {
-                    Log.error("Unknown enemy type: " + setting.getType());
-                    return null;
-                }
+            Enemy enemy = EnemyFactory.create(setting, this.formationSpeed, this.attackCooldown, this.missileCooldown);
+            if (enemy == null) {
+                continue;
             }
             enemyInst.add(enemy);
         }

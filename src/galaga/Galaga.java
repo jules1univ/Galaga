@@ -54,6 +54,11 @@ public class Galaga extends Application<GalagaPage> {
     }
 
     private boolean load() {
+        Sound startSound = getContext().getResource().get(GalagaSound.game_start);
+        if (startSound != null) {
+            startSound.play();
+        }
+
         this.registerPage(GalagaPage.MENU, Menu.class);
         this.registerPage(GalagaPage.GAME, Game.class);
         this.setCurrentPage(GalagaPage.MENU);
@@ -99,12 +104,7 @@ public class Galaga extends Application<GalagaPage> {
         rm.add(Config.LEVELS, LevelResource.NAME);
         rm.add(Config.BEST_SCORE, ScoreResource.NAME);
 
-        rm.add(Config.SOUNDS, SoundResource.NAME, (ResourceVariant variant, Resource<?> rawRes) -> {
-            SoundResource sound = (SoundResource) rawRes;
-            if (GalagaSound.game_start.toString().equals(sound.getAlias().getName())) {
-                sound.getData().play();
-            }
-        });
+        rm.add(Config.SOUNDS, SoundResource.NAME);
 
         rm.load(() -> {
             if (!this.load()) {

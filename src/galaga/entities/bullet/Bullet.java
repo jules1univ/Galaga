@@ -1,7 +1,6 @@
 package galaga.entities.bullet;
 
 import engine.elements.entity.Entity;
-import engine.elements.entity.SpriteEntity;
 import engine.utils.Collision;
 import engine.utils.Position;
 import engine.utils.Size;
@@ -11,21 +10,21 @@ import galaga.Galaga;
 public class Bullet extends Entity {
 
     private final float angle;
-    private final SpriteEntity shooter;
+    private final BulletShooter shooter;
     private final Size boxSize;
 
-    public Bullet(SpriteEntity shooter) {
+    public Bullet(BulletShooter shooter) {
         super();
-        this.angle = shooter.getAngle() - 90.f;
+        this.angle = shooter.getBulletSpawnAngle() - 90;
         this.boxSize = Size.of(2, 20);
         this.size = Size.of(10, 20);
 
         this.shooter = shooter;
-        this.position = shooter.getPosition().copy().add(Position.of(this.size).negate().half());
+        this.position = shooter.getBulletSpawnPosition(this.boxSize);
     }
 
-    public Entity getShooter() {
-        return shooter;
+    public BulletShooter getShooter() {
+        return this.shooter;
     }
 
     

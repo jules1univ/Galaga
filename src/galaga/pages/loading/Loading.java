@@ -31,12 +31,13 @@ public class Loading extends Page<GalagaPage> {
             return false;
         }
 
-        Font defaultFont = defaultFonts
-                .stream()
-                .filter(font -> font.getFontName().equalsIgnoreCase("arial"))
-                .findFirst()
-                .orElse(defaultFonts.get(0))
-                .deriveFont(Config.SIZE_FONT_TEXT);
+        Font defaultFont = defaultFonts.get(0);
+        for (Font font : defaultFonts) {
+            if (font.getFontName().equalsIgnoreCase("arial")) {
+                defaultFont = font.deriveFont(Config.SIZE_FONT_TEXT);
+                break;
+            }
+        }
 
         this.text = new Text("Loading", Position.of(
                 Galaga.getContext().getFrame().getWidth() / 2,
