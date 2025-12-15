@@ -11,5 +11,7 @@ public enum EnemyType {
 
     DRAGONFLY,
     SATELLITE,
-    STARSHIP
+    STARSHIP,
+
+    CAPTURED_PLAYER
 }
