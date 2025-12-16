@@ -1,28 +1,37 @@
 package galaga.entities.enemies;
 
-public class EnemyFactory {
-    public static Enemy create(EnemySetting setting, float formationSpeed, float attackCooldown,
-            float missileCooldown) {
+import engine.utils.Position;
+import galaga.Config;
+import galaga.entities.enemies.types.EnemyBee;
+import galaga.entities.enemies.types.EnemyButterFly;
+import galaga.entities.enemies.types.EnemyCapturedPlayer;
+import galaga.entities.enemies.types.EnemyMoth;
 
-        switch (setting.getType()) {
+public class EnemyFactory {
+    public static Enemy create(EnemyConfig config) {
+
+        switch (config.getType()) {
             case BEE -> {
-                return new EnemyBee(setting, formationSpeed, missileCooldown);
+                return new EnemyBee(config);
             }
             case BUTTERFLY -> {
-                return new EnemyButterFly(setting, formationSpeed, missileCooldown);
+                return new EnemyButterFly(config);
             }
             case MOTH -> {
-                return new EnemyMoth(setting, formationSpeed, attackCooldown);
+                return new EnemyMoth(config);
             }
-            case BOSCONIAN -> throw new UnsupportedOperationException("Unimplemented case: " + setting.getType());
-            case DRAGONFLY -> throw new UnsupportedOperationException("Unimplemented case: " + setting.getType());
-            case GALAXIAN -> throw new UnsupportedOperationException("Unimplemented case: " + setting.getType());
-            case SATELLITE -> throw new UnsupportedOperationException("Unimplemented case: " + setting.getType());
-            case SCORPION -> throw new UnsupportedOperationException("Unimplemented case: " + setting.getType());
-            case STARSHIP -> throw new UnsupportedOperationException("Unimplemented case: " + setting.getType());
             default -> {
                 return null;
             }
         }
+    }
+
+    public static EnemyCapturedPlayer createCapturedPlayer(EnemyConfig baseConfig) {
+        
+        Position lockOutside = Position.of(Config.WINDOW_WIDTH / 2.f, -100.f);
+        EnemyConfig config = new EnemyConfig(EnemyType.CAPTURED_PLAYER, lockOutside, baseConfig.getScoreValue(), baseConfig.getSpeed(), baseConfig.getLevel());
+
+        EnemyCapturedPlayer capturedPlayer = new EnemyCapturedPlayer(config);
+        return capturedPlayer;
     }
 }

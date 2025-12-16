@@ -18,6 +18,7 @@ public class LevelManager {
     private int index = -1;
     private Player player;
     private List<Enemy> enemies;
+    private Level level;
 
     private Text title;
     private float titleTime;
@@ -58,6 +59,17 @@ public class LevelManager {
         return true;
     }
 
+    public Level getLevel() {
+        return this.level;
+    }
+
+    public void spawnEnemy(Enemy enemy) {
+        if(!enemy.init()) {
+            return;
+        }
+        this.enemies.add(enemy);
+    }
+
     public boolean next() {
         this.index++;
         if (Config.LEVELS.size() <= this.index) {
@@ -65,14 +77,14 @@ public class LevelManager {
             return false;
         }
 
-        Level level = Galaga.getContext().getResource()
+        this.level = Galaga.getContext().getResource()
                 .get(Config.LEVELS.get(this.index));
         this.player.setShooting(false);
         if (this.index > 0) {
             this.player.onFinishLevel();
         }
 
-        if (level == null) {
+        if (this.level == null) {
             return false;
         }
 
@@ -80,7 +92,7 @@ public class LevelManager {
         this.title.setText(level.getName());
         this.title.setColor(Color.CYAN);
 
-        this.enemies = level.getEnemies();
+        this.enemies = level.getEnemiesConfig();
         if (this.enemies == null || this.enemies.isEmpty()) {
             return false;
         }

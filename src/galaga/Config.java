@@ -31,7 +31,7 @@ public class Config {
         public static final float SPEED_ANGLE_ANIMATION = 400.f;
 
         public static final int DELAY_ENTER_INDEX = 2;
-        public static final float DELAY_ENEMY_ENTER = .15f;
+        public static final float DELAY_ENEMY_ENTER = .015f;
         public static final float DELAY_SHOOT_PLAYER = .5f;
         public static final float DELAY_LEVEL_TITLE = 3.f;
         public static final float DELAY_PLAYER_HIT = 3.f;
@@ -103,7 +103,7 @@ public class Config {
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sounds/%s.wav");
 
         public static final List<ResourceAlias> LEVELS = ResourceAlias.folder(
-                        "level%d", 1, 2,
+                        "level%d", 0, 2,
                         "resources/levels/%s.lvl",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/levels/%s.lvl");
 

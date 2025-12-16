@@ -1,11 +1,12 @@
 package galaga;
 
 public enum GalagaSound {
-    enemy_bee_die,
+    enemy_small_die,
+    enemy_medium_die,
+    enemy_big_die,
     enemy_boss_die,
-    enemy_butterfly_die,
-    enemy_moth_capture,
-    enemy_moth_die,
+    
+    enemy_capture_player,
     
     entity_shoot,
     

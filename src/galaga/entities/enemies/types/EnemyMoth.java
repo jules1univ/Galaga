@@ -1,19 +1,24 @@
-package galaga.entities.enemies;
+package galaga.entities.enemies.types;
 
 import engine.utils.Position;
 import galaga.Galaga;
+import galaga.GalagaSound;
+import galaga.entities.enemies.Enemy;
+import galaga.entities.enemies.EnemyFactory;
+import galaga.entities.enemies.EnemyConfig;
+import galaga.entities.enemies.EnemyState;
+import galaga.entities.enemies.EnemyType;
 import galaga.entities.player.Player;
 
 public class EnemyMoth extends Enemy {
 
-    private final float attackCooldown;
-    private float attackTimer = 0.f;
+    private float timer = 0.f;
     private Position target;
     private Player player;
 
-    public EnemyMoth(EnemySetting setting, float formationSpeed, float attackCooldown) {
-        super(EnemyType.MOTH, setting, formationSpeed);
-        this.attackCooldown = attackCooldown;
+    public EnemyMoth(EnemyConfig config) {
+        super(config, GalagaSound.enemy_big_die);
+        assert config.getType() == EnemyType.MOTH;
     }
 
     public void capture(Player player) {
@@ -23,7 +28,7 @@ public class EnemyMoth extends Enemy {
 
     @Override
     public boolean canPerformAction() {
-        return this.attackCooldown > 0.f;
+        return this.config.getLevel().getAttackCooldown() > 0.f;
     }
 
     @Override
@@ -32,13 +37,17 @@ public class EnemyMoth extends Enemy {
             return;
         }
 
-        if (this.attackCooldown < 0.f) {
+        if (this.config.getLevel().getAttackCooldown() < 0.f) {
             this.state = EnemyState.RETURNING;
             return;
         }
 
         if (this.player != null) {
-            this.player.setPosition(this.getPosition().copy().add(Position.of(this.getSize())));
+            this.player.setPosition(Position.of(
+                this.getCenter().getX() + this.player.getScaledSize().getWidth() / 2.f,
+                this.getPosition().getY() + this.getScaledSize().getHeight()
+            ));
+
             this.animateToLockPosition(dt);
             if (this.isInLockPosition()) {
                 this.player.onCollideWithEnemy(this);
@@ -46,16 +55,18 @@ public class EnemyMoth extends Enemy {
                 this.player = null;
                 this.state = EnemyState.FORMATION;
             }
+
+            Galaga.getContext().getState().level.spawnEnemy(EnemyFactory.createCapturedPlayer(this.config));
             return;
         }
 
-        this.attackTimer += (float) dt;
+        this.timer += (float) dt;
         this.target = Galaga.getContext().getState().player.getCenter().copy();
-        boolean ready = this.attackTimer >= this.attackCooldown;
+        boolean ready = this.timer >= this.config.getLevel().getAttackCooldown();
 
         float distance = this.position.distance(target);
         float speedFactor = ready ? 2.f : 0.2f;
-        float scaledSpeed = (this.speed * speedFactor) * (float) dt + distance * (float) dt;
+        float scaledSpeed = (this.config.getSpeed() * speedFactor) * (float) dt + distance * (float) dt;
 
         this.position.moveTo(target, scaledSpeed);
         this.angle = this.position.angleTo(target) + 90.f;

@@ -1,23 +1,21 @@
 package galaga.entities.enemies;
 
-
 import engine.utils.Position;
 import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.level.Level;
 
-public class EnemySetting {
+public class EnemyConfig {
+    private final Level level;
+
     private final EnemyType type;
     private final Position lockPosition;
-
-    private final int enterIndex;
 
     private final int scoreValue;
     private final float speed;
 
-
-    public static EnemySetting createEnemySetting(String line, int enterIndex, Level level) {
+    public static EnemyConfig create(String line, Level level) {
         String[] data = line.split(" ");
         if (data.length < 6) {
             Log.error("Level enemy data is invalid: " + line);
@@ -39,19 +37,26 @@ public class EnemySetting {
             float speed = Float.parseFloat(data[5]) * Config.SPEED_ENEMY_FACTOR;
 
             EnemyType type = EnemyType.valueOf(enemyType.toUpperCase());
-            return new EnemySetting(type, lock, enterIndex, value, speed);
+            return new EnemyConfig(type, lock, value, speed, level);
+
         } catch (NumberFormatException e) {
             Log.error("Level enemy parsing failed: " + e.getMessage());
             return null;
         }
     }
 
-    public EnemySetting(EnemyType type, Position lock, int enterIndex, int value, float speed) {
+    public EnemyConfig(EnemyType type, Position lock, int value, float speed, Level level) {
+        this.level = level;
+
         this.type = type;
         this.lockPosition = lock;
-        this.enterIndex = enterIndex;
+
         this.scoreValue = value;
         this.speed = speed;
+    }
+
+    public Level getLevel() {
+        return level;
     }
 
     public EnemyType getType() {
@@ -60,10 +65,6 @@ public class EnemySetting {
 
     public Position getLockPosition() {
         return lockPosition;
-    }
-
-    public int getEnterIndex() {
-        return enterIndex;
     }
 
     public int getScoreValue() {

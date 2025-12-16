@@ -6,6 +6,7 @@ import engine.resource.sound.Sound;
 import engine.utils.Collision;
 import engine.utils.Position;
 import engine.utils.Size;
+import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaSound;
@@ -16,41 +17,35 @@ import java.awt.Color;
 import java.awt.Font;
 
 public abstract class Enemy extends SpriteEntity implements BulletShooter {
+    protected final EnemyConfig config;
 
-    protected final EnemyType type;
-    protected final Position lock;
-
-    protected final float speed;
-    protected final float formationSpeed;
-
-    protected final int scoreValue;
     protected EnemyState state;
 
     private float indexTimer;
     private boolean action;
 
+    private final GalagaSound dieSoundType;
     private Sound dieSound;
     private Font debugFont;
 
-    public Enemy(EnemyType type, EnemySetting setting, float formationSpeed) {
+    public Enemy(EnemyConfig config, GalagaSound dieSound) {
         super();
-        this.type = type;
+        this.config = config;
+        this.dieSoundType = dieSound;
 
         this.angle = 0.f;
         this.scale = Config.SPRITE_SCALE_DEFAULT;
 
-        boolean isLeft = setting.getLockPosition().getX() < Config.WINDOW_WIDTH / 2.f;
+        boolean isLeft = config.getLockPosition().getX() < Config.WINDOW_WIDTH / 2.f;
         this.position = isLeft ? Config.POSITION_ENEMY_LEFT.copy() : Config.POSITION_ENEMY_RIGHT.copy();
-        this.lock = setting.getLockPosition().copy();
-
-        this.speed = setting.getSpeed();
-        this.formationSpeed = formationSpeed;
-        this.scoreValue = setting.getScoreValue();
 
         this.state = EnemyState.ENTER_LEVEL;
 
         this.action = false;
-        this.indexTimer = setting.getEnterIndex() * Config.DELAY_ENEMY_ENTER;
+
+        float distance = this.config.getLockPosition().distance(Position.of(Config.WINDOW_WIDTH/2, 0));
+        this.indexTimer = distance * Config.DELAY_ENEMY_ENTER;
+        Log.message(this.indexTimer+"s");
     }
 
     public EnemyState getState() {
@@ -58,30 +53,30 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
     }
 
     public EnemyType getType() {
-        return this.type;
+        return this.config.getType();
     }
 
     public int getScoreValue() {
-        return this.scoreValue;
+        return this.config.getScoreValue();
     }
 
     public Position getLockPosition() {
-        return this.lock;
+        return this.config.getLockPosition();
     }
 
     protected boolean isInLockPosition() {
-        float distance = this.position.distance(this.lock);
+        float distance = this.position.distance(this.config.getLockPosition());
         return distance <= Config.POSITION_LOCK_THRESHOLD * 10;
     }
 
     protected void animateToLockPosition(float dt) {
-        float distance = this.position.distance(this.lock);
-        float scaledSpeed = this.formationSpeed * (float) dt + distance * (float) dt;
+        float distance = this.position.distance(this.config.getLockPosition());
+        float scaledSpeed = this.config.getLevel().getFormationSpeed() * (float) dt + distance * (float) dt;
 
-        this.position.moveTo(this.lock, scaledSpeed);
-        this.angle = this.lock.angleTo(this.position) + 90.f;
+        this.position.moveTo(this.config.getLockPosition(), scaledSpeed);
+        this.angle = this.config.getLockPosition().angleTo(this.position) + 90.f;
         if (this.isInLockPosition()) {
-            this.position = this.lock.copy();
+            this.position = this.config.getLockPosition().copy();
         }
     }
 
@@ -132,22 +127,13 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
 
     @Override
     public final boolean init() {
-        this.sprite = Galaga.getContext().getResource().get(this.type);
+        this.sprite = Galaga.getContext().getResource().get(this.config.getType());
         if (this.sprite == null) {
             return false;
         }
         this.size = this.sprite.getSize();
 
-        GalagaSound sound;
-        switch (this.type) {
-            case BEE -> sound = GalagaSound.enemy_bee_die;
-            case BUTTERFLY -> sound = GalagaSound.enemy_butterfly_die;
-            case MOTH -> sound = GalagaSound.enemy_moth_die;
-            default -> {
-                return false;
-            }
-        }
-        this.dieSound = Galaga.getContext().getResource().get(sound);
+        this.dieSound = Galaga.getContext().getResource().get(this.dieSoundType);
         if (this.dieSound == null) {
             return false;
         }
@@ -170,7 +156,7 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
             }
             case RETURNING -> {
                 if (Application.DEBUG_MODE) {
-                    this.position = this.lock.copy();
+                    this.position = this.config.getLockPosition().copy();
                     this.state = EnemyState.FORMATION;
                 }
                 this.animateToLockPosition(dt);

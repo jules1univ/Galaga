@@ -19,7 +19,7 @@ public final class Sky extends Entity {
         this.gridSize = gridSize;
     }
 
-    public void restorColor() {
+    public void restoreColor() {
         this.activeColor = false;
         for (Star star : stars) {
             int r = 180 + (int) (Math.random() * 75);

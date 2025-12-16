@@ -9,8 +9,8 @@ import galaga.GalagaSound;
 import galaga.entities.bullet.Bullet;
 import galaga.entities.bullet.BulletManager;
 import galaga.entities.enemies.Enemy;
-import galaga.entities.enemies.EnemyMoth;
 import galaga.entities.enemies.EnemyState;
+import galaga.entities.enemies.types.EnemyMoth;
 import galaga.entities.particles.ParticlesManager;
 import galaga.entities.player.Player;
 import galaga.entities.sky.Sky;
@@ -19,15 +19,12 @@ import galaga.pages.GalagaPage;
 import galaga.score.Score;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 public class Game extends Page<GalagaPage> {
 
     private Sky sky;
     private Player player;
-    private List<Enemy> enemies = new ArrayList<>();
 
     private BulletManager bullets;
     private LevelManager level;
@@ -79,7 +76,6 @@ public class Game extends Page<GalagaPage> {
         if (!this.level.init() || !this.level.next()) {
             return false;
         }
-        this.enemies = this.level.getEnemies();
 
         this.fud = new FUD();
         if (!this.fud.init()) {
@@ -121,48 +117,49 @@ public class Game extends Page<GalagaPage> {
     }
 
     private void handleCollisions() {
-        Iterator<Enemy> enemyIt = this.enemies.iterator();
+        Iterator<Enemy> enemyIt = this.level.getEnemies().iterator();
         while (enemyIt.hasNext()) {
             Enemy enemy = enemyIt.next();
 
-            if (enemy.collideWith(this.player)) {
-                if (enemy instanceof EnemyMoth enemyMoth) {
-                    enemyMoth.capture(this.player);
-                    continue;
-                }
-
-                this.player.onCollideWithEnemy(enemy);
-                enemy.onCollideWithPlayer();
-                enemyIt.remove();
+            if (!enemy.collideWith(player)) {
                 continue;
             }
 
-            Iterator<Bullet> bulletIt = this.bullets.iterator();
-            while (bulletIt.hasNext()) {
-                Bullet bullet = bulletIt.next();
-                if (bullet.isOutOfBounds()) {
-                    bulletIt.remove();
-                    continue;
-                }
+            if (enemy instanceof EnemyMoth enemyMoth) {
+                enemyMoth.capture(player);
+                continue;
+            }
 
-                if (bullet.getShooter() instanceof Player && enemy.isBulletColliding(bullet)) {
-                    this.player.onBulletHitOther(enemy);
+            player.onCollideWithEnemy(enemy);
+            enemy.onCollideWithPlayer();
+            enemyIt.remove();
+        }
+
+        Iterator<Bullet> bulletIt = bullets.iterator();
+        while (bulletIt.hasNext()) {
+            Bullet bullet = bulletIt.next();
+
+            if (bullet.getShooter() instanceof Enemy) {
+                if (player.isBulletColliding(bullet)) {
+                    bullet.getShooter().onBulletHitOther(player);
+                    bulletIt.remove();
+
+                    if (player.isDead()) {
+                        return;
+                    }
+                }
+                continue;
+            }
+
+            enemyIt = this.level.getEnemies().iterator();
+            while (enemyIt.hasNext()) {
+                Enemy enemy = enemyIt.next();
+                if (enemy.isBulletColliding(bullet)) {
+                    player.onBulletHitOther(enemy);
                     enemyIt.remove();
                     bulletIt.remove();
                     break;
                 }
-            }
-        }
-
-        Iterator<Bullet> bulletIt = this.bullets.iterator();
-        while (bulletIt.hasNext()) {
-            Bullet bullet = bulletIt.next();
-            if (bullet.getShooter() instanceof Enemy && this.player.isBulletColliding(bullet)) {
-                bullet.getShooter().onBulletHitOther(this.player);
-                if (this.player.isDead()) {
-                    break;
-                }
-                bulletIt.remove();
             }
         }
     }
@@ -176,27 +173,37 @@ public class Game extends Page<GalagaPage> {
         }
 
         this.sky.update(dt);
-        for (Bullet bullet : bullets) {
+        
+        Iterator<Bullet> bulletIt = bullets.iterator();
+        while (bulletIt.hasNext()) {
+            Bullet bullet = bulletIt.next();
             bullet.update(dt);
+
+            if (bullet.isOutOfBounds()) {
+                bulletIt.remove();
+            }
         }
 
         this.player.update(dt);
 
         boolean allActionDone = true;
         boolean allInFormation = true;
-        for (Enemy enemy : enemies) {
+        Enemy actionEnemy = null;
+
+        for (Enemy enemy : this.level.getEnemies()) {
             enemy.update(dt);
-            allActionDone = allActionDone && enemy.hasDoneAction();
-            allInFormation = allInFormation && enemy.getState() == EnemyState.FORMATION;
+
+            allActionDone &= enemy.hasDoneAction();
+            boolean inFormation = enemy.getState() == EnemyState.FORMATION;
+            allInFormation &= inFormation;
+
+            if (actionEnemy == null && inFormation && enemy.canPerformAction()) {
+                actionEnemy = enemy;
+            }
         }
 
-        if (allActionDone && allInFormation && !this.enemies.isEmpty()) {
-            for (Enemy enemy : this.enemies) {
-                if (enemy.canPerformAction()) {
-                    enemy.resetAction();
-                    break;
-                }
-            }
+        if (allActionDone && allInFormation && actionEnemy != null) {
+            actionEnemy.resetAction();
         }
 
         if (allInFormation && !this.player.isShootingActive()) {
@@ -208,21 +215,18 @@ public class Game extends Page<GalagaPage> {
         if (this.player.isDead()) {
             Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MENU);
         }
-        if (this.enemies.isEmpty()) {
+        if (this.level.getEnemies().isEmpty()) {
             if (this.level.next()) {
                 this.player.setShooting(false);
-                this.enemies = this.level.getEnemies();
             } else {
                 Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MENU);
             }
         }
 
-        this.level.updateTitle(dt);
-
         if (this.level.isTitleActive()) {
             this.level.updateTitle(dt);
         } else if (this.sky.isActiveColor()) {
-            this.sky.restorColor();
+            this.sky.restoreColor();
         }
 
         this.particles.update(dt);
@@ -238,7 +242,7 @@ public class Game extends Page<GalagaPage> {
         this.bullets.draw();
 
         this.player.draw();
-        for (Enemy enemy : this.enemies) {
+        for (Enemy enemy : this.level.getEnemies()) {
             enemy.draw();
         }
 

@@ -1,11 +1,10 @@
 package galaga.level;
 
-import engine.Application;
 import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.entities.enemies.Enemy;
 import galaga.entities.enemies.EnemyFactory;
-import galaga.entities.enemies.EnemySetting;
+import galaga.entities.enemies.EnemyConfig;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +19,7 @@ public class Level {
     private final float attackCooldown;
     private final float missileCooldown;
 
-    private final List<EnemySetting> enemies = new ArrayList<>();
+    private final List<EnemyConfig> enemiesConfig = new ArrayList<>();
 
     public static Level createLevel(InputStream in) {
 
@@ -42,17 +41,9 @@ public class Level {
             }
 
             i++;
-
-            int delayIndex = Config.DELAY_ENTER_INDEX;
-            if (Application.DEBUG_MODE) {
-                delayIndex = 0;
-            }
-            int actionEnterDelay = delayIndex;
             while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
-                EnemySetting enemy = EnemySetting.createEnemySetting(lines.get(i), actionEnterDelay, level);
-                actionEnterDelay += delayIndex;
-
-                level.enemies.add(enemy);
+                EnemyConfig enemy = EnemyConfig.create(lines.get(i), level);
+                level.enemiesConfig.add(enemy);
                 i++;
             }
             return level;
@@ -103,10 +94,10 @@ public class Level {
         return missileCooldown;
     }
 
-    public List<Enemy> getEnemies() {
+    public List<Enemy> getEnemiesConfig() {
         List<Enemy> enemyInst = new ArrayList<>();
-        for (EnemySetting setting : this.enemies) {
-            Enemy enemy = EnemyFactory.create(setting, this.formationSpeed, this.attackCooldown, this.missileCooldown);
+        for (EnemyConfig config : this.enemiesConfig) {
+            Enemy enemy = EnemyFactory.create(config);
             if (enemy == null) {
                 continue;
             }

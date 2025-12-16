@@ -1,24 +1,28 @@
-package galaga.entities.enemies;
+package galaga.entities.enemies.types;
 
 import engine.utils.Position;
 import galaga.Config;
 import galaga.Galaga;
+import galaga.GalagaSound;
+import galaga.entities.enemies.Enemy;
+import galaga.entities.enemies.EnemyConfig;
+import galaga.entities.enemies.EnemyState;
+import galaga.entities.enemies.EnemyType;
 
 public class EnemyBee extends Enemy {
 
-    private final float missileCooldown;
-    private float missileTimer = 0.f;
-
     private int zigZagIndex = 0;
+    private float timer;
 
-    public EnemyBee(EnemySetting setting, float formationSpeed, float missileCooldown) {
-        super(EnemyType.BEE, setting, formationSpeed);
-        this.missileCooldown = missileCooldown;
+    public EnemyBee(EnemyConfig config) {
+        super(config, GalagaSound.enemy_small_die);
+
+        assert config.getType() == EnemyType.BEE;
     }
 
     @Override
     public boolean canPerformAction() {
-        return this.missileCooldown > 0.f;
+        return this.config.getLevel().getMissileCooldown() > 0.f;
     }
 
     @Override
@@ -29,7 +33,7 @@ public class EnemyBee extends Enemy {
 
         Position target = Config.POSITION_ZIG_ZAG.get(this.zigZagIndex);
         float distance = this.position.distance(target);
-        float scaledSpeed = this.speed * (float) dt + distance * (float) dt;
+        float scaledSpeed = this.config.getSpeed() * (float) dt + distance * (float) dt;
 
         this.position.moveTo(target, scaledSpeed);
         this.angle = 180.f;
@@ -42,9 +46,9 @@ public class EnemyBee extends Enemy {
             }
         }
 
-        this.missileTimer += (float) dt;
-        if (this.missileTimer >= this.missileCooldown) {
-            this.missileTimer = 0.f;
+        this.timer += (float) dt;
+        if (this.timer >= this.config.getLevel().getMissileCooldown()) {
+            this.timer = 0.f;
             Galaga.getContext().getState().bullets.shoot(this);
         }
     }
