@@ -9,7 +9,7 @@ import galaga.entities.enemies.EnemyType;
 public class EnemyBosconian extends Enemy {
 
     public EnemyBosconian(EnemyConfig config) {
-        super(config, GalagaSound.enemy_small_die);
+        super(config, GalagaSound.enemy_boss_die);
 
         assert config.getType() == EnemyType.BOSCONIAN;
     }
