@@ -102,7 +102,7 @@ public class Menu extends Page<GalagaPage> {
                 case QUIT -> Galaga.getContext().getApplication().stop();
                 case GAMEMODE -> {
 
-                    if (this.gameMode.getSelected().getText().equals(GameModeOption.SOLO.toString())) {
+                    if (this.gameMode.getSelected().getText().equals(MenuModeOption.SOLO.toString())) {
                         Galaga.getContext().getState().shipSkin = this.shipSelect.getSelected().getSprite();
                         Galaga.getContext().getApplication().setCurrentPage(GalagaPage.GAME);
                     }
@@ -187,9 +187,9 @@ public class Menu extends Page<GalagaPage> {
                 (this.size.getHeight() - this.logo.getSize().getHeight() * Config.SPRITE_SCALE_ICON) / 2 - margin
                         - margin / 2);
 
-        String[] gameModeOptions = new String[GameModeOption.values().length];
-        for (int i = 0; i < GameModeOption.values().length; i++) {
-            gameModeOptions[i] = GameModeOption.values()[i].toString();
+        String[] gameModeOptions = new String[MenuModeOption.values().length];
+        for (int i = 0; i < MenuModeOption.values().length; i++) {
+            gameModeOptions[i] = MenuModeOption.values()[i].toString();
         }
         this.gameMode = new TextSelect(
                 gameModeOptions,

@@ -1,4 +1,4 @@
-package galaga.pages.game;
+package galaga.pages.solo;
 
 import engine.elements.ui.UIElement;
 import engine.elements.ui.icon.Icon;
@@ -11,7 +11,7 @@ import galaga.Galaga;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FUD extends UIElement {
+public class GameFooterDisplay extends UIElement {
 
     private IconGroup lifeIcons;
     private IconGroup medalIcons;
@@ -19,7 +19,7 @@ public class FUD extends UIElement {
     private Sprite ship;
     private Sprite medal;
 
-    public FUD() {
+    public GameFooterDisplay() {
 
     }
 

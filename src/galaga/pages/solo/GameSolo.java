@@ -1,4 +1,4 @@
-package galaga.pages.game;
+package galaga.pages.solo;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
@@ -22,7 +22,7 @@ import galaga.score.Score;
 import java.awt.Color;
 import java.util.Iterator;
 
-public class Game extends Page<GalagaPage> {
+public class GameSolo extends Page<GalagaPage> {
 
     private Sky sky;
     private Player player;
@@ -31,15 +31,15 @@ public class Game extends Page<GalagaPage> {
     private LevelManager level;
     private ParticlesManager particles;
 
-    private FUD fud;
-    private HUD hud;
+    private GameFooterDisplay gfd;
+    private GameHeaderDisplay ghd;
 
     private Sound themeSound;
 
     private boolean bestScoreUpdated = false;
     private int bestScore = 0;
 
-    public Game() {
+    public GameSolo() {
         super(GalagaPage.GAME);
     }
 
@@ -78,13 +78,13 @@ public class Game extends Page<GalagaPage> {
             return false;
         }
 
-        this.fud = new FUD();
-        if (!this.fud.init()) {
+        this.gfd = new GameFooterDisplay();
+        if (!this.gfd.init()) {
             return false;
         }
 
-        this.hud = new HUD();
-        if (!this.hud.init()) {
+        this.ghd = new GameHeaderDisplay();
+        if (!this.ghd.init()) {
             return false;
         }
 
@@ -229,8 +229,8 @@ public class Game extends Page<GalagaPage> {
         }
 
         this.particles.update(dt);
-        this.hud.update(dt);
-        this.fud.update(dt);
+        this.ghd.update(dt);
+        this.gfd.update(dt);
     }
 
     @Override
@@ -249,8 +249,8 @@ public class Game extends Page<GalagaPage> {
             this.level.drawTitle();
         }
 
-        this.hud.draw();
-        this.fud.draw();
+        this.ghd.draw();
+        this.gfd.draw();
     }
 
 }

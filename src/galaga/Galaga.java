@@ -12,9 +12,9 @@ import engine.resource.sound.SoundResource;
 import engine.resource.sprite.SpriteResource;
 import galaga.level.LevelResource;
 import galaga.pages.GalagaPage;
-import galaga.pages.game.Game;
 import galaga.pages.loading.Loading;
 import galaga.pages.menu.Menu;
+import galaga.pages.solo.GameSolo;
 import galaga.score.ScoreResource;
 import java.awt.event.KeyEvent;
 import java.lang.annotation.Retention;
@@ -59,7 +59,7 @@ public class Galaga extends Application<GalagaPage> {
         }
 
         this.registerPage(GalagaPage.MENU, Menu.class);
-        this.registerPage(GalagaPage.GAME, Game.class);
+        this.registerPage(GalagaPage.GAME, GameSolo.class);
         this.setCurrentPage(GalagaPage.MENU);
 
         return true;

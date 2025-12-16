@@ -1,4 +1,4 @@
-package galaga.pages.game;
+package galaga.pages.solo;
 
 import engine.elements.ui.UIElement;
 import engine.elements.ui.text.Text;
@@ -13,14 +13,14 @@ import galaga.score.Score;
 import java.awt.Color;
 import java.awt.Font;
 
-public class HUD extends UIElement {
+public class GameHeaderDisplay extends UIElement {
 
     private Text fps;
     private Text score;
     private Text bestScore;
     private Font textFont;
 
-    public HUD() {
+    public GameHeaderDisplay() {
 
     }
 
