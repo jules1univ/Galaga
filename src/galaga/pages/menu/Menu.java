@@ -237,6 +237,7 @@ public class Menu extends Page<GalagaPage> {
         this.option = MenuOption.GAMEMODE;
         this.updateMenuSelect();
 
+        Galaga.getContext().getInput().resetPressedKeys();
         this.state = PageState.ACTIVE;
         return true;
     }

@@ -30,68 +30,23 @@ def get_nearest_color(r: int,g: int, b:int, a: int) -> str:
 
 
 
-def main(args: list[str]) -> int:    
-    if len(args) < 2:
-        print("Usage: image_to_sprite <input_path> <output_path> ?(<width>x<height>|scale)")
-        return 1
-
-    input_path = args[0]    
-    if not os.path.exists(input_path):
-        print(f"Input path '{input_path}' does not exist.")
-        return 1
-
-    if os.path.isdir(input_path):
-        print(f"Input path '{input_path}' is a directory. Please provide a file path.")
-        return 1
-    
-    output_path = args[1]
-    if os.path.exists(output_path):
-        print(f"Output path '{output_path}' already exists. Please provide a different file path.")
-        return 1
-
-    file_output_path = output_path
-    if os.path.isdir(output_path):
-        filename = os.path.basename(input_path)
-        name, _ = os.path.splitext(filename)
-        file_output_path = os.path.join(output_path, name + ".sprite")
-        print(f"Output path is a directory. Using '{file_output_path}' as output file.")
-    
-    width, height = 0,0
-    scale = 1.0
-    if len(args) >= 3:
-        if 'x' in args[2]:
-            dimensions = args[2]
-            width, height = map(int, dimensions.split('x'))
-            if width <= 0 or height <= 0:
-                print(f"Dimensions '{dimensions}' must be positive integers.")
-                return 1
-            print(f"Resizing image to {width}x{height}")
-        else:
-            scale = float(args[2])
-            if scale <= 0:
-                print(f"Scale '{scale}' must be a positive number.")
-                return 1
-            print(f"Scaling image by factor {scale}")   
+def process_file(file_in: str, file_out: str, scale: float = 1.0):
 
     try:
-        image = Image.open(input_path).convert("RGBA")
+        image = Image.open(file_in).convert("RGBA")        
+        width = int(image.width * scale)
+        height = int(image.height * scale)
         
-        if scale != 1.0:
-            width = int(image.width * scale)
-            height = int(image.height * scale)
-        
-        if width == 0 or height == 0:
-            width, height = image.width, image.height
 
         image = image.resize((width, height))
         print("Final image size:", image.width, "x", image.height)
 
         pixels = image.load()
         if pixels is None:
-            print(f"Failed to load pixels from image '{input_path}'.")
+            print(f"Failed to load pixels from image '{file_in}'.")
             return 1
         
-        with open(file_output_path, 'w') as f:
+        with open(file_out, 'w') as f:
             for y in range(height):
                 row = []
                 for x in range(width):
@@ -109,8 +64,34 @@ def main(args: list[str]) -> int:
                 f.write(''.join(row) + '\n')
 
     except Exception as e:
-        print(f"Failed to open image '{input_path}': {e}")
+        print(f"Failed to process image '{file_in}': {e}")
+        return False
+    return True
+
+
+def main(args: list[str]) -> int:    
+    if len(args) < 2:
+        print("Usage: image_to_sprite <input_path> <output_path> <scale>")
         return 1
+
+    input_path = args[0]
+    output_path = args[1]
+    scale = float(args[2]) if len(args) >= 3 else 1.0
+
+    files = []
+    if os.path.isdir(input_path):
+        for filename in os.listdir(input_path):
+            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif')):
+                files.append((os.path.join(input_path, filename), os.path.join(output_path, os.path.splitext(filename)[0] + '.spr')))
+    else:
+        files.append((input_path, output_path))
+
+    for file_in, file_out in files:
+        print(f"Processing '{file_in}' -> '{file_out}' with scale {scale}")
+        success = process_file(file_in, file_out, scale)
+        if not success:
+            print(f"Failed to process '{file_in}'")
+            return 1
     return 0
 
 

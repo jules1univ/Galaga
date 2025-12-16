@@ -67,4 +67,8 @@ public final class InputKeyListener implements KeyListener {
     public String getTypedText() {
         return this.sb.toString();
     }
+
+    public void resetPressedKeys() {
+        this.keysDown.clear();
+    }
 }

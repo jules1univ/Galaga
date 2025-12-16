@@ -109,7 +109,7 @@ public final class Player extends SpriteEntity implements BulletShooter {
     }
 
     private void onHit() {
- this.dieSound.play();
+        this.dieSound.play();
         Galaga.getContext().getState().particles.createExplosion(this);
 
         this.resetPosition();
@@ -124,9 +124,8 @@ public final class Player extends SpriteEntity implements BulletShooter {
     @Override
     public Position getBulletSpawnPosition(Size bulletSize) {
         return this.getCenter().copy().add(Position.of(
-            this.getScaledSize().getWidth() / 2 - bulletSize.getWidth() / 2,
-            0
-        ));
+                this.getScaledSize().getWidth() / 2 - bulletSize.getWidth() / 2,
+                0));
     }
 
     @Override
@@ -136,7 +135,7 @@ public final class Player extends SpriteEntity implements BulletShooter {
 
     @Override
     public void onBulletHitSelf() {
-       this.onHit();
+        this.onHit();
     }
 
     @Override
@@ -154,7 +153,7 @@ public final class Player extends SpriteEntity implements BulletShooter {
 
     @Override
     public boolean isBulletColliding(Bullet bullet) {
-        return Collision.aabb(bullet.getPosition(), bullet.getSize(), this.getPosition(), this.getScaledSize());
+        return Collision.aabb(bullet.getPosition(), bullet.getSize(), this.getCenter(), this.getScaledSize());
     }
 
     @Override

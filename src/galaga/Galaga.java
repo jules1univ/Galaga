@@ -10,7 +10,6 @@ import engine.resource.font.FontResource;
 import engine.resource.sound.Sound;
 import engine.resource.sound.SoundResource;
 import engine.resource.sprite.SpriteResource;
-import engine.utils.logger.Log;
 import galaga.level.LevelResource;
 import galaga.pages.GalagaPage;
 import galaga.pages.game.Game;
@@ -114,28 +113,12 @@ public class Galaga extends Application<GalagaPage> {
         return true;
     }
 
-    private float totalDelta = 0f;
-    private float averageDelta = 0f;
-    private int frameCount = 0;
-
     @Override
     protected void update(float dt) {
         if (getContext().getInput().isKeyDown(KeyEvent.VK_ESCAPE)) {
             this.stop();
         }
 
-        if (Application.DEBUG_MODE) {
-            this.totalDelta += dt;
-            this.frameCount++;
-            this.averageDelta = this.totalDelta / this.frameCount;
-
-            if (this.frameCount > 30) {
-                if (dt > averageDelta * 3.0f) {
-                    Log.warning("Freeze detected (dt: " + dt + "s, average: " + averageDelta + "s)");
-                }
-            }
-
-        }
         super.update(dt);
     }
 

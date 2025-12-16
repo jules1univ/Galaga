@@ -117,54 +117,6 @@ public class Game extends Page<GalagaPage> {
         return true;
     }
 
-    private void handleCollisions() {
-        Iterator<Enemy> enemyIt = this.level.getEnemies().iterator();
-        while (enemyIt.hasNext()) {
-            Enemy enemy = enemyIt.next();
-
-            if (!enemy.collideWith(player)) {
-                continue;
-            }
-
-            if (enemy instanceof EnemyMoth enemyMoth) {
-                enemyMoth.capture(player);
-                continue;
-            }
-
-            player.onCollideWithEnemy(enemy);
-            enemy.onCollideWithPlayer();
-            enemyIt.remove();
-        }
-
-        Iterator<Bullet> bulletIt = bullets.iterator();
-        while (bulletIt.hasNext()) {
-            Bullet bullet = bulletIt.next();
-
-            if (bullet.getShooter() instanceof Enemy) {
-                if (player.isBulletColliding(bullet)) {
-                    bullet.getShooter().onBulletHitOther(player);
-                    bulletIt.remove();
-
-                    if (player.isDead()) {
-                        return;
-                    }
-                }
-                continue;
-            }
-
-            enemyIt = this.level.getEnemies().iterator();
-            while (enemyIt.hasNext()) {
-                Enemy enemy = enemyIt.next();
-                if (enemy.isBulletColliding(bullet)) {
-                    player.onBulletHitOther(enemy);
-                    enemyIt.remove();
-                    bulletIt.remove();
-                    break;
-                }
-            }
-        }
-    }
-
     @Override
     public void update(float dt) {
         if (this.player.getScore() > this.bestScore && !this.bestScoreUpdated) {
@@ -174,17 +126,6 @@ public class Game extends Page<GalagaPage> {
         }
 
         this.sky.update(dt);
-
-        Iterator<Bullet> bulletIt = bullets.iterator();
-        while (bulletIt.hasNext()) {
-            Bullet bullet = bulletIt.next();
-            bullet.update(dt);
-
-            if (bullet.isOutOfBounds()) {
-                bulletIt.remove();
-            }
-        }
-
         this.player.update(dt);
 
         boolean allActionDone = true;
@@ -211,6 +152,18 @@ public class Game extends Page<GalagaPage> {
                     || (actionEnemy == null && inFormation && enemy.canPerformAction())) {
                 actionEnemy = enemy;
             }
+
+            if (enemy.collideWith(player)) {
+                if (enemy instanceof EnemyMoth enemyMoth) {
+                    enemyMoth.capture(player);
+                    continue;
+                }
+
+                player.onCollideWithEnemy(enemy);
+                enemy.onCollideWithPlayer();
+                enemyIt.remove();
+            }
+
         }
 
         if (allActionDone && allInFormation && actionEnemy != null && !this.player.isReswawning()) {
@@ -221,7 +174,40 @@ public class Game extends Page<GalagaPage> {
             this.player.setShooting(true);
         }
 
-        this.handleCollisions();
+        Iterator<Bullet> bulletIt = bullets.iterator();
+        while (bulletIt.hasNext()) {
+            Bullet bullet = bulletIt.next();
+            bullet.update(dt);
+
+            if (bullet.isOutOfBounds()) {
+                bulletIt.remove();
+                continue;
+            }
+
+            if (bullet.getShooter() instanceof Enemy) {
+                if (player.isBulletColliding(bullet)) {
+                    bullet.getShooter().onBulletHitOther(player);
+                    bulletIt.remove();
+
+                    if (player.isDead()) {
+                        break;
+                    }
+                }
+                continue;
+            }
+
+            enemyIt = this.level.getEnemies().iterator();
+            while (enemyIt.hasNext()) {
+                Enemy enemy = enemyIt.next();
+                if (enemy.isBulletColliding(bullet)) {
+                    player.onBulletHitOther(enemy);
+                    enemyIt.remove();
+                    bulletIt.remove();
+                    break;
+                }
+            }
+
+        }
         this.level.flushSpawnedEnemies();
 
         if (this.player.isDead()) {

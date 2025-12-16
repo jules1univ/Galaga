@@ -20,6 +20,7 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
 
     protected EnemyState state;
 
+    private int index;
     private float indexTimer;
     private boolean action;
 
@@ -42,7 +43,15 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
 
         this.action = false;
 
-        float distance = this.config.getLockPosition().distance(Position.of(Config.WINDOW_WIDTH / 2, 0));
+        float distance = this.config.getLockPosition().distance(Position.of(
+            Config.WINDOW_WIDTH / 2.f,
+            0.f
+        ));
+        this.index = Math.round(distance/100.f);
+
+        if(Application.DEBUG_MODE) {
+            distance = 0;
+        }
         this.indexTimer = distance * Config.DELAY_ENEMY_ENTER;
     }
 
@@ -76,6 +85,13 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
         if (this.isInLockPosition()) {
             this.position = this.config.getLockPosition().copy();
         }
+    }
+
+    protected final void animateInLockPosition(float dt) {
+        float amplitude = 10.f;
+        float frequency = 2.f;
+        float offsetX = (float) Math.sin(System.currentTimeMillis() * 0.001 * frequency + this.index * Math.PI / 4) * amplitude;
+        this.position.setX(this.config.getLockPosition().getX() + offsetX);
     }
 
     public final boolean hasDoneAction() {
@@ -112,7 +128,7 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
 
     @Override
     public boolean isBulletColliding(Bullet bullet) {
-        return Collision.aabb(bullet.getPosition(), bullet.getSize(), this.getPosition(), this.getScaledSize());
+        return Collision.aabb(bullet.getPosition(), bullet.getSize(), this.getCenter(), this.getScaledSize());
     }
 
     public void onCollideWithPlayer() {
@@ -175,6 +191,8 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
                         this.angle += (this.angle > 0.f ? -dtAngle : dtAngle);
                     }
                 }
+
+                this.animateInLockPosition(dt);
 
                 this.indexTimer -= dt;
                 if (this.indexTimer <= 0 && !this.action && this.canPerformAction()) {
