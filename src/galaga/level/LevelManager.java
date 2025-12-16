@@ -2,6 +2,7 @@ package galaga.level;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.ArrayList;
 import java.util.List;
 
 import engine.elements.ui.text.Text;
@@ -15,9 +16,12 @@ import galaga.entities.enemies.Enemy;
 import galaga.entities.player.Player;
 
 public class LevelManager {
-    private int index = -1;
+    private final List<Enemy> pendingEnemies = new ArrayList<>();
+    
+    private List<Enemy> enemies;    
     private Player player;
-    private List<Enemy> enemies;
+
+    private int index = -1;
     private Level level;
 
     private Text title;
@@ -64,10 +68,19 @@ public class LevelManager {
     }
 
     public void spawnEnemy(Enemy enemy) {
-        if(!enemy.init()) {
+        if (enemy == null || !enemy.init()) {
             return;
         }
-        this.enemies.add(enemy);
+        this.pendingEnemies.add(enemy);
+    }
+
+    public void flushSpawnedEnemies() {
+        if (this.pendingEnemies == null || this.pendingEnemies.isEmpty()) {
+            return;
+        }
+
+        this.enemies.addAll(this.pendingEnemies);
+        this.pendingEnemies.clear();
     }
 
     public boolean next() {

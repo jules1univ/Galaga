@@ -27,11 +27,11 @@ public class EnemyFactory {
     }
 
     public static EnemyCapturedPlayer createCapturedPlayer(EnemyConfig baseConfig) {
-        
-        Position lockOutside = Position.of(Config.WINDOW_WIDTH / 2.f, -100.f);
-        EnemyConfig config = new EnemyConfig(EnemyType.CAPTURED_PLAYER, lockOutside, baseConfig.getScoreValue(), baseConfig.getSpeed(), baseConfig.getLevel());
 
-        EnemyCapturedPlayer capturedPlayer = new EnemyCapturedPlayer(config);
-        return capturedPlayer;
+        Position lockOutside = Position.of(Config.WINDOW_WIDTH / 2.f, -100.f);
+        EnemyConfig config = new EnemyConfig(EnemyType.CAPTURED_PLAYER, lockOutside, baseConfig.getScoreValue(),
+                baseConfig.getSpeed(), baseConfig.getLevel());
+
+        return new EnemyCapturedPlayer(config);
     }
 }

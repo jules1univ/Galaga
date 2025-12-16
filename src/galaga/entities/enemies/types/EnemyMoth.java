@@ -44,19 +44,20 @@ public class EnemyMoth extends Enemy {
 
         if (this.player != null) {
             this.player.setPosition(Position.of(
-                this.getCenter().getX() + this.player.getScaledSize().getWidth() / 2.f,
-                this.getPosition().getY() + this.getScaledSize().getHeight()
-            ));
+                    this.getCenter().getX() + this.player.getScaledSize().getWidth() / 2.f,
+                    this.getPosition().getY() + this.getScaledSize().getHeight()));
 
             this.animateToLockPosition(dt);
             if (this.isInLockPosition()) {
                 this.player.onCollideWithEnemy(this);
                 this.player.setMove(true);
                 this.player = null;
+
+                Galaga.getContext().getState().level.spawnEnemy(EnemyFactory.createCapturedPlayer(this.config));
+
                 this.state = EnemyState.FORMATION;
             }
 
-            Galaga.getContext().getState().level.spawnEnemy(EnemyFactory.createCapturedPlayer(this.config));
             return;
         }
 

@@ -173,7 +173,7 @@ public class Game extends Page<GalagaPage> {
         }
 
         this.sky.update(dt);
-        
+
         Iterator<Bullet> bulletIt = bullets.iterator();
         while (bulletIt.hasNext()) {
             Bullet bullet = bulletIt.next();
@@ -211,10 +211,12 @@ public class Game extends Page<GalagaPage> {
         }
 
         this.handleCollisions();
+        this.level.flushSpawnedEnemies();
 
         if (this.player.isDead()) {
             Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MENU);
         }
+
         if (this.level.getEnemies().isEmpty()) {
             if (this.level.next()) {
                 this.player.setShooting(false);

@@ -45,7 +45,7 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
 
         float distance = this.config.getLockPosition().distance(Position.of(Config.WINDOW_WIDTH/2, 0));
         this.indexTimer = distance * Config.DELAY_ENEMY_ENTER;
-        Log.message(this.indexTimer+"s");
+        Log.message(this.config.getType().toString() + " " +this.indexTimer);
     }
 
     public EnemyState getState() {
