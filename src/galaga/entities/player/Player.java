@@ -92,6 +92,10 @@ public final class Player extends SpriteEntity implements BulletShooter {
         return this.life <= 0;
     }
 
+    public boolean isReswawning() {
+        return this.hitTimer > 0.f;
+    }
+
     public void reset() {
         this.life = Config.PLAYER_INITIAL_LIFE;
         this.cooldownTimer = Config.DELAY_SHOOT_PLAYER;
@@ -184,11 +188,11 @@ public final class Player extends SpriteEntity implements BulletShooter {
         }
 
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_LEFT)) {
-            this.position.addX(-Config.SPEED_PLAYER * (float) dt);
+            this.position.addX(-Config.SPEED_PLAYER * dt);
         }
 
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_RIGHT)) {
-            this.position.addX(Config.SPEED_PLAYER * (float) dt);
+            this.position.addX(Config.SPEED_PLAYER * dt);
         }
 
         this.position.clampX(

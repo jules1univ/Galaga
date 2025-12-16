@@ -33,7 +33,7 @@ public class EnemyBee extends Enemy {
 
         Position target = Config.POSITION_ZIG_ZAG.get(this.zigZagIndex);
         float distance = this.position.distance(target);
-        float scaledSpeed = this.config.getSpeed() * (float) dt + distance * (float) dt;
+        float scaledSpeed = this.config.getSpeed() * dt + distance * dt;
 
         this.position.moveTo(target, scaledSpeed);
         this.angle = 180.f;
@@ -46,7 +46,7 @@ public class EnemyBee extends Enemy {
             }
         }
 
-        this.timer += (float) dt;
+        this.timer += dt;
         if (this.timer >= this.config.getLevel().getMissileCooldown()) {
             this.timer = 0.f;
             Galaga.getContext().getState().bullets.shoot(this);

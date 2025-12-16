@@ -20,8 +20,7 @@ public final class AnimatedValue {
             this.time = this.duration;
         }
 
-        // smoothstep ease in out
-        float t = (float) (this.time / this.duration);
+        float t = (this.time / this.duration);
         t = t * t * (3 - 2 * t);
 
         this.value = this.value + t * (this.target - this.value);

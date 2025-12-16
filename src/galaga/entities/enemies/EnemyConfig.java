@@ -24,15 +24,16 @@ public class EnemyConfig {
         String enemyType = data[0];
         try {
             float lockXPercent = Float.parseFloat(data[1]);
-            float lockX = (1.f - lockXPercent) * Galaga.getContext().getFrame().getWidth();
+            float width = Float.parseFloat(data[3])/2.f;
+            float lockX = (1.f - (lockXPercent + width)) * Galaga.getContext().getFrame().getWidth();
 
             float lockYPercent = Float.parseFloat(data[2]);
+
             float lockY = (1.f - lockYPercent) * Galaga.getContext().getFrame().getHeight();
 
             Position lock = Position.of(lockX, lockY);
 
-            // we no longer use size for enemies => sprite have their own fixed size
-            // float size = Float.parseFloat(data[3]);
+            
             int value = Integer.parseInt(data[4]);
             float speed = Float.parseFloat(data[5]) * Config.SPEED_ENEMY_FACTOR;
 

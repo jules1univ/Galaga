@@ -41,7 +41,7 @@ public class Bullet extends Entity {
 
     @Override
     public void update(float dt) {
-        this.position.moveTo(this.angle, (float) dt * Config.SPEED_BULLET);
+        this.position.moveTo(this.angle, dt * Config.SPEED_BULLET);
     }
 
     @Override

@@ -34,7 +34,7 @@ public class Particle extends Entity {
     @Override
     public void update(float dt) {
 
-        this.position.moveTo(this.angle, this.speed * (float) dt);
+        this.position.moveTo(this.angle, this.speed *  dt);
 
 
         this.duration -= dt;

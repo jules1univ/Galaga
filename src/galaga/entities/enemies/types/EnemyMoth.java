@@ -1,5 +1,6 @@
 package galaga.entities.enemies.types;
 
+import engine.resource.sound.Sound;
 import engine.utils.Position;
 import galaga.Galaga;
 import galaga.GalagaSound;
@@ -15,6 +16,9 @@ public class EnemyMoth extends Enemy {
     private float timer = 0.f;
     private Position target;
     private Player player;
+    
+    private boolean captureSoundPlayed = false;
+    private Sound captureSound;
 
     public EnemyMoth(EnemyConfig config) {
         super(config, GalagaSound.enemy_big_die);
@@ -24,6 +28,16 @@ public class EnemyMoth extends Enemy {
     public void capture(Player player) {
         this.player = player;
         this.player.setMove(false);
+    }
+
+    @Override
+    public boolean init()
+    {
+        if(!super.init()) {
+            return false;
+        }
+        this.captureSound = Galaga.getContext().getResource().get(GalagaSound.enemy_capture_player);
+        return this.captureSound != null;
     }
 
     @Override
@@ -43,12 +57,19 @@ public class EnemyMoth extends Enemy {
         }
 
         if (this.player != null) {
+            if(!this.captureSoundPlayed) {
+                this.captureSound.play();
+                captureSoundPlayed = true;
+            }
+
             this.player.setPosition(Position.of(
                     this.getCenter().getX() + this.player.getScaledSize().getWidth() / 2.f,
                     this.getPosition().getY() + this.getScaledSize().getHeight()));
 
             this.animateToLockPosition(dt);
             if (this.isInLockPosition()) {
+                this.captureSound.stop();
+
                 this.player.onCollideWithEnemy(this);
                 this.player.setMove(true);
                 this.player = null;
@@ -61,13 +82,13 @@ public class EnemyMoth extends Enemy {
             return;
         }
 
-        this.timer += (float) dt;
+        this.timer +=  dt;
         this.target = Galaga.getContext().getState().player.getCenter().copy();
         boolean ready = this.timer >= this.config.getLevel().getAttackCooldown();
 
         float distance = this.position.distance(target);
         float speedFactor = ready ? 2.f : 0.2f;
-        float scaledSpeed = (this.config.getSpeed() * speedFactor) * (float) dt + distance * (float) dt;
+        float scaledSpeed = (this.config.getSpeed() * speedFactor) *  dt + distance *  dt;
 
         this.position.moveTo(target, scaledSpeed);
         this.angle = this.position.angleTo(target) + 90.f;

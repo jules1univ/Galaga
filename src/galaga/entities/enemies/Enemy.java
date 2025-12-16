@@ -6,7 +6,6 @@ import engine.resource.sound.Sound;
 import engine.utils.Collision;
 import engine.utils.Position;
 import engine.utils.Size;
-import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaSound;
@@ -43,35 +42,34 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
 
         this.action = false;
 
-        float distance = this.config.getLockPosition().distance(Position.of(Config.WINDOW_WIDTH/2, 0));
+        float distance = this.config.getLockPosition().distance(Position.of(Config.WINDOW_WIDTH / 2, 0));
         this.indexTimer = distance * Config.DELAY_ENEMY_ENTER;
-        Log.message(this.config.getType().toString() + " " +this.indexTimer);
     }
 
-    public EnemyState getState() {
+    public final EnemyState getState() {
         return this.state;
     }
 
-    public EnemyType getType() {
+    public final EnemyType getType() {
         return this.config.getType();
     }
 
-    public int getScoreValue() {
+    public final int getScoreValue() {
         return this.config.getScoreValue();
     }
 
-    public Position getLockPosition() {
+    public final Position getLockPosition() {
         return this.config.getLockPosition();
     }
 
-    protected boolean isInLockPosition() {
+    protected final boolean isInLockPosition() {
         float distance = this.position.distance(this.config.getLockPosition());
         return distance <= Config.POSITION_LOCK_THRESHOLD * 10;
     }
 
-    protected void animateToLockPosition(float dt) {
+    protected final void animateToLockPosition(float dt) {
         float distance = this.position.distance(this.config.getLockPosition());
-        float scaledSpeed = this.config.getLevel().getFormationSpeed() * (float) dt + distance * (float) dt;
+        float scaledSpeed = this.config.getLevel().getFormationSpeed() * dt + distance * dt;
 
         this.position.moveTo(this.config.getLockPosition(), scaledSpeed);
         this.angle = this.config.getLockPosition().angleTo(this.position) + 90.f;
@@ -80,11 +78,11 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
         }
     }
 
-    public boolean hasDoneAction() {
+    public final boolean hasDoneAction() {
         return this.action;
     }
 
-    public void resetAction() {
+    public final void resetAction() {
         this.action = false;
         this.indexTimer = Config.DELAY_ENEMY_FORMATION;
     }
@@ -121,12 +119,16 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
         Galaga.getContext().getState().particles.createExplosion(this);
     }
 
+    public boolean canRemove() {
+        return false;
+    }
+
     public abstract boolean canPerformAction();
 
     protected abstract void updateAction(float dt);
 
     @Override
-    public final boolean init() {
+    public boolean init() {
         this.sprite = Galaga.getContext().getResource().get(this.config.getType());
         if (this.sprite == null) {
             return false;
@@ -148,7 +150,7 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
 
         switch (this.state) {
             case ENTER_LEVEL -> {
-                this.indexTimer -= (float) dt;
+                this.indexTimer -= dt;
                 if (this.indexTimer <= 0 && !this.action) {
                     this.action = true;
                     this.state = EnemyState.RETURNING;
@@ -166,7 +168,7 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
             }
             case FORMATION -> {
                 if (this.angle != 0.f) {
-                    float dtAngle = Config.SPEED_ANGLE_ANIMATION * (float) dt;
+                    float dtAngle = Config.SPEED_ANGLE_ANIMATION * dt;
                     if (Math.abs(this.angle) <= dtAngle) {
                         this.angle = 0.f;
                     } else {
@@ -174,7 +176,7 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
                     }
                 }
 
-                this.indexTimer -= (float) dt;
+                this.indexTimer -= dt;
                 if (this.indexTimer <= 0 && !this.action && this.canPerformAction()) {
                     this.action = true;
                     this.state = EnemyState.ATTACKING;

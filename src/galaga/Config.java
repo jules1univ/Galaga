@@ -31,13 +31,14 @@ public class Config {
         public static final float SPEED_ANGLE_ANIMATION = 400.f;
 
         public static final int DELAY_ENTER_INDEX = 2;
-        public static final float DELAY_ENEMY_ENTER = .015f;
+        public static final float DELAY_ENEMY_ENTER = .03f;
         public static final float DELAY_SHOOT_PLAYER = .5f;
         public static final float DELAY_LEVEL_TITLE = 3.f;
         public static final float DELAY_PLAYER_HIT = 3.f;
         public static final float DELAY_ENEMY_FORMATION = 2.f;
         public static final float DELAY_ENEMY_COOLDOWN_FACTOR_ATTACK = 0.01f;
         public static final float DELAY_ENEMY_COOLDOWN_FACTOR_MISSILE = 0.001f;
+        public static final float DELAY_ENEMY_CAPTURED_PLAYER_SHOOT_FACTOR = 0.2f;
 
         public static final float TIME_BLINKSTAR_MAX = 10.0f;
         public static final float TIME_BLINKSTAR_MIN = 3.0f;
@@ -52,6 +53,7 @@ public class Config {
 
         public static final float POSITION_LOCK_THRESHOLD = 1.f;
         public static final float POSITION_NEAR_THRESHOLD = 10.f;
+        public static final float POSITION_NEAR_CAPTURED_PLAYER_THRESHOLD = 100.f;
 
         public static final Position POSITION_ENEMY_LEFT = Position.of(-100.f, 600.f);
         public static final Position POSITION_ENEMY_RIGHT = Position.of(800.f, 600.f);

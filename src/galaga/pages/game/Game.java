@@ -10,6 +10,7 @@ import galaga.entities.bullet.Bullet;
 import galaga.entities.bullet.BulletManager;
 import galaga.entities.enemies.Enemy;
 import galaga.entities.enemies.EnemyState;
+import galaga.entities.enemies.EnemyType;
 import galaga.entities.enemies.types.EnemyMoth;
 import galaga.entities.particles.ParticlesManager;
 import galaga.entities.player.Player;
@@ -190,19 +191,29 @@ public class Game extends Page<GalagaPage> {
         boolean allInFormation = true;
         Enemy actionEnemy = null;
 
-        for (Enemy enemy : this.level.getEnemies()) {
+        Iterator<Enemy> enemyIt = this.level.getEnemies().iterator();
+        while (enemyIt.hasNext()) {
+            Enemy enemy = enemyIt.next();
             enemy.update(dt);
 
+            if (enemy.canRemove()) {
+                enemy.onCollideWithPlayer();
+                enemyIt.remove();
+                continue;
+            }
+
             allActionDone &= enemy.hasDoneAction();
+
             boolean inFormation = enemy.getState() == EnemyState.FORMATION;
             allInFormation &= inFormation;
 
-            if (actionEnemy == null && inFormation && enemy.canPerformAction()) {
+            if ((enemy.getType() == EnemyType.CAPTURED_PLAYER)
+                    || (actionEnemy == null && inFormation && enemy.canPerformAction())) {
                 actionEnemy = enemy;
             }
         }
 
-        if (allActionDone && allInFormation && actionEnemy != null) {
+        if (allActionDone && allInFormation && actionEnemy != null && !this.player.isReswawning()) {
             actionEnemy.resetAction();
         }
 
