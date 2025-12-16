@@ -11,7 +11,6 @@ import engine.resource.sound.Sound;
 import engine.resource.sound.SoundResource;
 import engine.resource.sprite.SpriteResource;
 import galaga.level.LevelResource;
-import galaga.pages.GalagaPage;
 import galaga.pages.loading.Loading;
 import galaga.pages.menu.Menu;
 import galaga.pages.solo.GameSolo;
@@ -58,9 +57,9 @@ public class Galaga extends Application<GalagaPage> {
             startSound.play();
         }
 
-        this.registerPage(GalagaPage.MENU, Menu.class);
-        this.registerPage(GalagaPage.GAME, GameSolo.class);
-        this.setCurrentPage(GalagaPage.MENU);
+        this.registerPage(GalagaPage.MAIN_MENU, Menu.class);
+        this.registerPage(GalagaPage.GAME_SOLO, GameSolo.class);
+        this.setCurrentPage(GalagaPage.MAIN_MENU);
 
         return true;
     }

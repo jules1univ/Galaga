@@ -13,9 +13,9 @@ import engine.utils.Position;
 import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
+import galaga.GalagaPage;
 import galaga.GalagaSound;
 import galaga.entities.sky.Sky;
-import galaga.pages.GalagaPage;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -38,7 +38,7 @@ public class Menu extends Page<GalagaPage> {
     private Font titleFont;
 
     public Menu() {
-        super(GalagaPage.MENU);
+        super(GalagaPage.MAIN_MENU);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class Menu extends Page<GalagaPage> {
 
                     if (this.gameMode.getSelected().getText().equals(MenuModeOption.SOLO.toString())) {
                         Galaga.getContext().getState().shipSkin = this.shipSelect.getSelected().getSprite();
-                        Galaga.getContext().getApplication().setCurrentPage(GalagaPage.GAME);
+                        Galaga.getContext().getApplication().setCurrentPage(GalagaPage.GAME_SOLO);
                     }
                 }
                 default -> {

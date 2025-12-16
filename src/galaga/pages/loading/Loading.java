@@ -13,7 +13,7 @@ import engine.elements.ui.text.TextPosition;
 import engine.utils.Position;
 
 import galaga.Galaga;
-import galaga.pages.GalagaPage;
+import galaga.GalagaPage;
 import galaga.Config;
 
 public class Loading extends Page<GalagaPage> {

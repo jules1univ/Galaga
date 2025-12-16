@@ -224,7 +224,7 @@ class Star {
 
 class Galaga {
   +Galaga()
-  +{static} getContext(): AppContext<State,GalagaPage>
+  +{static} getContext(): AppContext<State,PageState>
   +{static} main(args: String[]): void
   -load(): boolean
   #init(): boolean

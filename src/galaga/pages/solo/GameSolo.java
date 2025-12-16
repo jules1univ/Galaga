@@ -5,6 +5,7 @@ import engine.elements.page.PageState;
 import engine.resource.sound.Sound;
 import galaga.Config;
 import galaga.Galaga;
+import galaga.GalagaPage;
 import galaga.GalagaSound;
 import galaga.entities.bullet.Bullet;
 import galaga.entities.bullet.BulletManager;
@@ -16,7 +17,6 @@ import galaga.entities.particles.ParticlesManager;
 import galaga.entities.player.Player;
 import galaga.entities.sky.Sky;
 import galaga.level.LevelManager;
-import galaga.pages.GalagaPage;
 import galaga.score.Score;
 
 import java.awt.Color;
@@ -40,7 +40,7 @@ public class GameSolo extends Page<GalagaPage> {
     private int bestScore = 0;
 
     public GameSolo() {
-        super(GalagaPage.GAME);
+        super(GalagaPage.GAME_SOLO);
     }
 
     @Override
@@ -211,14 +211,14 @@ public class GameSolo extends Page<GalagaPage> {
         this.level.flushSpawnedEnemies();
 
         if (this.player.isDead()) {
-            Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MENU);
+            Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MAIN_MENU);
         }
 
         if (this.level.getEnemies().isEmpty()) {
             if (this.level.next()) {
                 this.player.setShooting(false);
             } else {
-                Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MENU);
+                Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MAIN_MENU);
             }
         }
 
