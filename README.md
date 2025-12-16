@@ -2,29 +2,33 @@
 
 ![C](https://img.shields.io/github/languages/top/jules1univ/Galaga?label=Java%20🔥) ![Platform](https://img.shields.io/badge/Platform%20🌍-Windows%20|%20Linux%20|%20MacOS-purple) ![Game](https://img.shields.io/badge/Game%20🎮-Galaga-green)
 
-**Concept**: A simple yet engaging Galaga clone written in Java. This project is a tribute to the classic arcade game, bringing its charm to modern platforms.
-
 > Preview 🎥
+
+
+![demo](./.github/preview/game_demo.gif)
 
 |                                              |                                             |
 | -------------------------------------------- | ------------------------------------------- |
-| ![image 0](./.github/preview/game_begin.png) | ![image 1](./.github/preview/game_play.png) |
-
-
-## 🚀 Project Insight
-
-- **Classic Gameplay**: Relive the thrill of space battles with waves of enemies.
-- **Modern Enhancements**: Smooth animations, responsive controls, and scalable graphics.
-- **Cross-Platform Compatibility**: Java-based, runs seamlessly on Windows, Linux, and MacOS.
+| ![image 0](./.github/preview/game_menu.png) | ![image 1](./.github/preview/game_play.png) |
 
 
 ## 🛠️ Features
 
 - **Player Mechanics**: Control your spaceship, shoot bullets, and dodge enemies.
-- **Enemy Types**: Multiple enemy behaviors, including bees, butterflies, and moths.
-- **Level Progression**: Advance through increasingly challenging levels.
+- **Enemy Types**: 
+    - Bees: Move in zig-zag patterns.
+    - Butterflies: Move straight downwards.
+    - Moths: Follow the player and trys to capture it.
+    - **Bosses**: Not implemented yet.
+- **Level Progression**: 
+    - **Default Levels**: Predefined levels with increasing difficulty.
+        - Level 1: Basic enemy waves.
+        - Level 2: Increased enemy speed and frequency and intoduction of Moth enemies.
+        - Level 3: Introduction of Boss enemies.
+    - **Custom Levels**: Create and load your own levels.
+- **Ship Skins**: Choose from various spaceship designs.
+- **Sound Effects**: Original sound effects from the classic game.
 - **High Scores**: Track and beat your best scores.
-- **Custom Resources**: Includes sprites, fonts, and levels for a tailored experience.
 
 
 ## 🤝 Get Involved
