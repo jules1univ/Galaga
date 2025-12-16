@@ -96,7 +96,7 @@ public class Menu extends Page<GalagaPage> {
                     this.updateMenuSelect();
                 }
             }
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER, KeyEvent.VK_SPACE)) {
+        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case QUIT -> Galaga.getContext().getApplication().stop();
