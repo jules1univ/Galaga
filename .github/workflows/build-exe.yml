@@ -34,12 +34,12 @@ jobs:
           --dest dist `
           --java-options "--enable-preview"
 
-      - name: Rename EXE
+      - name: list folders
         run: |
-          Rename-Item -Path "Galaga-1.0.exe" -NewName "Galaga.exe"
+          dir 
 
       - name: Upload Galaga App
         uses: actions/upload-artifact@v4
         with:
           name: Galaga-Windows
-          path: Galaga.exe
+          path: Galaga-1.0.exe
