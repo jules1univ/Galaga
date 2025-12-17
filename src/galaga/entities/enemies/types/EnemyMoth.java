@@ -74,7 +74,14 @@ public class EnemyMoth extends Enemy {
                 this.player.setMove(true);
                 this.player = null;
 
-                Galaga.getContext().getState().level.spawnEnemy(EnemyFactory.createCapturedPlayer(this.config));
+                Position capturePosition = Position.of(
+                    this.getCenter().getX() + this.getScaledSize().getWidth() / 2.f,
+                    this.getPosition().getY() + this.getScaledSize().getHeight());
+                    
+                EnemyCapturedPlayer capturedPlayer = EnemyFactory.createCapturedPlayer(this.config, capturePosition);
+                capturedPlayer.setCapturePosition(capturePosition);
+                
+                Galaga.getContext().getState().level.spawnEnemy(capturedPlayer);
 
                 this.state = EnemyState.FORMATION;
             }

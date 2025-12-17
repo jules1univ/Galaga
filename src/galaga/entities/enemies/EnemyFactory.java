@@ -1,7 +1,6 @@
 package galaga.entities.enemies;
 
 import engine.utils.Position;
-import galaga.Config;
 import galaga.entities.enemies.types.EnemyBee;
 import galaga.entities.enemies.types.EnemyBosconian;
 import galaga.entities.enemies.types.EnemyButterFly;
@@ -30,10 +29,9 @@ public class EnemyFactory {
         }
     }
 
-    public static EnemyCapturedPlayer createCapturedPlayer(EnemyConfig baseConfig) {
+    public static EnemyCapturedPlayer createCapturedPlayer(EnemyConfig baseConfig, Position capturePosition) {
 
-        Position lockOutside = Position.of(Config.WINDOW_WIDTH / 2.f, -100.f);
-        EnemyConfig config = new EnemyConfig(EnemyType.CAPTURED_PLAYER, lockOutside, baseConfig.getScoreValue(),
+        EnemyConfig config = new EnemyConfig(EnemyType.CAPTURED_PLAYER, capturePosition, baseConfig.getScoreValue(),
                 baseConfig.getSpeed(), baseConfig.getLevel());
 
         return new EnemyCapturedPlayer(config);

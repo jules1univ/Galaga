@@ -16,6 +16,10 @@ public class EnemyCapturedPlayer extends Enemy {
         assert config.getType() == EnemyType.CAPTURED_PLAYER;
     }
 
+    public void setCapturePosition(Position position) {
+        this.position = position;
+    }
+
     @Override
     public boolean canPerformAction() {
         return config.getLevel().getMissileCooldown() > 0.f;
