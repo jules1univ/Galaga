@@ -1,0 +1,75 @@
+name: Build Galaga MSI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Clean build folders
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force classes, dist -ErrorAction SilentlyContinue
+          Remove-Item Galaga.jar, sources.txt -ErrorAction SilentlyContinue
+
+      - name: Compile Java sources
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force classes
+          Get-ChildItem -Recurse -Filter *.java src |
+            ForEach-Object { $_.FullName } |
+            Set-Content sources.txt
+          javac -d classes @sources.txt
+
+      - name: Create JAR
+        shell: pwsh
+        run: |
+          jar --create `
+              --file Galaga.jar `
+              --main-class galaga.Galaga `
+              -C classes .
+
+      - name: Build MSI with jpackage
+        shell: pwsh
+        run: |
+          jpackage `
+            --type msi `
+            --name Galaga `
+            --app-version 1.0 `
+            --vendor "@jules1univ" `
+            --description "Classic Galaga arcade game clone" `
+            --copyright "© 2025 Galaga - @jules1univ" `
+            --input . `
+            --main-jar Galaga.jar `
+            --main-class galaga.Galaga `
+            --icon galaga.ico `
+            --install-dir Galaga `
+            --win-dir-chooser `
+            --win-menu `
+            --win-menu-group "Games" `
+            --win-shortcut `
+            --win-per-user-install `
+            --win-console false `
+            --win-upgrade-uuid 9f4e2c18-6c4d-4a7a-8a7e-1b9a2d3f4e5c `
+            --java-options "-Xmx512m" `
+            --strip-debug `
+            --no-header-files `
+            --no-man-pages `
+            --dest dist `
+            --verbose
+
+      - name: Upload Galaga Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaga-Windows-MSI
+          path: dist/*.msi
