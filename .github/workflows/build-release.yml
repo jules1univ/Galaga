@@ -1,0 +1,32 @@
+name: Build Galaga Release
+on:
+  release:
+    types: [created]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Compile Java sources
+        run: |
+          mkdir -p out
+          javac -d out $(find src -name "*.java")
+
+      - name: Create JAR
+        run: |
+          echo "Main-Class: galaga.Galaga" > manifest.txt
+          jar cfm Galaga.jar manifest.txt -C out .
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaga
+          path: Galaga.jar

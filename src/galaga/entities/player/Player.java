@@ -178,29 +178,26 @@ public final class Player extends SpriteEntity implements BulletShooter {
             return;
         }
 
-        float accel = Config.SPEED_ACCELERATION_PLAYER;
-        float maxSpeed = Config.SPEED_MAX_ACCELERATION_PLAYER;
 
         boolean moving = false;
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_LEFT)) {
-            this.velocityX -= accel * dt;
+            this.velocityX -=  Config.SPEED_ACCELERATION_PLAYER * dt;
             moving = true;
         }
 
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_RIGHT)) {
-            this.velocityX += accel * dt;
+            this.velocityX +=  Config.SPEED_ACCELERATION_PLAYER * dt;
             moving = true;
         }
 
         if (!moving) {
-            float damping = 12f;
-            this.velocityX -= this.velocityX * damping * dt;
-            if (Math.abs(this.velocityX) < 5f) {
+            this.velocityX -= this.velocityX * Config.SPEED_DAMPING_PLAYER * dt;
+            if (Math.abs(this.velocityX) < Config.SPEED_MIN_ACCELERATION_PLAYER) {
                 this.velocityX = 0f;
             }
         }
 
-        this.velocityX = Math.clamp(this.velocityX, -maxSpeed, maxSpeed);
+        this.velocityX = Math.clamp(this.velocityX, -Config.SPEED_MAX_ACCELERATION_PLAYER, Config.SPEED_MAX_ACCELERATION_PLAYER);
         this.position.addX(this.velocityX * dt);
 
         this.position.clampX(

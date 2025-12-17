@@ -23,9 +23,11 @@ public class Config {
         public static final float HEIGHT_HUD = 50.f;
         public static final float HEIGHT_FUD = 50.f;
 
-        public static final long SPEED_LOADING = 100;
         public static final float SPEED_MAX_ACCELERATION_PLAYER = 600.f;
+        public static final float SPEED_MIN_ACCELERATION_PLAYER = 5.f;
         public static final float SPEED_ACCELERATION_PLAYER = 2000.f;
+        public static final float SPEED_DAMPING_PLAYER = 12.f;
+        public static final long SPEED_LOADING = 100;
         public static final float SPEED_STAR = 200.0f;
         public static final float SPEED_BULLET = 500.f;
         public static final float SPEED_ENEMY_FACTOR = 500.f;
