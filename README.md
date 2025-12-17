@@ -1,6 +1,6 @@
 # 🎮 Galaga
 
-![C](https://img.shields.io/github/languages/top/jules1univ/Galaga?label=Java%20🔥) ![Platform](https://img.shields.io/badge/Platform%20🌍-Windows%20|%20Linux%20|%20MacOS-purple) ![Game](https://img.shields.io/badge/Game%20🎮-Galaga-green) [![Release Build](https://github.com/jules1univ/Galaga/actions/workflows/build-release.yml/badge.svg)](https://github.com/jules1univ/Galaga/actions/workflows/build-release.yml)
+![C](https://img.shields.io/github/languages/top/jules1univ/Galaga?label=Java%20🔥) ![Platform](https://img.shields.io/badge/Platform%20🌍-Windows%20|%20Linux%20|%20MacOS-purple) ![Game](https://img.shields.io/badge/Game%20🎮-Galaga-green) [![Release Build](https://github.com/jules1univ/Galaga/actions/workflows/build-jar.yml/badge.svg)](https://github.com/jules1univ/Galaga/actions/workflows/build-jar.yml)
 
 > Preview 🎥
 

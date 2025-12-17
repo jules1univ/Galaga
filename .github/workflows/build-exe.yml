@@ -25,14 +25,15 @@ jobs:
 
       - name: Build EXE with jpackage
         run: |
-          jpackage ^
-            --type exe ^
-            --name Galaga ^
-            --input . ^
-            --main-jar Galaga.jar ^
-            --main-class galaga.Galaga ^
-            --dest dist ^
+            jpackage `
+            --type exe `
+            --name Galaga `
+            --input . `
+            --main-jar Galaga.jar `
+            --main-class galaga.Galaga `
+            --dest dist `
             --java-options "--enable-preview"
+
 
       - name: Upload EXE Artifact
         uses: actions/upload-artifact@v4
