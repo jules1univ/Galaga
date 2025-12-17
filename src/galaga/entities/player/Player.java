@@ -29,6 +29,8 @@ public final class Player extends SpriteEntity implements BulletShooter {
     private float cooldownTimer;
     private float hitTimer;
 
+    private float velocityX;
+
     private Sound dieSound;
 
     private Font debugFont;
@@ -57,6 +59,7 @@ public final class Player extends SpriteEntity implements BulletShooter {
 
     public void setMove(boolean active) {
         this.moveActive = active;
+        this.velocityX = 0.f;
     }
 
     public void setPosition(Position position) {
@@ -81,6 +84,7 @@ public final class Player extends SpriteEntity implements BulletShooter {
                 Galaga.getContext().getFrame().getHeight() - this.getScaledSize().getHeight() - Config.HEIGHT_FUD);
         this.position.addX(this.getScaledSize().getWidth() / 2);
         this.position.addY(-this.getScaledSize().getHeight() / 2);
+        this.velocityX = 0.f;
     }
 
     public void onFinishLevel() {
@@ -94,18 +98,6 @@ public final class Player extends SpriteEntity implements BulletShooter {
 
     public boolean isReswawning() {
         return this.hitTimer > 0.f;
-    }
-
-    public void reset() {
-        this.life = Config.PLAYER_INITIAL_LIFE;
-        this.cooldownTimer = Config.DELAY_SHOOT_PLAYER;
-
-        this.score = 0;
-        this.medals = 0;
-        this.shootActive = false;
-        this.position.setX(
-                (Galaga.getContext().getFrame().getWidth() - this.getScaledSize().getWidth()) / 2
-                        + this.getScaledSize().getWidth() / 2);
     }
 
     private void onHit() {
@@ -186,13 +178,30 @@ public final class Player extends SpriteEntity implements BulletShooter {
             return;
         }
 
+        float accel = Config.SPEED_ACCELERATION_PLAYER;
+        float maxSpeed = Config.SPEED_MAX_ACCELERATION_PLAYER;
+
+        boolean moving = false;
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_LEFT)) {
-            this.position.addX(-Config.SPEED_PLAYER * dt);
+            this.velocityX -= accel * dt;
+            moving = true;
         }
 
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_RIGHT)) {
-            this.position.addX(Config.SPEED_PLAYER * dt);
+            this.velocityX += accel * dt;
+            moving = true;
         }
+
+        if (!moving) {
+            float damping = 12f;
+            this.velocityX -= this.velocityX * damping * dt;
+            if (Math.abs(this.velocityX) < 5f) {
+                this.velocityX = 0f;
+            }
+        }
+
+        this.velocityX = Math.clamp(this.velocityX, -maxSpeed, maxSpeed);
+        this.position.addX(this.velocityX * dt);
 
         this.position.clampX(
                 this.size.getWidth(),
@@ -222,7 +231,9 @@ public final class Player extends SpriteEntity implements BulletShooter {
         }
 
         if (Application.DEBUG_MODE) {
-            String debugText = String.format("%.2f", this.cooldownTimer);
+            String debugText = String.format("VEL: %.2f | FIRE: %.2f",
+                    this.velocityX,
+                    this.cooldownTimer);
             Galaga.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
         }
     }
