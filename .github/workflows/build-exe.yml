@@ -25,20 +25,21 @@ jobs:
 
       - name: Build EXE with jpackage
         run: |
-            jpackage `
-            --type exe `
-            --name Galaga `
-            --input . `
-            --main-jar Galaga.jar `
-            --main-class galaga.Galaga `
-            --dest dist `
-            --java-options "--enable-preview"
+          jpackage `
+          --type exe `
+          --name Galaga `
+          --input . `
+          --main-jar Galaga.jar `
+          --main-class galaga.Galaga `
+          --dest dist `
+          --java-options "--enable-preview"
 
-      - name: List dist contents
-        run: Get-ChildItem -Recurse dist
+      - name: Rename EXE
+        run: |
+          Rename-Item -Path "Galaga-1.0.exe" -NewName "Galaga.exe"
 
       - name: Upload Galaga App
         uses: actions/upload-artifact@v4
         with:
-            name: Galaga-Windows
-            path: dist/Galaga/**
+          name: Galaga-Windows
+          path: Galaga-1.0.exe
