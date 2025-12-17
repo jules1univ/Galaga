@@ -1,4 +1,4 @@
-name: Build Galaga Release
+name: Build Galaga
 on: [push, pull_request]
 jobs:
   build:
@@ -10,8 +10,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 17
+            distribution: 'temurin'
+            java-version: 21
 
       - name: Compile Java sources
         run: |
