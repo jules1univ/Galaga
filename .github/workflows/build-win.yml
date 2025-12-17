@@ -26,10 +26,8 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force classes
-          Get-ChildItem -Recurse -Filter *.java src |
-            ForEach-Object { $_.FullName } |
-            Set-Content sources.txt
-          javac -d classes @sources.txt
+          $files = Get-ChildItem -Recurse -Filter *.java src | ForEach-Object { $_.FullName }
+          javac -d classes $files
 
       - name: Create JAR
         shell: pwsh
