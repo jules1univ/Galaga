@@ -35,8 +35,8 @@ jobs:
             --java-options "--enable-preview"
 
 
-      - name: Upload EXE Artifact
+      - name: Upload Galaga App
         uses: actions/upload-artifact@v4
         with:
-          name: Galaga-EXE
-          path: dist/Galaga.exe
+            name: Galaga-Windows
+            path: dist/Galaga/**
