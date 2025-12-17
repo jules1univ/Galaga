@@ -44,7 +44,6 @@ jobs:
             --type msi `
             --name Galaga `
             --app-version 1.0 `
-            --vendor "@jules1univ" `
             --description "Classic Galaga arcade game clone" `
             --copyright "© 2025 Galaga - @jules1univ" `
             --input . `
@@ -56,12 +55,7 @@ jobs:
             --win-menu-group "Games" `
             --win-shortcut `
             --win-per-user-install `
-            --win-console false `
-            --win-upgrade-uuid 9f4e2c18-6c4d-4a7a-8a7e-1b9a2d3f4e5c `
             --java-options "-Xmx512m" `
-            --strip-debug `
-            --no-header-files `
-            --no-man-pages `
             --dest dist `
             --verbose
 
