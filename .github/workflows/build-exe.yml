@@ -36,10 +36,10 @@ jobs:
 
       - name: list folders
         run: |
-          dir 
+          dir dist
 
       - name: Upload Galaga App
         uses: actions/upload-artifact@v4
         with:
           name: Galaga-Windows
-          path: Galaga-1.0.exe
+          path: ./dist/Galaga-1.0.exe
