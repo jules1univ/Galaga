@@ -36,6 +36,7 @@ public class GameSolo extends Page<GalagaPage> {
 
     private Sound themeSound;
 
+    private boolean playerDiedUpdated = false;
     private boolean bestScoreUpdated = false;
     private int bestScore = 0;
 
@@ -125,6 +126,16 @@ public class GameSolo extends Page<GalagaPage> {
             this.bestScoreUpdated = true;
         }
 
+        if (this.level.isTitleActive()) {
+            this.level.updateTitle(dt);
+        } else if (this.sky.isActiveColor()) {
+            if (this.playerDiedUpdated) {
+                Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MAIN_MENU);
+                return;
+            }
+            this.sky.restoreColor();
+        }
+
         this.sky.update(dt);
         this.player.update(dt);
 
@@ -210,8 +221,11 @@ public class GameSolo extends Page<GalagaPage> {
         }
         this.level.flushSpawnedEnemies();
 
-        if (this.player.isDead()) {
-            Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MAIN_MENU);
+        if (this.player.isDead() && !this.playerDiedUpdated) {
+            this.level.onPlayerDied();
+            this.sky.setColor(Color.RED);
+
+            this.playerDiedUpdated = true;
         }
 
         if (this.level.getEnemies().isEmpty()) {
@@ -220,12 +234,6 @@ public class GameSolo extends Page<GalagaPage> {
             } else {
                 Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MAIN_MENU);
             }
-        }
-
-        if (this.level.isTitleActive()) {
-            this.level.updateTitle(dt);
-        } else if (this.sky.isActiveColor()) {
-            this.sky.restoreColor();
         }
 
         this.particles.update(dt);
@@ -238,11 +246,13 @@ public class GameSolo extends Page<GalagaPage> {
         this.sky.draw();
 
         this.particles.draw();
-        this.bullets.draw();
 
-        this.player.draw();
-        for (Enemy enemy : this.level.getEnemies()) {
-            enemy.draw();
+        if (!this.playerDiedUpdated) {
+            this.bullets.draw();
+            this.player.draw();
+            for (Enemy enemy : this.level.getEnemies()) {
+                enemy.draw();
+            }
         }
 
         if (this.level.isTitleActive()) {

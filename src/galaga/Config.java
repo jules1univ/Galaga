@@ -34,6 +34,7 @@ public class Config {
         public static final float DELAY_ENEMY_ENTER = .03f;
         public static final float DELAY_SHOOT_PLAYER = .5f;
         public static final float DELAY_LEVEL_TITLE = 3.f;
+        public static final float DELAY_LEVEL_TITLE_DEAD = 5.f;
         public static final float DELAY_PLAYER_HIT = 3.f;
         public static final float DELAY_ENEMY_FORMATION = 2.f;
         public static final float DELAY_ENEMY_COOLDOWN_FACTOR_ATTACK = 0.01f;

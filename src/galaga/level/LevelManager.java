@@ -133,11 +133,13 @@ public class LevelManager {
     public void updateTitle(float dt) {
         if (this.titleTime > 0.f) {
             this.titleTime -= dt;
+
+            int alpha = Math.min(255, (int) (255.f * (this.titleTime / Config.DELAY_LEVEL_TITLE)));
             this.title.setColor(new Color(
                     this.title.getColor().getRed(),
                     this.title.getColor().getGreen(),
                     this.title.getColor().getBlue(),
-                    (int) (255.f * (this.titleTime / Config.DELAY_LEVEL_TITLE))));
+                    alpha));
         }
     }
 
@@ -155,6 +157,14 @@ public class LevelManager {
         this.titleTime = Config.DELAY_LEVEL_TITLE;
         this.title.setText("New Best Score!");
         this.title.setColor(Color.YELLOW);
+    }
+
+    public void onPlayerDied() {
+        this.endSound.play();
+    
+        this.titleTime = Config.DELAY_LEVEL_TITLE_DEAD;
+        this.title.setText("Game Over");
+        this.title.setColor(Color.RED);
     }
 
 }
