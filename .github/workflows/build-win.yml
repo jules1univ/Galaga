@@ -47,7 +47,7 @@ jobs:
             --app-version 1.0 `
             --description "Classic Galaga arcade game clone" `
             --copyright "© 2025 Galaga - @jules1univ" `
-            --input classes `
+            --input Galaga.jar `
             --main-jar Galaga.jar `
             --main-class galaga.Galaga `
             --install-dir Galaga `
