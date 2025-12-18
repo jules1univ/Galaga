@@ -11,8 +11,8 @@ import galaga.entities.enemies.EnemyType;
 
 public class EnemyBee extends Enemy {
 
-    private int zigZagIndex = 0;
     private float timer;
+    private Position target;
 
     public EnemyBee(EnemyConfig config) {
         super(config, GalagaSound.enemy_small_die);
@@ -31,18 +31,28 @@ public class EnemyBee extends Enemy {
             return;
         }
 
-        Position target = Config.POSITION_ZIG_ZAG.get(this.zigZagIndex);
-        float distance = this.position.distance(target);
+        if(this.target == null)
+        {
+            this.target = Position.of(
+                this.getLockPosition().getX() < Config.WINDOW_WIDTH / 2 ? Config.POSTION_BEE_RIGHT : Config.POSTION_BEE_LEFT,
+                350.f
+            );
+        }
+
+        float distance = this.position.distance(this.target);
         float scaledSpeed = this.config.getSpeed() * dt + distance * dt;
 
-        this.position.moveTo(target, scaledSpeed);
+        this.position.moveTo(this.target, scaledSpeed);
         this.angle = 180.f;
 
-        if (this.position.distance(target) <= Config.POSITION_NEAR_THRESHOLD) {
-            this.zigZagIndex++;
-            if (this.zigZagIndex >= Config.POSITION_ZIG_ZAG.size()) {
-                this.zigZagIndex = 0;
+        if (this.position.distance(this.target) <= Config.POSITION_NEAR_THRESHOLD) {
+
+            if(this.target.getY() >= Config.POSITION_BEE_BOTTOM)
+            {
                 this.state = EnemyState.RETURNING;
+            }else{
+                this.target.addY(Config.POSITION_BEE_STEP_Y);
+                this.target.setX(this.target.getX() == 20.f ? Config.POSTION_BEE_RIGHT : Config.POSTION_BEE_LEFT);
             }
         }
 

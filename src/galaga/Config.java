@@ -61,13 +61,11 @@ public class Config {
 
         public static final Position POSITION_ENEMY_LEFT = Position.of(-100.f, 600.f);
         public static final Position POSITION_ENEMY_RIGHT = Position.of(800.f, 600.f);
-        public static final List<Position> POSITION_ZIG_ZAG = List.of(
-                        Position.of(20.f, 350.f),
-                        Position.of(680.f, 400.f),
-                        Position.of(20.f, 450.f),
-                        Position.of(680.f, 500.f),
-                        Position.of(20.f, 550.f),
-                        Position.of(680.f, 600.f));
+        public static final float POSTION_BEE_LEFT = 20.f;
+        public static final float POSTION_BEE_RIGHT = 680.f;
+        public static final float POSITION_BEE_STEP_Y = 50.f;
+        public static final float POSITION_BEE_BOTTOM = 600.f;
+     
 
         public static final Color COLOR_BULLET = new Color(255, 0, 0);
 
