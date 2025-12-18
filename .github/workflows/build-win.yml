@@ -37,6 +37,15 @@ jobs:
               --main-class galaga.Galaga `
               -C classes .
 
+      - name: Clean other folders
+        shell: pwsh
+        run: |
+          Get-ChildItem -Recurse | Where-Object {
+              $_.FullName -notmatch 'Galaga\.jar$' -and
+              $_.FullName -notmatch 'classes$' -and
+              $_.FullName -notmatch '\\.github\\preview\\galaga\.ico$'
+          } | Remove-Item -Recurse -Force
+           
       - name: Build MSI with jpackage
         shell: pwsh
         run: |
@@ -47,7 +56,7 @@ jobs:
             --app-version 1.0 `
             --description "Classic Galaga arcade game clone" `
             --copyright "© 2025 Galaga - @jules1univ" `
-            --input Galaga.jar `
+            --input .`
             --main-jar Galaga.jar `
             --main-class galaga.Galaga `
             --install-dir Galaga `
