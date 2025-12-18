@@ -52,7 +52,7 @@ public class EnemyBee extends Enemy {
                 this.state = EnemyState.RETURNING;
             }else{
                 this.target.addY(Config.POSITION_BEE_STEP_Y);
-                this.target.setX(this.target.getX() == 20.f ? Config.POSTION_BEE_RIGHT : Config.POSTION_BEE_LEFT);
+                this.target.setX(this.target.getX() == Config.POSTION_BEE_LEFT ? Config.POSTION_BEE_RIGHT : Config.POSTION_BEE_LEFT);
             }
         }
 

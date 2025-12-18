@@ -43,12 +43,13 @@ public class Config {
         public static final float DELAY_ENEMY_COOLDOWN_FACTOR_ATTACK = 0.01f;
         public static final float DELAY_ENEMY_COOLDOWN_FACTOR_MISSILE = 0.001f;
         public static final float DELAY_ENEMY_CAPTURED_PLAYER_SHOOT_FACTOR = 0.2f;
+        public static final float DELAY_ENEMY_BOSCONIAN_SHOOT_FACTOR = 0.3f;
 
         public static final float TIME_BLINKSTAR_MAX = 10.0f;
         public static final float TIME_BLINKSTAR_MIN = 3.0f;
 
         public static final int SIZE_SKY_GRID = 50;
-        public static final int SIZE_BULLET_CAPACITY = 16;
+        public static final int SIZE_BULLET_CAPACITY = 32;
         public static final int SIZE_ENEMY_DIE_CAPACITY = 4;
         public static final float SIZE_FONT_XLARGE = 48.f;
         public static final float SIZE_FONT_LARGE = 32.f;
@@ -107,7 +108,7 @@ public class Config {
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sounds/%s.wav");
 
         public static final List<ResourceAlias> LEVELS = ResourceAlias.folder(
-                        "level%d", 1, 3,
+                        "level%d", 3, 3,
                         "resources/levels/%s.lvl",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/levels/%s.lvl");
 
