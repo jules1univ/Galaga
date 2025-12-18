@@ -74,4 +74,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Galaga-Windows-MSI
-          path: dist/*.msi
+          path: pkg\dist\*.msi
