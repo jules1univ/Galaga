@@ -37,18 +37,12 @@ jobs:
               --main-class galaga.Galaga `
               -C classes .
 
-      - name: Clean other folders
+      - name: Move JAR and icon to pkg folder
         shell: pwsh
         run: |
-          Get-ChildItem -Recurse | Where-Object {
-              $_.FullName -notmatch 'Galaga\.jar$' -and
-              $_.FullName -notmatch '.github\\preview\\galaga\.ico$'
-          } | Remove-Item -Recurse -Force
-
-      - name: List files
-        shell: pwsh
-        run: |
-          Get-ChildItem -Recurse
+          New-Item -ItemType Directory -Force pkg
+          Move-Item Galaga.jar, .github/preview/galaga.ico pkg
+          Set-Location pkg
 
       - name: Build MSI with jpackage
         shell: pwsh
@@ -56,7 +50,7 @@ jobs:
           jpackage `
             --type msi `
             --name Galaga `
-            --icon .github/preview/galaga.ico `
+            --icon galaga.ico `
             --app-version 1.0 `
             --description "Classic Galaga arcade game clone" `
             --copyright "© 2025 Galaga - @jules1univ" `
