@@ -46,13 +46,17 @@ jobs:
               $_.FullName -notmatch '\\.github\\preview\\galaga\.ico$'
           } | Remove-Item -Recurse -Force
 
+      - name: List files
+        shell: pwsh
+        run: |
+          Get-ChildItem -Recurse
+
       - name: Build MSI with jpackage
         shell: pwsh
         run: |
           jpackage `
             --type msi `
             --name Galaga `
-            --icon ./.github/preview/galaga.ico `
             --app-version 1.0 `
             --description "Classic Galaga arcade game clone" `
             --copyright "© 2025 Galaga - @jules1univ" `
