@@ -43,10 +43,13 @@ jobs:
           New-Item -ItemType Directory -Force pkg
           Move-Item Galaga.jar, .github/preview/galaga.ico pkg
           Set-Location pkg
+          Get-ChildItem
+      
 
       - name: Build MSI with jpackage
         shell: pwsh
         run: |
+          Set-Location pkg
           jpackage `
             --type msi `
             --name Galaga `
