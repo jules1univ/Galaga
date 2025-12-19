@@ -185,7 +185,22 @@ public final class Renderer {
                 control1.getX(), control1.getY(),
                 control2.getX(), control2.getY(),
                 end.getX(), end.getY());
+
         this.g.draw(curve);
+
+        if (Application.DEBUG_MODE) {
+            this.g.setStroke(new java.awt.BasicStroke(1f, java.awt.BasicStroke.CAP_BUTT,
+                    java.awt.BasicStroke.JOIN_MITER, 10f, new float[] { 5f, 5f }, 0f));
+            this.g.drawLine(start.getIntX(), start.getIntY(), control1.getIntX(), control1.getIntY());
+            this.g.drawLine(control2.getIntX(), control2.getIntY(), end.getIntX(), end.getIntY());
+            this.g.setStroke(new java.awt.BasicStroke());
+
+            this.g.fillOval(start.getIntX() - 3, start.getIntY() - 3, 6, 6);
+            this.g.fillOval(control1.getIntX() - 3, control1.getIntY() - 3, 6, 6);
+
+            this.g.fillOval(control2.getIntX() - 3, control2.getIntY() - 3, 6, 6);
+            this.g.fillOval(end.getIntX() - 3, end.getIntY() - 3, 6, 6);
+        }
 
         return this;
     }

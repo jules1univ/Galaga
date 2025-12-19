@@ -34,7 +34,7 @@ public class Config {
         public static final float SPEED_ANGLE_ANIMATION = 400.f;
 
         public static final int DELAY_ENTER_INDEX = 2;
-        public static final float DELAY_ENEMY_ENTER = .03f;
+        public static final float DELAY_ENEMY_ENTER = .005f;
         public static final float DELAY_SHOOT_PLAYER = .5f;
         public static final float DELAY_LEVEL_TITLE = 3.f;
         public static final float DELAY_LEVEL_TITLE_DEAD = 5.f;

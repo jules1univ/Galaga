@@ -155,27 +155,7 @@ public final class Position {
         return this;
     }
 
-    public Position moveTo(Position control1, Position control2, Position end, float move) {
-        float u = 1 - move;
-
-        float tt = move * move;
-        float uu = u * u;
-        float uuu = uu * u;
-        float ttt = tt * move;
-
-        this.x = uuu * this.x +
-                3 * uu * move * control1.x +
-                3 * u * tt * control2.x +
-                ttt * end.x;
-
-        this.y = uuu * this.y +
-                3 * uu * move * control1.y +
-                3 * u * tt * control2.y +
-                ttt * end.y;
-
-        return this;
-    }
-
+   
     public Position copy() {
         return new Position(this.x, this.y);
     }
