@@ -88,6 +88,15 @@ public final class Renderer {
         return this;
     }
 
+    public Renderer drawLine(Position start, Position end, Color color, float thickness) {
+        this.g.setColor(color);
+        Stroke oldStroke = this.g.getStroke();
+        this.g.setStroke(new java.awt.BasicStroke(thickness));
+        this.g.drawLine(start.getIntX(), start.getIntY(), end.getIntX(), end.getIntY());
+        this.g.setStroke(oldStroke);
+        return this;
+    }
+
     public Renderer drawRectOutline(Position position, Size size, Color color) {
         return this.drawRectOutline(position, size, 1, color);
     }

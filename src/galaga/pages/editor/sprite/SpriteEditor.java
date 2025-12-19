@@ -2,9 +2,11 @@ package galaga.pages.editor.sprite;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.util.Map;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
+import engine.elements.ui.text.Text;
 import engine.graphics.sprite.Sprite;
 import engine.utils.Position;
 import engine.utils.Size;
@@ -20,10 +22,27 @@ public class SpriteEditor extends Page<GalagaPage> {
     private Size canvasSize;
     private Position canvasPosition;
 
-    private Size paletteSize;
-    private Position palettePosition;
-
     private Position cursor = Position.zero();
+    private char selectedColor = 'N';
+
+    private Text back;
+    private Text save;
+    private Text infoColor;
+    
+
+    private final Map<Integer, Character> keyToColor = Map.ofEntries(
+            Map.entry(KeyEvent.VK_1, 'W'),
+            Map.entry(KeyEvent.VK_2, 'B'),
+            Map.entry(KeyEvent.VK_3, 'R'),
+            Map.entry(KeyEvent.VK_4, 'Y'),
+            Map.entry(KeyEvent.VK_5, 'G'),
+            Map.entry(KeyEvent.VK_6, 'C'),
+            Map.entry(KeyEvent.VK_7, 'M'),
+            Map.entry(KeyEvent.VK_8, 'O'),
+            Map.entry(KeyEvent.VK_9, 'P'),
+            Map.entry(KeyEvent.VK_0, 'L'),
+            Map.entry(KeyEvent.VK_MINUS, 'D'),
+            Map.entry(KeyEvent.VK_DELETE, 'N'));
 
     public SpriteEditor() {
         super(GalagaPage.EDITOR_SPRITE);
@@ -34,14 +53,13 @@ public class SpriteEditor extends Page<GalagaPage> {
         int margin = 50;
         int marginLeft = 200;
 
-        this.canvasSize = Size.of(Config.SIZE_SPRITE_CANVAS_EDITOR * this.canvasCellSize + 1, Config.SIZE_SPRITE_CANVAS_EDITOR * this.canvasCellSize + 1);
+        this.canvasSize = Size.of(Config.SIZE_SPRITE_CANVAS_EDITOR * this.canvasCellSize + 1,
+                Config.SIZE_SPRITE_CANVAS_EDITOR * this.canvasCellSize + 1);
         this.canvasPosition = Position.of(marginLeft, margin);
 
         for (int i = 0; i < this.pixels.length; i++) {
             this.pixels[i] = 'N';
         }
-
-        
 
         return true;
     }
@@ -50,6 +68,29 @@ public class SpriteEditor extends Page<GalagaPage> {
     public boolean onDeactivate() {
         this.state = PageState.INACTIVE;
         return true;
+    }
+
+    private int getCursorIndex() {
+        Position pos = this.getCursorPosition();
+        int index = (int) (pos.getY() * Config.SIZE_SPRITE_CANVAS_EDITOR + pos.getX());
+        if (index < 0 || index >= this.pixels.length) {
+            return 0;
+        }
+        return index;
+    }
+
+    private Position getCursorPosition() {
+        int x = (int) (this.cursor.getX() / this.canvasCellSize);
+        int y = (int) (this.cursor.getY() / this.canvasCellSize);
+
+        x = Math.clamp(x, 0, Config.SIZE_SPRITE_CANVAS_EDITOR - 1);
+        y = Math.clamp(y, 0, Config.SIZE_SPRITE_CANVAS_EDITOR - 1);
+        return Position.of(x, y);
+    }
+
+    public Color getOpositeColor(char c) {
+        Color color = Sprite.charToColor(c);
+        return new Color(255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue());
     }
 
     @Override
@@ -66,6 +107,31 @@ public class SpriteEditor extends Page<GalagaPage> {
             this.cursor.addX(-move);
         } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
             this.cursor.addX(move);
+        }
+
+        for (var entry : this.keyToColor.entrySet()) {
+            if (Galaga.getContext().getInput().isKeyPressed(entry.getKey())) {
+                this.selectedColor = entry.getValue();
+            }
+        }
+
+        if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_SPACE)) {
+            this.pixels[this.getCursorIndex()] = this.selectedColor;
+
+        }
+
+        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+            // switch ui element
+            /*
+             * 
+             * Colorgrid Canvas
+             * X X......
+             * X ....X..
+             * X ......X
+             * 
+             * BACK SAVE
+             */
+
         }
 
         this.cursor.clampX(0, this.canvasSize.getWidth() - this.canvasCellSize / 2);
@@ -88,16 +154,44 @@ public class SpriteEditor extends Page<GalagaPage> {
                         Sprite.charToColor(c));
             }
         }
-
         Galaga.getContext().getRenderer().drawRectOutline(
-                Position.of(
-                        this.canvasPosition.getX()
-                                + (int) (this.cursor.getX() / this.canvasCellSize) * this.canvasCellSize,
-                        this.canvasPosition.getY()
-                                + (int) (this.cursor.getY() / this.canvasCellSize) * this.canvasCellSize),
+                this.getCursorPosition().multiply(this.canvasCellSize).add(this.canvasPosition),
                 Size.of(this.canvasCellSize, this.canvasCellSize),
                 4,
-                Color.RED);
+                this.selectedColor == 'N' ? this.getOpositeColor(this.pixels[this.getCursorIndex()])
+                        : Sprite.charToColor(this.selectedColor));
+
+        if (this.selectedColor == 'N') {
+            Galaga.getContext().getRenderer().drawLine(
+                    Position.of(
+                            this.canvasPosition.getX()
+                                    + (int) (this.cursor.getX() / this.canvasCellSize) * this.canvasCellSize,
+                            this.canvasPosition.getY()
+                                    + (int) (this.cursor.getY() / this.canvasCellSize) * this.canvasCellSize),
+                    Position.of(
+                            this.canvasPosition.getX()
+                                    + (int) (this.cursor.getX() / this.canvasCellSize + 1) * this.canvasCellSize,
+                            this.canvasPosition.getY()
+                                    + (int) (this.cursor.getY() / this.canvasCellSize + 1) * this.canvasCellSize),
+                    this.getOpositeColor(this.pixels[this.getCursorIndex()]),
+                    4.f);
+
+            Galaga.getContext().getRenderer().drawLine(
+                    Position.of(
+                            this.canvasPosition.getX()
+                                    + (int) (this.cursor.getX() / this.canvasCellSize + 1) * this.canvasCellSize,
+                            this.canvasPosition.getY()
+                                    + (int) (this.cursor.getY() / this.canvasCellSize) * this.canvasCellSize),
+
+                    Position.of(
+                            this.canvasPosition.getX()
+                                    + (int) (this.cursor.getX() / this.canvasCellSize) * this.canvasCellSize,
+                            this.canvasPosition.getY()
+                                    + (int) (this.cursor.getY() / this.canvasCellSize + 1) * this.canvasCellSize),
+                    this.getOpositeColor(this.pixels[this.getCursorIndex()]),
+                    4.f);
+        }
+
     }
 
 }
