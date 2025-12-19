@@ -25,6 +25,8 @@ public class EditorMenu extends Page<GalagaPage> {
 
     @Override
     public void draw() {
+        // < level, sprite, settings>
+        // back
     }
 
 }

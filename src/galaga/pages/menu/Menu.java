@@ -105,6 +105,9 @@ public class Menu extends Page<GalagaPage> {
                     if (this.gameMode.getSelected().getText().equals(MenuModeOption.SOLO.toString())) {
                         Galaga.getContext().getState().shipSkin = this.shipSelect.getSelected().getSprite();
                         Galaga.getContext().getApplication().setCurrentPage(GalagaPage.GAME_SOLO);
+
+                    } else if (this.gameMode.getSelected().getText().equals(MenuModeOption.EDITOR.toString())) {
+                        Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_MENU);
                     }
                 }
                 default -> {
