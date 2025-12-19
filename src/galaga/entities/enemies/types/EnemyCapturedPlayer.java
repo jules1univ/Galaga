@@ -6,6 +6,7 @@ import galaga.Galaga;
 import galaga.GalagaSound;
 import galaga.entities.enemies.Enemy;
 import galaga.entities.enemies.EnemyConfig;
+import galaga.entities.enemies.EnemyState;
 import galaga.entities.enemies.EnemyType;
 
 public class EnemyCapturedPlayer extends Enemy {
@@ -14,6 +15,8 @@ public class EnemyCapturedPlayer extends Enemy {
     public EnemyCapturedPlayer(EnemyConfig config) {
         super(config, GalagaSound.enemy_medium_die);
         assert config.getType() == EnemyType.CAPTURED_PLAYER;
+
+        this.state = EnemyState.RETURNING;
     }
 
     public void setCapturePosition(Position position) {

@@ -61,8 +61,8 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
                 Config.WINDOW_WIDTH / 2.f,
                 0.f));
         this.index = Math.round(distance / 100.f);
-        this.indexTimer = distance * Config.DELAY_ENEMY_ENTER * (1.f / this.config.getSpeed());
-        Log.message(this.indexTimer + "s");
+        this.indexTimer = distance * Config.DELAY_ENEMY_ENTER;
+        Log.message(this.indexTimer + " " + this.config.getType());
     }
 
     public final EnemyState getState() {
@@ -104,7 +104,7 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
                 ttt * end.getY());
     }
 
-    private final void animateEnterToMidPoint(float dt) {
+    private void animateEnterToMidPoint(float dt) {
         if (this.enterMidPassed) {
             return;
         }
@@ -125,7 +125,7 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
         }
     }
 
-    private final void animateEnterToLockPosition(float dt) {
+    private void animateEnterToLockPosition(float dt) {
         if (!this.enterMidPassed) {
             this.animateEnterToMidPoint(dt);
             return;
@@ -238,15 +238,11 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
                     this.animateEnterToLockPosition(dt);
                     if (this.isInLockPosition()) {
                         this.action = true;
-                        this.state = EnemyState.FORMATION;
+                        this.state = EnemyState.RETURNING;
                     }
                 }
             }
             case RETURNING -> {
-                if (Application.DEBUG_MODE) {
-                    this.position = this.config.getLockPosition().copy();
-                    this.state = EnemyState.FORMATION;
-                }
                 this.animateToLockPosition(dt);
                 if (this.isInLockPosition()) {
                     this.state = EnemyState.FORMATION;
