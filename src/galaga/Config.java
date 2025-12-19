@@ -104,7 +104,7 @@ public class Config {
 
         public static final List<ResourceAlias> SPRITES_SHIP = ResourceAlias.folder(
                         "ship_%d",
-                        1, 3,
+                        1, 4,
                         "resources/sprites/ships/%s.spr",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sprites/ships/%s.spr");
 

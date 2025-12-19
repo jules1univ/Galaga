@@ -109,8 +109,9 @@ public class Menu extends Page<GalagaPage> {
                             Galaga.getContext().getState().shipSkin = this.shipSelect.getSelected().getSprite();
                             Galaga.getContext().getApplication().setCurrentPage(GalagaPage.GAME_SOLO);
                         }
-                        case MULTIPLAYER ->
-                            throw new UnsupportedOperationException("Multiplayer mode is not implemented yet.");
+                        case MULTIPLAYER -> {
+                            Galaga.getContext().getApplication().setCurrentPage(GalagaPage.GAME_MULTIPLAYER);
+                        }
                         case EDITOR -> Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_MENU);
                     }
                 }
