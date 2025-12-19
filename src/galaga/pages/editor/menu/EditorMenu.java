@@ -3,10 +3,11 @@ package galaga.pages.editor.menu;
 import engine.elements.page.Page;
 import engine.elements.ui.select.TextSelect;
 import engine.utils.Position;
+import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
-import galaga.pages.menu.MenuModeOption;
+import galaga.entities.sky.Sky;
 import java.awt.Color;
 import java.awt.Font;
 
@@ -14,6 +15,7 @@ public class EditorMenu extends Page<GalagaPage> {
 
     TextSelect editSelect;
     private Font titleFont;
+    private Sky sky;
 
     public EditorMenu() {
         super(GalagaPage.EDITOR_MENU);
@@ -22,14 +24,23 @@ public class EditorMenu extends Page<GalagaPage> {
     @Override
     public boolean onActivate() {
 
+        this.size = Size.of(
+                Galaga.getContext().getFrame().getWidth(),
+                Galaga.getContext().getFrame().getHeight());
+
         this.titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_XLARGE);
 
-        String[] editSelectOptions = new String[editSelectOption.values().length];
-        for (int i = 0; i < editSelectOption.values().length; i++) {
-            editSelectOptions[i] = editSelectOption.values()[i].toString();
+        this.sky = new Sky(Config.SIZE_SKY_GRID);
+        if (!this.sky.init()) {
+            return false;
+        }
+
+        String[] editSelectOption = new String[MenuEditOption.values().length];
+        for (int i = 0; i < MenuEditOption.values().length; i++) {
+            editSelectOption[i] = MenuEditOption.values()[i].toString();
         }
         this.editSelect = new TextSelect(
-                editSelectOptions,
+                editSelectOption,
                 0,
                 true,
                 Color.WHITE, this.titleFont);
@@ -51,10 +62,12 @@ public class EditorMenu extends Page<GalagaPage> {
 
     @Override
     public void update(float dt) {
+        this.sky.update(dt);
     }
 
     @Override
     public void draw() {
+        this.editSelect.draw();
         // < level, sprite, settings>
         // back
     }
