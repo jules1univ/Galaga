@@ -163,17 +163,17 @@ public final class Position {
         float uuu = uu * u;
         float ttt = tt * move;
 
-        float x = uuu * this.x +
+        this.x = uuu * this.x +
                 3 * uu * move * control1.x +
                 3 * u * tt * control2.x +
                 ttt * end.x;
 
-        float y = uuu * this.y +
+        this.y = uuu * this.y +
                 3 * uu * move * control1.y +
                 3 * u * tt * control2.y +
                 ttt * end.y;
 
-        return new Position(x, y);
+        return this;
     }
 
     public Position copy() {
