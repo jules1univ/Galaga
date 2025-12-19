@@ -11,7 +11,10 @@ import engine.resource.sound.Sound;
 import engine.resource.sound.SoundResource;
 import engine.resource.sprite.SpriteResource;
 import galaga.level.LevelResource;
+import galaga.pages.editor.level.LevelEditor;
 import galaga.pages.editor.menu.EditorMenu;
+import galaga.pages.editor.settings.Settings;
+import galaga.pages.editor.sprite.SpriteEditor;
 import galaga.pages.loading.Loading;
 import galaga.pages.menu.Menu;
 import galaga.pages.solo.GameSolo;
@@ -60,9 +63,13 @@ public class Galaga extends Application<GalagaPage> {
 
         this.registerPage(GalagaPage.MAIN_MENU, Menu.class);
         this.registerPage(GalagaPage.GAME_SOLO, GameSolo.class);
-        this.registerPage(GalagaPage.EDITOR_MENU, EditorMenu.class);
         
-        this.setCurrentPage(GalagaPage.MAIN_MENU);
+        this.registerPage(GalagaPage.EDITOR_MENU, EditorMenu.class);
+        this.registerPage(GalagaPage.EDITOR_LEVEL, LevelEditor.class);
+        this.registerPage(GalagaPage.EDITOR_SPRITE, SpriteEditor.class);
+        this.registerPage(GalagaPage.EDITOR_SETTINGS, Settings.class);
+
+        this.setCurrentPage(GalagaPage.EDITOR_SPRITE);
 
         return true;
     }

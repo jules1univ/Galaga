@@ -73,7 +73,7 @@ public final class Sprite {
         return new Sprite(base, colorMap);
     }
 
-    private static Color charToColor(char c) {
+    public static Color charToColor(char c) {
         return switch (c) {
             case 'W' -> Color.WHITE;
             case 'B' -> Color.BLUE;

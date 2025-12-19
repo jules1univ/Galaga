@@ -32,6 +32,7 @@ public class Config {
         public static final float SPEED_BULLET = 500.f;
         public static final float SPEED_ENEMY_FACTOR = 500.f;
         public static final float SPEED_ANGLE_ANIMATION = 400.f;
+        public static final float SPEED_CURSOR = 18000.f;
 
         public static final int DELAY_ENTER_INDEX = 2;
         public static final float DELAY_ENEMY_ENTER = .005f;
@@ -54,6 +55,8 @@ public class Config {
         public static final float SIZE_FONT_XLARGE = 48.f;
         public static final float SIZE_FONT_LARGE = 32.f;
         public static final float SIZE_FONT_TEXT = 24.f;
+        public static final int SIZE_SPRITE_CANVAS_EDITOR = 20;
+        public static final int SIZE_SPRITE_CANVAS_EDITOR_CELL = 22;
         public static final Size SIZE_PARTICLE = Size.of(3.f, 3.f);
 
         public static final float POSITION_LOCK_THRESHOLD = 1.f;

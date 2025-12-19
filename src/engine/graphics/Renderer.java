@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Rectangle2D;
@@ -88,8 +89,15 @@ public final class Renderer {
     }
 
     public Renderer drawRectOutline(Position position, Size size, Color color) {
+        return this.drawRectOutline(position, size, 1, color);
+    }
+
+    public Renderer drawRectOutline(Position position, Size size, int thickness, Color color) {
         this.g.setColor(color);
+        Stroke oldStroke = this.g.getStroke();
+        this.g.setStroke(new java.awt.BasicStroke(thickness));
         this.g.drawRect(position.getIntX(), position.getIntY(), size.getIntWidth(), size.getIntHeight());
+        this.g.setStroke(oldStroke);
         return this;
     }
 
@@ -172,6 +180,20 @@ public final class Renderer {
 
         for (int y = 0; y < height; y += cellSize) {
             this.g.drawLine(0, y, width, y);
+        }
+
+        return this;
+    }
+
+    public Renderer drawGrid(Position position, Size size, int cellSize, Color color) {
+        this.g.setColor(color);
+
+        for (int x = position.getIntX(); x < position.getIntX() + size.getIntWidth(); x += cellSize) {
+            this.g.drawLine(x, position.getIntY(), x, position.getIntY() + size.getIntHeight());
+        }
+
+        for (int y = position.getIntY(); y < position.getIntY() + size.getIntHeight(); y += cellSize) {
+            this.g.drawLine(position.getIntX(), y, position.getIntX() + size.getIntWidth(), y);
         }
 
         return this;

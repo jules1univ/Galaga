@@ -19,7 +19,7 @@ public final class TextSelectEnum<T extends Enum<T>> extends Select<Text> {
         Text[] textOptions = new Text[len];
         for (int i = 0; i < len; i++) {
             textOptions[i] = new Text(
-                options.getEnumConstants()[i].name(),
+                options.getEnumConstants()[i].name().replace("_", " "),
                 Position.zero(),
                 color,
                 font
@@ -40,7 +40,7 @@ public final class TextSelectEnum<T extends Enum<T>> extends Select<Text> {
 
     public T getSelectedOption()
     {
-        String text = this.getSelected().getText();
+        String text = this.getSelected().getText().replace(" ", "_");
         return Enum.valueOf(this.enumClass, text);
     }
 
