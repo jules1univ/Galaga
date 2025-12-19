@@ -155,28 +155,25 @@ public final class Position {
         return this;
     }
 
-    public Position moveTo(Position target, Position control, float move) {
-        float oneMinusT = 1 - move;
-        float newX = oneMinusT * oneMinusT * this.x + 2 * oneMinusT * move * control.x + move * move * target.x;
-        float newY = oneMinusT * oneMinusT * this.y + 2 * oneMinusT * move * control.y + move * move * target.y;
-        this.x = newX;
-        this.y = newY;
-        return this;
-    }
+    public Position moveTo(Position control1, Position control2, Position end, float move) {
+        float u = 1 - move;
 
-    public Position moveTo(Position target, Position control1, Position control2, float move) {
-        float oneMinusT = 1 - move;
-        float newX = oneMinusT * oneMinusT * oneMinusT * this.x
-                + 3 * oneMinusT * oneMinusT * move * control1.x
-                + 3 * oneMinusT * move * move * control2.x
-                + move * move * move * target.x;
-        float newY = oneMinusT * oneMinusT * oneMinusT * this.y
-                + 3 * oneMinusT * oneMinusT * move * control1.y
-                + 3 * oneMinusT * move * move * control2.y
-                + move * move * move * target.y;
-        this.x = newX;
-        this.y = newY;
-        return this;
+        float tt = move * move;
+        float uu = u * u;
+        float uuu = uu * u;
+        float ttt = tt * move;
+
+        float x = uuu * this.x +
+                3 * uu * move * control1.x +
+                3 * u * tt * control2.x +
+                ttt * end.x;
+
+        float y = uuu * this.y +
+                3 * uu * move * control1.y +
+                3 * u * tt * control2.y +
+                ttt * end.y;
+
+        return new Position(x, y);
     }
 
     public Position copy() {

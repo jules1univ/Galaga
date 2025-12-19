@@ -1,5 +1,6 @@
 package galaga.level;
 
+import engine.utils.ini.Ini;
 import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.entities.enemies.Enemy;
@@ -21,12 +22,15 @@ public class Level {
 
     private final List<EnemyConfig> enemiesConfig = new ArrayList<>();
 
-    public static Level createLevel(InputStream in) {
+    public static Level create(InputStream in) {
 
-        ArrayList<String> lines = new ArrayList<>();
+        List<String> lines = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
             String line;
             while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
                 lines.add(line);
             }
         } catch (IOException e) {
@@ -34,6 +38,29 @@ public class Level {
             return null;
         }
 
+        int version = getVersion(lines);
+        if (version == 1) {
+            return createVersion1(lines);
+        }else if (version == 2) {
+            return createVersion2(lines);
+        }
+
+        return null;
+    }
+
+    private static int getVersion(List<String> lines) {
+        if (lines.isEmpty() || lines.size() < 1) {
+            return -1;
+        }
+
+        String header = lines.get(0);
+        if (header.toLowerCase().startsWith("[config]")) {
+            return 2;
+        }
+        return 1;
+    }
+
+    private static Level createVersion1(List<String> lines) {
         for (int i = 0; i < lines.size();) {
             Level level = createLevelFromHeader(lines.get(i));
             if (level == null) {
@@ -48,7 +75,20 @@ public class Level {
             }
             return level;
         }
+        return null;
+    }
 
+    private static Level createVersion2(List<String> lines) {
+        Ini levelConfig = Ini.create(lines);
+        if (levelConfig == null) {
+            return null;
+        }
+        
+        if(!levelConfig.containsSection("config")) {
+            return null;
+        }
+
+        // TODO: implement version 2
         return null;
     }
 

@@ -134,7 +134,7 @@ public class LevelManager {
         if (this.titleTime > 0.f) {
             this.titleTime -= dt;
 
-            int alpha = Math.min(255, (int) (255.f * (this.titleTime / Config.DELAY_LEVEL_TITLE)));
+            int alpha = (int)Math.clamp((255.f * (this.titleTime / Config.DELAY_LEVEL_TITLE)), 0.f, 255.f);
             this.title.setColor(new Color(
                     this.title.getColor().getRed(),
                     this.title.getColor().getGreen(),

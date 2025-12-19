@@ -23,6 +23,7 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
     private int index;
     private float indexTimer;
     private boolean action;
+    private boolean startLeft;
 
     private final GalagaSound dieSoundType;
     private Sound dieSound;
@@ -36,20 +37,19 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
         this.angle = 0.f;
         this.scale = Config.SPRITE_SCALE_DEFAULT;
 
-        boolean isLeft = config.getLockPosition().getX() < Config.WINDOW_WIDTH / 2.f;
-        this.position = isLeft ? Config.POSITION_ENEMY_LEFT.copy() : Config.POSITION_ENEMY_RIGHT.copy();
+        this.startLeft = config.getLockPosition().getX() < Config.WINDOW_WIDTH / 2.f;
+        this.position = this.startLeft ? Config.POSITION_ENEMY_LEFT.copy() : Config.POSITION_ENEMY_RIGHT.copy();
 
         this.state = EnemyState.ENTER_LEVEL;
 
         this.action = false;
 
         float distance = this.config.getLockPosition().distance(Position.of(
-            Config.WINDOW_WIDTH / 2.f,
-            0.f
-        ));
-        this.index = Math.round(distance/100.f);
+                Config.WINDOW_WIDTH / 2.f,
+                0.f));
+        this.index = Math.round(distance / 100.f);
 
-        if(Application.DEBUG_MODE) {
+        if (Application.DEBUG_MODE) {
             distance = 0;
         }
         this.indexTimer = distance * Config.DELAY_ENEMY_ENTER;
@@ -71,6 +71,44 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
         return this.config.getLockPosition();
     }
 
+    private final Position midLockLeft = Position.of(Config.WINDOW_WIDTH / 4.f, Config.WINDOW_HEIGHT / 2.f);
+    private final Position midLockRight = Position.of(Config.WINDOW_WIDTH * 3.f / 4.f, Config.WINDOW_HEIGHT / 2.f);
+
+    private final Position bezierControlMid1 = Position.of(Config.WINDOW_WIDTH / 4.f, Config.WINDOW_HEIGHT / 4.f);
+    private final Position bezierControlMid2 = Position.of(Config.WINDOW_WIDTH * 3.f / 4.f, Config.WINDOW_HEIGHT / 4.f);
+
+    private final Position bezierControl1 = Position.of(Config.WINDOW_WIDTH / 2.f, Config.WINDOW_HEIGHT / 4.f);
+    private final Position bezierControl2 = Position.of(Config.WINDOW_WIDTH / 2.f, Config.WINDOW_HEIGHT / 2.f);
+
+    private boolean passedMidPoint = false;
+
+    private final void animateEnterToMidPoint(float dt) {
+        if (this.passedMidPoint) {
+            return;
+        }
+
+        Position targetMid = this.startLeft ? midLockLeft : midLockRight;
+        this.position.moveTo(bezierControlMid1, bezierControlMid2, targetMid, this.config.getSpeed() * dt);
+        this.angle = targetMid.angleTo(this.position) + 90.f;
+
+        float distance = this.position.distance(targetMid);
+        if (distance <= Config.POSITION_LOCK_THRESHOLD * 10) {
+            this.position = targetMid.copy();
+            this.passedMidPoint = true;
+        }
+    }
+
+    private final void animateEnterToLockPosition(float dt) {
+        if (!this.passedMidPoint) {
+            this.animateEnterToMidPoint(dt);
+            return;
+        }
+
+        Position targetLock = this.config.getLockPosition();
+        this.position.moveTo(bezierControl1, bezierControl2, targetLock, this.config.getSpeed() * dt);
+        this.angle = targetLock.angleTo(this.position) + 90.f;
+    }
+
     protected final boolean isInLockPosition() {
         float distance = this.position.distance(this.config.getLockPosition());
         return distance <= Config.POSITION_LOCK_THRESHOLD * 10;
@@ -90,7 +128,8 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
     protected final void animateInLockPosition(float dt) {
         float amplitude = 10.f;
         float frequency = 2.f;
-        float offsetX = (float) Math.sin(System.currentTimeMillis() * 0.001 * frequency + this.index * Math.PI / 4) * amplitude;
+        float offsetX = (float) Math.sin(System.currentTimeMillis() * 0.001 * frequency + this.index * Math.PI / 4)
+                * amplitude;
         this.position.setX(this.config.getLockPosition().getX() + offsetX);
     }
 
@@ -167,9 +206,12 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
         switch (this.state) {
             case ENTER_LEVEL -> {
                 this.indexTimer -= dt;
-                if (this.indexTimer <= 0 && !this.action) {
-                    this.action = true;
-                    this.state = EnemyState.RETURNING;
+                if (this.indexTimer <= 0.f && !this.action) {
+                    this.animateEnterToLockPosition(dt);
+                    if (this.isInLockPosition()) {
+                        this.action = true;
+                        this.state = EnemyState.RETURNING;
+                    }
                 }
             }
             case RETURNING -> {
@@ -211,6 +253,17 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
         super.draw();
 
         if (Application.DEBUG_MODE) {
+            Galaga.getContext().getRenderer().drawCubicBezier(
+                    this.startLeft ? Config.POSITION_ENEMY_LEFT.copy() : Config.POSITION_ENEMY_RIGHT.copy(),
+                    bezierControlMid1,
+                    bezierControlMid2, this.startLeft ? midLockLeft : midLockRight, Color.WHITE);
+
+            Galaga.getContext().getRenderer().drawCubicBezier(
+                    this.startLeft ? midLockLeft : midLockRight,
+                    bezierControl1,
+                    bezierControl2,
+                    this.config.getLockPosition(), Color.WHITE);
+
             String debugText = this.state.name();
             Application.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
         }

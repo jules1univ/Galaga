@@ -18,7 +18,7 @@ public class LevelResource extends Resource<Level>{
         if(in == null) {
             return false;
         }
-        Level level = Level.createLevel(in);
+        Level level = Level.create(in);
         if(level == null) {
             return false;
         }

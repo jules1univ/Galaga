@@ -68,7 +68,7 @@ public class Config {
         public static final float POSITION_BEE_BOTTOM = 600.f;
      
 
-        public static final Color COLOR_BULLET = new Color(255, 0, 0);
+        public static final Color COLOR_BULLET = Color.RED;
 
         public static final String VARIANT_FONT_TEXT = "text";
         public static final String VARIANT_FONT_LARGE = "large";

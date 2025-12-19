@@ -11,6 +11,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Rectangle2D;
 
 public final class Renderer {
@@ -172,6 +173,19 @@ public final class Renderer {
         for (int y = 0; y < height; y += cellSize) {
             this.g.drawLine(0, y, width, y);
         }
+
+        return this;
+    }
+
+    public Renderer drawCubicBezier(Position start, Position control1, Position control2, Position end, Color color) {
+        this.g.setColor(color);
+
+        CubicCurve2D curve = new CubicCurve2D.Float(
+                start.getX(), start.getY(),
+                control1.getX(), control1.getY(),
+                control2.getX(), control2.getY(),
+                end.getX(), end.getY());
+        this.g.draw(curve);
 
         return this;
     }
