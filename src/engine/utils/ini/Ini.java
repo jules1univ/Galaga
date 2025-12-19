@@ -1,14 +1,21 @@
 package engine.utils.ini;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import engine.utils.logger.Log;
 
 public final class Ini {
 
     private final Map<String, Map<String, IniVariable>> sections = new HashMap<>();
 
-    public static Ini create(List<String> lines) {
+    public static Ini load(List<String> lines) {
         Ini ini = new Ini();
 
         String currentSection = "";
@@ -28,21 +35,50 @@ public final class Ini {
 
             int eq = line.indexOf('=');
             if (eq == -1) {
-                continue; 
+                continue;
             }
 
             String key = line.substring(0, eq).trim().toLowerCase();
             String value = line.substring(eq + 1).trim();
 
             ini.sections
-                .computeIfAbsent(currentSection, s -> new HashMap<>())
-                .put(key, new IniVariable(value));
+                    .computeIfAbsent(currentSection, s -> new HashMap<>())
+                    .put(key, new IniVariable(value));
         }
 
+        Log.message("Ini loaded successfully.");
         return ini;
     }
 
     private Ini() {
+    }
+
+    public void write(OutputStream out) {
+        try (Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
+
+            for (Map.Entry<String, Map<String, IniVariable>> sectionEntry : sections.entrySet()) {
+                String sectionName = sectionEntry.getKey();
+                Map<String, IniVariable> vars = sectionEntry.getValue();
+
+                if (!sectionName.isEmpty()) {
+                    writer.write("[" + sectionName + "]\n");
+                }
+
+                for (Map.Entry<String, IniVariable> varEntry : vars.entrySet()) {
+                    writer.write(varEntry.getKey());
+                    writer.write(" = ");
+                    writer.write(varEntry.getValue().toString());
+                    writer.write("\n");
+                }
+
+                writer.write("\n");
+            }
+
+            writer.flush();
+            Log.message("Ini saved successfully.");
+        } catch (IOException e) {
+            Log.error("Ini failed to save: " + e.getMessage());
+        }
     }
 
     public Map<String, IniVariable> getSection(String name) {

@@ -79,7 +79,7 @@ public class Level {
     }
 
     private static Level createVersion2(List<String> lines) {
-        Ini levelConfig = Ini.create(lines);
+        Ini levelConfig = Ini.load(lines);
         if (levelConfig == null) {
             return null;
         }
