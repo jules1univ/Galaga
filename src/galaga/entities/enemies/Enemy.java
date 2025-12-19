@@ -255,8 +255,9 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
         super.draw();
 
         if (Application.DEBUG_MODE) {
+            boolean enterLeft = this.config.getLockPosition().getX() < Config.WINDOW_WIDTH / 2.f;
             Galaga.getContext().getRenderer().drawCubicBezier(
-                    this.enterLeft ? Config.POSITION_ENEMY_LEFT.copy() : Config.POSITION_ENEMY_RIGHT.copy(),
+                    enterLeft ? Config.POSITION_ENEMY_LEFT.copy() : Config.POSITION_ENEMY_RIGHT.copy(),
                     bezierControlMid1,
                     bezierControlMid2, this.midPosition, Color.WHITE);
 
