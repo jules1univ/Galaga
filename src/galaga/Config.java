@@ -64,13 +64,27 @@ public class Config {
         public static final Position POSITION_ENEMY_MID_LEFT = Position.of(WINDOW_WIDTH / 4.f, WINDOW_HEIGHT / 2.f);
 
         public static final Position POSITION_ENEMY_RIGHT = Position.of(800.f, 600.f);
-        public static final Position POSITION_ENEMY_MID_RIGHT = Position.of(WINDOW_WIDTH * 3.f / 4.f, WINDOW_HEIGHT / 2.f);
+        public static final Position POSITION_ENEMY_MID_RIGHT = Position.of(WINDOW_WIDTH * 3.f / 4.f,
+                        WINDOW_HEIGHT / 2.f);
+
+        public static final Position POSITION_ENTER_MID_LEFT_CTRL = Position.of(Config.WINDOW_WIDTH / 2.f,
+                        Config.WINDOW_HEIGHT / 6.f);
+        public static Position POSITION_ENTER_MID_LEFT_CTRL_2 = Position.of(Config.WINDOW_WIDTH,
+                        Config.WINDOW_HEIGHT * 2.f / 4.f);
+
+        public static Position POSITION_ENTER_MID_RIGHT_CTRL = Position.of(Config.WINDOW_WIDTH / 2.f,
+                        Config.WINDOW_HEIGHT / 6.f);
+        public static Position POSITION_ENTER_MID_RIGHT_CTRL_2 = Position.of(0.f, Config.WINDOW_HEIGHT * 2.f / 4.f);
+
+        public static final Position POSITION_ENTER_LOCK_CTRL = Position.of(Config.WINDOW_WIDTH / 2.f,
+                        Config.WINDOW_HEIGHT / 4.f);
+        public static final Position POSITION_ENTER_LOCK_CTRL_2 = Position.of(Config.WINDOW_WIDTH / 2.f,
+                        Config.WINDOW_HEIGHT / 2.f);
 
         public static final float POSTION_BEE_LEFT = 20.f;
         public static final float POSTION_BEE_RIGHT = 680.f;
         public static final float POSITION_BEE_STEP_Y = 50.f;
         public static final float POSITION_BEE_BOTTOM = 600.f;
-     
 
         public static final Color COLOR_BULLET = Color.RED;
 

@@ -61,8 +61,8 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
                 Config.WINDOW_WIDTH / 2.f,
                 0.f));
         this.index = Math.round(distance / 100.f);
-        this.indexTimer = distance * Config.DELAY_ENEMY_ENTER * (1.f/this.config.getSpeed());
-        Log.message(this.indexTimer+"s");
+        this.indexTimer = distance * Config.DELAY_ENEMY_ENTER * (1.f / this.config.getSpeed());
+        Log.message(this.indexTimer + "s");
     }
 
     public final EnemyState getState() {
@@ -80,18 +80,6 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
     public final Position getLockPosition() {
         return this.config.getLockPosition();
     }
-
-    private final Position POSITION_ENTER_MID_LEFT_CTRL = Position.of(Config.WINDOW_WIDTH / 2.f,
-            Config.WINDOW_HEIGHT / 6.f);
-    private final Position POSITION_ENTER_MID_LEFT_CTRL_2 = Position.of(Config.WINDOW_WIDTH,
-            Config.WINDOW_HEIGHT * 2.f / 4.f);
-
-    private final Position POSITION_ENTER_MID_RIGHT_CTRL = Position.of(Config.WINDOW_WIDTH / 2.f,
-            Config.WINDOW_HEIGHT / 6.f);
-    private final Position POSITION_ENTER_MID_RIGHT_CTRL_2 = Position.of(0.f, Config.WINDOW_HEIGHT * 2.f / 4.f);
-
-    private final Position bezierControl1 = Position.of(Config.WINDOW_WIDTH / 2.f, Config.WINDOW_HEIGHT / 4.f);
-    private final Position bezierControl2 = Position.of(Config.WINDOW_WIDTH / 2.f, Config.WINDOW_HEIGHT / 2.f);
 
     private void animateCubicBezier(Position start, Position control1, Position control2, Position end, float move) {
         this.bezierTime += move;
@@ -122,16 +110,18 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
         }
 
         this.animateCubicBezier(this.enterPosition,
-                this.enterLeft ? POSITION_ENTER_MID_LEFT_CTRL : POSITION_ENTER_MID_RIGHT_CTRL,
-                this.enterLeft ? POSITION_ENTER_MID_LEFT_CTRL_2 : POSITION_ENTER_MID_RIGHT_CTRL_2, this.midPosition,
-                dt * this.config.getSpeed()/2.f);
+                this.enterLeft ? Config.POSITION_ENTER_MID_LEFT_CTRL : Config.POSITION_ENTER_MID_RIGHT_CTRL,
+                this.enterLeft ? Config.POSITION_ENTER_MID_LEFT_CTRL_2 : Config.POSITION_ENTER_MID_RIGHT_CTRL_2,
+                this.midPosition,
+                dt * this.config.getSpeed() / 2.f);
 
         this.angle = this.midPosition.angleTo(this.position) + 90.f;
 
         float distance = this.position.distance(this.midPosition);
         if (distance <= Config.POSITION_LOCK_THRESHOLD * 10) {
             this.position = this.midPosition.copy();
-            // this.enterMidPassed = true;
+            this.bezierTime = 0.f;
+            this.enterMidPassed = true;
         }
     }
 
@@ -140,8 +130,10 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
             this.animateEnterToMidPoint(dt);
             return;
         }
-        this.animateCubicBezier(this.midPosition, bezierControl1, bezierControl2, this.config.getLockPosition(),
-                dt * this.config.getSpeed());
+
+        this.animateCubicBezier(this.midPosition, Config.POSITION_ENTER_LOCK_CTRL, Config.POSITION_ENTER_LOCK_CTRL_2,
+                this.config.getLockPosition(),
+                dt * this.config.getSpeed() );
         this.angle = this.config.getLockPosition().angleTo(this.position) + 90.f;
     }
 
@@ -294,14 +286,14 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
 
                 Galaga.getContext().getRenderer().drawCubicBezier(
                         this.enterLeft ? Config.POSITION_ENEMY_LEFT : Config.POSITION_ENEMY_RIGHT,
-                        this.enterLeft ? POSITION_ENTER_MID_LEFT_CTRL : POSITION_ENTER_MID_RIGHT_CTRL,
-                        this.enterLeft ? POSITION_ENTER_MID_LEFT_CTRL_2 : POSITION_ENTER_MID_RIGHT_CTRL_2,
+                        this.enterLeft ? Config.POSITION_ENTER_MID_LEFT_CTRL : Config.POSITION_ENTER_MID_RIGHT_CTRL,
+                        this.enterLeft ? Config.POSITION_ENTER_MID_LEFT_CTRL_2 : Config.POSITION_ENTER_MID_RIGHT_CTRL_2,
                         this.midPosition, Color.WHITE);
             } else {
                 Galaga.getContext().getRenderer().drawCubicBezier(
                         this.position,
-                        bezierControl1,
-                        bezierControl2,
+                        Config.POSITION_ENTER_LOCK_CTRL,
+                        Config.POSITION_ENTER_LOCK_CTRL_2,
                         this.config.getLockPosition(), Color.RED);
             }
 
