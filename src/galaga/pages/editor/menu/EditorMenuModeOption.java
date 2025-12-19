@@ -1,6 +1,6 @@
 package galaga.pages.editor.menu;
 
-public enum MenuEditorSelectOption {
+public enum EditorMenuModeOption {
     LEVEL,
     SPRITE,
     SETTINGS

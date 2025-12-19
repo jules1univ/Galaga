@@ -1,6 +1,6 @@
 package galaga.pages.editor.menu;
 
-public enum MenuEditorOption {
+public enum EditorMenuOption {
     EDITSELECT,
     BACK
 }

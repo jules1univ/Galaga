@@ -4,7 +4,7 @@ import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.elements.ui.icon.Icon;
 import engine.elements.ui.select.IconSelect;
-import engine.elements.ui.select.TextSelect;
+import engine.elements.ui.select.TextSelectEnum;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
 import engine.graphics.sprite.Sprite;
@@ -23,7 +23,7 @@ import java.awt.event.KeyEvent;
 public class Menu extends Page<GalagaPage> {
 
     private IconSelect shipSelect;
-    private TextSelect gameMode;
+    private TextSelectEnum<MenuModeOption> gameMode;
     private Text quit;
 
     private Sky sky;
@@ -100,17 +100,19 @@ public class Menu extends Page<GalagaPage> {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case QUIT -> Galaga.getContext().getApplication().stop();
-                case GAMEMODE -> {
-
-                    if (this.gameMode.getSelected().getText().equals(MenuModeOption.SOLO.toString())) {
-                        Galaga.getContext().getState().shipSkin = this.shipSelect.getSelected().getSprite();
-                        Galaga.getContext().getApplication().setCurrentPage(GalagaPage.GAME_SOLO);
-
-                    } else if (this.gameMode.getSelected().getText().equals(MenuModeOption.EDITOR.toString())) {
-                        Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_MENU);
-                    }
+                case SHIPSKIN -> {
+                    Galaga.getContext().getState().shipSkin = this.shipSelect.getSelected().getSprite();
                 }
-                default -> {
+                case GAMEMODE -> {
+                    switch (this.gameMode.getSelectedOption()) {
+                        case SOLO -> {
+                            Galaga.getContext().getState().shipSkin = this.shipSelect.getSelected().getSprite();
+                            Galaga.getContext().getApplication().setCurrentPage(GalagaPage.GAME_SOLO);
+                        }
+                        case MULTIPLAYER ->
+                            throw new UnsupportedOperationException("Multiplayer mode is not implemented yet.");
+                        case EDITOR -> Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_MENU);
+                    }
                 }
             }
         }
@@ -190,12 +192,8 @@ public class Menu extends Page<GalagaPage> {
                 (this.size.getHeight() - this.logo.getSize().getHeight() * Config.SPRITE_SCALE_ICON) / 2 - margin
                         - margin / 2);
 
-        String[] gameModeOptions = new String[MenuModeOption.values().length];
-        for (int i = 0; i < MenuModeOption.values().length; i++) {
-            gameModeOptions[i] = MenuModeOption.values()[i].toString();
-        }
-        this.gameMode = new TextSelect(
-                gameModeOptions,
+        this.gameMode = new TextSelectEnum<>(
+                MenuModeOption.class,
                 0,
                 true,
                 Color.WHITE, this.titleFont);

@@ -1,7 +1,8 @@
 package galaga.pages.editor.menu;
 
 import engine.elements.page.Page;
-import engine.elements.ui.select.TextSelect;
+import engine.elements.page.PageState;
+import engine.elements.ui.select.TextSelectEnum;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
 import engine.resource.sound.Sound;
@@ -16,17 +17,15 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 
-
-
 public class EditorMenu extends Page<GalagaPage> {
 
-    private TextSelect editSelect;
+    private TextSelectEnum<EditorMenuModeOption> editSelect;
     private Text back;
-    
+
     private Font titleFont;
     private Sky sky;
 
-    private MenuEditorOption option;
+    private EditorMenuOption option;
 
     private Sound themeSound;
     private Sound selectSound;
@@ -64,12 +63,8 @@ public class EditorMenu extends Page<GalagaPage> {
             return false;
         }
 
-        String[] editSelectOption = new String[MenuEditorSelectOption.values().length];
-        for (int i = 0; i < MenuEditorSelectOption.values().length; i++) {
-            editSelectOption[i] = MenuEditorSelectOption.values()[i].toString();
-        }
-        this.editSelect = new TextSelect(
-                editSelectOption,
+        this.editSelect = new TextSelectEnum<>(
+                EditorMenuModeOption.class,
                 0,
                 true,
                 Color.WHITE, this.titleFont);
@@ -91,7 +86,7 @@ public class EditorMenu extends Page<GalagaPage> {
         }
         this.back.setCenter(TextPosition.CENTER, TextPosition.END);
 
-        this.option = MenuEditorOption.EDITSELECT;
+        this.option = EditorMenuOption.EDITSELECT;
         this.updateMenuSelect();
 
         return true;
@@ -99,6 +94,8 @@ public class EditorMenu extends Page<GalagaPage> {
 
     @Override
     public boolean onDeactivate() {
+        this.themeSound.stop();
+        this.state = PageState.INACTIVE;
         return true;
     }
 
@@ -125,11 +122,11 @@ public class EditorMenu extends Page<GalagaPage> {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case EDITSELECT -> {
-                    this.option = MenuEditorOption.BACK;
+                    this.option = EditorMenuOption.BACK;
                     this.updateMenuSelect();
                 }
                 case BACK -> {
-                    this.option = MenuEditorOption.EDITSELECT;
+                    this.option = EditorMenuOption.EDITSELECT;
                     this.updateMenuSelect();
                 }
             }
@@ -137,13 +134,13 @@ public class EditorMenu extends Page<GalagaPage> {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case EDITSELECT -> {
-                    this.option = MenuEditorOption.BACK;
+                    this.option = EditorMenuOption.BACK;
                     this.updateMenuSelect();
 
                 }
-                
+
                 case BACK -> {
-                    this.option = MenuEditorOption.EDITSELECT;
+                    this.option = EditorMenuOption.EDITSELECT;
                     this.updateMenuSelect();
                 }
             }
@@ -152,28 +149,25 @@ public class EditorMenu extends Page<GalagaPage> {
             switch (this.option) {
                 case BACK -> Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MAIN_MENU);
                 case EDITSELECT -> {
-                    
-                }
-                default -> {
+                    switch (this.editSelect.getSelectedOption()) {
+                        case LEVEL -> Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_LEVEL);
+                        case SPRITE -> Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_SPRITE);
+                        case SETTINGS -> Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_SETTINGS);
+                    }
                 }
             }
         }
     }
 
-
-
-
     private void updateMenuSelect() {
         switch (this.option) {
             case EDITSELECT -> {
                 this.editSelect.setShowArrows(true);
-
                 this.editSelect.setColor(Color.ORANGE);
                 this.back.setColor(Color.WHITE);
             }
             case BACK -> {
                 this.editSelect.setShowArrows(false);
-
                 this.editSelect.setColor(Color.WHITE);
                 this.back.setColor(Color.ORANGE);
             }
@@ -185,8 +179,6 @@ public class EditorMenu extends Page<GalagaPage> {
         this.sky.draw();
         this.editSelect.draw();
         this.back.draw();
-        // < level, sprite, settings>
-        // back
     }
 
 }
