@@ -23,7 +23,10 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
     private int index;
     private float indexTimer;
     private boolean action;
-    private boolean startLeft;
+    
+    private boolean enterMidPassed;
+    private Position midPosition;
+
 
     private final GalagaSound dieSoundType;
     private Sound dieSound;
@@ -37,8 +40,11 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
         this.angle = 0.f;
         this.scale = Config.SPRITE_SCALE_DEFAULT;
 
-        this.startLeft = config.getLockPosition().getX() < Config.WINDOW_WIDTH / 2.f;
-        this.position = this.startLeft ? Config.POSITION_ENEMY_LEFT.copy() : Config.POSITION_ENEMY_RIGHT.copy();
+        boolean enterLeft = config.getLockPosition().getX() < Config.WINDOW_WIDTH / 2.f;
+        this.enterMidPassed = false;
+
+        this.midPosition = enterLeft ? Config.POSITION_ENEMY_MID_LEFT.copy() : Config.POSITION_ENEMY_MID_RIGHT.copy();
+        this.position = enterLeft ? Config.POSITION_ENEMY_LEFT.copy() : Config.POSITION_ENEMY_RIGHT.copy();
 
         this.state = EnemyState.ENTER_LEVEL;
 
@@ -71,8 +77,6 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
         return this.config.getLockPosition();
     }
 
-    private final Position midLockLeft = Position.of(Config.WINDOW_WIDTH / 4.f, Config.WINDOW_HEIGHT / 2.f);
-    private final Position midLockRight = Position.of(Config.WINDOW_WIDTH * 3.f / 4.f, Config.WINDOW_HEIGHT / 2.f);
 
     private final Position bezierControlMid1 = Position.of(Config.WINDOW_WIDTH / 4.f, Config.WINDOW_HEIGHT / 4.f);
     private final Position bezierControlMid2 = Position.of(Config.WINDOW_WIDTH * 3.f / 4.f, Config.WINDOW_HEIGHT / 4.f);
@@ -80,26 +84,24 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
     private final Position bezierControl1 = Position.of(Config.WINDOW_WIDTH / 2.f, Config.WINDOW_HEIGHT / 4.f);
     private final Position bezierControl2 = Position.of(Config.WINDOW_WIDTH / 2.f, Config.WINDOW_HEIGHT / 2.f);
 
-    private boolean passedMidPoint = false;
 
     private final void animateEnterToMidPoint(float dt) {
-        if (this.passedMidPoint) {
+        if (this.enterMidPassed) {
             return;
         }
 
-        Position targetMid = this.startLeft ? midLockLeft : midLockRight;
-        this.position.moveTo(bezierControlMid1, bezierControlMid2, targetMid, this.config.getSpeed() * dt);
-        this.angle = targetMid.angleTo(this.position) + 90.f;
+        this.position.moveTo(bezierControlMid1, bezierControlMid2, this.midPosition, this.config.getSpeed() * dt);
+        this.angle = this.midPosition.angleTo(this.position) + 90.f;
 
-        float distance = this.position.distance(targetMid);
+        float distance = this.position.distance(this.midPosition);
         if (distance <= Config.POSITION_LOCK_THRESHOLD * 10) {
-            this.position = targetMid.copy();
-            this.passedMidPoint = true;
+            this.position = this.midPosition.copy();
+            this.enterMidPassed = true;
         }
     }
 
     private final void animateEnterToLockPosition(float dt) {
-        if (!this.passedMidPoint) {
+        if (!this.enterMidPassed) {
             this.animateEnterToMidPoint(dt);
             return;
         }
@@ -254,12 +256,12 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
 
         if (Application.DEBUG_MODE) {
             Galaga.getContext().getRenderer().drawCubicBezier(
-                    this.startLeft ? Config.POSITION_ENEMY_LEFT.copy() : Config.POSITION_ENEMY_RIGHT.copy(),
+                    this.enterLeft ? Config.POSITION_ENEMY_LEFT.copy() : Config.POSITION_ENEMY_RIGHT.copy(),
                     bezierControlMid1,
-                    bezierControlMid2, this.startLeft ? midLockLeft : midLockRight, Color.WHITE);
+                    bezierControlMid2, this.midPosition, Color.WHITE);
 
             Galaga.getContext().getRenderer().drawCubicBezier(
-                    this.startLeft ? midLockLeft : midLockRight,
+                    this.midPosition,
                     bezierControl1,
                     bezierControl2,
                     this.config.getLockPosition(), Color.WHITE);

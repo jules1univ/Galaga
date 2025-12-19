@@ -61,7 +61,11 @@ public class Config {
         public static final float POSITION_NEAR_CAPTURED_PLAYER_THRESHOLD = 100.f;
 
         public static final Position POSITION_ENEMY_LEFT = Position.of(-100.f, 600.f);
+        public static final Position POSITION_ENEMY_MID_LEFT = Position.of(WINDOW_WIDTH / 4.f, WINDOW_HEIGHT / 2.f);
+
         public static final Position POSITION_ENEMY_RIGHT = Position.of(800.f, 600.f);
+        public static final Position POSITION_ENEMY_MID_RIGHT = Position.of(WINDOW_WIDTH * 3.f / 4.f, WINDOW_HEIGHT / 2.f);
+
         public static final float POSTION_BEE_LEFT = 20.f;
         public static final float POSTION_BEE_RIGHT = 680.f;
         public static final float POSITION_BEE_STEP_Y = 50.f;
