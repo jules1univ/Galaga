@@ -26,8 +26,7 @@ public final class Position {
         this.y = y;
     }
 
-    public Position add(float value)
-    {
+    public Position add(float value) {
         this.x += value;
         this.y += value;
         return this;
@@ -37,19 +36,19 @@ public final class Position {
         this.x += other.x;
         this.y += other.y;
         return this;
-    
+
     }
 
     public Position addX(float dx) {
         this.x += dx;
         return this;
-    
+
     }
 
     public Position addY(float dy) {
         this.y += dy;
         return this;
-    
+
     }
 
     public Position multiply(float factor) {
@@ -61,7 +60,7 @@ public final class Position {
     public Position clampX(float minX, float maxX) {
         this.x = Math.max(minX, Math.min(this.x, maxX));
         return this;
-    
+
     }
 
     public Position clampY(float minY, float maxY) {
@@ -72,13 +71,13 @@ public final class Position {
     public Position setX(float x) {
         this.x = x;
         return this;
-    
+
     }
 
     public Position setY(float y) {
         this.y = y;
         return this;
-    
+
     }
 
     public float getX() {
@@ -104,13 +103,13 @@ public final class Position {
     }
 
     public float angleTo(Position other) {
-        return (float)Math.toDegrees((float)Math.atan2(this.y - other.y, this.x - other.x));
+        return (float) Math.toDegrees((float) Math.atan2(this.y - other.y, this.x - other.x));
     }
 
     public Position normalize() {
         float length = (float) Math.sqrt(this.x * this.x + this.y * this.y);
         if (length == 0) {
-           return this;
+            return this;
         }
         this.x /= length;
         this.y /= length;
@@ -156,10 +155,33 @@ public final class Position {
         return this;
     }
 
+    public Position moveTo(Position target, Position control, float move) {
+        float oneMinusT = 1 - move;
+        float newX = oneMinusT * oneMinusT * this.x + 2 * oneMinusT * move * control.x + move * move * target.x;
+        float newY = oneMinusT * oneMinusT * this.y + 2 * oneMinusT * move * control.y + move * move * target.y;
+        this.x = newX;
+        this.y = newY;
+        return this;
+    }
+
+    public Position moveTo(Position target, Position control1, Position control2, float move) {
+        float oneMinusT = 1 - move;
+        float newX = oneMinusT * oneMinusT * oneMinusT * this.x
+                + 3 * oneMinusT * oneMinusT * move * control1.x
+                + 3 * oneMinusT * move * move * control2.x
+                + move * move * move * target.x;
+        float newY = oneMinusT * oneMinusT * oneMinusT * this.y
+                + 3 * oneMinusT * oneMinusT * move * control1.y
+                + 3 * oneMinusT * move * move * control2.y
+                + move * move * move * target.y;
+        this.x = newX;
+        this.y = newY;
+        return this;
+    }
+
     public Position copy() {
         return new Position(this.x, this.y);
     }
-
 
     @Override
     public String toString() {

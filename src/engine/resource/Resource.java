@@ -1,6 +1,5 @@
 package engine.resource;
 
-import engine.utils.cache.Cache;
 import engine.utils.logger.Log;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,34 +33,35 @@ public abstract class Resource<ResourceData> {
     }
 
     protected final InputStream getResourceData() {
-        if(Cache.exists(this.alias.getFullName()))
-        {
-            Log.message("Resource '"+ this.alias.getFullName() + "' found in cache.");
-            return Cache.load(this.alias.getFullName());
-        }
-
         File file = this.alias.getPath();
         if (file.exists()) {
             try {
-                Log.message("Resource '"+ this.alias.getFullName() + "' found in local file system.");
+                Log.message("Resource '" + this.alias.getFullName() + "' found in local file system.");
                 return new FileInputStream(file);
             } catch (FileNotFoundException e) {
-                Log.error("Resource '"+this.alias.getFullName() +"'file loading failed: " + e.getMessage());
+                Log.error("Resource '" + this.alias.getFullName() + "'file loading failed: " + e.getMessage());
             }
         }
 
-
         URI url = this.alias.getUrl();
-        if(url.toString().isEmpty()) {
-            Log.error("Resource '"+ this.alias.getFullName() + "' has no url to load from.");
+        if (url.toString().isEmpty()) {
+            Log.error("Resource '" + this.alias.getFullName() + "' has no url to load from.");
             return null;
         }
-        try{
+        try {
             InputStream in = url.toURL().openStream();
-            Cache.save(this.alias.getFullName(), in);
+            new Thread(() -> {
+                this.alias.getPath().getParentFile().mkdirs();
+                try (FileOutputStream out = new FileOutputStream(this.alias.getPath())) {
+                    in.transferTo(out);
+                    Log.message("Resource '" + this.alias.getFullName() + "' saved to local file system.");
+                } catch (Exception e) {
+                    Log.error("Resource '" + this.alias.getFullName() + "' saving failed: " + e.getMessage());
+                }
+            }).start();
             return url.toURL().openStream();
-        }catch(IOException e) {
-            Log.error("Resource url loading failed: " + e.getMessage());
+        } catch (IOException e) {
+            Log.error("Resource '" + this.alias.getFullName() + "' download failed: " + e.getMessage());
         }
 
         return null;
