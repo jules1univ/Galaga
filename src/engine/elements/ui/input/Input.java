@@ -16,23 +16,23 @@ public class Input extends UIElement {
     private static final float CURSOR_SIZE = 5.f;
     private static final int NO_MAX_LENGTH = -1;
 
-    private final String placeholder;
     private final Font font;
-
-    private int maxLength = NO_MAX_LENGTH;
-
-    private Color color;
 
     private String value = "";
     private String displayText = "";
+    private final String placeholder;
 
     private Text text;
     private TextPosition horizontal;
     private TextPosition vertical;
 
     private boolean focused = false;
-    private int cursor = 0;
+    private boolean outline = true;
+    private int maxLength = NO_MAX_LENGTH;
 
+    private Color color;
+
+    private int cursor = 0;
     private Position cursorPosition;
     private float cursorBlinkTime = 0.f;
     private boolean cursorBlink = true;
@@ -53,11 +53,14 @@ public class Input extends UIElement {
         this.cursorPosition = position.copy();
     }
 
-
     public void clear() {
         this.value = "";
         this.cursor = 0;
         this.updateText();
+    }
+
+    public void setOutline(boolean outline) {
+        this.outline = outline;
     }
 
     public void setColor(Color color) {
@@ -72,7 +75,6 @@ public class Input extends UIElement {
         this.updateText();
     }
 
-    
     public String getText() {
         return this.value;
     }
@@ -215,7 +217,10 @@ public class Input extends UIElement {
 
     @Override
     public void draw() {
-        Galaga.getContext().getRenderer().drawRectOutline(this.position, this.size, 2, this.color);
+        if (this.outline) {
+            Galaga.getContext().getRenderer().drawRectOutline(this.position, this.size, 2, this.color);
+        }
+
         if (!this.displayText.isEmpty()) {
             this.text.draw();
         }

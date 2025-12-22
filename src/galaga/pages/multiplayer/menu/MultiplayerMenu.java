@@ -127,25 +127,24 @@ public class MultiplayerMenu extends Page<GalagaPage> {
         this.ip.setCenter(TextPosition.CENTER, TextPosition.CENTER);
 
         this.next = new Text("Next", Position.of(
-                Config.WINDOW_WIDTH / 2.f,
-                this.ip.getPosition().getY() + padding + this.ip.getSize().getHeight()),
+                this.ip.getPosition().getX() + this.ip.getSize().getWidth(),
+                this.ip.getPosition().getY() + padding * 2),
                 Color.WHITE, this.textFont);
 
         if (!this.next.init()) {
             return false;
         }
-        this.next.setCenter(TextPosition.CENTER, TextPosition.CENTER);
+        this.next.setCenter(TextPosition.END, TextPosition.END);
 
         this.back = new Text("Back", Position.of(
-                Config.WINDOW_WIDTH / 2.f,
-                this.next.getPosition().getY() + padding + this.next.getSize().getHeight()),
+                this.ip.getPosition().getX(),
+                this.ip.getPosition().getY() + padding * 2),
                 Color.WHITE, this.textFont);
 
         if (!this.back.init()) {
             return false;
         }
-        this.back.setCenter(TextPosition.CENTER, TextPosition.CENTER);
-
+        this.back.setCenter(TextPosition.BEGIN, TextPosition.END);
 
         this.option = MultiplayerMenuOption.USERNAME;
         this.updateMenuSelect();
@@ -159,21 +158,16 @@ public class MultiplayerMenu extends Page<GalagaPage> {
 
     @Override
     public void update(float dt) {
-        if(Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP))
-        {
-            switch(this.option)
-            {
+        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
+            switch (this.option) {
                 case IP -> this.option = MultiplayerMenuOption.USERNAME;
                 case NEXT -> this.option = MultiplayerMenuOption.IP;
                 case BACK -> this.option = MultiplayerMenuOption.NEXT;
                 case USERNAME -> this.option = MultiplayerMenuOption.BACK;
             }
             this.updateMenuSelect();
-        }
-        else if(Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN))
-        {
-            switch(this.option)
-            {
+        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
+            switch (this.option) {
                 case USERNAME -> this.option = MultiplayerMenuOption.IP;
                 case IP -> this.option = MultiplayerMenuOption.NEXT;
                 case NEXT -> this.option = MultiplayerMenuOption.BACK;
@@ -184,8 +178,19 @@ public class MultiplayerMenu extends Page<GalagaPage> {
 
         this.ip.update(dt);
         this.username.update(dt);
-
         this.sky.update(dt);
+
+        if(Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+            switch (this.option) {
+                case NEXT -> {
+                    
+                }
+                case BACK -> {
+                    Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MAIN_MENU);
+                }
+                case IP, USERNAME -> {}
+            }
+        }
     }
 
     @Override
