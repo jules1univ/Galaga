@@ -2,6 +2,7 @@ package engine.elements.ui.input;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
 
 import engine.elements.ui.UIElement;
 import engine.elements.ui.text.Text;
@@ -22,6 +23,7 @@ public class Input extends UIElement {
     private Color color;
 
     private String value = "";
+    private String lastValue = "";
     private String displayText = "";
 
     private Text text;
@@ -51,12 +53,19 @@ public class Input extends UIElement {
         this.cursorPosition = position.copy();
     }
 
+    public void clear() {
+        this.value = "";
+        this.lastValue = "";
+        this.cursor = 0;
+        this.updateText();
+    }
+
     public void setColor(Color color) {
         this.color = color;
     }
 
     public void setValue(String text) {
-        if(this.maxLength != NO_MAX_LENGTH && text.length() > this.maxLength) {
+        if (this.maxLength != NO_MAX_LENGTH && text.length() > this.maxLength) {
             text = text.substring(0, this.maxLength);
         }
         this.value = text;
@@ -69,12 +78,18 @@ public class Input extends UIElement {
 
     public void setFocused(boolean focused) {
         this.focused = focused;
-        if (Galaga.getContext().getInput().isTyping() && !focused) {
-            Galaga.getContext().getInput().stopTyping();
+        if (focused) {
+            this.cursorBlink = true;
+            this.cursorBlinkTime = 0.3f;
+            this.value = this.lastValue;
+            this.lastValue = "";
+        } else {
+            this.lastValue = this.value;
+            this.value = "";
         }
+        this.updateText();
     }
 
-    
     public void setCenter(TextPosition hor, TextPosition ver) {
         this.horizontal = hor;
         this.vertical = ver;
@@ -100,7 +115,7 @@ public class Input extends UIElement {
             float width = Galaga.getContext().getRenderer().getTextSize(this.placeholder, this.font).getWidth();
             if (width + CURSOR_SIZE < this.size.getWidth()) {
                 this.displayText = this.placeholder;
-            }else{
+            } else {
                 for (int i = 0; i < this.placeholder.length(); i++) {
                     String sub = this.placeholder.substring(0, this.placeholder.length() - i);
                     width = Galaga.getContext().getRenderer().getTextSize(sub, this.font).getWidth();
@@ -139,9 +154,8 @@ public class Input extends UIElement {
 
         int padding = 5;
         this.text.setPosition(Position.of(
-            this.position.getX() + padding,
-            this.position.getY() + padding
-        ));
+                this.position.getX() + padding,
+                this.position.getY() + padding));
         this.cursorPosition.setY(this.position.getY());
         this.updateText();
     }
@@ -168,21 +182,6 @@ public class Input extends UIElement {
         if (!this.focused) {
             return;
         }
-        if (!Galaga.getContext().getInput().isTyping()) {
-            Galaga.getContext().getInput().startTyping();
-        }
-
-        String newValue = Galaga.getContext().getInput().getTypedText();
-        if (!newValue.equals(this.value)) {
-            if(this.maxLength != NO_MAX_LENGTH && newValue.length() > this.maxLength) {
-                newValue = newValue.substring(0, this.maxLength);
-            }
-            this.value = newValue;
-
-            this.cursor = this.value.length();
-            this.cursorBlink = true;
-            this.updateText();
-        }
 
         if (this.cursorBlinkTime < 0.f) {
             this.cursorBlinkTime = 0.3f;
@@ -190,6 +189,28 @@ public class Input extends UIElement {
         } else {
             this.cursorBlinkTime -= dt;
         }
+
+        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DELETE, KeyEvent.VK_BACK_SPACE)) {
+            if (this.value.length() > 0 && this.cursor > 0) {
+                this.value = this.value.substring(0, this.cursor - 1) + this.value.substring(this.cursor);
+                this.cursor--;
+                this.cursorBlink = true;
+                this.updateText();
+            }
+        }
+
+        char ch = Galaga.getContext().getInput().getTypedChar();
+        if (ch != '\0') {
+            if (this.maxLength != NO_MAX_LENGTH && this.value.length() + 1 > this.maxLength) {
+                return;
+            }
+
+            this.value = this.value + String.valueOf(ch);
+            this.cursor = this.value.length();
+            this.cursorBlink = true;
+            this.updateText();
+        }
+
     }
 
     @Override
@@ -207,6 +228,5 @@ public class Input extends UIElement {
                     this.color, 4);
         }
     }
-
 
 }
