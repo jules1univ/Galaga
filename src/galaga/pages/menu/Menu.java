@@ -41,84 +41,6 @@ public class Menu extends Page<GalagaPage> {
         super(GalagaPage.MAIN_MENU);
     }
 
-    @Override
-    public void update(float dt) {
-        this.sky.update(dt);
-
-        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_LEFT)) {
-            this.selectSound.play(2.f);
-            switch (this.option) {
-                case GAMEMODE -> this.gameMode.prev();
-                case SHIPSKIN -> this.shipSelect.prev();
-                default -> {
-                }
-            }
-            this.selectSound.play(2.f);
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
-            this.selectSound.play(2.f);
-            switch (this.option) {
-                case GAMEMODE -> this.gameMode.next();
-                case SHIPSKIN -> this.shipSelect.next();
-                default -> {
-                }
-            }
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
-            this.selectSound.play(2.f);
-            switch (this.option) {
-                case GAMEMODE -> {
-                    this.option = MenuOption.QUIT;
-                    this.updateMenuSelect();
-                }
-                case SHIPSKIN -> {
-                    this.option = MenuOption.GAMEMODE;
-                    this.updateMenuSelect();
-                }
-                case QUIT -> {
-                    this.option = MenuOption.SHIPSKIN;
-                    this.updateMenuSelect();
-                }
-            }
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
-            this.selectSound.play(2.f);
-            switch (this.option) {
-                case GAMEMODE -> {
-                    this.option = MenuOption.SHIPSKIN;
-                    this.updateMenuSelect();
-
-                }
-                case SHIPSKIN -> {
-                    this.option = MenuOption.QUIT;
-                    this.updateMenuSelect();
-
-                }
-                case QUIT -> {
-                    this.option = MenuOption.GAMEMODE;
-                    this.updateMenuSelect();
-                }
-            }
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
-            this.selectSound.play(2.f);
-            switch (this.option) {
-                case QUIT -> Galaga.getContext().getApplication().stop();
-                case SHIPSKIN -> {
-                    Galaga.getContext().getState().shipSkin = this.shipSelect.getSelected().getSprite();
-                }
-                case GAMEMODE -> {
-                    switch (this.gameMode.getSelectedOption()) {
-                        case SOLO -> {
-                            Galaga.getContext().getState().shipSkin = this.shipSelect.getSelected().getSprite();
-                            Galaga.getContext().getApplication().setCurrentPage(GalagaPage.GAME_SOLO);
-                        }
-                        case MULTIPLAYER -> {
-                            Galaga.getContext().getApplication().setCurrentPage(GalagaPage.GAME_MULTIPLAYER);
-                        }
-                        case EDITOR -> Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_MENU);
-                    }
-                }
-            }
-        }
-    }
-
     private void updateMenuSelect() {
         switch (this.option) {
             case GAMEMODE -> {
@@ -146,17 +68,6 @@ public class Menu extends Page<GalagaPage> {
                 this.quit.setColor(Color.ORANGE);
             }
         }
-    }
-
-    @Override
-    public void draw() {
-        this.sky.draw();
-
-        Galaga.getContext().getRenderer().drawSprite(this.logo, this.logoPosition, Config.SPRITE_SCALE_ICON);
-
-        this.gameMode.draw();
-        this.shipSelect.draw();
-        this.quit.draw();
     }
 
     @Override
@@ -249,6 +160,95 @@ public class Menu extends Page<GalagaPage> {
         this.themeSound.stop();
         this.state = PageState.INACTIVE;
         return true;
+    }
+
+    @Override
+    public void update(float dt) {
+        this.sky.update(dt);
+
+        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_LEFT)) {
+            this.selectSound.play(2.f);
+            switch (this.option) {
+                case GAMEMODE -> this.gameMode.prev();
+                case SHIPSKIN -> this.shipSelect.prev();
+                default -> {
+                }
+            }
+            this.selectSound.play(2.f);
+        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
+            this.selectSound.play(2.f);
+            switch (this.option) {
+                case GAMEMODE -> this.gameMode.next();
+                case SHIPSKIN -> this.shipSelect.next();
+                default -> {
+                }
+            }
+        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
+            this.selectSound.play(2.f);
+            switch (this.option) {
+                case GAMEMODE -> {
+                    this.option = MenuOption.QUIT;
+                    this.updateMenuSelect();
+                }
+                case SHIPSKIN -> {
+                    this.option = MenuOption.GAMEMODE;
+                    this.updateMenuSelect();
+                }
+                case QUIT -> {
+                    this.option = MenuOption.SHIPSKIN;
+                    this.updateMenuSelect();
+                }
+            }
+        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
+            this.selectSound.play(2.f);
+            switch (this.option) {
+                case GAMEMODE -> {
+                    this.option = MenuOption.SHIPSKIN;
+                    this.updateMenuSelect();
+
+                }
+                case SHIPSKIN -> {
+                    this.option = MenuOption.QUIT;
+                    this.updateMenuSelect();
+
+                }
+                case QUIT -> {
+                    this.option = MenuOption.GAMEMODE;
+                    this.updateMenuSelect();
+                }
+            }
+        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+            this.selectSound.play(2.f);
+            switch (this.option) {
+                case QUIT -> Galaga.getContext().getApplication().stop();
+                case SHIPSKIN -> {
+                    Galaga.getContext().getState().shipSkin = this.shipSelect.getSelected().getSprite();
+                }
+                case GAMEMODE -> {
+                    switch (this.gameMode.getSelectedOption()) {
+                        case SOLO -> {
+                            Galaga.getContext().getState().shipSkin = this.shipSelect.getSelected().getSprite();
+                            Galaga.getContext().getApplication().setCurrentPage(GalagaPage.GAME_SOLO);
+                        }
+                        case MULTIPLAYER -> {
+                            Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MULTIPLAYER_MENU);
+                        }
+                        case EDITOR -> Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_MENU);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void draw() {
+        this.sky.draw();
+
+        Galaga.getContext().getRenderer().drawSprite(this.logo, this.logoPosition, Config.SPRITE_SCALE_ICON);
+
+        this.gameMode.draw();
+        this.shipSelect.draw();
+        this.quit.draw();
     }
 
 }
