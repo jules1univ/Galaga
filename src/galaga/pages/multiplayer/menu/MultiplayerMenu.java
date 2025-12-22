@@ -27,7 +27,7 @@ public class MultiplayerMenu extends Page<GalagaPage> {
             return false;
         }
 
-        this.ipInput =  new Input(Position.zero(), Config.WINDOW_WIDTH/4.f, "Server ip address ...", Color.WHITE, this.textFont);
+        this.ipInput =  new Input(Position.zero(), Config.WINDOW_WIDTH/4.f, "Server ip address", Color.WHITE, this.textFont);
         if(!this.ipInput.init()) {
             return false;
         }
