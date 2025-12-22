@@ -47,6 +47,14 @@ public final class Size {
         return (int) this.height;
     }
 
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
     public Size copy() {
         return new Size(this.width, this.height);
     }

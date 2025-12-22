@@ -1,12 +1,15 @@
 package galaga.pages.editor.sprite;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.util.Map;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.elements.ui.text.Text;
+import engine.elements.ui.text.TextPosition;
+import engine.elements.ui.textarea.Textarea;
 import engine.graphics.sprite.Sprite;
 import engine.utils.Position;
 import engine.utils.Size;
@@ -25,10 +28,14 @@ public class SpriteEditor extends Page<GalagaPage> {
     private Position cursor = Position.zero();
     private char selectedColor = 'N';
 
+    private Font titleFont;
     private Text back;
     private Text save;
-    private Text infoColor;
-    
+
+    private Font textFont;
+    private Textarea info;
+
+    private SpriteEditorOption option = SpriteEditorOption.EDIT;
 
     private final Map<Integer, Character> keyToColor = Map.ofEntries(
             Map.entry(KeyEvent.VK_1, 'W'),
@@ -41,7 +48,7 @@ public class SpriteEditor extends Page<GalagaPage> {
             Map.entry(KeyEvent.VK_8, 'O'),
             Map.entry(KeyEvent.VK_9, 'P'),
             Map.entry(KeyEvent.VK_0, 'L'),
-            Map.entry(KeyEvent.VK_MINUS, 'D'),
+            Map.entry(KeyEvent.VK_BACK_SPACE, 'N'),
             Map.entry(KeyEvent.VK_DELETE, 'N'));
 
     public SpriteEditor() {
@@ -50,16 +57,54 @@ public class SpriteEditor extends Page<GalagaPage> {
 
     @Override
     public boolean onActivate() {
-        int margin = 50;
-        int marginLeft = 200;
+        int margin  = 50;
 
         this.canvasSize = Size.of(Config.SIZE_SPRITE_CANVAS_EDITOR * this.canvasCellSize + 1,
                 Config.SIZE_SPRITE_CANVAS_EDITOR * this.canvasCellSize + 1);
-        this.canvasPosition = Position.of(marginLeft, margin);
+        this.canvasPosition = Position.of((Config.WINDOW_WIDTH - this.canvasSize.getWidth()) / 2.f, margin);
 
         for (int i = 0; i < this.pixels.length; i++) {
             this.pixels[i] = 'N';
         }
+
+        this.textFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_TEXT);
+        if (this.textFont == null) {
+            return false;
+        }
+        this.titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_LARGE);
+        if (this.titleFont == null) {
+            return false;
+        }
+
+        this.info = new Textarea(
+                "- ARROW KEYS to move cursor\n- SPACE to draw\n- KEYS 0-9 to select color\n- DELETE to erase\n- TAB to switch buttons\n- ENTER to confirm",
+                Position.of(
+                    margin,
+                    this.canvasPosition.getY() + this.canvasSize.getHeight() + margin
+                ),
+                Color.WHITE, this.textFont);
+        if (!this.info.init()) {
+            return false;
+        }
+        this.info.setCenter(TextPosition.BEGIN, TextPosition.BEGIN);
+
+        this.back = new Text("BACK", Position.of(
+            Config.WINDOW_WIDTH - margin,
+            this.info.getPosition().getY()
+        ), Color.WHITE, this.titleFont);
+        if (!this.back.init()) {
+            return false;
+        }
+        this.back.setCenter(TextPosition.END, TextPosition.CENTER);
+
+        this.save = new Text("SAVE", Position.of(
+            Config.WINDOW_WIDTH - margin,
+            this.back.getPosition().getY() + this.back.getSize().getHeight() + margin
+        ), Color.WHITE, this.titleFont);
+        if (!this.save.init()) {
+            return false;
+        }
+        this.save.setCenter(TextPosition.END, TextPosition.BEGIN);
 
         return true;
     }
@@ -120,18 +165,36 @@ public class SpriteEditor extends Page<GalagaPage> {
 
         }
 
-        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
-            // switch ui element
-            /*
-             * 
-             * Colorgrid Canvas
-             * X X......
-             * X ....X..
-             * X ......X
-             * 
-             * BACK SAVE
-             */
+        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_TAB)) {
+            switch (this.option) {
+                case EDIT -> {
+                    this.option = SpriteEditorOption.BACK;
+                    this.back.setColor(Color.ORANGE);
+                    this.save.setColor(Color.WHITE);
+                }
+                case BACK -> {
+                    this.option = SpriteEditorOption.SAVE;
+                    this.back.setColor(Color.WHITE);
+                    this.save.setColor(Color.ORANGE);
+                }
+                case SAVE -> {
+                    this.option = SpriteEditorOption.EDIT;
+                    this.back.setColor(Color.WHITE);
+                    this.save.setColor(Color.WHITE);
+                }
+            }
+        }
 
+        if(Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+            switch (this.option) {
+                case BACK -> {
+                    Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_MENU);
+                }
+                case SAVE -> {
+                    throw new UnsupportedOperationException("Save sprite not implemented yet.");
+                }
+                case EDIT -> {}
+            }
         }
 
         this.cursor.clampX(0, this.canvasSize.getWidth() - this.canvasCellSize / 2);
@@ -142,6 +205,7 @@ public class SpriteEditor extends Page<GalagaPage> {
     public void draw() {
         Galaga.getContext().getRenderer().drawGrid(this.canvasPosition, this.canvasSize, this.canvasCellSize,
                 Color.WHITE);
+
 
         for (int y = 0; y < Config.SIZE_SPRITE_CANVAS_EDITOR; y++) {
             for (int x = 0; x < Config.SIZE_SPRITE_CANVAS_EDITOR; x++) {
@@ -192,6 +256,18 @@ public class SpriteEditor extends Page<GalagaPage> {
                     4.f);
         }
 
+        if(this.option == SpriteEditorOption.EDIT) {
+            Galaga.getContext().getRenderer().drawRectOutline(
+                this.canvasPosition,
+                this.canvasSize,
+                2,
+                Color.ORANGE
+            );
+        }
+
+        this.info.draw();
+        this.back.draw();
+        this.save.draw();
     }
 
 }
