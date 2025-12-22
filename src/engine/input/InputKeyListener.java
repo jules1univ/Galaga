@@ -5,9 +5,10 @@ import java.awt.event.KeyListener;
 import java.util.HashSet;
 
 public final class InputKeyListener implements KeyListener {
+    public static final char NO_CHAR = '\0';
 
     private final HashSet<Integer> keysDown = new HashSet<>();
-    private char current = '\0';
+    private char current = NO_CHAR;
 
     public InputKeyListener() {
     }
@@ -45,7 +46,7 @@ public final class InputKeyListener implements KeyListener {
 
     public char getTypedChar() {
         char temp = this.current;
-        this.current = '\0';
+        this.current = NO_CHAR;
         return temp;
     }
 
