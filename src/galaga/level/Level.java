@@ -1,10 +1,13 @@
 package galaga.level;
 
+import engine.graphics.sprite.Sprite;
 import engine.utils.ini.Ini;
 import engine.utils.logger.Log;
 import galaga.Config;
+import galaga.Galaga;
 import galaga.entities.enemies.Enemy;
 import galaga.entities.enemies.EnemyFactory;
+import galaga.entities.enemies.EnemyType;
 import galaga.entities.enemies.EnemyConfig;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,7 +44,7 @@ public class Level {
         int version = getVersion(lines);
         if (version == 1) {
             return createVersion1(lines);
-        }else if (version == 2) {
+        } else if (version == 2) {
             return createVersion2(lines);
         }
 
@@ -53,9 +56,10 @@ public class Level {
             return -1;
         }
 
-        String header = lines.get(0);
-        if (header.toLowerCase().startsWith("[config]")) {
-            return 2;
+        for (String line : lines) {
+            if (line.trim().startsWith("[level]")) {
+                return 2;
+            }
         }
         return 1;
     }
@@ -68,8 +72,21 @@ public class Level {
             }
 
             i++;
+
+            int left = 0;
+            int right = 0;
             while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
-                EnemyConfig enemy = EnemyConfig.create(lines.get(i), level);
+                EnemyConfig enemy = EnemyConfig.create(lines.get(i), EnemyConfig.NO_INDEX, level);
+
+                float x = enemy.getLockPosition().getX();
+                if (x < Config.WINDOW_WIDTH / 2.f) {
+                    enemy.setIndex(left);
+                    left++;
+                } else {
+                    enemy.setIndex(right);
+                    right++;
+                }
+
                 level.enemiesConfig.add(enemy);
                 i++;
             }
@@ -83,13 +100,53 @@ public class Level {
         if (levelConfig == null) {
             return null;
         }
-        
-        if(!levelConfig.containsSection("config")) {
+
+        if (!levelConfig.containsSection("level")) {
             return null;
         }
 
-        // TODO: implement version 2
-        return null;
+        try {
+            String name = levelConfig.getVariable("level", "name").asString();
+            float formationSpeed = levelConfig.getVariable("level", "formation_speed").asFloat();
+            float attackCooldown = levelConfig.getVariable("level", "attack_cooldown").asFloat();
+            float missileCooldown = levelConfig.getVariable("level", "missile_cooldown").asFloat();
+
+            Level level = new Level(name, formationSpeed, attackCooldown, missileCooldown);
+            if (!levelConfig.containsSection("formation")) {
+                return level;
+            }
+
+            int layers = levelConfig.getVariable("formation", "layers").asInt();
+            // int stages = levelConfig.getVariable("formation", "stages").asInt();
+
+            float y = Config.POSITION_LEVEL_START_Y;
+            for (int i = layers; i >= 0; i--) {
+                String section = "layer" + i;
+                if (!levelConfig.containsSection(section)) {
+                    continue;
+                }
+
+                EnemyType type = EnemyType.valueOf(levelConfig.getVariable(section, "type").asString().toUpperCase());
+                Sprite sprite = Galaga.getContext().getResource().get(type);
+                if(sprite == null) {
+                    continue;
+                }
+
+                int count = levelConfig.getVariable(section, "count").asInt();
+                float speed = levelConfig.getVariable(section, "speed").asFloat();
+                int score = levelConfig.getVariable(section, "score").asInt();
+
+                List<EnemyConfig> enemies = EnemyConfig.create(type, score, speed, count, y, level);
+                level.enemiesConfig.addAll(enemies);
+
+                y += sprite.getSize().getHeight() * Config.SPRITE_SCALE_DEFAULT + Config.POSITION_LEVEL_STEP_Y;
+            }
+
+            return level;
+        } catch (Exception e) {
+            Log.error("Level header parsing failed: " + e.getMessage());
+            return null;
+        }
     }
 
     private static Level createLevelFromHeader(String lineHeader) {

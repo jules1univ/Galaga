@@ -6,7 +6,6 @@ import engine.resource.sound.Sound;
 import engine.utils.Collision;
 import engine.utils.Position;
 import engine.utils.Size;
-import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaSound;
@@ -57,12 +56,8 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
 
         this.action = false;
 
-        float distance = this.config.getLockPosition().distance(Position.of(
-                Config.WINDOW_WIDTH / 2.f,
-                0.f));
-        this.index = Math.round(distance / 100.f);
-        this.indexTimer = distance * Config.DELAY_ENEMY_ENTER;
-        Log.message(this.indexTimer + " " + this.config.getType());
+        this.index = this.config.getIndex();
+        this.indexTimer = this.index * Config.DELAY_ENEMY_ENTER;
     }
 
     public final EnemyState getState() {

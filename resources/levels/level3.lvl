@@ -1,43 +1,39 @@
-Level3 0.003 400 4000
-Bosconian 0.45 0.85 0.06 1000 0.001
-Bosconian 0.52 0.85 0.06 1000 0.001
-Moth 0.38 0.78 0.06 500 0.001
-Moth 0.45 0.78 0.06 500 0.001
-Moth 0.52 0.78 0.06 500 0.001
-Moth 0.59 0.78 0.06 500 0.001
-Butterfly 0.24 0.71 0.06 400 0.003
-Butterfly 0.31 0.71 0.06 400 0.003
-Butterfly 0.38 0.71 0.06 400 0.003
-Butterfly 0.45 0.71 0.06 400 0.003
-Butterfly 0.52 0.71 0.06 400 0.003
-Butterfly 0.59 0.71 0.06 400 0.003
-Butterfly 0.66 0.71 0.06 400 0.003
-Butterfly 0.73 0.71 0.06 400 0.003
-Butterfly 0.24 0.64 0.06 400 0.003
-Butterfly 0.31 0.64 0.06 400 0.003
-Butterfly 0.38 0.64 0.06 400 0.003
-Butterfly 0.45 0.64 0.06 400 0.003
-Butterfly 0.52 0.64 0.06 400 0.003
-Butterfly 0.59 0.64 0.06 400 0.003
-Butterfly 0.66 0.64 0.06 400 0.003
-Butterfly 0.73 0.64 0.06 400 0.003
-Bee 0.1 0.57 0.06 200 0.004
-Bee 0.17 0.57 0.06 200 0.004
-Bee 0.24 0.57 0.06 200 0.004
-Bee 0.31 0.57 0.06 200 0.004
-Bee 0.38 0.57 0.06 200 0.004
-Bee 0.45 0.57 0.06 200 0.004
-Bee 0.52 0.57 0.06 200 0.004
-Bee 0.59 0.57 0.06 200 0.004
-Bee 0.66 0.57 0.06 200 0.004
-Bee 0.73 0.57 0.06 200 0.004
-Bee 0.8 0.57 0.06 200 0.004
-Bee 0.87 0.57 0.06 200 0.004
-Bee 0.24 0.50 0.06 200 0.004
-Bee 0.31 0.50 0.06 200 0.004
-Bee 0.38 0.50 0.06 200 0.004
-Bee 0.45 0.50 0.06 200 0.004
-Bee 0.52 0.50 0.06 200 0.004
-Bee 0.59 0.50 0.06 200 0.004
-Bee 0.66 0.50 0.06 200 0.004
-Bee 0.73 0.50 0.06 200 0.004
+[level]
+name=Level 3
+formation_speed=0.003
+attack_cooldown=400
+missile_cooldown=4000
+
+[formation]
+layers=6
+stages=1
+
+[layer0]
+type=bee
+speed=0.003
+score=200
+count=12
+
+[layer1]
+type=bee
+speed=0.003
+score=200
+count=12
+
+[layer2]
+type=butterfly
+speed=0.002
+score=400
+count=8
+
+[layer3]
+type=moth
+speed=0.0025
+score=500
+count=4
+
+[layer4]
+type=bosconian
+speed=0.0015
+score=1000
+count=2

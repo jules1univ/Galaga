@@ -69,7 +69,7 @@ public class Galaga extends Application<GalagaPage> {
         this.registerPage(GalagaPage.EDITOR_SPRITE, SpriteEditor.class);
         this.registerPage(GalagaPage.EDITOR_SETTINGS, Settings.class);
 
-        this.setCurrentPage(GalagaPage.EDITOR_SPRITE);
+        this.setCurrentPage(GalagaPage.MAIN_MENU);
 
         return true;
     }

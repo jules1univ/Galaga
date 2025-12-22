@@ -32,7 +32,7 @@ public class EnemyFactory {
     public static EnemyCapturedPlayer createCapturedPlayer(EnemyConfig baseConfig, Position capturePosition) {
 
         EnemyConfig config = new EnemyConfig(EnemyType.CAPTURED_PLAYER, capturePosition, baseConfig.getScoreValue(),
-                baseConfig.getSpeed(), baseConfig.getLevel());
+                baseConfig.getSpeed(), EnemyConfig.NO_INDEX, baseConfig.getLevel());
 
         return new EnemyCapturedPlayer(config);
     }

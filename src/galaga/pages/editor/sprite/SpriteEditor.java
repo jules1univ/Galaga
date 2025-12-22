@@ -3,6 +3,7 @@ package galaga.pages.editor.sprite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
+import java.util.Map.Entry;
 import java.util.Map;
 
 import engine.elements.page.Page;
@@ -154,7 +155,7 @@ public class SpriteEditor extends Page<GalagaPage> {
             this.cursor.addX(move);
         }
 
-        for (var entry : this.keyToColor.entrySet()) {
+        for (Entry<Integer, Character> entry : this.keyToColor.entrySet()) {
             if (Galaga.getContext().getInput().isKeyPressed(entry.getKey())) {
                 this.selectedColor = entry.getValue();
             }

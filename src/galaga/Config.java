@@ -35,7 +35,7 @@ public class Config {
         public static final float SPEED_CURSOR = 18000.f;
 
         public static final int DELAY_ENTER_INDEX = 2;
-        public static final float DELAY_ENEMY_ENTER = .005f;
+        public static final float DELAY_ENEMY_ENTER = .5f;
         public static final float DELAY_SHOOT_PLAYER = .5f;
         public static final float DELAY_LEVEL_TITLE = 3.f;
         public static final float DELAY_LEVEL_TITLE_DEAD = 5.f;
@@ -58,6 +58,10 @@ public class Config {
         public static final int SIZE_SPRITE_CANVAS_EDITOR = 20;
         public static final int SIZE_SPRITE_CANVAS_EDITOR_CELL = 22;
         public static final Size SIZE_PARTICLE = Size.of(3.f, 3.f);
+
+
+        public static final float POSITION_LEVEL_START_Y = 50.f;
+        public static final float POSITION_LEVEL_STEP_Y = 25.f;
 
         public static final float POSITION_LOCK_THRESHOLD = 1.f;
         public static final float POSITION_NEAR_THRESHOLD = 10.f;
@@ -129,7 +133,7 @@ public class Config {
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sounds/%s.wav");
 
         public static final List<ResourceAlias> LEVELS = ResourceAlias.folder(
-                        "level%d", 1, 3,
+                        "level%d", 3, 3,
                         "resources/levels/%s.lvl",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/levels/%s.lvl");
 
