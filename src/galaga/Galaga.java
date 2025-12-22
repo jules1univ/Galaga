@@ -10,6 +10,7 @@ import engine.resource.font.FontResource;
 import engine.resource.sound.Sound;
 import engine.resource.sound.SoundResource;
 import engine.resource.sprite.SpriteResource;
+import engine.utils.Args;
 import galaga.level.LevelResource;
 import galaga.pages.editor.level.LevelEditor;
 import galaga.pages.editor.menu.EditorMenu;
@@ -39,12 +40,18 @@ public class Galaga extends Application<GalagaPage> {
     }
 
     @RequiresJava(21)
-    public static void main(String[] args) throws Exception {
-        if (args.length > 0 && args[0].equalsIgnoreCase("--debug")) {
+    public static void main(String[] cmdArgs) {
+        Args args = new Args(cmdArgs);
+        if (args.getBool("debug")) {
             Application.DEBUG_MODE = true;
         }
+
         if (ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0) {
             Application.DEBUG_MODE = true;
+        }
+
+        if (args.getBool("server")) {
+            return;
         }
 
         Galaga game = new Galaga();
@@ -63,11 +70,11 @@ public class Galaga extends Application<GalagaPage> {
         }
 
         this.registerPage(GalagaPage.MAIN_MENU, Menu.class);
-        
+
         this.registerPage(GalagaPage.GAME_SOLO, GameSolo.class);
 
         this.registerPage(GalagaPage.MULTIPLAYER_MENU, MultiplayerMenu.class);
-        
+
         this.registerPage(GalagaPage.EDITOR_MENU, EditorMenu.class);
         this.registerPage(GalagaPage.EDITOR_LEVEL, LevelEditor.class);
         this.registerPage(GalagaPage.EDITOR_SPRITE, SpriteEditor.class);
