@@ -29,6 +29,11 @@ public final class InputKeyListener implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
+        if(this.recordTyping){
+            if((e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)  && sb.length() > 0) {
+                sb.deleteCharAt(sb.length() - 1);
+            }
+        }
         keysDown.add(e.getKeyCode());
     }
 
@@ -43,13 +48,13 @@ public final class InputKeyListener implements KeyListener {
             return;
         }
 
-        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
-            this.sb.deleteCharAt(this.sb.length() - 1);
-            return;
-        }
-        if (e.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {
+        if (e.getKeyChar() >= 32 && e.getKeyChar() <= 126) {
             this.sb.append(e.getKeyChar());
         }
+    }
+
+    public boolean isTyping() {
+        return this.recordTyping;
     }
 
     public void startTyping() {

@@ -17,6 +17,7 @@ import galaga.pages.editor.settings.Settings;
 import galaga.pages.editor.sprite.SpriteEditor;
 import galaga.pages.loading.Loading;
 import galaga.pages.menu.Menu;
+import galaga.pages.multiplayer.menu.MultiplayerMenu;
 import galaga.pages.solo.GameSolo;
 import galaga.score.ScoreResource;
 import java.awt.event.KeyEvent;
@@ -62,14 +63,17 @@ public class Galaga extends Application<GalagaPage> {
         }
 
         this.registerPage(GalagaPage.MAIN_MENU, Menu.class);
+        
         this.registerPage(GalagaPage.GAME_SOLO, GameSolo.class);
+
+        this.registerPage(GalagaPage.MULTIPLAYER_MENU, MultiplayerMenu.class);
         
         this.registerPage(GalagaPage.EDITOR_MENU, EditorMenu.class);
         this.registerPage(GalagaPage.EDITOR_LEVEL, LevelEditor.class);
         this.registerPage(GalagaPage.EDITOR_SPRITE, SpriteEditor.class);
         this.registerPage(GalagaPage.EDITOR_SETTINGS, Settings.class);
 
-        this.setCurrentPage(GalagaPage.MAIN_MENU);
+        this.setCurrentPage(GalagaPage.MULTIPLAYER_MENU);
 
         return true;
     }
