@@ -20,12 +20,13 @@ public class Input extends UIElement {
     private int maxLength = NO_MAX_LENGTH;
 
     private Color color;
-    private Color textColor;
 
     private String value = "";
     private String displayText = "";
 
     private Text text;
+    private TextPosition horizontal;
+    private TextPosition vertical;
 
     private boolean focused = false;
     private int cursor = 0;
@@ -40,11 +41,14 @@ public class Input extends UIElement {
 
         this.font = font;
         this.color = color;
-        this.textColor = Color.GRAY;
 
-        this.position = position;
+        this.position = position.copy();
         this.size = Size.of(width, 0);
-        this.cursorPosition = Position.of(position.getX(), position.getY());
+
+        this.horizontal = TextPosition.BEGIN;
+        this.vertical = TextPosition.BEGIN;
+
+        this.cursorPosition = position.copy();
     }
 
     public void setColor(Color color) {
@@ -70,6 +74,13 @@ public class Input extends UIElement {
         }
     }
 
+    
+    public void setCenter(TextPosition hor, TextPosition ver) {
+        this.horizontal = hor;
+        this.vertical = ver;
+        this.updatePosition();
+    }
+
     private void updateDisplayText(int index, String text) {
         float width = Galaga.getContext().getRenderer().getTextSize(text, this.font).getWidth();
         if (width + CURSOR_SIZE < this.size.getWidth()) {
@@ -86,28 +97,64 @@ public class Input extends UIElement {
 
     private void updateText() {
         if (this.value.isEmpty()) {
-            this.updateDisplayText(0, this.placeholder);
-            this.textColor = Color.GRAY;
+            float width = Galaga.getContext().getRenderer().getTextSize(this.placeholder, this.font).getWidth();
+            if (width + CURSOR_SIZE < this.size.getWidth()) {
+                this.displayText = this.placeholder;
+            }else{
+                for (int i = 0; i < this.placeholder.length(); i++) {
+                    String sub = this.placeholder.substring(0, this.placeholder.length() - i);
+                    width = Galaga.getContext().getRenderer().getTextSize(sub, this.font).getWidth();
+                    if (width + CURSOR_SIZE < this.size.getWidth()) {
+                        this.displayText = sub;
+                        break;
+                    }
+                }
+            }
+
+            this.text.setColor(Color.GRAY);
         } else {
             this.updateDisplayText(this.cursor, this.value);
-            this.textColor = Color.WHITE;
+            this.text.setColor(Color.WHITE);
         }
         this.text.setText(this.displayText);
 
-        int margin = 5;
+        int padding = 5;
         float width = Galaga.getContext().getRenderer().getTextSize(this.displayText, this.font).getWidth();
-        this.cursorPosition.setX(this.position.getX() + width + margin);
+        this.cursorPosition.setX(this.position.getX() + width + padding);
+    }
+
+    private void updatePosition() {
+
+        switch (this.horizontal) {
+            case BEGIN -> this.position.setX(this.position.getX());
+            case CENTER -> this.position.setX(this.position.getX() - this.size.getWidth() / 2.f);
+            case END -> this.position.setX(this.position.getX() - this.size.getWidth());
+        }
+
+        switch (this.vertical) {
+            case BEGIN -> this.position.setY(this.position.getY());
+            case CENTER -> this.position.setY(this.position.getY() - this.size.getHeight() / 2.f);
+            case END -> this.position.setY(this.position.getY() - this.size.getHeight());
+        }
+
+        int padding = 5;
+        this.text.setPosition(Position.of(
+            this.position.getX() + padding,
+            this.position.getY() + padding
+        ));
+        this.cursorPosition.setY(this.position.getY());
+        this.updateText();
     }
 
     @Override
     public boolean init() {
-        int margin = 5;
+        int padding = 5;
         this.size.setHeight(
-                Galaga.getContext().getRenderer().getTextSize(this.placeholder, font).getHeight() + margin * 2);
-        this.size.setWidth(this.size.getWidth() + margin * 2);
+                Galaga.getContext().getRenderer().getTextSize(this.placeholder, font).getHeight() + padding * 2);
+        this.size.setWidth(this.size.getWidth() + padding * 2);
 
-        this.text = new Text("", Position.of(this.position.getX() + margin, this.position.getY() + margin),
-                this.textColor, this.font);
+        this.text = new Text("", Position.of(this.position.getX() + padding, this.position.getY() + padding),
+                Color.WHITE, this.font);
         if (!this.text.init()) {
             return false;
         }
@@ -157,8 +204,9 @@ public class Input extends UIElement {
                     Position.of(this.cursorPosition.getX(), this.cursorPosition.getY() + this.size.getHeight() / 4.f),
                     Position.of(this.cursorPosition.getX(),
                             this.cursorPosition.getY() + this.size.getHeight() * 3.f / 4.f),
-                    this.color, 2);
+                    this.color, 4);
         }
     }
+
 
 }

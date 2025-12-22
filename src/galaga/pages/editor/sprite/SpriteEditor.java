@@ -58,11 +58,11 @@ public class SpriteEditor extends Page<GalagaPage> {
 
     @Override
     public boolean onActivate() {
-        int margin  = 50;
+        int padding  = 50;
 
         this.canvasSize = Size.of(Config.SIZE_SPRITE_CANVAS_EDITOR * this.canvasCellSize + 1,
                 Config.SIZE_SPRITE_CANVAS_EDITOR * this.canvasCellSize + 1);
-        this.canvasPosition = Position.of((Config.WINDOW_WIDTH - this.canvasSize.getWidth()) / 2.f, margin);
+        this.canvasPosition = Position.of((Config.WINDOW_WIDTH - this.canvasSize.getWidth()) / 2.f, padding);
 
         for (int i = 0; i < this.pixels.length; i++) {
             this.pixels[i] = 'N';
@@ -80,8 +80,8 @@ public class SpriteEditor extends Page<GalagaPage> {
         this.info = new Textarea(
                 "- ARROW KEYS to move cursor\n- SPACE to draw\n- KEYS 0-9 to select color\n- DELETE to erase\n- TAB to switch buttons\n- ENTER to confirm",
                 Position.of(
-                    margin,
-                    this.canvasPosition.getY() + this.canvasSize.getHeight() + margin
+                    padding,
+                    this.canvasPosition.getY() + this.canvasSize.getHeight() + padding
                 ),
                 Color.WHITE, this.textFont);
         if (!this.info.init()) {
@@ -90,7 +90,7 @@ public class SpriteEditor extends Page<GalagaPage> {
         this.info.setCenter(TextPosition.BEGIN, TextPosition.BEGIN);
 
         this.back = new Text("BACK", Position.of(
-            Config.WINDOW_WIDTH - margin,
+            Config.WINDOW_WIDTH - padding,
             this.info.getPosition().getY()
         ), Color.WHITE, this.titleFont);
         if (!this.back.init()) {
@@ -99,8 +99,8 @@ public class SpriteEditor extends Page<GalagaPage> {
         this.back.setCenter(TextPosition.END, TextPosition.CENTER);
 
         this.save = new Text("SAVE", Position.of(
-            Config.WINDOW_WIDTH - margin,
-            this.back.getPosition().getY() + this.back.getSize().getHeight() + margin
+            Config.WINDOW_WIDTH - padding,
+            this.back.getPosition().getY() + this.back.getSize().getHeight() + padding
         ), Color.WHITE, this.titleFont);
         if (!this.save.init()) {
             return false;

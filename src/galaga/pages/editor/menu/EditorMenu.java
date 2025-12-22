@@ -66,15 +66,15 @@ public class EditorMenu extends Page<GalagaPage> {
             return false;
         }
 
-        int margin = 50;
+        int padding = 50;
 
         this.logo = Galaga.getContext().getResource().get(Config.SPRITE_LOGO);
         this.logoPosition = Position.of(
                 (this.size.getWidth()) / 2,
-                (this.size.getHeight() - this.logo.getSize().getHeight() * Config.SPRITE_SCALE_ICON) / 2 - margin
-                        - margin / 2);
+                (this.size.getHeight() - this.logo.getSize().getHeight() * Config.SPRITE_SCALE_ICON) / 2 - padding
+                        - padding / 2);
 
-        margin -= 10;
+        padding -= 10;
         this.etidorMode = new TextSelectEnum<>(
                 EditorMenuModeOption.class,
                 0,
@@ -92,8 +92,8 @@ public class EditorMenu extends Page<GalagaPage> {
                 "SETTINGS",
                 Position.of(
                         this.size.getWidth() / 2,
-                        this.etidorMode.getPosition().getY() + this.etidorMode.getSize().getHeight() / 2 + margin
-                                + margin / 4.f),
+                        this.etidorMode.getPosition().getY() + this.etidorMode.getSize().getHeight() / 2 + padding
+                                + padding / 4.f),
                 Color.WHITE, this.titleFont);
         if (!this.settings.init()) {
             return false;
@@ -104,7 +104,7 @@ public class EditorMenu extends Page<GalagaPage> {
                 "BACK",
                 Position.of(
                         this.size.getWidth() / 2,
-                        this.settings.getPosition().getY() + this.settings.getSize().getHeight() / 2 + margin),
+                        this.settings.getPosition().getY() + this.settings.getSize().getHeight() / 2 + padding),
                 Color.WHITE, this.titleFont);
         if (!this.back.init()) {
             return false;

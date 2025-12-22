@@ -7,17 +7,17 @@ import engine.utils.Position;
 
 public final class IconGroup extends UIElement {
 
-    private int margin;
+    private int padding;
     private float parentWidth;
     private boolean alignLeft;
     private List<Icon> icons;
 
-    public IconGroup(List<Icon> icons, float parentWidth, boolean alignLeft, int margin) {
+    public IconGroup(List<Icon> icons, float parentWidth, boolean alignLeft, int padding) {
         super();
         this.icons = icons;
 
         this.parentWidth = parentWidth;
-        this.margin = margin;
+        this.padding = padding;
         this.alignLeft = alignLeft;
     }
 
@@ -38,10 +38,10 @@ public final class IconGroup extends UIElement {
         int space = (int) this.icons.get(0).getSize().getWidth();
         for (Icon icon : this.icons) {
             icon.setPosition(Position.of(
-                Math.abs((this.alignLeft ? 0 : this.parentWidth) - (this.position.getX() + icon.getSize().getWidth() + space)) + (this.alignLeft ? 0 : -this.margin),
+                Math.abs((this.alignLeft ? 0 : this.parentWidth) - (this.position.getX() + icon.getSize().getWidth() + space)) + (this.alignLeft ? 0 : -this.padding),
                 this.position.getY() - icon.getSize().getHeight()
             ));
-            space += icon.getSize().getWidth() + this.margin;
+            space += icon.getSize().getWidth() + this.padding;
         }
     }
 

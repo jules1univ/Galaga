@@ -5,6 +5,7 @@ import java.awt.Font;
 
 import engine.elements.page.Page;
 import engine.elements.ui.input.Input;
+import engine.elements.ui.text.TextPosition;
 import engine.utils.Position;
 import galaga.Config;
 import galaga.Galaga;
@@ -12,7 +13,9 @@ import galaga.GalagaPage;
 
 public class MultiplayerMenu extends Page<GalagaPage> {
 
-    private Input ipInput;
+    private Input ip;
+    private Input username;
+
     private Font textFont;
 
     public MultiplayerMenu() {
@@ -22,17 +25,35 @@ public class MultiplayerMenu extends Page<GalagaPage> {
     @Override
     public boolean onActivate() {
 
-        this.textFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_TEXT);
-        if(this.textFont == null) {
+        this.textFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_XLARGE);
+        if (this.textFont == null) {
             return false;
         }
 
-        this.ipInput =  new Input(Position.zero(), Config.WINDOW_WIDTH/4.f, "Server ip address", Color.WHITE, this.textFont);
-        if(!this.ipInput.init()) {
+        float margin = 50.f;
+
+        this.ip = new Input(Position.of(
+                Config.WINDOW_WIDTH / 2.f,
+                Config.WINDOW_HEIGHT / 2.f), Config.WINDOW_WIDTH / 2.f,
+                "Server X.X.X.X:YY",
+                Color.WHITE, this.textFont);
+        if (!this.ip.init()) {
             return false;
         }
 
-        this.ipInput.setFocused(true);
+        this.ip.setCenter(TextPosition.CENTER, TextPosition.CENTER);
+        this.ip.setFocused(false);
+
+        this.username = new Input(Position.of(
+                Config.WINDOW_WIDTH / 2.f,
+                this.ip.getPosition().getY() - margin), Config.WINDOW_WIDTH / 2.f, "Username", Color.WHITE,
+                this.textFont);
+        if (!this.username.init()) {
+            return false;
+        }
+        this.username.setCenter(TextPosition.CENTER, TextPosition.CENTER);
+        this.username.setFocused(true);
+
         return true;
     }
 
@@ -43,12 +64,14 @@ public class MultiplayerMenu extends Page<GalagaPage> {
 
     @Override
     public void update(float dt) {
-        this.ipInput.update(dt);
+        this.ip.update(dt);
+        this.username.update(dt);
     }
 
     @Override
     public void draw() {
-        this.ipInput.draw();
+        this.username.draw();
+        this.ip.draw();
     }
 
 }

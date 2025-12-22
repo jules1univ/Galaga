@@ -58,7 +58,7 @@ public abstract class Select<T extends UIElement> extends UIElement {
     }
 
     private void updateArrowPosition() {
-        int margin = 10;
+        int padding = 10;
         Size arrowSize = Application.getContext().getRenderer().getTextSize("<", this.font);
         Size sizeMax = Size.zero();
         for (T el : this.options) {
@@ -69,11 +69,11 @@ public abstract class Select<T extends UIElement> extends UIElement {
         }
 
         this.arrowLeft = Position.of(
-                this.position.getX() - sizeMax.getWidth()/2 - arrowSize.getWidth() - margin,
+                this.position.getX() - sizeMax.getWidth()/2 - arrowSize.getWidth() - padding,
                 this.position.getY() + sizeMax.getHeight()/2);
 
         this.arrowRight = Position.of(
-                this.position.getX() + sizeMax.getWidth()/2 + margin,
+                this.position.getX() + sizeMax.getWidth()/2 + padding,
                 this.position.getY() + sizeMax.getHeight()/2);
     }
 

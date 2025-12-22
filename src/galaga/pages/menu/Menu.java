@@ -185,13 +185,13 @@ public class Menu extends Page<GalagaPage> {
 
         this.titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_XLARGE);
 
-        int margin = 50;
+        int padding = 50;
 
         this.logo = Galaga.getContext().getResource().get(Config.SPRITE_LOGO);
         this.logoPosition = Position.of(
                 (this.size.getWidth()) / 2,
-                (this.size.getHeight() - this.logo.getSize().getHeight() * Config.SPRITE_SCALE_ICON) / 2 - margin
-                        - margin / 2);
+                (this.size.getHeight() - this.logo.getSize().getHeight() * Config.SPRITE_SCALE_ICON) / 2 - padding
+                        - padding / 2);
 
         this.gameMode = new TextSelectEnum<>(
                 MenuModeOption.class,
@@ -222,14 +222,14 @@ public class Menu extends Page<GalagaPage> {
 
         this.shipSelect.setPosition(Position.of(
                 this.size.getWidth() / 2,
-                this.gameMode.getPosition().getY() + this.gameMode.getSize().getHeight() + margin));
+                this.gameMode.getPosition().getY() + this.gameMode.getSize().getHeight() + padding));
         this.shipSelect.setShowArrows(false);
 
         this.quit = new Text(
                 "QUIT",
                 Position.of(
                         this.size.getWidth() / 2,
-                        this.shipSelect.getPosition().getY() + this.shipSelect.getSize().getHeight() + margin),
+                        this.shipSelect.getPosition().getY() + this.shipSelect.getSize().getHeight() + padding),
                 Color.WHITE, this.titleFont);
         if (!this.quit.init()) {
             return false;
