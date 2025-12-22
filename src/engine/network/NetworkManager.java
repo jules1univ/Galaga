@@ -3,7 +3,6 @@ package engine.network;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class NetworkManager {
     private final Map<Integer, Class<? extends NetObject>> networkClass = new HashMap<>();
@@ -12,7 +11,7 @@ public class NetworkManager {
     public NetworkManager() {
     }
 
-    public <T extends NetObject> void register(Class<T> netClass, Supplier<T> factory) {
+    public <T extends NetObject> void register(Class<T> netClass) {
         int id = this.nextId++;
         this.networkClass.put(id, netClass);
     }

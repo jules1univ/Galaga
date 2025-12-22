@@ -42,13 +42,9 @@ public class Galaga extends Application<GalagaPage> {
     @RequiresJava(21)
     public static void main(String[] cmdArgs) {
         Args args = new Args(cmdArgs);
-        if (args.getBool("debug")) {
-            Application.DEBUG_MODE = true;
-        }
 
-        if (ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0) {
-            Application.DEBUG_MODE = true;
-        }
+        boolean debugActive = ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
+        Application.DEBUG_MODE = debugActive || args.getBool("debug");
 
         if (args.getBool("server")) {
             return;

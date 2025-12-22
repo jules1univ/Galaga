@@ -1,7 +1,10 @@
 package engine.utils;
 
-public final class Size {
-    
+import engine.network.NetBuffer;
+import engine.network.NetObject;
+
+public final class Size implements NetObject {
+
     public float width;
     public float height;
 
@@ -29,7 +32,6 @@ public final class Size {
         this.width = width;
         this.height = height;
     }
-
 
     public float getWidth() {
         return this.width;
@@ -59,8 +61,25 @@ public final class Size {
         return new Size(this.width, this.height);
     }
 
-    @Override   
+    @Override
     public String toString() {
         return "Size(" + this.width + ", " + this.height + ")";
+    }
+
+    @Override
+    public int getId() {
+        return 0; // TODO
+    }
+
+    @Override
+    public void read(NetBuffer buff) {
+        this.width = buff.readFloat().orElse(0.0f);
+        this.height = buff.readFloat().orElse(0.0f);
+    }
+
+    @Override
+    public void write(NetBuffer buff) {
+        buff.writeFloat(this.width);
+        buff.writeFloat(this.height);
     }
 }

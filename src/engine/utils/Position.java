@@ -1,6 +1,9 @@
 package engine.utils;
 
-public final class Position {
+import engine.network.NetBuffer;
+import engine.network.NetObject;
+
+public final class Position implements NetObject{
     private float x, y;
 
     public static Position zero() {
@@ -163,5 +166,22 @@ public final class Position {
     @Override
     public String toString() {
         return "Position(" + this.x + ", " + this.y + ")";
+    }
+
+    @Override
+    public int getId() {
+        return 0; //TODO
+    }
+
+    @Override
+    public void read(NetBuffer buff) {
+        this.x = buff.readFloat().orElse(0.0f);
+        this.y = buff.readFloat().orElse(0.0f);
+    }
+
+    @Override
+    public void write(NetBuffer buff) {
+        buff.writeFloat(this.x);
+        buff.writeFloat(this.y);
     }
 }
