@@ -40,7 +40,7 @@ public final class ClientConnection {
         try {
             ins = this.socket.getInputStream();
         } catch (IOException e) {
-            Log.error("Net Server Client failed to get input stream: " + e.getMessage());
+            Log.error("Net Client failed to get input stream: " + e.getMessage());
             ins = null;
         }
         this.in = new DataInputStream(ins);
@@ -49,7 +49,7 @@ public final class ClientConnection {
         try {
             outs = new DataOutputStream(this.socket.getOutputStream());
         } catch (IOException e) {
-            Log.error("Net Server Client failed to get output stream: " + e.getMessage());
+            Log.error("Net Client failed to get output stream: " + e.getMessage());
             outs = null;
         }
         this.out = outs;
@@ -74,7 +74,7 @@ public final class ClientConnection {
         try {
             this.socket.close();
         } catch (IOException e) {
-            Log.error("Net Server Client failed to close: " + e.getMessage());
+            Log.error("Net Client failed to close: " + e.getMessage());
         }
     }
 
@@ -87,14 +87,14 @@ public final class ClientConnection {
 
                 NetObject obj = this.netm.create(id);
                 if(obj == null) {
-                    Log.error("Net Server Client received unknown object id: " + id);
+                    Log.error("Net Client received unknown object id: " + id);
                     continue;
                 }
                 obj.read(new NetBuffer(data));
                 this.onReceive.run(this, obj);
             }
         } catch (IOException e) {
-            Log.error("Net Server Client failed to receive: " + e.getMessage());
+            Log.error("Net Client failed to receive: " + e.getMessage());
             this.onClientDisconnected.run(this);
         }
     }
@@ -115,7 +115,7 @@ public final class ClientConnection {
             out.flush();
             return true;
         } catch (IOException e) {
-            Log.error("Net Server Client failed to send: " + e.getMessage());
+            Log.error("Net Client failed to send: " + e.getMessage());
             return false;
         }
     }
