@@ -61,6 +61,9 @@ public abstract class Application<T extends Enum<T>> {
     }
 
     public final void stop() {
+        if(this.currentPage != null) {
+            this.currentPage.onDeactivate();
+        }
         getContext().getResource().cancel();
         getContext().getFrame().stop();
         this.destroy();

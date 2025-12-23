@@ -34,7 +34,7 @@ import java.util.List;
 
 public class Galaga extends Application<GalagaPage> {
 
-    public static NetworkManager netm = NetworkManager.of(List.of(
+    public static NetworkManager net = NetworkManager.of(List.of(
             Position.class,
             Size.class));
 
@@ -60,7 +60,7 @@ public class Galaga extends Application<GalagaPage> {
         if (args.getBool("server") && args.getInt("port", -1) > 0) {
 
             int port = args.getInt("port", -1);
-            GalagaServer server = new GalagaServer(netm);
+            GalagaServer server = new GalagaServer(net);
             server.start(port);
             return;
         }

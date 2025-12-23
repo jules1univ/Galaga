@@ -4,8 +4,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashSet;
 
-import engine.utils.logger.Log;
-
 public final class InputKeyListener implements KeyListener {
     public static final char NO_CHAR = '\0';
 
