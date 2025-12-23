@@ -4,6 +4,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashSet;
 
+import engine.utils.logger.Log;
+
 public final class InputKeyListener implements KeyListener {
     public static final char NO_CHAR = '\0';
 
@@ -52,5 +54,9 @@ public final class InputKeyListener implements KeyListener {
 
     public void resetPressedKeys() {
         this.keysDown.clear();
+    }
+
+    public boolean isTyping() {
+        return this.current != NO_CHAR;
     }
 }

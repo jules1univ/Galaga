@@ -20,6 +20,7 @@ public enum GalagaSound {
     level_start,
     
     menu_select,
+    menu_keyboard,
     menu_theme,
     menu_theme_2,
 

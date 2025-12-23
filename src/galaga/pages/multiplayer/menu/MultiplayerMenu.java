@@ -36,6 +36,7 @@ public class MultiplayerMenu extends Page<GalagaPage> {
 
     private Sound themeSound;
     private Sound selectSound;
+    private Sound keyboardSound;
 
     public MultiplayerMenu() {
         super(GalagaPage.MULTIPLAYER_MENU);
@@ -108,6 +109,12 @@ public class MultiplayerMenu extends Page<GalagaPage> {
             return false;
         }
         this.selectSound.setCapacity(4);
+
+        this.keyboardSound = Galaga.getContext().getResource().get(GalagaSound.menu_keyboard);
+        if (this.keyboardSound == null) {
+            return false;
+        }
+        this.keyboardSound.setCapacity(4);
 
         this.textFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_XLARGE);
         if (this.textFont == null) {
@@ -188,6 +195,17 @@ public class MultiplayerMenu extends Page<GalagaPage> {
 
     @Override
     public void update(float dt) {
+        
+        if(Galaga.getContext().getInput().isTyping()) {
+            switch (this.option) {
+                case IP, USERNAME -> {
+                        this.keyboardSound.play(.5f);
+                }
+                default -> {
+                }
+            }
+        }
+
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
             this.selectSound.play(2.f);
             switch (this.option) {
@@ -226,6 +244,7 @@ public class MultiplayerMenu extends Page<GalagaPage> {
                 }
             }
         }
+
     }
 
     @Override
