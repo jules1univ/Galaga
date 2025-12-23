@@ -1,6 +1,6 @@
 package galaga.pages.menu;
 
-public enum MenuModeOption {
+public enum MainMenuModeOption {
     SOLO,
     MULTIPLAYER,
     EDITOR

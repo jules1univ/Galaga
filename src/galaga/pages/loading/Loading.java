@@ -53,6 +53,10 @@ public class Loading extends Page<GalagaPage> {
         return true;
     }
 
+    @Override
+    public void onReceiveArgs(Object... args) {
+    }
+
     public void setFont(Font font) {
         this.text.setFont(font);
     }

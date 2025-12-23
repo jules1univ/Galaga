@@ -21,6 +21,11 @@ public class Settings extends Page<GalagaPage> {
         return true;
     }
 
+    
+    @Override
+    public void onReceiveArgs(Object... args) {
+    }
+
     @Override
     public void update(float dt) {
     }

@@ -71,6 +71,10 @@ public abstract class Application<T extends Enum<T>> {
     }
 
     public final boolean setCurrentPage(T id) {
+        return this.setCurrentPage(id, (Object[]) null);
+    }
+
+    public final boolean setCurrentPage(T id, Object... args) {
         try {
             this.nextPage = this.pages.get(id).getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
@@ -78,7 +82,7 @@ public abstract class Application<T extends Enum<T>> {
             return false;
         }
         if (this.currentPage != null) {
-            if(!this.currentPage.onDeactivate()) {
+            if (!this.currentPage.onDeactivate()) {
                 Log.error("Failed to deactivate page: " + this.currentPage.getClass().getName());
                 this.stop();
                 return false;
@@ -86,11 +90,15 @@ public abstract class Application<T extends Enum<T>> {
         } else {
             this.currentPage = this.nextPage;
             this.nextPage = null;
-            if(!this.currentPage.onActivate()) {
+            if (!this.currentPage.onActivate()) {
                 Log.error("Failed to activate page: " + this.currentPage.getClass().getName());
                 this.stop();
                 return false;
             }
+        }
+
+        if(this.nextPage != null) {
+            this.nextPage.onReceiveArgs(args);
         }
         return true;
     }
@@ -100,13 +108,14 @@ public abstract class Application<T extends Enum<T>> {
     }
 
     protected abstract boolean init();
+
     protected abstract void destroy();
 
     protected void update(float dt) {
         if (this.nextPage != null && this.currentPage.getState() == PageState.INACTIVE) {
             this.currentPage = this.nextPage;
             this.nextPage = null;
-            if(!this.currentPage.onActivate()) {
+            if (!this.currentPage.onActivate()) {
                 Log.error("Failed to activate page: " + this.currentPage.getClass().getName());
                 this.stop();
                 return;

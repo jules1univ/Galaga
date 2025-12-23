@@ -41,7 +41,7 @@ public class GameSolo extends Page<GalagaPage> {
     private int bestScore = 0;
 
     public GameSolo() {
-        super(GalagaPage.GAME_SOLO);
+        super(GalagaPage.SOLO_GAME);
     }
 
     @Override
@@ -116,6 +116,10 @@ public class GameSolo extends Page<GalagaPage> {
 
         this.state = PageState.INACTIVE;
         return true;
+    }
+
+    @Override
+    public void onReceiveArgs(Object... args) {
     }
 
     @Override

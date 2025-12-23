@@ -20,10 +20,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 
-public class Menu extends Page<GalagaPage> {
+public class MainMenu extends Page<GalagaPage> {
 
     private IconSelect shipSelect;
-    private TextSelectEnum<MenuModeOption> gameMode;
+    private TextSelectEnum<MainMenuModeOption> gameMode;
     private Text quit;
 
     private Sky sky;
@@ -33,11 +33,11 @@ public class Menu extends Page<GalagaPage> {
     private Sound themeSound;
     private Sound selectSound;
 
-    private MenuOption option;
+    private MainMenuOption option;
 
     private Font titleFont;
 
-    public Menu() {
+    public MainMenu() {
         super(GalagaPage.MAIN_MENU);
     }
 
@@ -105,7 +105,7 @@ public class Menu extends Page<GalagaPage> {
                         - padding / 2);
 
         this.gameMode = new TextSelectEnum<>(
-                MenuModeOption.class,
+                MainMenuModeOption.class,
                 0,
                 true,
                 Color.WHITE, this.titleFont);
@@ -147,7 +147,7 @@ public class Menu extends Page<GalagaPage> {
         }
         this.quit.setCenter(TextPosition.CENTER, TextPosition.END);
 
-        this.option = MenuOption.GAMEMODE;
+        this.option = MainMenuOption.GAMEMODE;
         this.updateMenuSelect();
 
         Galaga.getContext().getInput().resetPressedKeys();
@@ -187,15 +187,15 @@ public class Menu extends Page<GalagaPage> {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case GAMEMODE -> {
-                    this.option = MenuOption.QUIT;
+                    this.option = MainMenuOption.QUIT;
                     this.updateMenuSelect();
                 }
                 case SHIPSKIN -> {
-                    this.option = MenuOption.GAMEMODE;
+                    this.option = MainMenuOption.GAMEMODE;
                     this.updateMenuSelect();
                 }
                 case QUIT -> {
-                    this.option = MenuOption.SHIPSKIN;
+                    this.option = MainMenuOption.SHIPSKIN;
                     this.updateMenuSelect();
                 }
             }
@@ -203,17 +203,17 @@ public class Menu extends Page<GalagaPage> {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case GAMEMODE -> {
-                    this.option = MenuOption.SHIPSKIN;
+                    this.option = MainMenuOption.SHIPSKIN;
                     this.updateMenuSelect();
 
                 }
                 case SHIPSKIN -> {
-                    this.option = MenuOption.QUIT;
+                    this.option = MainMenuOption.QUIT;
                     this.updateMenuSelect();
 
                 }
                 case QUIT -> {
-                    this.option = MenuOption.GAMEMODE;
+                    this.option = MainMenuOption.GAMEMODE;
                     this.updateMenuSelect();
                 }
             }
@@ -228,7 +228,7 @@ public class Menu extends Page<GalagaPage> {
                     switch (this.gameMode.getSelectedOption()) {
                         case SOLO -> {
                             Galaga.getContext().getState().shipSkin = this.shipSelect.getSelected().getSprite();
-                            Galaga.getContext().getApplication().setCurrentPage(GalagaPage.GAME_SOLO);
+                            Galaga.getContext().getApplication().setCurrentPage(GalagaPage.SOLO_GAME);
                         }
                         case MULTIPLAYER -> {
                             Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MULTIPLAYER_MENU);
@@ -249,6 +249,10 @@ public class Menu extends Page<GalagaPage> {
         this.gameMode.draw();
         this.shipSelect.draw();
         this.quit.draw();
+    }
+
+    @Override
+    public void onReceiveArgs(Object... args) {
     }
 
 }

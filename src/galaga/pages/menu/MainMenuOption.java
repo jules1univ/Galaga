@@ -1,6 +1,6 @@
 package galaga.pages.menu;
 
-public enum MenuOption {
+public enum MainMenuOption {
     GAMEMODE,
     SHIPSKIN,
     QUIT

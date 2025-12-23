@@ -13,7 +13,7 @@ public final class Args {
 
             if (arg.startsWith("--")) {
                 String[] parts = arg.split("=");
-                if(parts.length == 0) {
+                if (parts.length == 0) {
                     continue;
                 }
 
@@ -22,8 +22,6 @@ public final class Args {
                 this.args.put(key, value);
             }
         }
-
-        System.out.println("Parsed Args: " + this.args.toString());
     }
 
     public int getInt(String key, int def) {

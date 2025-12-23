@@ -9,11 +9,13 @@ import engine.elements.ui.input.Input;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
 import engine.graphics.sprite.Sprite;
+import engine.resource.sound.Sound;
 import engine.utils.Position;
 import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
+import galaga.GalagaSound;
 import galaga.entities.sky.Sky;
 
 public class MultiplayerMenu extends Page<GalagaPage> {
@@ -31,6 +33,9 @@ public class MultiplayerMenu extends Page<GalagaPage> {
 
     private Sprite logo;
     private Position logoPosition;
+
+    private Sound themeSound;
+    private Sound selectSound;
 
     public MultiplayerMenu() {
         super(GalagaPage.MULTIPLAYER_MENU);
@@ -90,6 +95,19 @@ public class MultiplayerMenu extends Page<GalagaPage> {
         if (!this.sky.init()) {
             return false;
         }
+
+        this.themeSound = Galaga.getContext().getResource().get(GalagaSound.menu_theme);
+        if (this.themeSound == null) {
+            return false;
+        }
+        this.themeSound.setLoop(true);
+        this.themeSound.play(0.2f);
+
+        this.selectSound = Galaga.getContext().getResource().get(GalagaSound.menu_select);
+        if (this.selectSound == null) {
+            return false;
+        }
+        this.selectSound.setCapacity(4);
 
         this.textFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_XLARGE);
         if (this.textFont == null) {
@@ -153,12 +171,25 @@ public class MultiplayerMenu extends Page<GalagaPage> {
 
     @Override
     public boolean onDeactivate() {
+        this.themeSound.stop();
+        this.selectSound.stop();
         return true;
+    }
+
+    @Override
+    public void onReceiveArgs(Object... args) {
+        if (args == null || args.length != 2) {
+            return;
+        }
+
+        this.username.setText((String) args[0]);
+        this.ip.setText((String) args[1]);
     }
 
     @Override
     public void update(float dt) {
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
+            this.selectSound.play(2.f);
             switch (this.option) {
                 case IP -> this.option = MultiplayerMenuOption.USERNAME;
                 case NEXT -> this.option = MultiplayerMenuOption.IP;
@@ -167,6 +198,7 @@ public class MultiplayerMenu extends Page<GalagaPage> {
             }
             this.updateMenuSelect();
         } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
+            this.selectSound.play(2.f);
             switch (this.option) {
                 case USERNAME -> this.option = MultiplayerMenuOption.IP;
                 case IP -> this.option = MultiplayerMenuOption.NEXT;
@@ -180,15 +212,18 @@ public class MultiplayerMenu extends Page<GalagaPage> {
         this.username.update(dt);
         this.sky.update(dt);
 
-        if(Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+            this.selectSound.play(2.f);
             switch (this.option) {
                 case NEXT -> {
-                    
+                    Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MULTIPLAYER_LOBBY,
+                            this.username.getText(), this.ip.getText());
                 }
                 case BACK -> {
                     Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MAIN_MENU);
                 }
-                case IP, USERNAME -> {}
+                case IP, USERNAME -> {
+                }
             }
         }
     }

@@ -58,7 +58,7 @@ public class SpriteEditor extends Page<GalagaPage> {
 
     @Override
     public boolean onActivate() {
-        int padding  = 50;
+        int padding = 50;
 
         this.canvasSize = Size.of(Config.SIZE_SPRITE_CANVAS_EDITOR * this.canvasCellSize + 1,
                 Config.SIZE_SPRITE_CANVAS_EDITOR * this.canvasCellSize + 1);
@@ -80,9 +80,8 @@ public class SpriteEditor extends Page<GalagaPage> {
         this.info = new Textarea(
                 "- ARROW KEYS to move cursor\n- SPACE to draw\n- KEYS 0-9 to select color\n- DELETE to erase\n- TAB to switch buttons\n- ENTER to confirm",
                 Position.of(
-                    padding,
-                    this.canvasPosition.getY() + this.canvasSize.getHeight() + padding
-                ),
+                        padding,
+                        this.canvasPosition.getY() + this.canvasSize.getHeight() + padding),
                 Color.WHITE, this.textFont);
         if (!this.info.init()) {
             return false;
@@ -90,18 +89,17 @@ public class SpriteEditor extends Page<GalagaPage> {
         this.info.setCenter(TextPosition.BEGIN, TextPosition.BEGIN);
 
         this.back = new Text("BACK", Position.of(
-            Config.WINDOW_WIDTH - padding,
-            this.info.getPosition().getY()
-        ), Color.WHITE, this.titleFont);
+                Config.WINDOW_WIDTH - padding,
+                this.info.getPosition().getY()), Color.WHITE, this.titleFont);
         if (!this.back.init()) {
             return false;
         }
         this.back.setCenter(TextPosition.END, TextPosition.CENTER);
 
         this.save = new Text("SAVE", Position.of(
-            Config.WINDOW_WIDTH - padding,
-            this.back.getPosition().getY() + this.back.getSize().getHeight() + padding
-        ), Color.WHITE, this.titleFont);
+                Config.WINDOW_WIDTH - padding,
+                this.back.getPosition().getY() + this.back.getSize().getHeight() + padding), Color.WHITE,
+                this.titleFont);
         if (!this.save.init()) {
             return false;
         }
@@ -114,6 +112,10 @@ public class SpriteEditor extends Page<GalagaPage> {
     public boolean onDeactivate() {
         this.state = PageState.INACTIVE;
         return true;
+    }
+
+    @Override
+    public void onReceiveArgs(Object... args) {
     }
 
     private int getCursorIndex() {
@@ -186,7 +188,7 @@ public class SpriteEditor extends Page<GalagaPage> {
             }
         }
 
-        if(Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
             switch (this.option) {
                 case BACK -> {
                     Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_MENU);
@@ -194,7 +196,8 @@ public class SpriteEditor extends Page<GalagaPage> {
                 case SAVE -> {
                     throw new UnsupportedOperationException("Save sprite not implemented yet.");
                 }
-                case EDIT -> {}
+                case EDIT -> {
+                }
             }
         }
 
@@ -206,7 +209,6 @@ public class SpriteEditor extends Page<GalagaPage> {
     public void draw() {
         Galaga.getContext().getRenderer().drawGrid(this.canvasPosition, this.canvasSize, this.canvasCellSize,
                 Color.WHITE);
-
 
         for (int y = 0; y < Config.SIZE_SPRITE_CANVAS_EDITOR; y++) {
             for (int x = 0; x < Config.SIZE_SPRITE_CANVAS_EDITOR; x++) {
@@ -257,13 +259,12 @@ public class SpriteEditor extends Page<GalagaPage> {
                     4.f);
         }
 
-        if(this.option == SpriteEditorOption.EDIT) {
+        if (this.option == SpriteEditorOption.EDIT) {
             Galaga.getContext().getRenderer().drawRectOutline(
-                this.canvasPosition,
-                this.canvasSize,
-                2,
-                Color.ORANGE
-            );
+                    this.canvasPosition,
+                    this.canvasSize,
+                    2,
+                    Color.ORANGE);
         }
 
         this.info.draw();

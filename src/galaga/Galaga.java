@@ -15,14 +15,14 @@ import engine.utils.Args;
 import engine.utils.Position;
 import engine.utils.Size;
 import galaga.level.LevelResource;
-import galaga.net.client.GalagaClient;
 import galaga.net.server.GalagaServer;
 import galaga.pages.editor.level.LevelEditor;
 import galaga.pages.editor.menu.EditorMenu;
 import galaga.pages.editor.settings.Settings;
 import galaga.pages.editor.sprite.SpriteEditor;
 import galaga.pages.loading.Loading;
-import galaga.pages.menu.Menu;
+import galaga.pages.menu.MainMenu;
+import galaga.pages.multiplayer.lobby.MultiplayerLobby;
 import galaga.pages.multiplayer.menu.MultiplayerMenu;
 import galaga.pages.solo.GameSolo;
 import galaga.score.ScoreResource;
@@ -65,13 +65,8 @@ public class Galaga extends Application<GalagaPage> {
             return;
         }
 
-        GalagaClient client = new GalagaClient(netm);
-        client.start("localhost", 5555);
-
-        while(true){}
-
-        // Galaga game = new Galaga();
-        // game.start();
+        Galaga game = new Galaga();
+        game.start();
     }
 
     public Galaga() {
@@ -85,11 +80,12 @@ public class Galaga extends Application<GalagaPage> {
             startSound.play();
         }
 
-        this.registerPage(GalagaPage.MAIN_MENU, Menu.class);
+        this.registerPage(GalagaPage.MAIN_MENU, MainMenu.class);
 
-        this.registerPage(GalagaPage.GAME_SOLO, GameSolo.class);
+        this.registerPage(GalagaPage.SOLO_GAME, GameSolo.class);
 
         this.registerPage(GalagaPage.MULTIPLAYER_MENU, MultiplayerMenu.class);
+        this.registerPage(GalagaPage.MULTIPLAYER_LOBBY, MultiplayerLobby.class);
 
         this.registerPage(GalagaPage.EDITOR_MENU, EditorMenu.class);
         this.registerPage(GalagaPage.EDITOR_LEVEL, LevelEditor.class);

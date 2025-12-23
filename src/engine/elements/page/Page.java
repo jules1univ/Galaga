@@ -24,6 +24,8 @@ public abstract class Page<T extends Enum<T>> extends VisualElement {
      
     public abstract boolean onDeactivate();
 
+    public abstract void onReceiveArgs(Object... args);
+
     public final boolean init()
     {
         throw new UnsupportedOperationException("Page.init should be called from subclasses");

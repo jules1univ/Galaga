@@ -125,6 +125,10 @@ public class EditorMenu extends Page<GalagaPage> {
     }
 
     @Override
+    public void onReceiveArgs(Object... args) {
+    }
+
+    @Override
     public void update(float dt) {
         this.sky.update(dt);
 
