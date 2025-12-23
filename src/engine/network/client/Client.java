@@ -52,7 +52,9 @@ public abstract class Client {
     public boolean stop() {
         try {
             this.active = false;
-            this.socket.close();
+            if (this.socket != null && !this.socket.isClosed()) {
+                this.socket.close();
+            }
             return true;
         } catch (IOException e) {
             Log.error("Net Client failed to close: " + e.getMessage());
@@ -69,11 +71,11 @@ public abstract class Client {
                 byte[] data = this.in.readNBytes(length);
 
                 NetObject obj = this.netm.create(id);
-                if(obj == null) {
+                if (obj == null) {
                     Log.error("Net Client received unknown object id: " + id);
                     continue;
                 }
-                
+
                 obj.read(new NetBuffer(data));
                 this.onReceive(obj);
             }

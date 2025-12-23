@@ -72,6 +72,7 @@ public class Input extends UIElement {
             text = text.substring(0, this.maxLength);
         }
         this.value = text;
+        this.cursor = this.value.length();
         this.updateText();
     }
 

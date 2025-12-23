@@ -9,14 +9,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Application<T extends Enum<T>> {
+public abstract class Application<PageId extends Enum<PageId>> {
 
     public static boolean DEBUG_MODE = false;
     private static AppContext<?, ?> context;
 
-    private Page<T> currentPage;
-    private Page<T> nextPage;
-    private final Map<Enum<T>, Class<? extends Page<T>>> pages = new HashMap<>();
+    private Page<PageId> currentPage;
+    private Page<PageId> nextPage;
+    private Object[] pageArgs;
+    private final Map<Enum<PageId>, Class<? extends Page<PageId>>> pages = new HashMap<>();
 
     protected final int width;
     protected final int height;
@@ -69,21 +70,24 @@ public abstract class Application<T extends Enum<T>> {
         this.destroy();
     }
 
-    public final Page<T> getCurrentPage() {
+    public final Page<PageId> getCurrentPage() {
         return this.currentPage;
     }
 
-    public final boolean setCurrentPage(T id) {
+    public final boolean setCurrentPage(PageId id) {
         return this.setCurrentPage(id, (Object[]) null);
     }
 
-    public final boolean setCurrentPage(T id, Object... args) {
+    public final boolean setCurrentPage(PageId id, Object... args) {
+        this.pageArgs = args;
+
         try {
             this.nextPage = this.pages.get(id).getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
             return false;
         }
+
         if (this.currentPage != null) {
             if (!this.currentPage.onDeactivate()) {
                 Log.error("Failed to deactivate page: " + this.currentPage.getClass().getName());
@@ -98,15 +102,13 @@ public abstract class Application<T extends Enum<T>> {
                 this.stop();
                 return false;
             }
-        }
-
-        if(this.nextPage != null) {
-            this.nextPage.onReceiveArgs(args);
+            this.currentPage.onReceiveArgs(this.pageArgs);
+            this.pageArgs = null;
         }
         return true;
     }
 
-    protected final <PageObj extends Page<T>> void registerPage(T id, Class<PageObj> pageClass) {
+    protected final <PageObj extends Page<PageId>> void registerPage(PageId id, Class<PageObj> pageClass) {
         this.pages.put(id, pageClass);
     }
 
@@ -123,6 +125,8 @@ public abstract class Application<T extends Enum<T>> {
                 this.stop();
                 return;
             }
+            this.currentPage.onReceiveArgs(this.pageArgs);
+            this.pageArgs = null;
         }
         this.currentPage.update(dt);
     }
