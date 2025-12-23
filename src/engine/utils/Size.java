@@ -28,6 +28,11 @@ public final class Size implements NetObject {
         return new Size(original.width / 2, original.height / 2);
     }
 
+    public Size() {
+        this.width = 0.f;
+        this.height = 0.f;
+    }
+
     private Size(float width, float height) {
         this.width = width;
         this.height = height;
@@ -67,11 +72,6 @@ public final class Size implements NetObject {
     }
 
     @Override
-    public int getId() {
-        return 0; // TODO
-    }
-
-    @Override
     public void read(NetBuffer buff) {
         this.width = buff.readFloat().orElse(0.0f);
         this.height = buff.readFloat().orElse(0.0f);
@@ -79,7 +79,15 @@ public final class Size implements NetObject {
 
     @Override
     public void write(NetBuffer buff) {
-        buff.writeFloat(this.width);
-        buff.writeFloat(this.height);
+        buff.write(this.width);
+        buff.write(this.height);
+    }
+
+    @Override
+    public void interpolate(NetObject other, float factor) {
+        if (other instanceof Size otherSize) {
+            this.width = this.width + (otherSize.width - this.width) * factor;
+            this.height = this.height + (otherSize.height - this.height) * factor;
+        }
     }
 }

@@ -10,15 +10,20 @@ public final class Args {
     public Args(String[] cmdArgs) {
         for (int i = 0; i < cmdArgs.length; i++) {
             String arg = cmdArgs[i];
-            if (arg.startsWith("--")) {
-                String key = arg.substring(2);
-                String value = (i + 1 < cmdArgs.length && !cmdArgs[i + 1].startsWith("--"))
-                        ? cmdArgs[++i]
-                        : "true";
 
+            if (arg.startsWith("--")) {
+                String[] parts = arg.split("=");
+                if(parts.length == 0) {
+                    continue;
+                }
+
+                String key = parts[0].substring(2);
+                String value = parts.length > 1 ? parts[1] : "true";
                 this.args.put(key, value);
             }
         }
+
+        System.out.println("Parsed Args: " + this.args.toString());
     }
 
     public int getInt(String key, int def) {

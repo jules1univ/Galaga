@@ -3,7 +3,7 @@ package engine.utils;
 import engine.network.NetBuffer;
 import engine.network.NetObject;
 
-public final class Position implements NetObject{
+public final class Position implements NetObject {
     private float x, y;
 
     public static Position zero() {
@@ -22,6 +22,11 @@ public final class Position implements NetObject{
         return Position.of(
                 center.getX() - size.getWidth() / 2,
                 center.getY() - size.getHeight() / 2);
+    }
+
+    public Position() {
+        this.x = .0f;
+        this.y = .0f;
     }
 
     private Position(float x, float y) {
@@ -158,7 +163,6 @@ public final class Position implements NetObject{
         return this;
     }
 
-   
     public Position copy() {
         return new Position(this.x, this.y);
     }
@@ -169,11 +173,6 @@ public final class Position implements NetObject{
     }
 
     @Override
-    public int getId() {
-        return 0; //TODO
-    }
-
-    @Override
     public void read(NetBuffer buff) {
         this.x = buff.readFloat().orElse(0.0f);
         this.y = buff.readFloat().orElse(0.0f);
@@ -181,7 +180,15 @@ public final class Position implements NetObject{
 
     @Override
     public void write(NetBuffer buff) {
-        buff.writeFloat(this.x);
-        buff.writeFloat(this.y);
+        buff.write(this.x);
+        buff.write(this.y);
+    }
+
+    @Override
+    public void interpolate(NetObject other, float factor) {
+        if (other instanceof Position otherPosition) {
+            this.x = this.x + (otherPosition.x - this.x) * factor;
+            this.y = this.y + (otherPosition.y - this.y) * factor;
+        }
     }
 }

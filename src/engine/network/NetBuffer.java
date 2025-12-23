@@ -20,12 +20,56 @@ public final class NetBuffer {
         this.in = new DataInputStream(new ByteArrayInputStream(data));
     }
 
-    public boolean writeInt(int v)  {
+    public boolean write(int v)  {
         try {
             this.out.writeInt(v);
             return true;
         } catch (IOException e) {
             return false;
+        }
+    }
+
+    public boolean write(float v)  {
+        try {
+            this.out.writeFloat(v);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public boolean write(char v)  {
+        try {
+            this.out.writeChar(v);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public boolean write(NetObject obj)  {
+        try {
+            obj.write(this);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public Optional<NetObject> read(NetObject obj)  {
+        try {
+            obj.read(this);
+            return Optional.of(obj);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Float> readFloat()  {
+        try {
+            return Optional.of(this.in.readFloat());
+        } catch (IOException e) {
+            return Optional.empty();
         }
     }
 
@@ -37,22 +81,14 @@ public final class NetBuffer {
         }
     }
 
-    public boolean writeFloat(float v)  {
+    public Optional<Character> readChar()  {
         try {
-            this.out.writeFloat(v);
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
-    public Optional<Float> readFloat()  {
-        try {
-            return Optional.of(this.in.readFloat());
+            return Optional.of(this.in.readChar());
         } catch (IOException e) {
             return Optional.empty();
         }
     }
+
 
     public Optional<byte[]> toBytes()  {
         try {

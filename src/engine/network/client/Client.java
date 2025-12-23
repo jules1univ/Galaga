@@ -9,6 +9,7 @@ import java.util.Optional;
 import engine.network.NetBuffer;
 import engine.network.NetObject;
 import engine.network.NetworkManager;
+import engine.utils.logger.Log;
 
 public abstract class Client {
 
@@ -43,6 +44,7 @@ public abstract class Client {
 
             return true;
         } catch (Exception e) {
+            Log.error("Net Client failed to connect to " + host + ":" + port + ": " + e.getMessage());
             return false;
         }
     }
@@ -53,24 +55,30 @@ public abstract class Client {
             this.socket.close();
             return true;
         } catch (IOException e) {
+            Log.error("Net Client failed to close: " + e.getMessage());
             return false;
         }
     }
 
     protected void update() {
         try {
-            while (!socket.isClosed() && this.active) {
-                int id = in.readInt();
+            while (!this.socket.isClosed() && this.active) {
+                int id = this.in.readInt();
 
-                int length = in.readInt();
-                byte[] data = in.readNBytes(length);
+                int length = this.in.readInt();
+                byte[] data = this.in.readNBytes(length);
 
                 NetObject obj = this.netm.create(id);
+                if(obj == null) {
+                    Log.error("Net Client received unknown object id: " + id);
+                    continue;
+                }
+                
                 obj.read(new NetBuffer(data));
-
-                this.receive(obj);
+                this.onReceive(obj);
             }
         } catch (IOException e) {
+            Log.error("Net Client failed to receive: " + e.getMessage());
             this.onDisconnect();
         }
     }
@@ -93,12 +101,13 @@ public abstract class Client {
 
             return true;
         } catch (IOException e) {
+            Log.error("Net Client failed to send: " + e.getMessage());
             this.onDisconnect();
             return false;
         }
     }
 
-    protected abstract void receive(NetObject obj);
+    protected abstract void onReceive(NetObject obj);
 
     protected abstract void onConnect();
 

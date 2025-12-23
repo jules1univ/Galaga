@@ -3,6 +3,7 @@ package galaga;
 import engine.AppContext;
 import engine.Application;
 import engine.elements.page.Page;
+import engine.network.NetworkManager;
 import engine.resource.Resource;
 import engine.resource.ResourceManager;
 import engine.resource.ResourceVariant;
@@ -11,7 +12,11 @@ import engine.resource.sound.Sound;
 import engine.resource.sound.SoundResource;
 import engine.resource.sprite.SpriteResource;
 import engine.utils.Args;
+import engine.utils.Position;
+import engine.utils.Size;
 import galaga.level.LevelResource;
+import galaga.net.client.GalagaClient;
+import galaga.net.server.GalagaServer;
 import galaga.pages.editor.level.LevelEditor;
 import galaga.pages.editor.menu.EditorMenu;
 import galaga.pages.editor.settings.Settings;
@@ -25,8 +30,13 @@ import java.awt.event.KeyEvent;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.management.ManagementFactory;
+import java.util.List;
 
 public class Galaga extends Application<GalagaPage> {
+
+    public static NetworkManager netm = NetworkManager.of(List.of(
+            Position.class,
+            Size.class));
 
     @SuppressWarnings("unchecked")
     public static AppContext<State, GalagaPage> getContext() {
@@ -43,15 +53,25 @@ public class Galaga extends Application<GalagaPage> {
     public static void main(String[] cmdArgs) {
         Args args = new Args(cmdArgs);
 
-        boolean debugActive = ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
+        boolean debugActive = ManagementFactory.getRuntimeMXBean().getInputArguments().toString()
+                .indexOf("-agentlib:jdwp") > 0;
         Application.DEBUG_MODE = debugActive || args.getBool("debug");
 
-        if (args.getBool("server")) {
+        if (args.getBool("server") && args.getInt("port", -1) > 0) {
+
+            int port = args.getInt("port", -1);
+            GalagaServer server = new GalagaServer(netm);
+            server.start(port);
             return;
         }
 
-        Galaga game = new Galaga();
-        game.start();
+        GalagaClient client = new GalagaClient(netm);
+        client.start("localhost", 5555);
+
+        while(true){}
+
+        // Galaga game = new Galaga();
+        // game.start();
     }
 
     public Galaga() {
