@@ -90,7 +90,7 @@ public abstract class Application<PageId extends Enum<PageId>> {
 
         if (this.currentPage != null) {
             if (!this.currentPage.onDeactivate()) {
-                Log.error("Failed to deactivate page: " + this.currentPage.getClass().getName());
+                Log.error("Failed to deactivate page: %s",  this.currentPage.getClass().getName());
                 this.stop();
                 return false;
             }
@@ -98,7 +98,7 @@ public abstract class Application<PageId extends Enum<PageId>> {
             this.currentPage = this.nextPage;
             this.nextPage = null;
             if (!this.currentPage.onActivate()) {
-                Log.error("Failed to activate page: " + this.currentPage.getClass().getName());
+                Log.error("Failed to activate page: %s", this.currentPage.getClass().getName());
                 this.stop();
                 return false;
             }
@@ -121,7 +121,7 @@ public abstract class Application<PageId extends Enum<PageId>> {
             this.currentPage = this.nextPage;
             this.nextPage = null;
             if (!this.currentPage.onActivate()) {
-                Log.error("Failed to activate page: " + this.currentPage.getClass().getName());
+                Log.error("Failed to activate page: %s" , this.currentPage.getClass().getName());
                 this.stop();
                 return;
             }

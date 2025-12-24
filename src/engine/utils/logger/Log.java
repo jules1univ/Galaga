@@ -22,11 +22,23 @@ public final class Log {
         log(message, LogStatus.MESSAGE);
     }
 
+    public static void message(String message, Object... args) {
+        log(String.format(message, args), LogStatus.MESSAGE);
+    }
+
     public static void warning(String message) {
         log(message, LogStatus.WARNING);
     }
 
+    public static void warning(String message, Object... args) {
+        log(String.format(message, args), LogStatus.WARNING);
+    }
+
     public static void error(String message) {
         log(message, LogStatus.ERROR);
+    }
+
+    public static void error(String message, Object... args) {
+        log(String.format(message, args), LogStatus.ERROR);
     }
 }

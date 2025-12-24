@@ -95,7 +95,7 @@ public final class AppCanvas extends Canvas implements Runnable {
                         this.app.draw();
                         this.renderer.end();
                     } catch (Exception e) {
-                        Log.error("Application encountered an error during cycle: " + e.getMessage());
+                        Log.error("Application encountered an error during cycle: %s",  e.getMessage());
                         
                         this.renderer.end();
                         this.stop();

@@ -32,7 +32,7 @@ public final class Sprite {
                 lines.add(line);
             }
         } catch (IOException e) {
-            Log.error("Sprite loading failed - " + e.getMessage());
+            Log.error("Sprite loading failed: %s" , e.getMessage());
             return null;
         }
 
