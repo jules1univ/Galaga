@@ -5,11 +5,12 @@ import engine.network.NetworkManager;
 import engine.network.server.ClientConnection;
 import engine.network.server.Server;
 import engine.utils.logger.Log;
+import galaga.Config;
 
 public class GalagaServer extends Server {
-
+    
     public GalagaServer(NetworkManager netm) {
-        super(netm, true);
+        super(netm, true, Config.NET_TICKRATE);
     }
 
     @Override
@@ -19,6 +20,10 @@ public class GalagaServer extends Server {
 
     @Override
     protected void onDeactivate() {
+    }
+
+    @Override
+    protected void onTick() {
     }
 
     @Override

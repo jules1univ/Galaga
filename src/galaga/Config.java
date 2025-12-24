@@ -59,7 +59,6 @@ public class Config {
         public static final int SIZE_SPRITE_CANVAS_EDITOR_CELL = 22;
         public static final Size SIZE_PARTICLE = Size.of(3.f, 3.f);
 
-
         public static final float POSITION_LEVEL_START_Y = 50.f;
         public static final float POSITION_LEVEL_STEP_Y = 25.f;
 
@@ -94,6 +93,8 @@ public class Config {
         public static final float POSITION_BEE_BOTTOM = 600.f;
 
         public static final Color COLOR_BULLET = Color.RED;
+
+        public static final float NET_TICKRATE = 30.f;
 
         public static final String VARIANT_FONT_TEXT = "text";
         public static final String VARIANT_FONT_LARGE = "large";
