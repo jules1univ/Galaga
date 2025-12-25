@@ -2,8 +2,11 @@ package galaga.pages.editor.sprite;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.util.Map.Entry;
+import java.util.HashMap;
 import java.util.Map;
 
 import engine.elements.page.Page;
@@ -20,20 +23,40 @@ import galaga.GalagaPage;
 
 public class SpriteEditor extends Page<GalagaPage> {
 
-    private final char[] pixels = new char[Config.SIZE_SPRITE_CANVAS_EDITOR * Config.SIZE_SPRITE_CANVAS_EDITOR];
+    private static final int SIZE = Config.SIZE_SPRITE_CANVAS_EDITOR;
+    private static final int CELL = Config.SIZE_SPRITE_CANVAS_EDITOR_CELL;
 
-    private final int canvasCellSize = Config.SIZE_SPRITE_CANVAS_EDITOR_CELL;
+    private static final Map<Character, Color> OPPOSITE_COLOR = new HashMap<>();
+
+    static {
+        for (char c : new char[] { 'W', 'B', 'R', 'Y', 'G', 'C', 'M', 'O', 'P', 'L' }) {
+            Color col = Sprite.charToColor(c);
+            OPPOSITE_COLOR.put(
+                    c,
+                    new Color(255 - col.getRed(), 255 - col.getGreen(), 255 - col.getBlue()));
+        }
+    }
+
+    private final char[] pixels = new char[SIZE * SIZE];
+
+    private BufferedImage canvasImage;
+    private boolean canvasDirty = true;
+
     private Size canvasSize;
     private Position canvasPosition;
 
-    private Position cursor = Position.zero();
+    private final Position cursor = Position.zero();
+    private int cursorCellX;
+    private int cursorCellY;
+    private int cursorIndex;
+
     private char selectedColor = 'N';
 
     private Font titleFont;
+    private Font textFont;
+
     private Text back;
     private Text save;
-
-    private Font textFont;
     private Textarea info;
 
     private SpriteEditorOption option = SpriteEditorOption.EDIT;
@@ -60,51 +83,60 @@ public class SpriteEditor extends Page<GalagaPage> {
     public boolean onActivate() {
         int padding = 50;
 
-        this.canvasSize = Size.of(Config.SIZE_SPRITE_CANVAS_EDITOR * this.canvasCellSize + 1,
-                Config.SIZE_SPRITE_CANVAS_EDITOR * this.canvasCellSize + 1);
-        this.canvasPosition = Position.of((Config.WINDOW_WIDTH - this.canvasSize.getWidth()) / 2.f, padding);
+        this.canvasSize = Size.of(SIZE * CELL + 1, SIZE * CELL + 1);
+        this.canvasPosition = Position.of(
+                (Config.WINDOW_WIDTH - this.canvasSize.getWidth()) / 2f,
+                padding);
 
         for (int i = 0; i < this.pixels.length; i++) {
             this.pixels[i] = 'N';
         }
 
-        this.textFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_TEXT);
-        if (this.textFont == null) {
-            return false;
-        }
-        this.titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_LARGE);
-        if (this.titleFont == null) {
-            return false;
-        }
+        this.canvasImage = new BufferedImage(
+                SIZE * CELL,
+                SIZE * CELL,
+                BufferedImage.TYPE_INT_ARGB);
 
+        this.textFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_TEXT);
+        this.titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_LARGE);
+        if (this.textFont == null || this.titleFont == null) {
+            return false;
+
+        }
         this.info = new Textarea(
-                "- ARROW KEYS to move cursor\n- SPACE to draw\n- KEYS 0-9 to select color\n- DELETE to erase\n- TAB to switch buttons\n- ENTER to confirm",
+                "- ARROW KEYS to move this.cursor\n- SPACE to draw\n- KEYS 0-9 to select color\n- DELETE to erase\n- TAB to switch buttons\n- ENTER to confirm",
                 Position.of(
                         padding,
                         this.canvasPosition.getY() + this.canvasSize.getHeight() + padding),
                 Color.WHITE, this.textFont);
         if (!this.info.init()) {
             return false;
+
         }
         this.info.setCenter(TextPosition.BEGIN, TextPosition.BEGIN);
 
-        this.back = new Text("BACK", Position.of(
-                Config.WINDOW_WIDTH - padding,
-                this.info.getPosition().getY()), Color.WHITE, this.titleFont);
+        this.back = new Text("BACK",
+                Position.of(Config.WINDOW_WIDTH - padding, this.info.getPosition().getY()),
+                Color.WHITE, this.titleFont);
         if (!this.back.init()) {
             return false;
+
         }
         this.back.setCenter(TextPosition.END, TextPosition.CENTER);
 
-        this.save = new Text("SAVE", Position.of(
-                Config.WINDOW_WIDTH - padding,
-                this.back.getPosition().getY() + this.back.getSize().getHeight() + padding), Color.WHITE,
-                this.titleFont);
+        this.save = new Text("SAVE",
+                Position.of(Config.WINDOW_WIDTH - padding,
+                        this.back.getPosition().getY() + this.back.getSize().getHeight() + padding),
+                Color.WHITE, this.titleFont);
         if (!this.save.init()) {
             return false;
+
         }
         this.save.setCenter(TextPosition.END, TextPosition.BEGIN);
 
+        this.canvasDirty = true;
+
+        this.state = PageState.ACTIVE;
         return true;
     }
 
@@ -118,54 +150,36 @@ public class SpriteEditor extends Page<GalagaPage> {
     public void onReceiveArgs(Object... args) {
     }
 
-    private int getCursorIndex() {
-        Position pos = this.getCursorPosition();
-        int index = (int) (pos.getY() * Config.SIZE_SPRITE_CANVAS_EDITOR + pos.getX());
-        if (index < 0 || index >= this.pixels.length) {
-            return 0;
-        }
-        return index;
-    }
-
-    private Position getCursorPosition() {
-        int x = (int) (this.cursor.getX() / this.canvasCellSize);
-        int y = (int) (this.cursor.getY() / this.canvasCellSize);
-
-        x = Math.clamp(x, 0, Config.SIZE_SPRITE_CANVAS_EDITOR - 1);
-        y = Math.clamp(y, 0, Config.SIZE_SPRITE_CANVAS_EDITOR - 1);
-        return Position.of(x, y);
-    }
-
-    public Color getOpositeColor(char c) {
-        Color color = Sprite.charToColor(c);
-        return new Color(255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue());
-    }
-
     @Override
     public void update(float dt) {
-        float move = Config.SPEED_CURSOR * dt;
+        float move = CELL; // hack fix to make cursor move properly on different framerates
 
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
             this.cursor.addY(-move);
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
-            this.cursor.addY(move);
-        }
 
+        }
+        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
+            this.cursor.addY(move);
+
+        }
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_LEFT)) {
             this.cursor.addX(-move);
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
+
+        }
+        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
             this.cursor.addX(move);
         }
 
-        for (Entry<Integer, Character> entry : this.keyToColor.entrySet()) {
-            if (Galaga.getContext().getInput().isKeyPressed(entry.getKey())) {
-                this.selectedColor = entry.getValue();
+        for (Entry<Integer, Character> e : this.keyToColor.entrySet()) {
+            if (Galaga.getContext().getInput().isKeyPressed(e.getKey())) {
+                this.selectedColor = e.getValue();
             }
         }
 
-        if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_SPACE)) {
-            this.pixels[this.getCursorIndex()] = this.selectedColor;
+        this.updateCursor();
 
+        if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_SPACE)) {
+            this.setPixel(this.cursorIndex, this.selectedColor);
         }
 
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_TAB)) {
@@ -189,82 +203,75 @@ public class SpriteEditor extends Page<GalagaPage> {
         }
 
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
-            switch (this.option) {
-                case BACK -> {
-                    Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_MENU);
-                }
-                case SAVE -> {
-                    throw new UnsupportedOperationException("Save sprite not implemented yet.");
-                }
-                case EDIT -> {
-                }
+            if (this.option == SpriteEditorOption.BACK) {
+                Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_MENU);
             }
         }
 
-        this.cursor.clampX(0, this.canvasSize.getWidth() - this.canvasCellSize / 2);
-        this.cursor.clampY(0, this.canvasSize.getHeight() - this.canvasCellSize / 2);
+        this.cursor.clampX(0, this.canvasSize.getWidth() - CELL / 2);
+        this.cursor.clampY(0, this.canvasSize.getHeight() - CELL / 2);
+    }
+
+    private void updateCursor() {
+        this.cursorCellX = Math.clamp((int) (this.cursor.getX() / CELL), 0, SIZE - 1);
+        this.cursorCellY = Math.clamp((int) (this.cursor.getY() / CELL), 0, SIZE - 1);
+        this.cursorIndex = this.cursorCellY * SIZE + this.cursorCellX;
+    }
+
+    private void setPixel(int index, char color) {
+        if (this.pixels[index] == color) {
+            return;
+        }
+        this.pixels[index] = color;
+        this.canvasDirty = true;
+    }
+
+    private void rebuildCanvas() {
+        Graphics2D g = Galaga.getContext().getRenderer().getImageGraphics(this.canvasImage);
+        for (int y = 0; y < SIZE; y++) {
+            for (int x = 0; x < SIZE; x++) {
+                char ch = this.pixels[y * SIZE + x];
+                Color color = Sprite.charToColor(ch);
+                if (ch == 'N') {
+                    color = Color.BLACK;
+                }
+                g.setColor(color);
+                g.fillRect(x * CELL, y * CELL, CELL, CELL);
+            }
+        }
+
+        g.setColor(Color.WHITE);
+        for (int x = 0; x < this.canvasSize.getIntWidth(); x += CELL) {
+            g.drawLine(x, 0, x, this.canvasSize.getIntHeight());
+        }
+
+        for (int y = 0; y < this.canvasSize.getIntHeight(); y += CELL) {
+            g.drawLine(0, y, this.canvasSize.getIntWidth(), y);
+        }
+
+        g.dispose();
+        this.canvasDirty = false;
     }
 
     @Override
     public void draw() {
-        Galaga.getContext().getRenderer().drawGrid(this.canvasPosition, this.canvasSize, this.canvasCellSize,
-                Color.WHITE);
-
-        for (int y = 0; y < Config.SIZE_SPRITE_CANVAS_EDITOR; y++) {
-            for (int x = 0; x < Config.SIZE_SPRITE_CANVAS_EDITOR; x++) {
-                char c = this.pixels[y * Config.SIZE_SPRITE_CANVAS_EDITOR + x];
-                Galaga.getContext().getRenderer().drawRect(
-                        Position.of(
-                                this.canvasPosition.getX() + x * this.canvasCellSize + 1,
-                                this.canvasPosition.getY() + y * this.canvasCellSize + 1),
-                        Size.of(this.canvasCellSize - 1, this.canvasCellSize - 1),
-                        Sprite.charToColor(c));
-            }
+        if (this.canvasDirty) {
+            this.rebuildCanvas();
         }
-        Galaga.getContext().getRenderer().drawRectOutline(
-                this.getCursorPosition().multiply(this.canvasCellSize).add(this.canvasPosition),
-                Size.of(this.canvasCellSize, this.canvasCellSize),
-                4,
-                this.selectedColor == 'N' ? this.getOpositeColor(this.pixels[this.getCursorIndex()])
-                        : Sprite.charToColor(this.selectedColor));
+        Galaga.getContext().getRenderer().drawImage(this.canvasImage, this.canvasPosition);
 
-        if (this.selectedColor == 'N') {
-            Galaga.getContext().getRenderer().drawLine(
-                    Position.of(
-                            this.canvasPosition.getX()
-                                    + (int) (this.cursor.getX() / this.canvasCellSize) * this.canvasCellSize,
-                            this.canvasPosition.getY()
-                                    + (int) (this.cursor.getY() / this.canvasCellSize) * this.canvasCellSize),
-                    Position.of(
-                            this.canvasPosition.getX()
-                                    + (int) (this.cursor.getX() / this.canvasCellSize + 1) * this.canvasCellSize,
-                            this.canvasPosition.getY()
-                                    + (int) (this.cursor.getY() / this.canvasCellSize + 1) * this.canvasCellSize),
-                    this.getOpositeColor(this.pixels[this.getCursorIndex()]),
-                    4.f);
+        Position cursorPos = Position.of(
+                this.canvasPosition.getX() + this.cursorCellX * CELL,
+                this.canvasPosition.getY() + this.cursorCellY * CELL);
 
-            Galaga.getContext().getRenderer().drawLine(
-                    Position.of(
-                            this.canvasPosition.getX()
-                                    + (int) (this.cursor.getX() / this.canvasCellSize + 1) * this.canvasCellSize,
-                            this.canvasPosition.getY()
-                                    + (int) (this.cursor.getY() / this.canvasCellSize) * this.canvasCellSize),
+        Color cursorColor = this.selectedColor == 'N'
+                ? OPPOSITE_COLOR.get(this.pixels[this.cursorIndex])
+                : Sprite.charToColor(this.selectedColor);
 
-                    Position.of(
-                            this.canvasPosition.getX()
-                                    + (int) (this.cursor.getX() / this.canvasCellSize) * this.canvasCellSize,
-                            this.canvasPosition.getY()
-                                    + (int) (this.cursor.getY() / this.canvasCellSize + 1) * this.canvasCellSize),
-                    this.getOpositeColor(this.pixels[this.getCursorIndex()]),
-                    4.f);
-        }
+        Galaga.getContext().getRenderer().drawRectOutline(cursorPos, Size.of(CELL, CELL), 4, cursorColor);
 
         if (this.option == SpriteEditorOption.EDIT) {
-            Galaga.getContext().getRenderer().drawRectOutline(
-                    this.canvasPosition,
-                    this.canvasSize,
-                    2,
-                    Color.ORANGE);
+            Galaga.getContext().getRenderer().drawRectOutline(this.canvasPosition, this.canvasSize, 2, Color.ORANGE);
         }
 
         this.info.draw();

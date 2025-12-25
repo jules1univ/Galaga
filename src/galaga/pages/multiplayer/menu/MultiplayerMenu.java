@@ -195,11 +195,11 @@ public class MultiplayerMenu extends Page<GalagaPage> {
 
     @Override
     public void update(float dt) {
-        
-        if(Galaga.getContext().getInput().isTyping()) {
+
+        if (Galaga.getContext().getInput().isTyping()) {
             switch (this.option) {
                 case IP, USERNAME -> {
-                        this.keyboardSound.play(.5f);
+                    this.keyboardSound.play(.5f);
                 }
                 default -> {
                 }
@@ -215,7 +215,7 @@ public class MultiplayerMenu extends Page<GalagaPage> {
                 case USERNAME -> this.option = MultiplayerMenuOption.BACK;
             }
             this.updateMenuSelect();
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
+        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN, KeyEvent.VK_TAB)) {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case USERNAME -> this.option = MultiplayerMenuOption.IP;

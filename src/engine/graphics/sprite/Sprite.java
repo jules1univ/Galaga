@@ -86,7 +86,7 @@ public final class Sprite {
             case 'P' -> Color.PINK;
             case 'L' -> Color.LIGHT_GRAY;
             case 'D' -> Color.DARK_GRAY;
-            default -> new Color(0, 0, 0, 0); // BLACK = transparent
+            default -> new Color(0, 0, 0, 0); // NOIR/N = transparent
         };
     }
 

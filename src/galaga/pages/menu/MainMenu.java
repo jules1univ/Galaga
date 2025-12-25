@@ -199,7 +199,7 @@ public class MainMenu extends Page<GalagaPage> {
                     this.updateMenuSelect();
                 }
             }
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
+        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN, KeyEvent.VK_TAB)) {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case GAMEMODE -> {

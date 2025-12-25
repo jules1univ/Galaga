@@ -32,7 +32,7 @@ public class Config {
         public static final float SPEED_BULLET = 500.f;
         public static final float SPEED_ENEMY_FACTOR = 500.f;
         public static final float SPEED_ANGLE_ANIMATION = 400.f;
-        public static final float SPEED_CURSOR = 18000.f;
+        public static final float SPEED_CURSOR = 10000.f;
 
         public static final int DELAY_ENTER_INDEX = 2;
         public static final float DELAY_ENEMY_ENTER = .5f;

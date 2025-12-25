@@ -14,6 +14,7 @@ import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 
 public final class Renderer {
 
@@ -37,6 +38,14 @@ public final class Renderer {
     public void end() {
         this.g.dispose();
     }
+
+    public Graphics2D getImageGraphics(BufferedImage image) {
+        Graphics2D gImg = image.createGraphics();
+        gImg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        gImg.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        return gImg;
+    }
+
 
     public Size getTextSize(String text, Font font) {
         if (font == null || text == null || text.isEmpty()) {
@@ -130,6 +139,16 @@ public final class Renderer {
             this.g.fillPolygon(xPoints, yPoints, 3);
         }
 
+        return this;
+    }
+
+    public Renderer drawImage(BufferedImage image, Position position) {
+        if (image == null) {
+            Log.warning("Attempted to draw null image.");
+            return this;
+        }
+
+        this.g.drawImage(image, position.getIntX(), position.getIntY(), null);
         return this;
     }
 
