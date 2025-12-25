@@ -123,6 +123,11 @@ public class MultiplayerLobby extends Page<GalagaPage> {
             return;
         }
 
+        if(!this.client.isActive() && this.lobbyState != MultiplayerLobbyState.NOT_CONNECTED) {
+            this.setStatusFailConnect();
+            return;
+        }
+
     }
 
     @Override

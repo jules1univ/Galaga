@@ -42,7 +42,6 @@ public class GalagaServer extends Server {
         Log.message("Net Server new client connected: " + client.getSocket().getRemoteSocketAddress());
 
         this.players.put(client, "player-data");
-        client.stop();
     }
 
     @Override
