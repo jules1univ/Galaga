@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import engine.network.NetObject;
@@ -113,8 +114,12 @@ public abstract class Server {
     }
 
     protected final void sendAll(NetObject obj) {
-        for (ClientConnection client : this.clients) {
-            client.send(obj);
+        Iterator<ClientConnection> clientIt = this.clients.iterator();
+        while (clientIt.hasNext()) {
+            ClientConnection client = clientIt.next();
+            if (!client.send(obj) || !client.isActive()) {
+                clientIt.remove();
+            }
         }
     }
 

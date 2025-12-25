@@ -116,6 +116,7 @@ public final class ClientConnection {
             return true;
         } catch (IOException e) {
             Log.error("Net Client failed to send: " + e.getMessage());
+            this.onClientDisconnected.run(this);
             return false;
         }
     }

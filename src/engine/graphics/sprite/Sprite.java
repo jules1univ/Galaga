@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,7 @@ public final class Sprite {
                 lines.add(line);
             }
         } catch (IOException e) {
-            Log.error("Sprite loading failed: %s" , e.getMessage());
+            Log.error("Sprite loading failed: %s", e.getMessage());
             return null;
         }
 
@@ -73,6 +74,52 @@ public final class Sprite {
         return new Sprite(base, colorMap);
     }
 
+    public static boolean saveSprite(Sprite data, OutputStream out) {
+        try {
+            for (int y = 0; y < data.image.getHeight(); y++) {
+                StringBuilder row = new StringBuilder();
+                for (int x = 0; x < data.image.getWidth(); x++) {
+                    Color color = new Color(data.image.getRGB(x, y), true);
+                    row.append(colorToChar(color));
+                }
+                row.append('\n');
+                out.write(row.toString().getBytes());
+            }
+            return true;
+        } catch (IOException e) {
+            Log.error("Sprite saving failed: %s" , e.getMessage());
+            return false;
+        }
+    }
+
+    public static char colorToChar(Color color) {
+        if (color.equals(Color.WHITE)) {
+            return 'W';
+        } else if (color.equals(Color.BLUE)) {
+            return 'B';
+        } else if (color.equals(Color.RED)) {
+            return 'R';
+        } else if (color.equals(Color.YELLOW)) {
+            return 'Y';
+        } else if (color.equals(Color.GREEN)) {
+            return 'G';
+        } else if (color.equals(Color.CYAN)) {
+            return 'C';
+        } else if (color.equals(Color.MAGENTA)) {
+            return 'M';
+        } else if (color.equals(Color.ORANGE)) {
+            return 'O';
+        } else if (color.equals(Color.PINK)) {
+            return 'P';
+        } else if (color.equals(Color.LIGHT_GRAY)) {
+            return 'L';
+        } else if (color.equals(Color.DARK_GRAY)) {
+            return 'D';
+        } else {
+            return 'N';
+        }
+    }
+
     public static Color charToColor(char c) {
         return switch (c) {
             case 'W' -> Color.WHITE;
@@ -104,4 +151,5 @@ public final class Sprite {
     public BufferedImage getImage() {
         return this.image;
     }
+
 }
