@@ -3,7 +3,6 @@ package engine.network.server;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Socket;
 import java.util.Optional;
 
@@ -16,43 +15,23 @@ public final class ClientConnection {
 
     private final NetworkManager netm;
 
-    private final Socket socket;
-    private final DataInputStream in;
-    private final DataOutputStream out;
+    private Socket socket;
+    private DataInputStream in;
+    private DataOutputStream out;
 
-    private final ClientDisconnect onClientDisconnected;
+    private final ClientConnect onConnect;
+    private final ClientDisconnect onDisconnect;
     private final ClientReceive onReceive;
 
     private Thread updateThread;
     private boolean active;
 
-    public ClientConnection(NetworkManager netm, Socket socket,
-            ClientDisconnect onDisconnect,
-            ClientReceive onReceive) {
-
+    public ClientConnection(NetworkManager netm,ClientConnect onConnect, ClientDisconnect onDisconnect, ClientReceive onReceive) {
         this.netm = netm;
-        this.socket = socket;
-
+        
+        this.onConnect = onConnect;
+        this.onDisconnect = onDisconnect;
         this.onReceive = onReceive;
-        this.onClientDisconnected = onDisconnect;
-
-        InputStream ins;
-        try {
-            ins = this.socket.getInputStream();
-        } catch (IOException e) {
-            Log.error("Net Client failed to get input stream: " + e.getMessage());
-            ins = null;
-        }
-        this.in = new DataInputStream(ins);
-
-        DataOutputStream outs;
-        try {
-            outs = new DataOutputStream(this.socket.getOutputStream());
-        } catch (IOException e) {
-            Log.error("Net Client failed to get output stream: " + e.getMessage());
-            outs = null;
-        }
-        this.out = outs;
     }
 
     public Socket getSocket() {
@@ -63,18 +42,36 @@ public final class ClientConnection {
         return this.active;
     }
 
-    public void start() {
-        this.active = true;
-        this.updateThread = new Thread(this::update);
-        this.updateThread.start();
+    public boolean start(Socket socket) {
+         try {
+            this.socket = socket;
+            this.in = new DataInputStream(socket.getInputStream());
+            this.out = new DataOutputStream(socket.getOutputStream());
+
+            this.active = true;
+
+            this.onConnect.run(this);
+            this.updateThread = new Thread(this::update);
+            this.updateThread.start();
+
+            return true;
+        } catch (Exception e) {
+            Log.error("Net Client failed to start: " + e.getMessage());
+            return false;
+        }
     }
 
-    public void stop() {
-        this.active = false;
+    public boolean stop() {
+        this.onDisconnect.run(this);
         try {
-            this.socket.close();
+            this.active = false;
+            if (this.socket != null && !this.socket.isClosed()) {
+                this.socket.close();
+            }
+            return true;
         } catch (IOException e) {
             Log.error("Net Client failed to close: " + e.getMessage());
+            return false;
         }
     }
 
@@ -86,7 +83,7 @@ public final class ClientConnection {
                 byte[] data = in.readNBytes(length);
 
                 NetObject obj = this.netm.create(id);
-                if(obj == null) {
+                if (obj == null) {
                     Log.error("Net Client received unknown object id: " + id);
                     continue;
                 }
@@ -94,8 +91,7 @@ public final class ClientConnection {
                 this.onReceive.run(this, obj);
             }
         } catch (IOException e) {
-            Log.error("Net Client failed to receive: " + e.getMessage());
-            this.onClientDisconnected.run(this);
+            this.stop();
         }
     }
 
@@ -116,7 +112,7 @@ public final class ClientConnection {
             return true;
         } catch (IOException e) {
             Log.error("Net Client failed to send: " + e.getMessage());
-            this.onClientDisconnected.run(this);
+            this.stop();
             return false;
         }
     }

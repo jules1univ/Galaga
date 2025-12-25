@@ -1,5 +1,8 @@
 package galaga.net.server;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import engine.network.NetObject;
 import engine.network.NetworkManager;
 import engine.network.server.ClientConnection;
@@ -9,6 +12,8 @@ import galaga.Config;
 
 public class GalagaServer extends Server {
     
+    private final Map<ClientConnection, String> players = new HashMap<>();
+
     public GalagaServer(NetworkManager netm) {
         super(netm, true, Config.NET_TICKRATE);
     }
@@ -35,11 +40,16 @@ public class GalagaServer extends Server {
     @Override
     protected void onClientConnected(ClientConnection client) {
         Log.message("Net Server new client connected: " + client.getSocket().getRemoteSocketAddress());
+
+        this.players.put(client, "player-data");
+        client.stop();
     }
 
     @Override
     protected void onClientDisconnected(ClientConnection client) {
         Log.message("Net Server client disconnected: " + client.getSocket().getRemoteSocketAddress());
+        
+        this.players.remove(client);
     }
 
 }

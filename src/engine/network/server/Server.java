@@ -85,6 +85,14 @@ public abstract class Server {
                 this.onTick();
             }
 
+            Iterator<ClientConnection> clientIt = this.clients.iterator();
+            while (clientIt.hasNext()) {
+                ClientConnection client = clientIt.next();
+                if (!client.isActive()) {
+                    clientIt.remove();
+                }
+            }
+
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
@@ -97,15 +105,12 @@ public abstract class Server {
         this.onActivate();
 
         try {
-
             while (this.active) {
-
-                ClientConnection client = new ClientConnection(this.netm, this.serverSocket.accept(),
+                ClientConnection client = new ClientConnection(this.netm, this::onClientConnected,
                         this::onClientDisconnected, this::onClientReceive);
-                client.start();
-                this.clients.add(client);
+                client.start(this.serverSocket.accept());
 
-                this.onClientConnected(client);
+                this.clients.add(client);
             }
         } catch (IOException e) {
             Log.error("Net Server failed to accept client connection: " + e.getMessage());

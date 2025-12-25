@@ -50,6 +50,8 @@ public abstract class Client {
     }
 
     public boolean stop() {
+        this.onDisconnect();
+
         try {
             this.active = false;
             if (this.socket != null && !this.socket.isClosed()) {
@@ -80,8 +82,7 @@ public abstract class Client {
                 this.onReceive(obj);
             }
         } catch (IOException e) {
-            Log.error("Net Client failed to receive: " + e.getMessage());
-            this.onDisconnect();
+            this.stop();
         }
     }
 
@@ -104,7 +105,7 @@ public abstract class Client {
             return true;
         } catch (IOException e) {
             Log.error("Net Client failed to send: " + e.getMessage());
-            this.onDisconnect();
+            this.stop();
             return false;
         }
     }
