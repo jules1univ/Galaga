@@ -231,7 +231,7 @@ public class SpriteEditor extends Page<GalagaPage> {
     }
 
     private void rebuildCanvas() {
-        this.canvasRenderer.begin();
+        this.canvasRenderer.beginSub();
 
         for (int y = 0; y < SIZE; y++) {
             for (int x = 0; x < SIZE; x++) {

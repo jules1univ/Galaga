@@ -33,11 +33,7 @@ public final class Renderer {
 
     public static Renderer ofSub(Size size) {
         BufferedImage image = new BufferedImage(size.getIntWidth(), size.getIntHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = image.createGraphics();
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-        return new Renderer(g, image);
+        return new Renderer(null, image);
     }
 
     private Renderer(Graphics2D g, BufferedImage image) {
@@ -49,6 +45,18 @@ public final class Renderer {
         this.g = newG;
         this.g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         this.g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    }
+
+    public void beginSub() {
+        if (this.image == null) {
+            Log.warning("Attempted to begin sub-renderer on a non-sub renderer.");
+            return;
+        }
+        this.g = this.image.createGraphics();
+        this.g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        this.g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        this.g.clearRect(0, 0, this.image.getWidth(), this.image.getHeight());
     }
 
     public void begin() {

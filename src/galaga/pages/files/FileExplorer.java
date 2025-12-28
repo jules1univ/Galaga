@@ -226,7 +226,7 @@ public class FileExplorer extends Page<GalagaPage> {
             return;
         }
 
-        this.displayFilesRenderer.begin();
+        this.displayFilesRenderer.beginSub();
         int margin = 10;
         int textHeight = this.displayFilesRenderer.getTextSize(this.files.reversed().get(0).getFirst(), this.titleFont)
                 .getIntHeight();
