@@ -60,11 +60,10 @@ public class Galaga extends Application<GalagaPage> {
                 .indexOf("-agentlib:jdwp") > 0;
         Application.DEBUG_MODE = debugActive || args.getBool("debug");
 
-        if (args.getBool("server") && args.getInt("port", -1) > 0) {
+        if (args.getBool("server")) {
 
-            int port = args.getInt("port", -1);
             GalagaServer server = new GalagaServer();
-            server.start(port);
+            server.launch(args);
             return;
         }
 

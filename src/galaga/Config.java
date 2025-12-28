@@ -96,6 +96,7 @@ public class Config {
         public static final Color COLOR_BULLET = Color.RED;
 
         public static final float NET_TICKRATE = 30.f;
+        public static int NET_SERVER_PORT = 5555;
 
         public static final String PATH_CUSTOM_SHIPS = ".";
 

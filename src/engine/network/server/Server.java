@@ -26,6 +26,10 @@ public abstract class Server {
         this.tick = 1.0f / tickRate;
     }
 
+    public boolean isActive() {
+        return this.active;
+    }
+
     public boolean start(int port) {
         try {
             this.serverSocket = new ServerSocket(port);
@@ -104,7 +108,9 @@ public abstract class Server {
                 this.clients.add(client);
             }
         } catch (IOException e) {
-            Log.error("Net Server failed to accept client connection: %s", e.getMessage());
+            if (this.active) {
+                Log.error("Net Server failed to accept client connection: %s", e.getMessage());
+            }
         }
 
     }

@@ -1,7 +1,9 @@
 package engine.utils.logger;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 public final class Log {
 
@@ -41,4 +43,22 @@ public final class Log {
     public static void error(String message, Object... args) {
         log(String.format(message, args), LogStatus.ERROR);
     }
+
+    public static Optional<String> input(String prompt, Object... args) {
+        System.out.print(String.format(prompt, args));
+        try {
+            byte[] inputBytes = new byte[256];
+            int bytesRead = System.in.read(inputBytes);
+
+            if (bytesRead == -1) {
+                return Optional.empty();
+            }
+
+            return Optional.of(new String(inputBytes, 0, bytesRead).trim());
+        } catch (IOException e) {
+            error("Log failed to read input: %s", e.getMessage());
+            return Optional.of("");
+        }
+    }
+
 }

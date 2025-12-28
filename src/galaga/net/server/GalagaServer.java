@@ -3,11 +3,13 @@ package galaga.net.server;
 import engine.network.NetObject;
 import engine.network.server.ClientConnection;
 import engine.network.server.Server;
+import engine.utils.Args;
 import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.net.objects.request.NetRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class GalagaServer extends Server {
 
@@ -15,7 +17,49 @@ public class GalagaServer extends Server {
     private final int maxPlayers = 4; // TODO: load from server config
 
     public GalagaServer() {
-        super(true, Config.NET_TICKRATE);
+        super(false, Config.NET_TICKRATE);
+    }
+
+    public void launch(Args args) {
+        int port = args.getInt("port", Config.NET_SERVER_PORT);
+        String config = args.get("config", null);
+        if (config != null) {
+            // 
+        }
+
+        if(!this.start(port)) {
+            Log.error("Server failed to start on port %d", port);
+            return;
+        }
+
+        do{
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Log.error("Server launch interrupted: %s", e.getMessage());
+                return;
+            }
+        }while(!this.isActive());
+
+        while (this.isActive()) {
+            Optional<String> input = Log.input(">");
+            if (input.isEmpty()) {
+                Log.message("Server stopping...");
+                this.stop();
+                break;
+            }
+
+            switch (input.get().trim().toLowerCase()) {
+                case "exit" -> {
+                    Log.message("Server stopping...");
+                    this.stop();
+                }
+                case "status" -> {
+                    Log.message("Server Status: %d/%d players connected.", this.players.size(), this.maxPlayers);
+                }
+                default -> Log.message("Unknown command: '%s'", input);
+            }
+        }
     }
 
     @Override
@@ -50,14 +94,14 @@ public class GalagaServer extends Server {
                 obj.getClass().getSimpleName(), obj.toString());
 
         if (!this.players.containsKey(client)) {
-            Log.warning("Received data from unregistered client: %s",client.getSocket().getRemoteSocketAddress());
+            Log.warning("Received data from unregistered client: %s", client.getSocket().getRemoteSocketAddress());
             client.stop();
             return;
         }
 
         NetPlayerData player = this.players.get(client);
         if (player == null) {
-            Log.warning("Player data is null for client: %s",client.getSocket().getRemoteSocketAddress());
+            Log.warning("Player data is null for client: %s", client.getSocket().getRemoteSocketAddress());
             client.stop();
             return;
         }
@@ -76,7 +120,7 @@ public class GalagaServer extends Server {
             return;
         }
 
-        Log.message("Net Server new client connected: %s",client.getSocket().getRemoteSocketAddress());
+        Log.message("Net Server new client connected: %s", client.getSocket().getRemoteSocketAddress());
         this.players.put(client, new NetPlayerData());
     }
 
