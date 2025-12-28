@@ -50,6 +50,7 @@ public class Config {
         public static final float TIME_BLINKSTAR_MIN = 3.0f;
 
         public static final int SIZE_SKY_GRID = 50;
+        public static final int SIZE_MAX_DISPLAY_FILES = 10;
         public static final int SIZE_BULLET_CAPACITY = 32;
         public static final int SIZE_ENEMY_DIE_CAPACITY = 4;
         public static final float SIZE_FONT_XLARGE = 48.f;
@@ -95,6 +96,8 @@ public class Config {
         public static final Color COLOR_BULLET = Color.RED;
 
         public static final float NET_TICKRATE = 30.f;
+
+        public static final String PATH_CUSTOM_SHIPS = ".";
 
         public static final String VARIANT_FONT_TEXT = "text";
         public static final String VARIANT_FONT_LARGE = "large";

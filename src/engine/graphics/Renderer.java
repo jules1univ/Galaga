@@ -39,6 +39,10 @@ public final class Renderer {
         this.g.dispose();
     }
 
+    public BufferedImage createImage(int width, int height) {
+        return new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    }
+
     public Graphics2D getImageGraphics(BufferedImage image) {
         Graphics2D gImg = image.createGraphics();
         gImg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -255,4 +259,5 @@ public final class Renderer {
         return this;
     }
 
+   
 }

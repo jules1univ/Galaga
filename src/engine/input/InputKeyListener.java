@@ -18,6 +18,7 @@ public final class InputKeyListener implements KeyListener {
     }
 
     public boolean isKeyPressed(int... keys) {
+
         for (int key : keys) {
             if (keysDown.contains(key)) {
                 keysDown.remove(key);

@@ -14,12 +14,14 @@ import engine.elements.page.PageState;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
 import engine.elements.ui.textarea.Textarea;
+import engine.graphics.Renderer;
 import engine.graphics.sprite.Sprite;
 import engine.utils.Position;
 import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
+import galaga.pages.files.FileExplorerArgs;
 
 public class SpriteEditor extends Page<GalagaPage> {
 
@@ -92,10 +94,7 @@ public class SpriteEditor extends Page<GalagaPage> {
             this.pixels[i] = 'N';
         }
 
-        this.canvasImage = new BufferedImage(
-                SIZE * CELL,
-                SIZE * CELL,
-                BufferedImage.TYPE_INT_ARGB);
+        this.canvasImage = Galaga.getContext().getRenderer().createImage(SIZE * CELL, SIZE * CELL);
 
         this.textFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_TEXT);
         this.titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_LARGE);
@@ -203,8 +202,17 @@ public class SpriteEditor extends Page<GalagaPage> {
         }
 
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
-            if (this.option == SpriteEditorOption.BACK) {
-                Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_MENU);
+            switch (this.option) {
+                case BACK -> {
+                    Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_MENU);
+
+                }
+                case SAVE -> {
+                    Galaga.getContext().getApplication().setCurrentPage(GalagaPage.FILE_EXPLORER,
+                            FileExplorerArgs.ofSaveMode(Config.PATH_CUSTOM_SHIPS));
+                }
+                default -> {
+                }
             }
         }
 
@@ -228,6 +236,11 @@ public class SpriteEditor extends Page<GalagaPage> {
 
     private void rebuildCanvas() {
         Graphics2D g = Galaga.getContext().getRenderer().getImageGraphics(this.canvasImage);
+
+        Renderer canvasRenderer = new Renderer();
+        canvasRenderer.set(g);
+        canvasRenderer.begin();
+
         for (int y = 0; y < SIZE; y++) {
             for (int x = 0; x < SIZE; x++) {
                 char ch = this.pixels[y * SIZE + x];
@@ -235,21 +248,15 @@ public class SpriteEditor extends Page<GalagaPage> {
                 if (ch == 'N') {
                     color = Color.BLACK;
                 }
-                g.setColor(color);
-                g.fillRect(x * CELL, y * CELL, CELL, CELL);
+                canvasRenderer.drawRect(
+                        Position.of(x * CELL, y * CELL),
+                        Size.of(CELL, CELL),
+                        color);
             }
         }
 
-        g.setColor(Color.WHITE);
-        for (int x = 0; x < this.canvasSize.getIntWidth(); x += CELL) {
-            g.drawLine(x, 0, x, this.canvasSize.getIntHeight());
-        }
-
-        for (int y = 0; y < this.canvasSize.getIntHeight(); y += CELL) {
-            g.drawLine(0, y, this.canvasSize.getIntWidth(), y);
-        }
-
-        g.dispose();
+        canvasRenderer.drawGrid(Position.zero(), this.canvasSize, CELL, Color.WHITE);
+        canvasRenderer.end();
         this.canvasDirty = false;
     }
 

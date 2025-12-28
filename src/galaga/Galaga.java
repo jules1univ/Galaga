@@ -14,23 +14,26 @@ import engine.resource.sprite.SpriteResource;
 import engine.utils.Args;
 import engine.utils.Position;
 import engine.utils.Size;
+
 import galaga.level.LevelResource;
 import galaga.net.server.GalagaServer;
 import galaga.pages.editor.level.LevelEditor;
 import galaga.pages.editor.menu.EditorMenu;
 import galaga.pages.editor.settings.Settings;
 import galaga.pages.editor.sprite.SpriteEditor;
+import galaga.pages.files.FileExplorer;
 import galaga.pages.loading.Loading;
 import galaga.pages.menu.MainMenu;
 import galaga.pages.multiplayer.lobby.MultiplayerLobby;
 import galaga.pages.multiplayer.menu.MultiplayerMenu;
 import galaga.pages.solo.GameSolo;
 import galaga.score.ScoreResource;
+
 import java.awt.event.KeyEvent;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.lang.management.ManagementFactory;
 import java.util.List;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 public class Galaga extends Application<GalagaPage> {
 
@@ -85,6 +88,8 @@ public class Galaga extends Application<GalagaPage> {
         }
 
         this.registerPage(GalagaPage.MAIN_MENU, MainMenu.class);
+
+        this.registerPage(GalagaPage.FILE_EXPLORER, FileExplorer.class);
 
         this.registerPage(GalagaPage.SOLO_GAME, GameSolo.class);
 
