@@ -1,14 +1,13 @@
 package galaga.entities.enemies;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import engine.graphics.sprite.Sprite;
 import engine.utils.Position;
 import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.level.Level;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EnemyConfig {
     public static final int NO_INDEX = -1;
@@ -26,7 +25,7 @@ public class EnemyConfig {
     public static EnemyConfig create(String line, int index, Level level) {
         String[] data = line.split(" ");
         if (data.length < 6) {
-            Log.error("Level enemy data is invalid: " + line);
+            Log.error("Level enemy data is invalid: %s", line);
             return null;
         }
         String enemyType = data[0];
@@ -48,7 +47,7 @@ public class EnemyConfig {
             return new EnemyConfig(type, lock, value, speed, index, level);
 
         } catch (NumberFormatException e) {
-            Log.error("Level enemy parsing failed: " + e.getMessage());
+            Log.error("Level enemy parsing failed: %s", e.getMessage());
             return null;
         }
     }

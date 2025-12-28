@@ -1,9 +1,5 @@
 package engine.elements.ui.input;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.KeyEvent;
-
 import engine.elements.ui.UIElement;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
@@ -11,6 +7,9 @@ import engine.input.InputKeyListener;
 import engine.utils.Position;
 import engine.utils.Size;
 import galaga.Galaga;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.KeyEvent;
 
 public class Input extends UIElement {
     private static final float CURSOR_SIZE = 5.f;
@@ -33,7 +32,7 @@ public class Input extends UIElement {
     private Color color;
 
     private int cursor = 0;
-    private Position cursorPosition;
+    private final Position cursorPosition;
     private float cursorBlinkTime = 0.f;
     private boolean cursorBlink = true;
 
@@ -91,6 +90,10 @@ public class Input extends UIElement {
             this.cursorBlinkTime = 0.3f;
         }
         this.updateText();
+    }
+
+    public boolean isFocused() {
+        return this.focused;
     }
 
     public void setCenter(TextPosition hor, TextPosition ver) {

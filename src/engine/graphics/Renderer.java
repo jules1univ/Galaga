@@ -50,7 +50,6 @@ public final class Renderer {
         return gImg;
     }
 
-
     public Size getTextSize(String text, Font font) {
         if (font == null || text == null || text.isEmpty()) {
             Log.warning("Attempted to get size of null or empty text.");
@@ -259,5 +258,4 @@ public final class Renderer {
         return this;
     }
 
-   
 }

@@ -1,12 +1,11 @@
 package engine.network;
 
+import engine.utils.logger.Log;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import engine.utils.logger.Log;
 
 public class NetworkManager {
     private static final Map<Integer, Class<? extends NetObject>> networkClass = new HashMap<>();
@@ -42,7 +41,7 @@ public class NetworkManager {
             return networkClass.get(id).getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
-            Log.error("Net Manager failed to create object for id " + id + ": " + e.getMessage());
+            Log.error("Net Manager failed to create object for id %d: %s", id, e.getMessage());
             return null;
         }
     }

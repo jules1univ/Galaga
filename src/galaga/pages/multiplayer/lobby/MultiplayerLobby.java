@@ -1,8 +1,5 @@
 package galaga.pages.multiplayer.lobby;
 
-import java.awt.Color;
-import java.awt.Font;
-
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.elements.ui.text.Text;
@@ -12,6 +9,8 @@ import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
 import galaga.net.client.GalagaClient;
+import java.awt.Color;
+import java.awt.Font;
 
 public class MultiplayerLobby extends Page<GalagaPage> {
 
@@ -125,7 +124,7 @@ public class MultiplayerLobby extends Page<GalagaPage> {
 
         if(!this.client.isActive() && this.lobbyState != MultiplayerLobbyState.NOT_CONNECTED) {
             this.setStatusFailConnect();
-            return;
+            // return;
         }
 
     }

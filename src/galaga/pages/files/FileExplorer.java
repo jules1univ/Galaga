@@ -1,15 +1,5 @@
 package galaga.pages.files;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.elements.ui.input.Input;
@@ -21,43 +11,77 @@ import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileExplorer extends Page<GalagaPage> {
+
+    private static final int FILE_DIRECTORY = -1;
+    private static final int FILE_PARENT_DIRECTORY = -2;
 
     private FileExplorerArgs args = FileExplorerArgs.empty();
 
     private Path currentPath;
     private int index = 0;
-    private List<Pair<String, Integer>> files = new ArrayList<>();
-    
+    private final List<Pair<String, Integer>> files = new ArrayList<>();
+
     private BufferedImage displayFiles;
     private Position displayFilesPosition;
 
     private Font titleFont;
     private Input saveInput;
 
+    private FileExplorerOption option;
 
     public FileExplorer() {
         super(GalagaPage.FILE_EXPLORER);
     }
 
     private void updateFiles() {
-        this.currentPath = Path.of(this.args.getBasePath()).toAbsolutePath().normalize();
+        this.index = 0;
         this.files.clear();
-        files.add(Pair.of("..", -1));
         try {
-            DirectoryStream<Path> dir = Files.newDirectoryStream(this.currentPath);
-            for (Path item : dir) {
-                String name = item.getFileName().toString();
-                int size = (int) Files.size(item);
-                this.files.add(Pair.of(name, size));
-            }
-            dir.close();
-        } catch (Exception e) {
-            Log.error("Files", "Failed to read directory (%s): %s", this.currentPath.getFileName(), e.getMessage());
-        }
+            try (DirectoryStream<Path> dir = Files.newDirectoryStream(this.currentPath)) {
+                for (Path item : dir) {
+                    String name = item.getFileName().toString();
+                    int fileSize = item.toFile().isDirectory() ? FILE_DIRECTORY : (int) Files.size(item);
+                    this.files.add(Pair.of(name, fileSize));
+                }
 
-        this.rebuildDisplayFiles();
+                this.files.sort((a, b) -> {
+                    if (a.getSecond() == FILE_DIRECTORY && b.getSecond() != FILE_DIRECTORY) {
+                        return -1;
+                    } else if (a.getSecond() != FILE_DIRECTORY && b.getSecond() == FILE_DIRECTORY) {
+                        return 1;
+                    } else {
+                        return a.getFirst().compareToIgnoreCase(b.getFirst());
+                    }
+                });
+
+                if (this.currentPath.getParent() != null) {
+                    this.files.add(0, Pair.of("..", FILE_PARENT_DIRECTORY));
+                }
+            }
+
+            this.rebuildDisplayFiles();
+        } catch (IOException e) {
+            Log.error("Failed to read directory: %s", e.getMessage());
+
+            Path newPath = Path.of(".").toAbsolutePath().normalize();
+            if (!this.currentPath.equals(newPath)) {
+                this.currentPath = newPath;
+                this.updateFiles();
+            }
+        }
     }
 
     @Override
@@ -70,24 +94,24 @@ public class FileExplorer extends Page<GalagaPage> {
         }
 
         this.saveInput = new Input(Position.of(
-            Config.WINDOW_WIDTH/2,
-            margin
-        ), Config.WINDOW_WIDTH/2 - margin * 2, "Filename...", Color.WHITE, this.titleFont);
-        if(!this.saveInput.init()) {
+                Config.WINDOW_WIDTH / 2,
+                margin), Config.WINDOW_WIDTH / 2 - margin * 2, "Filename...", Color.WHITE, this.titleFont);
+        if (!this.saveInput.init()) {
             return false;
         }
         this.saveInput.setCenter(TextPosition.CENTER, TextPosition.BEGIN);
 
-        this.displayFiles = Galaga.getContext().getRenderer().createImage(            
-            Config.WINDOW_WIDTH - margin * 2,
-            Config.WINDOW_HEIGHT - this.saveInput.getSize().getIntHeight() - margin * 3
-        );
+        this.displayFiles = Galaga.getContext().getRenderer().createImage(
+                Config.WINDOW_WIDTH - margin * 2,
+                Config.WINDOW_HEIGHT - this.saveInput.getSize().getIntHeight() - margin * 3);
         this.displayFilesPosition = Position.of(
-            margin,
-            this.saveInput.getSize().getIntHeight() + margin * 2
-        );
+                margin,
+                this.saveInput.getSize().getIntHeight() + margin * 2);
 
+        this.currentPath = Path.of(".").toAbsolutePath().normalize();
         this.updateFiles();
+
+        this.option = FileExplorerOption.VIEW;
         this.state = PageState.ACTIVE;
         return true;
     }
@@ -108,39 +132,107 @@ public class FileExplorer extends Page<GalagaPage> {
         this.args = (FileExplorerArgs) rawArgs[0];
         this.saveInput.setFocused(this.args.isSaveMode());
 
+        if (this.args.isSaveMode()) {
+            this.option = FileExplorerOption.FILE_SAVE;
+        }
+
+        this.currentPath = Path.of(this.args.getBasePath()).toAbsolutePath().normalize();
         this.updateFiles();
     }
 
     @Override
     public void update(float dt) {
-        if(this.args.isSaveMode()) {
+
+        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_TAB)) {
+            this.option = this.option == FileExplorerOption.VIEW ? FileExplorerOption.FILE_SAVE
+                    : FileExplorerOption.VIEW;
+
+            if (this.option == FileExplorerOption.FILE_SAVE) {
+                this.saveInput.setFocused(true);
+                this.saveInput.setColor(Color.ORANGE);
+            } else {
+                this.saveInput.setFocused(false);
+                this.saveInput.setColor(Color.WHITE);
+            }
+
+            this.rebuildDisplayFiles();
+        }
+
+        if (this.option == FileExplorerOption.FILE_SAVE) {
             this.saveInput.update(dt);
+            return;
+        }
+
+        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
+            this.index--;
+            this.rebuildDisplayFiles();
+        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
+            this.index++;
+            this.rebuildDisplayFiles();
+        }
+
+        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+            Pair<String, Integer> selectedFile = this.files.get(this.index);
+
+            switch (selectedFile.getSecond()) {
+                case FILE_PARENT_DIRECTORY -> {
+                    this.currentPath = this.currentPath.getParent();
+                    this.updateFiles();
+                }
+                case FILE_DIRECTORY -> {
+                    this.currentPath = this.currentPath.resolve(selectedFile.getFirst());
+                    this.updateFiles();
+                }
+                default -> {
+                    if (!this.args.isSaveMode()) {
+                        this.args.getCallback().run(
+                                this.currentPath.resolve(selectedFile.getFirst()).toString());
+                    }
+                }
+            }
         }
     }
 
     private void rebuildDisplayFiles() {
+        if (this.files.isEmpty()) {
+            return;
+        }
+
         Graphics2D gImg = Galaga.getContext().getRenderer().getImageGraphics(this.displayFiles);
         Renderer fileRenderer = new Renderer();
         fileRenderer.set(gImg);
         fileRenderer.begin();
 
         int margin = 10;
-        int textHeight = fileRenderer.getTextSize(this.files.reversed().get(0).getFirst(), this.titleFont).getIntHeight();
+        int textHeight = fileRenderer.getTextSize(this.files.reversed().get(0).getFirst(), this.titleFont)
+                .getIntHeight();
 
-        for (int i = this.index; i < Math.min(this.files.size(), this.index + Config.SIZE_MAX_DISPLAY_FILES); i++) {
+        Color selectColor = this.option == FileExplorerOption.VIEW ? Color.ORANGE : Color.WHITE;
+        this.index = Math.clamp(this.index, 0, this.files.size() - 1);
+
+        for (int i = this.index; i < this.files.size(); i++) {
+            if (i - this.index >= Config.SIZE_MAX_DISPLAY_FILES) {
+                break;
+            }
             Pair<String, Integer> file = this.files.get(i);
 
-            String displayText = String.format("%s (%d bytes)", file.getFirst(), file.getSecond());
+            int fileSize = file.getSecond();
+            String displayText;
+
+            switch (fileSize) {
+                case FILE_PARENT_DIRECTORY -> displayText = "[..]";
+                case FILE_DIRECTORY -> displayText = String.format("[DIR] %s", file.getFirst());
+                default -> displayText = String.format("[FILE] %s (%d bytes)", file.getFirst(), file.getSecond());
+            }
+
             Position textPosition = Position.of(
-                margin,
-                margin + (i - this.index+2) * textHeight
-            );
+                    margin,
+                    margin + (i - this.index + 2) * textHeight);
             fileRenderer.drawText(
-                displayText,
-                textPosition,
-                Color.WHITE,
-                this.titleFont
-            );
+                    displayText,
+                    textPosition,
+                    i == this.index ? selectColor : Color.WHITE,
+                    this.titleFont);
         }
 
         fileRenderer.end();
@@ -148,14 +240,13 @@ public class FileExplorer extends Page<GalagaPage> {
 
     @Override
     public void draw() {
-        if(this.args.isSaveMode()) {
+        if (this.args.isSaveMode()) {
             this.saveInput.draw();
         }
 
         Galaga.getContext().getRenderer().drawImage(
-            this.displayFiles,
-            this.displayFilesPosition
-        );
+                this.displayFiles,
+                this.displayFilesPosition);
     }
 
 }

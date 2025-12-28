@@ -14,7 +14,6 @@ import engine.resource.sprite.SpriteResource;
 import engine.utils.Args;
 import engine.utils.Position;
 import engine.utils.Size;
-
 import galaga.level.LevelResource;
 import galaga.net.server.GalagaServer;
 import galaga.pages.editor.level.LevelEditor;
@@ -28,21 +27,18 @@ import galaga.pages.multiplayer.lobby.MultiplayerLobby;
 import galaga.pages.multiplayer.menu.MultiplayerMenu;
 import galaga.pages.solo.GameSolo;
 import galaga.score.ScoreResource;
-
 import java.awt.event.KeyEvent;
-import java.lang.management.ManagementFactory;
-import java.util.List;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.lang.management.ManagementFactory;
+import java.util.List;
 
 public class Galaga extends Application<GalagaPage> {
 
     static {
-
         NetworkManager.register(List.of(
                 Position.class,
                 Size.class));
-
     }
 
     @SuppressWarnings("unchecked")

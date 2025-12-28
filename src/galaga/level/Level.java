@@ -6,9 +6,9 @@ import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.entities.enemies.Enemy;
+import galaga.entities.enemies.EnemyConfig;
 import galaga.entities.enemies.EnemyFactory;
 import galaga.entities.enemies.EnemyType;
-import galaga.entities.enemies.EnemyConfig;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +37,7 @@ public class Level {
                 lines.add(line);
             }
         } catch (IOException e) {
-            Log.error("Level loading failed: " + e.getMessage());
+            Log.error("Level loading failed: %s", e.getMessage());
             return null;
         }
 
@@ -144,7 +144,7 @@ public class Level {
 
             return level;
         } catch (Exception e) {
-            Log.error("Level header parsing failed: " + e.getMessage());
+            Log.error("Level header parsing failed: %s", e.getMessage());
             return null;
         }
     }
@@ -152,7 +152,7 @@ public class Level {
     private static Level createLevelFromHeader(String lineHeader) {
         String[] header = lineHeader.split(" ");
         if (header.length < 4) {
-            Log.error("Level header is invalid or level already exists: " + lineHeader);
+            Log.error("Level header is invalid or level already exists: %s", lineHeader);
             return null;
         }
 
@@ -162,7 +162,7 @@ public class Level {
             float missileCooldown = Integer.parseInt(header[3]) * Config.DELAY_ENEMY_COOLDOWN_FACTOR_MISSILE;
             return new Level(header[0], formationSpeed, attackCooldown, missileCooldown);
         } catch (NumberFormatException e) {
-            Log.error("Level header parsing failed: " + e.getMessage());
+            Log.error("Level header parsing failed: %s", e.getMessage());
             return null;
         }
     }

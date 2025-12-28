@@ -1,22 +1,20 @@
 package engine.network.server;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import engine.network.NetObject;
 import engine.utils.logger.Log;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.Iterator;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.LockSupport;
 
 public abstract class Server {
-    protected final List<ClientConnection> clients = Collections.synchronizedList(new ArrayList<>());
+    private final CopyOnWriteArrayList<ClientConnection> clients = new CopyOnWriteArrayList<>();
 
-    protected Thread handleThread;
-    protected Thread updateThread;
+    private Thread handleThread;
+    private Thread updateThread;
 
-    protected volatile boolean active;
+    private volatile boolean active;
 
     private final boolean noMainThread;
     private final double tick;
@@ -46,7 +44,7 @@ public abstract class Server {
 
             return true;
         } catch (IOException e) {
-            Log.error("Net Server failed to start on port " + port + ": " + e.getMessage());
+            Log.error("Net Server failed to start on port %d: %s", port, e.getMessage());
             return false;
         }
     }
@@ -56,7 +54,7 @@ public abstract class Server {
         try {
             this.serverSocket.close();
         } catch (IOException e) {
-            Log.error("Net Server failed to close: " + e.getMessage());
+            Log.error("Net Server failed to close: %s", e.getMessage());
         }
 
         for (ClientConnection client : this.clients) {
@@ -80,19 +78,17 @@ public abstract class Server {
                 this.onTick();
             }
 
-            Iterator<ClientConnection> clientIt = this.clients.iterator();
-            while (clientIt.hasNext()) {
-                ClientConnection client = clientIt.next();
-                if (!client.isActive()) {
-                    clientIt.remove();
+            synchronized (this.clients) {
+                Iterator<ClientConnection> clientIt = this.clients.iterator();
+                while (clientIt.hasNext()) {
+                    ClientConnection client = clientIt.next();
+                    if (!client.isActive()) {
+                        clientIt.remove();
+                    }
                 }
             }
 
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                break;
-            }
+            LockSupport.parkNanos(1_000_000);
         }
     }
 
@@ -108,17 +104,19 @@ public abstract class Server {
                 this.clients.add(client);
             }
         } catch (IOException e) {
-            Log.error("Net Server failed to accept client connection: " + e.getMessage());
+            Log.error("Net Server failed to accept client connection: %s", e.getMessage());
         }
 
     }
 
     protected final void sendAll(NetObject obj) {
-        Iterator<ClientConnection> clientIt = this.clients.iterator();
-        while (clientIt.hasNext()) {
-            ClientConnection client = clientIt.next();
-            if (!client.send(obj) || !client.isActive()) {
-                clientIt.remove();
+        synchronized (clients) {
+            Iterator<ClientConnection> clientIt = this.clients.iterator();
+            while (clientIt.hasNext()) {
+                ClientConnection client = clientIt.next();
+                if (!client.send(obj) || !client.isActive()) {
+                    clientIt.remove();
+                }
             }
         }
     }

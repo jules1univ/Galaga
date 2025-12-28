@@ -9,7 +9,6 @@ import engine.utils.Time;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.score.Score;
-
 import java.awt.Color;
 import java.awt.Font;
 
@@ -41,11 +40,11 @@ public class GameHeaderDisplay extends UIElement {
         this.score = new Text("SCORE: 0", Position.of(this.size.getWidth()/2, this.size.getHeight()/2), Color.WHITE, this.textFont);
         this.score.setCenter(TextPosition.CENTER, TextPosition.BEGIN);
 
-        Score score = Galaga.getContext().getResource().get(Config.BEST_SCORE);
-        if(score == null) {
+        Score bestScoreVal = Galaga.getContext().getResource().get(Config.BEST_SCORE);
+        if(bestScoreVal == null) {
             return false;
         }
-        this.bestScore = new Text(String.format("BEST: %d", score.getValue()), Position.of(0, this.size.getHeight()/2), Color.RED, this.textFont);
+        this.bestScore = new Text(String.format("BEST: %d", bestScoreVal.getValue()), Position.of(0, this.size.getHeight()/2), Color.RED, this.textFont);
         this.bestScore.setCenter(TextPosition.BEGIN, TextPosition.BEGIN);
         return true;
     }

@@ -1,5 +1,6 @@
 package galaga.score;
 
+import engine.utils.logger.Log;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,10 +8,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import engine.utils.logger.Log;
-
 public class Score implements Comparable<Score> {
-    private int value;
+    private final int value;
     
     public static Score loadScore(InputStream in)
     {
@@ -21,7 +20,7 @@ public class Score implements Comparable<Score> {
                 lines.add(line);
             }
         } catch (IOException e) {
-            Log.error("Level loading failed: " + e.getMessage());
+            Log.error("Level loading failed: %s", e.getMessage());
             return null;
         }
 
@@ -32,7 +31,7 @@ public class Score implements Comparable<Score> {
         try {
             value = Integer.parseInt(lines.get(0));
         } catch (NumberFormatException e) {
-            Log.error("Score loading failed: " + e.getMessage());
+            Log.error("Score loading failed: %s",e.getMessage());
             return null;
         }
         return new Score(value);
@@ -45,7 +44,7 @@ public class Score implements Comparable<Score> {
             out.flush();
             return true;
         } catch (IOException e) {
-            Log.error("Score saving failed: " + e.getMessage());
+            Log.error("Score saving failed: %s",e.getMessage());
             return false;
         }
     }

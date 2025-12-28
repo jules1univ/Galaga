@@ -87,7 +87,7 @@ public final class Sprite {
             }
             return true;
         } catch (IOException e) {
-            Log.error("Sprite saving failed: %s" , e.getMessage());
+            Log.error("Sprite saving failed: %s", e.getMessage());
             return false;
         }
     }

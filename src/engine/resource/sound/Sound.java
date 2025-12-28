@@ -1,12 +1,10 @@
 package engine.resource.sound;
 
 import engine.utils.logger.Log;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -18,18 +16,20 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class Sound {
     private final ArrayList<Clip> clips = new ArrayList<>();
-    private AudioFormat format;
-    private byte[] audioData;
-    private DataLine.Info info;
+    private final AudioFormat format;
+    private final byte[] audioData;
+    private final DataLine.Info info;
 
     public static Sound createSound(InputStream in) {
         try {
             BufferedInputStream bis = new BufferedInputStream(in);
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bis);
+            AudioFormat format;
+            byte[] audioData;
 
-            AudioFormat format = audioInputStream.getFormat();
-            byte[] audioData = audioInputStream.readAllBytes();
-            audioInputStream.close();
+            try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(bis)) {
+                format = audioInputStream.getFormat();
+                audioData = audioInputStream.readAllBytes();
+            }
             
             DataLine.Info info = new DataLine.Info(Clip.class, format);
 
@@ -38,10 +38,10 @@ public class Sound {
 
             return new Sound(format, audioData, info, clip);
         } catch (UnsupportedAudioFileException e) {
-            Log.error("Sound format not supported: " + e.getMessage());
+            Log.error("Sound format not supported: %s", e.getMessage());
             return null;
         } catch (IOException | LineUnavailableException e) {
-            Log.error("Sound loading failed: " + e.getMessage());
+            Log.error("Sound loading failed: %s", e.getMessage());
             return null;
         }
     }
@@ -70,7 +70,7 @@ public class Sound {
                 clip.open(this.format, this.audioData, 0, this.audioData.length);
                 this.clips.add(clip);
             } catch (LineUnavailableException e) {
-                Log.error("Sound creation failed: " + e.getMessage());
+                Log.error("Sound creation failed: %s", e.getMessage());
                 return;
             }
         }

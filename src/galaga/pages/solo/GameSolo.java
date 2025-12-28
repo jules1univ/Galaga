@@ -18,7 +18,6 @@ import galaga.entities.player.Player;
 import galaga.entities.sky.Sky;
 import galaga.level.LevelManager;
 import galaga.score.Score;
-
 import java.awt.Color;
 import java.util.Iterator;
 
@@ -109,8 +108,8 @@ public class GameSolo extends Page<GalagaPage> {
         this.level.close();
 
         Score score = new Score(this.player.getScore());
-        Score bestScore = Galaga.getContext().getResource().get(Config.BEST_SCORE);
-        if (score.compareTo(bestScore) > 0) {
+        Score bestScoreVal = Galaga.getContext().getResource().get(Config.BEST_SCORE);
+        if (score.compareTo(bestScoreVal) > 0) {
             Galaga.getContext().getResource().write(Config.BEST_SCORE, score);
         }
 

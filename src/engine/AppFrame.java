@@ -2,16 +2,14 @@ package engine;
 
 import engine.graphics.Renderer;
 import engine.input.InputKeyListener;
-
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import javax.swing.JFrame;
 
 public final class AppFrame extends JFrame {
     private final AppCanvas canvas;
-    private InputKeyListener input;
+    private final InputKeyListener input;
 
     public AppFrame(Application<?> app) {
         super(app.getTitle());

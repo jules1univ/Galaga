@@ -34,7 +34,7 @@ public final class FontResource extends Resource<Font> {
             }
             this.onLoadComplete(font);
         } catch (FontFormatException | IOException e) {
-            Log.error("Font loading failed: " + e.getMessage());
+            Log.error("Font loading failed: %s", e.getMessage());
             return false;
         }
         return true;

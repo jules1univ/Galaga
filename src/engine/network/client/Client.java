@@ -1,15 +1,14 @@
 package engine.network.client;
 
+import engine.network.NetBuffer;
+import engine.network.NetObject;
+import engine.network.NetworkManager;
+import engine.utils.logger.Log;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Optional;
-
-import engine.network.NetBuffer;
-import engine.network.NetObject;
-import engine.network.NetworkManager;
-import engine.utils.logger.Log;
 
 public abstract class Client {
 
@@ -40,8 +39,8 @@ public abstract class Client {
             this.updateThread.start();
 
             return true;
-        } catch (Exception e) {
-            Log.error("Net Client failed to connect to " + host + ":" + port + ": " + e.getMessage());
+        } catch (IOException e) {
+            Log.error("Net Client failed to connect (%s:%d) : %s", host, port, e.getMessage());
             return false;
         }
     }
@@ -56,7 +55,7 @@ public abstract class Client {
             }
             return true;
         } catch (IOException e) {
-            Log.error("Net Client failed to close: " + e.getMessage());
+            Log.error("Net Client failed to close: %s", e.getMessage());
             return false;
         }
     }
@@ -71,7 +70,7 @@ public abstract class Client {
 
                 NetObject obj = NetworkManager.createObjectById(id);
                 if (obj == null) {
-                    Log.error("Net Client received unknown object id: " + id);
+                    Log.error("Net Client received unknown object id: %d" , id);
                     continue;
                 }
 
@@ -101,7 +100,7 @@ public abstract class Client {
 
             return true;
         } catch (IOException e) {
-            Log.error("Net Client failed to send: " + e.getMessage());
+            Log.error("Net Client failed to send: %s" , e.getMessage());
             this.stop();
             return false;
         }

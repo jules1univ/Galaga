@@ -26,7 +26,7 @@ public final class ResourceManager {
     public void add(ResourceAlias alias, String loadername, ResourceCallback callback) {
         Class<? extends Resource<?>> resourceClass = this.loaders.get(loadername);
         if (resourceClass == null) {
-            Log.error("Resource loader not found: " + loadername);
+            Log.error("Resource loader not found: %s", loadername);
             return;
         }
         
@@ -36,7 +36,7 @@ public final class ResourceManager {
                             callback));
         } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException
                 | SecurityException | InvocationTargetException e) {
-            Log.error("Resource creation failed: " + e.getMessage());
+            Log.error("Resource creation failed: %s",e.getMessage());
         }
     }
 
@@ -112,7 +112,7 @@ public final class ResourceManager {
 
                 if (!res.load()) {
                     failedCount++;
-                    Log.error("Failed to load resource: " + res.getAlias().getFullName());
+                    Log.error("Failed to load resource: %s", res.getAlias().getFullName());
                 }
 
                 if (Thread.currentThread().isInterrupted() || !this.loading) {
@@ -136,7 +136,7 @@ public final class ResourceManager {
             }
             this.loading = false;
             if (failedCount > 0) {
-                Log.error("Resource loading completed with " + failedCount + "  failed resources.");
+                Log.error("Resource loading completed with %d failed resources.", failedCount);
             } else {
                 Log.message("All resources loaded successfully.");
             }

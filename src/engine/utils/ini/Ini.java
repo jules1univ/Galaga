@@ -1,5 +1,6 @@
 package engine.utils.ini;
 
+import engine.utils.logger.Log;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -8,8 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import engine.utils.logger.Log;
 
 public final class Ini {
 
@@ -77,7 +76,7 @@ public final class Ini {
             writer.flush();
             Log.message("Ini saved successfully.");
         } catch (IOException e) {
-            Log.error("Ini failed to save: " + e.getMessage());
+            Log.error("Ini failed to save: %s", e.getMessage());
         }
     }
 

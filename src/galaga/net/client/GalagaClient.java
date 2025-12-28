@@ -30,7 +30,7 @@ public class GalagaClient extends Client {
 
     @Override
     protected void onReceive(NetObject obj) {
-        if (obj instanceof NetRequest req && obj != null) {
+        if (obj instanceof NetRequest req) {
             this.handleRequest(req);
         }
     }

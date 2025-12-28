@@ -36,16 +36,16 @@ public abstract class Resource<ResourceData> {
         File file = this.alias.getPath();
         if (file.exists()) {
             try {
-                Log.message("Resource '" + this.alias.getFullName() + "' found in local file system.");
+                Log.message("Resource '%s' found in local file system.", this.alias.getFullName());
                 return new FileInputStream(file);
             } catch (FileNotFoundException e) {
-                Log.error("Resource '" + this.alias.getFullName() + "'file loading failed: " + e.getMessage());
+                Log.error("Resource '%s' file loading failed: %s", this.alias.getFullName(), e.getMessage());
             }
         }
 
         URI url = this.alias.getUrl();
         if (url.toString().isEmpty()) {
-            Log.error("Resource '" + this.alias.getFullName() + "' has no url to load from.");
+            Log.error("Resource '%s' has no url to load from.", this.alias.getFullName());
             return null;
         }
         try {
@@ -54,14 +54,14 @@ public abstract class Resource<ResourceData> {
                 this.alias.getPath().getParentFile().mkdirs();
                 try (FileOutputStream out = new FileOutputStream(this.alias.getPath())) {
                     in.transferTo(out);
-                    Log.message("Resource '" + this.alias.getFullName() + "' saved to local file system.");
+                    Log.message("Resource '%s' saved to local file system.", this.alias.getFullName());
                 } catch (Exception e) {
-                    Log.error("Resource '" + this.alias.getFullName() + "' saving failed: " + e.getMessage());
+                    Log.error("Resource '%s' saving failed: %s", this.alias.getFullName(), e.getMessage());
                 }
             }).start();
             return url.toURL().openStream();
         } catch (IOException e) {
-            Log.error("Resource '" + this.alias.getFullName() + "' download failed: " + e.getMessage());
+            Log.error("Resource '%s' download failed: %s", this.alias.getFullName(), e.getMessage());
         }
 
         return null;
@@ -76,7 +76,7 @@ public abstract class Resource<ResourceData> {
             }
             return new FileOutputStream(file);
         } catch (IOException e) {
-            Log.error("Resource output stream creation failed: " + e.getMessage());
+            Log.error("Resource output stream creation failed: %s", e.getMessage());
             return null;
         }
     }

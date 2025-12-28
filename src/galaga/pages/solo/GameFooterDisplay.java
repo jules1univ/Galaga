@@ -58,11 +58,7 @@ public class GameFooterDisplay extends UIElement {
                 this.medal.getSize().getIntWidth());
         this.medalIcons.setPosition(this.position);
 
-        if (!this.medalIcons.init()) {
-            return false;
-        }
-
-        return true;
+        return this.medalIcons.init();
     }
 
     @Override

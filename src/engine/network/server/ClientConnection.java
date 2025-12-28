@@ -1,15 +1,14 @@
 package engine.network.server;
 
+import engine.network.NetBuffer;
+import engine.network.NetObject;
+import engine.network.NetworkManager;
+import engine.utils.logger.Log;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Optional;
-
-import engine.network.NetBuffer;
-import engine.network.NetObject;
-import engine.network.NetworkManager;
-import engine.utils.logger.Log;
 
 public final class ClientConnection {
 
@@ -22,9 +21,9 @@ public final class ClientConnection {
     private final ClientReceive onReceive;
 
     private Thread updateThread;
-    private boolean active;
+    private volatile boolean active;
 
-    public ClientConnection(ClientConnect onConnect, ClientDisconnect onDisconnect, ClientReceive onReceive) {        
+    public ClientConnection(ClientConnect onConnect, ClientDisconnect onDisconnect, ClientReceive onReceive) {
         this.onConnect = onConnect;
         this.onDisconnect = onDisconnect;
         this.onReceive = onReceive;
@@ -39,7 +38,7 @@ public final class ClientConnection {
     }
 
     public boolean start(Socket socket) {
-         try {
+        try {
             this.socket = socket;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
@@ -51,22 +50,23 @@ public final class ClientConnection {
             this.updateThread.start();
 
             return true;
-        } catch (Exception e) {
-            Log.error("Net Client failed to start: " + e.getMessage());
+        } catch (IOException e) {
+            Log.error("Net Client failed to start: %s", e.getMessage());
             return false;
         }
     }
 
     public boolean stop() {
+        this.active = false;
         this.onDisconnect.run(this);
+
         try {
-            this.active = false;
             if (this.socket != null && !this.socket.isClosed()) {
                 this.socket.close();
             }
             return true;
         } catch (IOException e) {
-            Log.error("Net Client failed to close: " + e.getMessage());
+            Log.error("Net Client failed to close: %s", e.getMessage());
             return false;
         }
     }
@@ -80,7 +80,7 @@ public final class ClientConnection {
 
                 NetObject obj = NetworkManager.createObjectById(id);
                 if (obj == null) {
-                    Log.error("Net Client received unknown object id: " + id);
+                    Log.error("Net Client received unknown object id: %d", id);
                     continue;
                 }
                 obj.read(new NetBuffer(data));
@@ -107,7 +107,7 @@ public final class ClientConnection {
             out.flush();
             return true;
         } catch (IOException e) {
-            Log.error("Net Client failed to send: " + e.getMessage());
+            Log.error("Net Client failed to send: %s", e.getMessage());
             this.stop();
             return false;
         }
