@@ -19,12 +19,34 @@ import java.awt.image.BufferedImage;
 public final class Renderer {
 
     private Graphics2D g;
+    private BufferedImage image;
 
-    public Renderer() {
+    public static Renderer empty() {
+        return new Renderer(null, null);
     }
 
-    public void set(Graphics2D g) {
+    public static Renderer of(Graphics2D g) {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        return new Renderer(g, null);
+    }
+
+    public static Renderer ofSub(Size size) {
+        BufferedImage image = new BufferedImage(size.getIntWidth(), size.getIntHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = image.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        return new Renderer(g, image);
+    }
+
+    private Renderer(Graphics2D g, BufferedImage image) {
         this.g = g;
+        this.image = image;
+    }
+
+    public void setGraphics(Graphics2D newG) {
+        this.g = newG;
         this.g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         this.g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
     }
@@ -39,15 +61,14 @@ public final class Renderer {
         this.g.dispose();
     }
 
-    public BufferedImage createImage(int width, int height) {
-        return new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-    }
+    public Renderer draw(Renderer subrenderer, Position position) {
+        if (subrenderer.image == null) {
+            Log.warning("Attempted to draw null sub-renderer image.");
+            return this;
+        }
 
-    public Graphics2D getImageGraphics(BufferedImage image) {
-        Graphics2D gImg = image.createGraphics();
-        gImg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        gImg.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        return gImg;
+        this.g.drawImage(subrenderer.image, position.getIntX(), position.getIntY(), null);
+        return this;
     }
 
     public Size getTextSize(String text, Font font) {
@@ -142,16 +163,6 @@ public final class Renderer {
             this.g.fillPolygon(xPoints, yPoints, 3);
         }
 
-        return this;
-    }
-
-    public Renderer drawImage(BufferedImage image, Position position) {
-        if (image == null) {
-            Log.warning("Attempted to draw null image.");
-            return this;
-        }
-
-        this.g.drawImage(image, position.getIntX(), position.getIntY(), null);
         return this;
     }
 

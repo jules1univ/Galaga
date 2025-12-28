@@ -2,6 +2,7 @@ package galaga.entities.player;
 
 import engine.Application;
 import engine.elements.entity.SpriteEntity;
+import engine.graphics.Renderer;
 import engine.resource.sound.Sound;
 import engine.utils.Collision;
 import engine.utils.Position;
@@ -178,15 +179,14 @@ public final class Player extends SpriteEntity implements BulletShooter {
             return;
         }
 
-
         boolean moving = false;
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_LEFT)) {
-            this.velocityX -=  Config.SPEED_ACCELERATION_PLAYER * dt;
+            this.velocityX -= Config.SPEED_ACCELERATION_PLAYER * dt;
             moving = true;
         }
 
         if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_RIGHT)) {
-            this.velocityX +=  Config.SPEED_ACCELERATION_PLAYER * dt;
+            this.velocityX += Config.SPEED_ACCELERATION_PLAYER * dt;
             moving = true;
         }
 
@@ -197,7 +197,8 @@ public final class Player extends SpriteEntity implements BulletShooter {
             }
         }
 
-        this.velocityX = Math.clamp(this.velocityX, -Config.SPEED_MAX_ACCELERATION_PLAYER, Config.SPEED_MAX_ACCELERATION_PLAYER);
+        this.velocityX = Math.clamp(this.velocityX, -Config.SPEED_MAX_ACCELERATION_PLAYER,
+                Config.SPEED_MAX_ACCELERATION_PLAYER);
         this.position.addX(this.velocityX * dt);
 
         this.position.clampX(
@@ -215,11 +216,11 @@ public final class Player extends SpriteEntity implements BulletShooter {
     }
 
     @Override
-    public void draw() {
+    public void draw(Renderer renderer) {
         if (this.hitTimer <= 0.f) {
-            super.draw();
+            super.draw(renderer);
         } else {
-            Galaga.getContext().getRenderer().drawLoadingCircle(
+            renderer.drawLoadingCircle(
                     this.getPosition(),
                     this.getScaledSize().getWidth() / 2.f,
                     Color.RED,
@@ -231,7 +232,7 @@ public final class Player extends SpriteEntity implements BulletShooter {
             String debugText = String.format("VEL: %.2f | FIRE: %.2f",
                     this.velocityX,
                     this.cooldownTimer);
-            Galaga.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
+            renderer.drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
         }
     }
 

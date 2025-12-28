@@ -1,6 +1,7 @@
 package galaga.entities.sky;
 
 import engine.elements.entity.Entity;
+import engine.graphics.Renderer;
 import engine.utils.Position;
 import engine.utils.Size;
 import galaga.Config;
@@ -59,13 +60,11 @@ public final class Star extends Entity {
     }
 
     @Override
-    public void draw() {
+    public void draw(Renderer renderer) {
         if (!active) {
             return;
         }
 
-        Galaga.getContext()
-                .getRenderer()
-                .drawRect(position, size, color);
+        renderer.drawRect(position, size, color);
     }
 }

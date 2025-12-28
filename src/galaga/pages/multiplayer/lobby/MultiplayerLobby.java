@@ -4,6 +4,7 @@ import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
+import engine.graphics.Renderer;
 import engine.utils.Position;
 import galaga.Config;
 import galaga.Galaga;
@@ -130,8 +131,8 @@ public class MultiplayerLobby extends Page<GalagaPage> {
     }
 
     @Override
-    public void draw() {
-        this.status.draw();
+    public void draw(Renderer renderer) {
+        this.status.draw(renderer);
     }
 
 }

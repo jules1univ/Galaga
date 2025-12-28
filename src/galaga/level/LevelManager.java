@@ -7,6 +7,7 @@ import java.util.List;
 
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
+import engine.graphics.Renderer;
 import engine.resource.sound.Sound;
 import engine.utils.Position;
 import galaga.Config;
@@ -147,8 +148,8 @@ public class LevelManager {
         return this.titleTime > 0.f;
     }
 
-    public void drawTitle() {
-        this.title.draw();
+    public void drawTitle(Renderer renderer) {
+        this.title.draw(renderer);
     }
 
     public void onNewBestScore() {

@@ -2,6 +2,7 @@ package engine.elements.entity;
 
 import engine.Application;
 import engine.elements.VisualElement;
+import engine.graphics.Renderer;
 import engine.utils.Collision;
 import java.awt.Color;
 
@@ -20,9 +21,9 @@ public abstract class Entity extends VisualElement {
     }
 
     @Override
-    public void draw() {
+    public void draw(Renderer renderer) {
         if (Application.DEBUG_MODE) {
-            Application.getContext().getRenderer().drawRectOutline(this.position, this.getSize(), Color.WHITE);
+            renderer.drawRectOutline(this.position, this.getSize(), Color.WHITE);
         }
     }
 

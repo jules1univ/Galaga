@@ -2,6 +2,7 @@ package engine.elements.ui.select;
 
 import engine.Application;
 import engine.elements.ui.UIElement;
+import engine.graphics.Renderer;
 import engine.utils.Position;
 import engine.utils.Size;
 import java.awt.Color;
@@ -69,12 +70,12 @@ public abstract class Select<T extends UIElement> extends UIElement {
         }
 
         this.arrowLeft = Position.of(
-                this.position.getX() - sizeMax.getWidth()/2 - arrowSize.getWidth() - padding,
-                this.position.getY() + sizeMax.getHeight()/2);
+                this.position.getX() - sizeMax.getWidth() / 2 - arrowSize.getWidth() - padding,
+                this.position.getY() + sizeMax.getHeight() / 2);
 
         this.arrowRight = Position.of(
-                this.position.getX() + sizeMax.getWidth()/2 + padding,
-                this.position.getY() + sizeMax.getHeight()/2);
+                this.position.getX() + sizeMax.getWidth() / 2 + padding,
+                this.position.getY() + sizeMax.getHeight() / 2);
     }
 
     public void setShowArrows(boolean active) {
@@ -111,17 +112,17 @@ public abstract class Select<T extends UIElement> extends UIElement {
     }
 
     @Override
-    public void draw() {
-        this.element.draw();
+    public void draw(Renderer renderer) {
+        this.element.draw(renderer);
         if (!this.showArrows) {
             return;
         }
 
-        Application.getContext().getRenderer().drawText(
+        renderer.drawText(
                 "<",
                 this.arrowLeft,
                 this.color, this.font);
-        Application.getContext().getRenderer().drawText(
+        renderer.drawText(
                 ">",
                 this.arrowRight,
                 this.color, this.font);

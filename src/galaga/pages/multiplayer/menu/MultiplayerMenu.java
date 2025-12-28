@@ -8,6 +8,7 @@ import engine.elements.page.Page;
 import engine.elements.ui.input.Input;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
+import engine.graphics.Renderer;
 import engine.graphics.sprite.Sprite;
 import engine.resource.sound.Sound;
 import engine.utils.Position;
@@ -248,17 +249,17 @@ public class MultiplayerMenu extends Page<GalagaPage> {
     }
 
     @Override
-    public void draw() {
+    public void draw(Renderer renderer) {
 
-        this.sky.draw();
+        this.sky.draw(renderer);
 
         Galaga.getContext().getRenderer().drawSprite(this.logo, this.logoPosition, Config.SPRITE_SCALE_ICON);
 
-        this.username.draw();
-        this.ip.draw();
+        this.username.draw(renderer);
+        this.ip.draw(renderer);
 
-        this.back.draw();
-        this.next.draw();
+        this.back.draw(renderer);
+        this.next.draw(renderer);
     }
 
 }

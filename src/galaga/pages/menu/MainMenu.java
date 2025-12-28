@@ -7,6 +7,7 @@ import engine.elements.ui.select.IconSelect;
 import engine.elements.ui.select.TextSelectEnum;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
+import engine.graphics.Renderer;
 import engine.graphics.sprite.Sprite;
 import engine.resource.sound.Sound;
 import engine.utils.Position;
@@ -241,14 +242,14 @@ public class MainMenu extends Page<GalagaPage> {
     }
 
     @Override
-    public void draw() {
-        this.sky.draw();
+    public void draw(Renderer renderer) {
+        this.sky.draw(renderer);
 
-        Galaga.getContext().getRenderer().drawSprite(this.logo, this.logoPosition, Config.SPRITE_SCALE_ICON);
+        renderer.drawSprite(this.logo, this.logoPosition, Config.SPRITE_SCALE_ICON);
 
-        this.gameMode.draw();
-        this.shipSelect.draw();
-        this.quit.draw();
+        this.gameMode.draw(renderer);
+        this.shipSelect.draw(renderer);
+        this.quit.draw(renderer);
     }
 
     @Override

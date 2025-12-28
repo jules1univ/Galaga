@@ -2,6 +2,7 @@ package galaga.pages.solo;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
+import engine.graphics.Renderer;
 import engine.resource.sound.Sound;
 import galaga.Config;
 import galaga.Galaga;
@@ -245,25 +246,25 @@ public class GameSolo extends Page<GalagaPage> {
     }
 
     @Override
-    public void draw() {
-        this.sky.draw();
+    public void draw(Renderer renderer) {
+        this.sky.draw(renderer);
 
-        this.particles.draw();
+        this.particles.draw(renderer);
 
         if (!this.playerDiedUpdated) {
-            this.bullets.draw();
-            this.player.draw();
+            this.bullets.draw(renderer);
+            this.player.draw(renderer);
             for (Enemy enemy : this.level.getEnemies()) {
-                enemy.draw();
+                enemy.draw(renderer);
             }
         }
 
         if (this.level.isTitleActive()) {
-            this.level.drawTitle();
+            this.level.drawTitle(renderer);
         }
 
-        this.ghd.draw();
-        this.gfd.draw();
+        this.ghd.draw(renderer);
+        this.gfd.draw(renderer);
     }
 
 }

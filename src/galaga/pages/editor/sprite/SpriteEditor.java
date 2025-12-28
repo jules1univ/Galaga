@@ -2,9 +2,7 @@ package galaga.pages.editor.sprite;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,12 +38,11 @@ public class SpriteEditor extends Page<GalagaPage> {
     }
 
     private final char[] pixels = new char[SIZE * SIZE];
-
-    private BufferedImage canvasImage;
     private boolean canvasDirty = true;
 
     private Size canvasSize;
     private Position canvasPosition;
+    private Renderer canvasRenderer;
 
     private final Position cursor = Position.zero();
     private int cursorCellX;
@@ -94,8 +91,6 @@ public class SpriteEditor extends Page<GalagaPage> {
             this.pixels[i] = 'N';
         }
 
-        this.canvasImage = Galaga.getContext().getRenderer().createImage(SIZE * CELL, SIZE * CELL);
-
         this.textFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_TEXT);
         this.titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_LARGE);
         if (this.textFont == null || this.titleFont == null) {
@@ -133,6 +128,7 @@ public class SpriteEditor extends Page<GalagaPage> {
         }
         this.save.setCenter(TextPosition.END, TextPosition.BEGIN);
 
+        this.canvasRenderer = Renderer.ofSub(this.canvasSize);
         this.canvasDirty = true;
 
         this.state = PageState.ACTIVE;
@@ -235,11 +231,7 @@ public class SpriteEditor extends Page<GalagaPage> {
     }
 
     private void rebuildCanvas() {
-        Graphics2D g = Galaga.getContext().getRenderer().getImageGraphics(this.canvasImage);
-
-        Renderer canvasRenderer = new Renderer();
-        canvasRenderer.set(g);
-        canvasRenderer.begin();
+        this.canvasRenderer.begin();
 
         for (int y = 0; y < SIZE; y++) {
             for (int x = 0; x < SIZE; x++) {
@@ -248,24 +240,24 @@ public class SpriteEditor extends Page<GalagaPage> {
                 if (ch == 'N') {
                     color = Color.BLACK;
                 }
-                canvasRenderer.drawRect(
+                this.canvasRenderer.drawRect(
                         Position.of(x * CELL, y * CELL),
                         Size.of(CELL, CELL),
                         color);
             }
         }
 
-        canvasRenderer.drawGrid(Position.zero(), this.canvasSize, CELL, Color.WHITE);
-        canvasRenderer.end();
+        this.canvasRenderer.drawGrid(Position.zero(), this.canvasSize, CELL, Color.WHITE);
+        this.canvasRenderer.end();
         this.canvasDirty = false;
     }
 
     @Override
-    public void draw() {
+    public void draw(Renderer renderer) {
         if (this.canvasDirty) {
             this.rebuildCanvas();
         }
-        Galaga.getContext().getRenderer().drawImage(this.canvasImage, this.canvasPosition);
+        renderer.draw(this.canvasRenderer, this.canvasPosition);
 
         Position cursorPos = Position.of(
                 this.canvasPosition.getX() + this.cursorCellX * CELL,
@@ -281,9 +273,9 @@ public class SpriteEditor extends Page<GalagaPage> {
             Galaga.getContext().getRenderer().drawRectOutline(this.canvasPosition, this.canvasSize, 2, Color.ORANGE);
         }
 
-        this.info.draw();
-        this.back.draw();
-        this.save.draw();
+        this.info.draw(renderer);
+        this.back.draw(renderer);
+        this.save.draw(renderer);
     }
 
 }

@@ -1,6 +1,7 @@
 package galaga.entities.bullet;
 
 import engine.elements.entity.Entity;
+import engine.graphics.Renderer;
 import engine.resource.sound.Sound;
 import galaga.Config;
 import galaga.Galaga;
@@ -53,9 +54,9 @@ public class BulletManager extends Entity implements  Iterable<Bullet> {
     }
 
     @Override
-    public void draw() {
+    public void draw(Renderer renderer) {
         for(Bullet bullet : this.bullets) {
-            bullet.draw();
+            bullet.draw(renderer);
         }
     }
 

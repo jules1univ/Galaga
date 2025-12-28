@@ -1,7 +1,7 @@
 package engine.elements.ui.icon;
 
-import engine.Application;
 import engine.elements.ui.UIElement;
+import engine.graphics.Renderer;
 import engine.graphics.sprite.Sprite;
 import engine.utils.Size;
 
@@ -32,8 +32,8 @@ public final class Icon extends UIElement {
     }
 
     @Override
-    public void draw() {
-        Application.getContext().getRenderer().drawSprite(this.icon, this.position, this.scale);
+    public void draw(Renderer renderer) {
+        renderer.drawSprite(this.icon, this.position, this.scale);
     }
 
 }

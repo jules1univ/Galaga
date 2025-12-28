@@ -1,6 +1,7 @@
 package galaga.entities.bullet;
 
 import engine.elements.entity.Entity;
+import engine.graphics.Renderer;
 import engine.utils.Collision;
 import engine.utils.Position;
 import engine.utils.Size;
@@ -43,9 +44,9 @@ public class Bullet extends Entity {
     }
 
     @Override
-    public void draw() {
+    public void draw(Renderer renderer) {
         Galaga.getContext().getRenderer().drawRect(this.position, this.size, Config.COLOR_BULLET, this.angle + 90.f);
-        super.draw();
+        super.draw(renderer);
     }
 
  

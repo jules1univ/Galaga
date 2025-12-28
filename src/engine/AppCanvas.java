@@ -21,7 +21,7 @@ public final class AppCanvas extends Canvas implements Runnable {
     public AppCanvas(Application<?> app) {
         super();
         this.app = app;
-        this.renderer = new Renderer();
+        this.renderer = Renderer.empty();
 
         this.setSize(app.getWidth(), app.getHeight());
         this.setPreferredSize(new Dimension(app.getWidth(), app.getHeight()));
@@ -64,7 +64,7 @@ public final class AppCanvas extends Canvas implements Runnable {
     public void run() {
         BufferStrategy strategy = getBufferStrategy();
         Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
-        this.renderer.set(g);
+        this.renderer.setGraphics(g);
 
         if (!this.app.init()) {
             Log.error("Application failed to initialize");
@@ -86,17 +86,17 @@ public final class AppCanvas extends Canvas implements Runnable {
                         this.stop();
                         return;
                     }
-                    this.renderer.set(g);
+                    this.renderer.setGraphics(g);
 
                     try {
                         this.app.update(Time.getDeltaTime());
 
                         this.renderer.begin();
-                        this.app.draw();
+                        this.app.draw(this.renderer);
                         this.renderer.end();
                     } catch (Exception e) {
-                        Log.error("Application encountered an error during cycle: %s",  e.getMessage());
-                        
+                        Log.error("Application encountered an error during cycle: %s", e.getMessage());
+
                         this.renderer.end();
                         this.stop();
                         return;

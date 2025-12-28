@@ -3,6 +3,7 @@ package engine.elements.ui.icon;
 import java.util.List;
 
 import engine.elements.ui.UIElement;
+import engine.graphics.Renderer;
 import engine.utils.Position;
 
 public final class IconGroup extends UIElement {
@@ -62,9 +63,9 @@ public final class IconGroup extends UIElement {
     }
 
     @Override
-    public void draw() {
+    public void draw(Renderer renderer) {
         for (Icon icon : this.icons) {
-            icon.draw();
+            icon.draw(renderer);
         }
     }
 

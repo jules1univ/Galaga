@@ -1,5 +1,6 @@
 package engine.elements;
 
+import engine.graphics.Renderer;
 import engine.utils.Position;
 import engine.utils.Size;
 
@@ -23,5 +24,5 @@ public abstract class VisualElement {
 
     public abstract void update(float dt);
 
-    public abstract void draw();
+    public abstract void draw(Renderer renderer);
 }

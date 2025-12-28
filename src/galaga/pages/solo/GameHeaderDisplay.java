@@ -3,6 +3,7 @@ package galaga.pages.solo;
 import engine.elements.ui.UIElement;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
+import engine.graphics.Renderer;
 import engine.utils.Position;
 import engine.utils.Size;
 import engine.utils.Time;
@@ -56,10 +57,10 @@ public class GameHeaderDisplay extends UIElement {
     }
 
     @Override
-    public void draw() {
-        this.fps.draw();
-        this.score.draw();
-        this.bestScore.draw();
+    public void draw(Renderer renderer) {
+        this.fps.draw(renderer);
+        this.score.draw(renderer);
+        this.bestScore.draw(renderer);
     }
 
 }

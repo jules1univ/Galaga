@@ -2,6 +2,7 @@ package galaga.entities.particles;
 
 import engine.elements.entity.Entity;
 import engine.elements.entity.SpriteEntity;
+import engine.graphics.Renderer;
 import engine.utils.Position;
 import engine.utils.Size;
 import java.awt.Color;
@@ -61,9 +62,9 @@ public class ParticlesManager {
         this.particles.removeAll(toRemove);
     }
 
-    public void draw() {
+    public void draw(Renderer renderer) {
         for (Particle particle : this.particles) {
-            particle.draw();
+            particle.draw(renderer);
         }
     }
 }

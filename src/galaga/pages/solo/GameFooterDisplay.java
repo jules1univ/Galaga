@@ -3,6 +3,7 @@ package galaga.pages.solo;
 import engine.elements.ui.UIElement;
 import engine.elements.ui.icon.Icon;
 import engine.elements.ui.icon.IconGroup;
+import engine.graphics.Renderer;
 import engine.graphics.sprite.Sprite;
 import engine.utils.Position;
 import engine.utils.Size;
@@ -75,9 +76,9 @@ public class GameFooterDisplay extends UIElement {
     }
 
     @Override
-    public void draw() {
-        this.lifeIcons.draw();
-        this.medalIcons.draw();
+    public void draw(Renderer renderer) {
+        this.lifeIcons.draw(renderer);
+        this.medalIcons.draw(renderer);
     }
 
 }

@@ -3,6 +3,7 @@ package engine.elements.ui.textarea;
 import engine.Application;
 import engine.elements.ui.UIElement;
 import engine.elements.ui.text.TextPosition;
+import engine.graphics.Renderer;
 import engine.utils.Position;
 import java.awt.Color;
 import java.awt.Font;
@@ -121,11 +122,11 @@ public final class Textarea extends UIElement {
     }
 
     @Override
-    public void draw() {
+    public void draw(Renderer renderer) {
         for (int i = 0; i < this.lines.size(); i++) {
             String line = this.lines.get(i);
             Position linePos = Position.of(this.position.getX(), this.position.getY() + i * this.lineHeight);
-            Application.getContext().getRenderer().drawText(line, linePos, this.color, this.font);
+            renderer.drawText(line, linePos, this.color, this.font);
         }
     }
 

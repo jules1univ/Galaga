@@ -5,6 +5,7 @@ import engine.elements.page.PageState;
 import engine.elements.ui.select.TextSelectEnum;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
+import engine.graphics.Renderer;
 import engine.graphics.sprite.Sprite;
 import engine.resource.sound.Sound;
 import engine.utils.Position;
@@ -217,13 +218,13 @@ public class EditorMenu extends Page<GalagaPage> {
     }
 
     @Override
-    public void draw() {
-        this.sky.draw();
+    public void draw(Renderer renderer) {
+        this.sky.draw(renderer);
         Galaga.getContext().getRenderer().drawSprite(this.logo, this.logoPosition, Config.SPRITE_SCALE_ICON);
 
-        this.etidorMode.draw();
-        this.settings.draw();
-        this.back.draw();
+        this.etidorMode.draw(renderer);
+        this.settings.draw(renderer);
+        this.back.draw(renderer);
     }
 
 }

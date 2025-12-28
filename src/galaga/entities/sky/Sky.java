@@ -1,6 +1,7 @@
 package galaga.entities.sky;
 
 import engine.elements.entity.Entity;
+import engine.graphics.Renderer;
 import engine.utils.Position;
 import galaga.Config;
 import galaga.Galaga;
@@ -74,8 +75,8 @@ public final class Sky extends Entity {
     }
 
     @Override
-    public void draw() {
+    public void draw(Renderer renderer) {
         for (Star s : stars)
-            s.draw();
+            s.draw(renderer);
     }
 }

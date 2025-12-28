@@ -2,6 +2,7 @@ package engine;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
+import engine.graphics.Renderer;
 import engine.utils.Size;
 import engine.utils.logger.Log;
 
@@ -131,7 +132,7 @@ public abstract class Application<PageId extends Enum<PageId>> {
         this.currentPage.update(dt);
     }
 
-    protected final void draw() {
-        this.currentPage.draw();
+    protected final void draw(Renderer renderer) {
+        this.currentPage.draw(renderer);
     }
 }

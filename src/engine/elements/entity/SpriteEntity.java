@@ -1,6 +1,7 @@
 package engine.elements.entity;
 
 import engine.Application;
+import engine.graphics.Renderer;
 import engine.graphics.sprite.Sprite;
 import engine.utils.Collision;
 import engine.utils.Position;
@@ -57,10 +58,10 @@ public abstract class SpriteEntity extends Entity {
     }
 
     @Override
-    public void draw() {
-        Application.getContext().getRenderer().drawSprite(this);
+    public void draw(Renderer renderer) {
+        renderer.drawSprite(this);
         if (Application.DEBUG_MODE) {
-            Application.getContext().getRenderer().drawRectOutline(this.getCenter(), this.getScaledSize(), Color.WHITE);
+            renderer.drawRectOutline(this.getCenter(), this.getScaledSize(), Color.WHITE);
         }
     }
 

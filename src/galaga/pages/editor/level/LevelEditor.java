@@ -2,6 +2,7 @@ package galaga.pages.editor.level;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
+import engine.graphics.Renderer;
 import galaga.GalagaPage;
 
 public class LevelEditor extends Page<GalagaPage> {
@@ -32,7 +33,7 @@ public class LevelEditor extends Page<GalagaPage> {
     }
 
     @Override
-    public void draw() {
+    public void draw(Renderer renderer) {
     }
 
 

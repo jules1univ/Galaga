@@ -1,9 +1,9 @@
 package galaga.entities.particles;
 
 import engine.elements.entity.Entity;
+import engine.graphics.Renderer;
 import engine.utils.Position;
 import galaga.Config;
-import galaga.Galaga;
 import java.awt.Color;
 
 public class Particle extends Entity {
@@ -51,8 +51,8 @@ public class Particle extends Entity {
     }
 
     @Override
-    public void draw() {
-        Galaga.getContext().getRenderer().drawRect(this.position, this.size, this.color);
+    public void draw(Renderer renderer) {
+        renderer.drawRect(this.position, this.size, this.color);
     }
 
 }

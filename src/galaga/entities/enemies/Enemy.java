@@ -2,6 +2,7 @@ package galaga.entities.enemies;
 
 import engine.Application;
 import engine.elements.entity.SpriteEntity;
+import engine.graphics.Renderer;
 import engine.resource.sound.Sound;
 import engine.utils.Collision;
 import engine.utils.Position;
@@ -268,20 +269,20 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
     }
 
     @Override
-    public final void draw() {
-        super.draw();
+    public final void draw(Renderer renderer) {
+        super.draw(renderer);
 
         if (Application.DEBUG_MODE) {
 
             if (!this.enterMidPassed) {
 
-                Galaga.getContext().getRenderer().drawCubicBezier(
+                renderer.drawCubicBezier(
                         this.enterLeft ? Config.POSITION_ENEMY_LEFT : Config.POSITION_ENEMY_RIGHT,
                         this.enterLeft ? Config.POSITION_ENTER_MID_LEFT_CTRL : Config.POSITION_ENTER_MID_RIGHT_CTRL,
                         this.enterLeft ? Config.POSITION_ENTER_MID_LEFT_CTRL_2 : Config.POSITION_ENTER_MID_RIGHT_CTRL_2,
                         this.midPosition, Color.WHITE);
             } else {
-                Galaga.getContext().getRenderer().drawCubicBezier(
+                renderer.drawCubicBezier(
                         this.position,
                         Config.POSITION_ENTER_LOCK_CTRL,
                         Config.POSITION_ENTER_LOCK_CTRL_2,
@@ -289,7 +290,7 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
             }
 
             String debugText = this.state.name();
-            Application.getContext().getRenderer().drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
+            renderer.drawText(debugText, this.getCenter(), Color.WHITE, this.debugFont);
         }
     }
 }

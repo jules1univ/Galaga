@@ -8,15 +8,14 @@ import engine.elements.ui.text.TextPosition;
 import engine.graphics.Renderer;
 import engine.utils.Pair;
 import engine.utils.Position;
+import engine.utils.Size;
 import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -35,8 +34,10 @@ public class FileExplorer extends Page<GalagaPage> {
     private int index = 0;
     private final List<Pair<String, Integer>> files = new ArrayList<>();
 
-    private BufferedImage displayFiles;
+    private Renderer displayFilesRenderer;
     private Position displayFilesPosition;
+    private Size displayFilesSize;
+
 
     private Font titleFont;
     private Input saveInput;
@@ -105,9 +106,10 @@ public class FileExplorer extends Page<GalagaPage> {
         }
         this.saveInput.setCenter(TextPosition.CENTER, TextPosition.BEGIN);
 
-        this.displayFiles = Galaga.getContext().getRenderer().createImage(
+        this.displayFilesSize = Size.of(
                 Config.WINDOW_WIDTH - margin * 2,
-                Config.WINDOW_HEIGHT - this.saveInput.getSize().getIntHeight() - margin * 3);
+                Config.SIZE_MAX_DISPLAY_FILES * this.titleFont.getSize() + margin * 2);
+        this.displayFilesRenderer = Renderer.ofSub(this.displayFilesSize);
         this.displayFilesPosition = Position.of(
                 margin,
                 this.saveInput.getSize().getIntHeight() + margin * 2);
@@ -117,7 +119,7 @@ public class FileExplorer extends Page<GalagaPage> {
 
         this.backText = new Text("BACK",
                 Position.of(margin,
-                        this.displayFilesPosition.getY() + this.displayFiles.getHeight() + margin),
+                        this.displayFilesPosition.getY() + this.displayFilesSize.getHeight() + margin),
                 Color.WHITE, this.titleFont);
         if (!this.backText.init()) {
             return false;
@@ -126,7 +128,7 @@ public class FileExplorer extends Page<GalagaPage> {
 
         this.actionText = new Text("SAVE",
                 Position.of(Config.WINDOW_WIDTH - margin,
-                        this.displayFilesPosition.getY() + this.displayFiles.getHeight() + margin),
+                        this.displayFilesPosition.getY() + this.displayFilesSize.getHeight() + margin),
                 Color.WHITE, this.titleFont);
         if (!this.actionText.init()) {
             return false;
@@ -157,7 +159,7 @@ public class FileExplorer extends Page<GalagaPage> {
         if (this.args.isSaveMode()) {
             this.option = FileExplorerOption.FILE_SAVE;
             this.actionText.setText("SAVE");
-        }else {
+        } else {
             this.option = FileExplorerOption.VIEW;
             this.actionText.setText("OPEN");
         }
@@ -224,13 +226,9 @@ public class FileExplorer extends Page<GalagaPage> {
             return;
         }
 
-        Graphics2D gImg = Galaga.getContext().getRenderer().getImageGraphics(this.displayFiles);
-        Renderer fileRenderer = new Renderer();
-        fileRenderer.set(gImg);
-        fileRenderer.begin();
-
+        this.displayFilesRenderer.begin();
         int margin = 10;
-        int textHeight = fileRenderer.getTextSize(this.files.reversed().get(0).getFirst(), this.titleFont)
+        int textHeight = this.displayFilesRenderer.getTextSize(this.files.reversed().get(0).getFirst(), this.titleFont)
                 .getIntHeight();
 
         Color selectColor = this.option == FileExplorerOption.VIEW ? Color.ORANGE : Color.WHITE;
@@ -264,28 +262,26 @@ public class FileExplorer extends Page<GalagaPage> {
             Position textPosition = Position.of(
                     margin,
                     margin + (i - this.index + 2) * textHeight);
-            fileRenderer.drawText(
+            this.displayFilesRenderer.drawText(
                     displayText,
                     textPosition,
                     i == this.index ? selectColor : Color.WHITE,
                     this.titleFont);
         }
 
-        fileRenderer.end();
+        this.displayFilesRenderer.end();
     }
 
     @Override
-    public void draw() {
+    public void draw(Renderer renderer) {
         if (this.args.isSaveMode()) {
-            this.saveInput.draw();
+            this.saveInput.draw(renderer);
         }
 
-        Galaga.getContext().getRenderer().drawImage(
-                this.displayFiles,
-                this.displayFilesPosition);
+        renderer.draw(this.displayFilesRenderer, this.displayFilesPosition);
 
-        this.backText.draw();
-        this.actionText.draw();
+        this.backText.draw(renderer);
+        this.actionText.draw(renderer);
     }
 
 }

@@ -10,6 +10,7 @@ import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
+import engine.graphics.Renderer;
 import engine.utils.Position;
 
 import galaga.Galaga;
@@ -71,8 +72,8 @@ public class Loading extends Page<GalagaPage> {
     }
 
     @Override
-    public void draw() {
-        this.text.draw();
+    public void draw(Renderer renderer) {
+        this.text.draw(renderer);
     }
 
 }

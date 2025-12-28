@@ -2,6 +2,7 @@ package engine.elements.ui.text;
 
 import engine.Application;
 import engine.elements.ui.UIElement;
+import engine.graphics.Renderer;
 import engine.utils.Position;
 import java.awt.Color;
 import java.awt.Font;
@@ -73,7 +74,8 @@ public final class Text extends UIElement {
 
     private void updateText() {
         if (!this.fixedSize) {
-            this.size = Application.getContext().getRenderer().getTextSize(this.text.length() == 0 ? "X" : this.text, this.font);
+            this.size = Application.getContext().getRenderer().getTextSize(this.text.length() == 0 ? "X" : this.text,
+                    this.font);
         }
 
         switch (this.horizontal) {
@@ -107,8 +109,8 @@ public final class Text extends UIElement {
     }
 
     @Override
-    public void draw() {
-        Application.getContext().getRenderer().drawText(this.text, this.position, this.color, this.font);
+    public void draw(Renderer renderer) {
+        renderer.drawText(this.text, this.position, this.color, this.font);
     }
 
 }
