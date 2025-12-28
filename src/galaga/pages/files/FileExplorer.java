@@ -3,6 +3,7 @@ package galaga.pages.files;
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.elements.ui.input.Input;
+import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
 import engine.graphics.Renderer;
 import engine.utils.Pair;
@@ -39,6 +40,9 @@ public class FileExplorer extends Page<GalagaPage> {
 
     private Font titleFont;
     private Input saveInput;
+
+    private Text backText;
+    private Text actionText;
 
     private FileExplorerOption option;
 
@@ -111,6 +115,24 @@ public class FileExplorer extends Page<GalagaPage> {
         this.currentPath = Path.of(".").toAbsolutePath().normalize();
         this.updateFiles();
 
+        this.backText = new Text("BACK",
+                Position.of(margin,
+                        this.displayFilesPosition.getY() + this.displayFiles.getHeight() + margin),
+                Color.WHITE, this.titleFont);
+        if (!this.backText.init()) {
+            return false;
+        }
+        this.backText.setCenter(TextPosition.BEGIN, TextPosition.END);
+
+        this.actionText = new Text("SAVE",
+                Position.of(Config.WINDOW_WIDTH - margin,
+                        this.displayFilesPosition.getY() + this.displayFiles.getHeight() + margin),
+                Color.WHITE, this.titleFont);
+        if (!this.actionText.init()) {
+            return false;
+        }
+        this.actionText.setCenter(TextPosition.END, TextPosition.END);
+
         this.option = FileExplorerOption.VIEW;
         this.state = PageState.ACTIVE;
         return true;
@@ -134,6 +156,10 @@ public class FileExplorer extends Page<GalagaPage> {
 
         if (this.args.isSaveMode()) {
             this.option = FileExplorerOption.FILE_SAVE;
+            this.actionText.setText("SAVE");
+        }else {
+            this.option = FileExplorerOption.VIEW;
+            this.actionText.setText("OPEN");
         }
 
         this.currentPath = Path.of(this.args.getBasePath()).toAbsolutePath().normalize();
@@ -219,10 +245,20 @@ public class FileExplorer extends Page<GalagaPage> {
             int fileSize = file.getSecond();
             String displayText;
 
+            String fileSizeStr;
+            if (fileSize >= 1_000_000_000) {
+                fileSizeStr = String.format("%.2f GB", fileSize / 1_000_000_000.0);
+            } else if (fileSize >= 1_000_000) {
+                fileSizeStr = String.format("%.2f MB", fileSize / 1_000_000.0);
+            } else if (fileSize >= 1_000) {
+                fileSizeStr = String.format("%.2f KB", fileSize / 1_000.0);
+            } else {
+                fileSizeStr = String.format("%d B", fileSize);
+            }
             switch (fileSize) {
                 case FILE_PARENT_DIRECTORY -> displayText = "[..]";
                 case FILE_DIRECTORY -> displayText = String.format("[DIR] %s", file.getFirst());
-                default -> displayText = String.format("[FILE] %s (%d bytes)", file.getFirst(), file.getSecond());
+                default -> displayText = String.format("[FILE] %s (%s)", file.getFirst(), fileSizeStr);
             }
 
             Position textPosition = Position.of(
@@ -247,6 +283,9 @@ public class FileExplorer extends Page<GalagaPage> {
         Galaga.getContext().getRenderer().drawImage(
                 this.displayFiles,
                 this.displayFilesPosition);
+
+        this.backText.draw();
+        this.actionText.draw();
     }
 
 }

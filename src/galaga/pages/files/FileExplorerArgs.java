@@ -1,25 +1,32 @@
 package galaga.pages.files;
 
+import galaga.GalagaPage;
+
 public class FileExplorerArgs {
     private final boolean saveMode;
     private final String basePath;
-    private FileExplorerCallback callback;
+    private final GalagaPage back;
+    private final FileExplorerCallback callback;
 
-    public static FileExplorerArgs ofSaveMode(String basePath) {
-        return new FileExplorerArgs(true, basePath);
+    public static FileExplorerArgs ofSaveMode(String basePath, GalagaPage back) {
+        return new FileExplorerArgs(true, basePath, back, null);
     }
 
-    public static FileExplorerArgs ofOpenMode(String basePath) {
-        return new FileExplorerArgs(false, basePath);
+    public static FileExplorerArgs ofOpenMode(String basePath, GalagaPage back,
+            FileExplorerCallback callback) {
+        return new FileExplorerArgs(false, basePath, back, callback);
     }
 
     public static FileExplorerArgs empty() {
-        return new FileExplorerArgs(false, ".");
+        return new FileExplorerArgs(false, "", GalagaPage.MAIN_MENU, null);
     }
 
-    private FileExplorerArgs(boolean saveMode, String basePath) {
+    private FileExplorerArgs(boolean saveMode, String basePath, GalagaPage back,
+            FileExplorerCallback callback) {
         this.saveMode = saveMode;
         this.basePath = basePath;
+        this.back = back;
+        this.callback = callback;
     }
 
     public boolean isSaveMode() {
@@ -28,6 +35,10 @@ public class FileExplorerArgs {
 
     public String getBasePath() {
         return this.basePath;
+    }
+
+    public GalagaPage getBackPage() {
+        return this.back;
     }
 
     public FileExplorerCallback getCallback() {

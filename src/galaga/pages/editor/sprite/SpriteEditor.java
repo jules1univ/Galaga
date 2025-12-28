@@ -209,7 +209,7 @@ public class SpriteEditor extends Page<GalagaPage> {
                 }
                 case SAVE -> {
                     Galaga.getContext().getApplication().setCurrentPage(GalagaPage.FILE_EXPLORER,
-                            FileExplorerArgs.ofSaveMode(Config.PATH_CUSTOM_SHIPS));
+                            FileExplorerArgs.ofSaveMode(Config.PATH_CUSTOM_SHIPS, this.id));
                 }
                 default -> {
                 }

@@ -22,6 +22,7 @@ public class GalagaServer extends Server {
 
     public void launch(Args args) {
         int port = args.getInt("port", Config.NET_SERVER_PORT);
+        
         String config = args.get("config", null);
         if (config != null) {
             // 
