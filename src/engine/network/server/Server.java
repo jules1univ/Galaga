@@ -8,12 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import engine.network.NetObject;
-import engine.network.NetworkManager;
 import engine.utils.logger.Log;
 
 public abstract class Server {
-    protected final NetworkManager netm;
-
     protected final List<ClientConnection> clients = Collections.synchronizedList(new ArrayList<>());
 
     protected Thread handleThread;
@@ -26,10 +23,8 @@ public abstract class Server {
 
     protected ServerSocket serverSocket;
 
-    public Server(NetworkManager netm, boolean noMainThread, float tickRate) {
-        this.netm = netm;
+    public Server(boolean noMainThread, float tickRate) {
         this.noMainThread = noMainThread;
-
         this.tick = 1.0f / tickRate;
     }
 
@@ -106,8 +101,8 @@ public abstract class Server {
 
         try {
             while (this.active) {
-                ClientConnection client = new ClientConnection(this.netm, this::onClientConnected,
-                        this::onClientDisconnected, this::onClientReceive);
+                ClientConnection client = new ClientConnection(this::onClientConnected, this::onClientDisconnected,
+                        this::onClientReceive);
                 client.start(this.serverSocket.accept());
 
                 this.clients.add(client);

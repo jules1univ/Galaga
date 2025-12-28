@@ -13,8 +13,6 @@ import engine.utils.logger.Log;
 
 public final class ClientConnection {
 
-    private final NetworkManager netm;
-
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
@@ -26,9 +24,7 @@ public final class ClientConnection {
     private Thread updateThread;
     private boolean active;
 
-    public ClientConnection(NetworkManager netm,ClientConnect onConnect, ClientDisconnect onDisconnect, ClientReceive onReceive) {
-        this.netm = netm;
-        
+    public ClientConnection(ClientConnect onConnect, ClientDisconnect onDisconnect, ClientReceive onReceive) {        
         this.onConnect = onConnect;
         this.onDisconnect = onDisconnect;
         this.onReceive = onReceive;
@@ -82,7 +78,7 @@ public final class ClientConnection {
                 int length = in.readInt();
                 byte[] data = in.readNBytes(length);
 
-                NetObject obj = this.netm.create(id);
+                NetObject obj = NetworkManager.createObjectById(id);
                 if (obj == null) {
                     Log.error("Net Client received unknown object id: " + id);
                     continue;
@@ -105,7 +101,7 @@ public final class ClientConnection {
         }
         byte[] data = optData.get();
         try {
-            out.writeInt(this.netm.get(obj));
+            out.writeInt(NetworkManager.getObjectId(obj));
             out.writeInt(data.length);
             out.write(data);
             out.flush();

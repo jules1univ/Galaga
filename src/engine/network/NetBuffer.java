@@ -47,6 +47,16 @@ public final class NetBuffer {
         }
     }
 
+    public boolean write(String v)
+    {
+        try {
+            this.out.writeUTF(v);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     public boolean write(NetObject obj)  {
         try {
             obj.write(this);
@@ -84,6 +94,14 @@ public final class NetBuffer {
     public Optional<Character> readChar()  {
         try {
             return Optional.of(this.in.readChar());
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<String> readString()  {
+        try {
+            return Optional.of(this.in.readUTF());
         } catch (IOException e) {
             return Optional.empty();
         }

@@ -20,10 +20,7 @@ public abstract class Client {
     protected Thread updateThread;
     protected volatile boolean active = false;
 
-    protected final NetworkManager netm;
-
-    public Client(NetworkManager netm) {
-        this.netm = netm;
+    public Client() {
     }
 
     public boolean isActive() {
@@ -72,7 +69,7 @@ public abstract class Client {
                 int length = this.in.readInt();
                 byte[] data = this.in.readNBytes(length);
 
-                NetObject obj = this.netm.create(id);
+                NetObject obj = NetworkManager.createObjectById(id);
                 if (obj == null) {
                     Log.error("Net Client received unknown object id: " + id);
                     continue;
@@ -97,7 +94,7 @@ public abstract class Client {
         byte[] data = optData.get();
         try {
 
-            out.writeInt(this.netm.get(obj));
+            out.writeInt(NetworkManager.getObjectId(obj));
             out.writeInt(data.length);
             out.write(data);
             out.flush();

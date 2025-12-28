@@ -85,7 +85,7 @@ public class MultiplayerLobby extends Page<GalagaPage> {
         this.username = (String) args[0];
         this.serverAddress = (String) args[1];
 
-        this.client = new GalagaClient(Galaga.net);
+        this.client = new GalagaClient();
 
         String[] parts = this.serverAddress.split(":");
         if (parts.length != 2) {
