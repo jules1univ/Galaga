@@ -28,13 +28,13 @@ public final class AppFrame extends JFrame {
         this.setLocationRelativeTo(null);
         this.setVisible(true);
 
-        this.input = new InputKeyListener();
-
-        this.setFocusTraversalKeysEnabled(false);
-        this.addKeyListener(this.input);
-        this.canvas.addKeyListener(this.input);
-
         this.requestFocusInWindow();
+
+        this.input = new InputKeyListener();
+        this.canvas.setFocusTraversalKeysEnabled(false);
+        this.canvas.addKeyListener(this.input);
+        this.canvas.requestFocus();
+
 
         this.addWindowListener(new WindowAdapter() {
             @Override
