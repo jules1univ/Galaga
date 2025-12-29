@@ -2,8 +2,8 @@ package galaga.net.client;
 
 import engine.network.NetObject;
 import engine.network.client.Client;
-import galaga.net.objects.request.NetRequest;
-import galaga.net.objects.request.NetRequestType;
+import engine.network.objects.form.NetForm;
+import galaga.net.GalagaNetState;
 
 public class GalagaClient extends Client {
 
@@ -17,28 +17,23 @@ public class GalagaClient extends Client {
         return this.state;
     }
 
-    private void handleRequest(NetRequest req) {
-        if (req.getType() == NetRequestType.REQUEST) {
-            switch (req.getField()) {
-                case "username" -> {
-                    this.state = NetClientState.WAIT_USERNAME;
-                }
-                default -> {}
-            }
-        }
-    }
+    private void handleForm(NetForm<GalagaNetState> form) {
+           }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void onReceive(NetObject obj) {
-        if (obj instanceof NetRequest req) {
-            this.handleRequest(req);
+        if (obj instanceof NetForm form) {
+            if(form.getState().getDeclaringClass() != GalagaNetState.class) {
+                return;
+            }
+            this.handleForm(form);
         }
     }
 
     @Override
     protected void onConnect() {
         this.state = NetClientState.CONNECTED;
-        this.send(NetRequest.create(NetRequestType.JOIN));
     }
 
     @Override
