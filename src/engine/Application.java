@@ -3,11 +3,19 @@ package engine;
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.graphics.Renderer;
+import engine.network.NetworkManager;
+import engine.network.objects.primitives.NetBool;
+import engine.network.objects.primitives.NetFloat;
+import engine.network.objects.primitives.NetInt;
+import engine.network.objects.primitives.NetNull;
+import engine.network.objects.primitives.NetString;
+import engine.utils.Position;
 import engine.utils.Size;
 import engine.utils.logger.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class Application<PageId extends Enum<PageId>> {
@@ -23,6 +31,18 @@ public abstract class Application<PageId extends Enum<PageId>> {
     protected final int width;
     protected final int height;
     protected String title;
+
+    static {
+        NetworkManager.register(List.of(
+            NetNull.class,
+            NetBool.class,
+            NetInt.class,
+            NetFloat.class,
+            NetString.class,
+            Position.class,
+            Size.class
+        ));
+    }
 
     @SuppressWarnings("unchecked")
     public static <State, T extends Enum<T>> AppContext<State, T> getContext() {

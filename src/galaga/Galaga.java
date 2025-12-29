@@ -3,7 +3,6 @@ package galaga;
 import engine.AppContext;
 import engine.Application;
 import engine.elements.page.Page;
-import engine.network.NetworkManager;
 import engine.resource.Resource;
 import engine.resource.ResourceManager;
 import engine.resource.ResourceVariant;
@@ -12,8 +11,6 @@ import engine.resource.sound.Sound;
 import engine.resource.sound.SoundResource;
 import engine.resource.sprite.SpriteResource;
 import engine.utils.Args;
-import engine.utils.Position;
-import engine.utils.Size;
 import galaga.level.LevelResource;
 import galaga.net.server.GalagaServer;
 import galaga.pages.editor.level.LevelEditor;
@@ -31,15 +28,8 @@ import java.awt.event.KeyEvent;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.management.ManagementFactory;
-import java.util.List;
 
 public class Galaga extends Application<GalagaPage> {
-
-    static {
-        NetworkManager.register(List.of(
-                Position.class,
-                Size.class));
-    }
 
     @SuppressWarnings("unchecked")
     public static AppContext<State, GalagaPage> getContext() {

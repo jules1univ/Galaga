@@ -2,6 +2,8 @@ package galaga.net.server;
 
 import engine.network.NetObject;
 import engine.network.objects.form.NetForm;
+import engine.network.objects.primitives.NetBool;
+import engine.network.objects.primitives.NetNull;
 import engine.network.server.ClientConnection;
 import engine.network.server.Server;
 import engine.utils.Args;
@@ -145,6 +147,11 @@ public class GalagaServer extends Server {
 
         Log.message("Server new client connected: %s", client.getSocket().getRemoteSocketAddress());
         this.players.put(client, new NetPlayerData());
+
+        client.send(NetForm.create(GalagaNetState.CLIENT_JOIN, Map.of(
+            "username", NetNull.of(),
+            "accepted", NetBool.of(true)
+        )));
     }
 
     @Override

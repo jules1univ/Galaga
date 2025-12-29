@@ -66,6 +66,15 @@ public final class NetBuffer {
         }
     }
 
+    public boolean write(boolean v)  {
+        try {
+            this.out.writeBoolean(v);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     public Optional<NetObject> read(NetObject obj)  {
         try {
             obj.read(this);
@@ -78,6 +87,14 @@ public final class NetBuffer {
     public Optional<Float> readFloat()  {
         try {
             return Optional.of(this.in.readFloat());
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Boolean> readBool()  {
+        try {
+            return Optional.of(this.in.readBoolean());
         } catch (IOException e) {
             return Optional.empty();
         }

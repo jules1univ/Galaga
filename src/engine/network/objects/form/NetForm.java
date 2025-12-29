@@ -20,7 +20,6 @@ public class NetForm<T extends Enum<T>> implements NetObject {
         return form;
     }
 
-    
     public static <E extends Enum<E>> NetForm<E> create(E state, Map<String, NetObject> fields) {
         NetForm<E> form = new NetForm<>();
         form.state = state;
@@ -38,6 +37,22 @@ public class NetForm<T extends Enum<T>> implements NetObject {
 
     public void addField(String name, NetObject value) {
         fields.put(name, value);
+    }
+
+    public boolean hasField(String name) {
+        return fields.containsKey(name);
+    }
+
+    public NetObject getField(String name) {
+        return fields.get(name);
+    }
+
+    public <E extends NetObject> E getFieldAs(String name, Class<E> cls) {
+        NetObject obj = fields.get(name);
+        if (cls.isInstance(obj)) {
+            return cls.cast(obj);
+        }
+        return null;
     }
 
     @Override

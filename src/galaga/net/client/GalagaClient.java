@@ -7,7 +7,7 @@ import galaga.net.GalagaNetState;
 
 public class GalagaClient extends Client {
 
-    private NetClientState state;    
+    private NetClientState state;
 
     public GalagaClient() {
         super();
@@ -18,13 +18,19 @@ public class GalagaClient extends Client {
     }
 
     private void handleForm(NetForm<GalagaNetState> form) {
-           }
+
+        switch (form.getState()) {
+            case CLIENT_JOIN -> {
+                
+            }
+        }
+    }
 
     @SuppressWarnings("unchecked")
     @Override
     protected void onReceive(NetObject obj) {
         if (obj instanceof NetForm form) {
-            if(form.getState().getDeclaringClass() != GalagaNetState.class) {
+            if (form.getState().getDeclaringClass() != GalagaNetState.class) {
                 return;
             }
             this.handleForm(form);
