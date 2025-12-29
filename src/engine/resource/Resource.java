@@ -44,7 +44,7 @@ public abstract class Resource<ResourceData> {
         }
 
         URI url = this.alias.getUrl();
-        if (url.toString().isEmpty()) {
+        if (url == null || url.toString().isEmpty()) {
             Log.error("Resource '%s' has no url to load from.", this.alias.getFullName());
             return null;
         }
