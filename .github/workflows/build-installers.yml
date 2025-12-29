@@ -1,0 +1,133 @@
+name: Build Galaga Installers
+
+on: [release]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            installer: msi
+            icon: galaga.ico
+            artifact: Galaga-Windows-MSI
+
+          - os: ubuntu-latest
+            installer: deb
+            icon: galaga.png
+            artifact: Galaga-Linux-DEB
+
+          - os: macos-latest
+            installer: dmg
+            icon: galaga.icns
+            artifact: Galaga-macOS-DMG
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Clean build folders (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force classes, dist, pkg -ErrorAction SilentlyContinue
+          Remove-Item Galaga.jar, sources.txt -ErrorAction SilentlyContinue
+
+      - name: Clean build folders (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          rm -rf classes dist pkg Galaga.jar sources.txt
+
+      - name: Compile Java sources (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force classes
+          $files = Get-ChildItem -Recurse -Filter *.java src | ForEach-Object { $_.FullName }
+          javac -d classes $files
+
+      - name: Compile Java sources (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          mkdir -p classes
+          find src -name "*.java" > sources.txt
+          javac -d classes @sources.txt
+
+      - name: Create JAR
+        run: |
+          jar --create \
+            --file Galaga.jar \
+            --main-class galaga.Galaga \
+            -C classes .
+
+      - name: Prepare pkg folder (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force pkg
+          Move-Item Galaga.jar, .github/preview/${{ matrix.icon }} pkg
+
+      - name: Prepare pkg folder (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          mkdir -p pkg
+          mv Galaga.jar .github/preview/${{ matrix.icon }} pkg
+
+      - name: Build installer (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Set-Location pkg
+          jpackage `
+            --type msi `
+            --name Galaga `
+            --icon ${{ matrix.icon }} `
+            --app-version 1.0 `
+            --description "Classic Galaga arcade game clone" `
+            --copyright "© 2025 Galaga - @jules1univ" `
+            --input . `
+            --main-jar Galaga.jar `
+            --main-class galaga.Galaga `
+            --install-dir Galaga `
+            --win-dir-chooser `
+            --win-menu `
+            --win-menu-group "Games" `
+            --win-shortcut `
+            --win-per-user-install `
+            --java-options "-Xmx512m" `
+            --dest dist `
+            --verbose
+
+      - name: Build installer (Linux / macOS)
+        if: matrix.os != 'windows-latest'
+        run: |
+          cd pkg
+          jpackage \
+            --type ${{ matrix.installer }} \
+            --name Galaga \
+            --icon ${{ matrix.icon }} \
+            --app-version 1.0 \
+            --description "Classic Galaga arcade game clone" \
+            --copyright "© 2025 Galaga - @jules1univ" \
+            --input . \
+            --main-jar Galaga.jar \
+            --main-class galaga.Galaga \
+            --java-options "-Xmx512m" \
+            --dest dist \
+            --verbose
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: pkg/dist/*.${{ matrix.installer }}
