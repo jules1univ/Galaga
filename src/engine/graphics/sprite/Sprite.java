@@ -24,6 +24,23 @@ public final class Sprite {
         this.colorMap = colorMap;
     }
 
+    public static Sprite createSprite(char[] pixels, int width, int height) {
+        BufferedImage base = new BufferedImage(width, height,
+                BufferedImage.TYPE_INT_ARGB);
+        Map<Color, Integer> colorMap = new HashMap<>();
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                char c = pixels[y * width + x];
+                Color color = charToColor(c);
+
+                colorMap.putIfAbsent(color, 0);
+                colorMap.put(color, colorMap.get(color) + 1);
+                base.setRGB(x, y, color.getRGB());
+            }
+        }
+        return new Sprite(base, colorMap);
+    }
+
     public static Sprite createSprite(InputStream in) {
         List<String> lines = new ArrayList<>();
         try {

@@ -38,7 +38,6 @@ public class FileExplorer extends Page<GalagaPage> {
     private Position displayFilesPosition;
     private Size displayFilesSize;
 
-
     private Font titleFont;
     private Input saveInput;
 
@@ -57,6 +56,10 @@ public class FileExplorer extends Page<GalagaPage> {
         try {
             try (DirectoryStream<Path> dir = Files.newDirectoryStream(this.currentPath)) {
                 for (Path item : dir) {
+                    if (this.args.isSaveMode() && !item.toFile().isDirectory()) {
+                        continue;
+                    }
+
                     String name = item.getFileName().toString();
                     int fileSize = item.toFile().isDirectory() ? FILE_DIRECTORY : (int) Files.size(item);
                     this.files.add(Pair.of(name, fileSize));
@@ -114,8 +117,6 @@ public class FileExplorer extends Page<GalagaPage> {
                 margin,
                 this.saveInput.getSize().getIntHeight() + margin * 2);
 
-        this.currentPath = Path.of(".").toAbsolutePath().normalize();
-        this.updateFiles();
 
         this.backText = new Text("BACK",
                 Position.of(margin,
@@ -135,7 +136,12 @@ public class FileExplorer extends Page<GalagaPage> {
         }
         this.actionText.setCenter(TextPosition.END, TextPosition.END);
 
-        this.option = FileExplorerOption.VIEW;
+        
+        this.currentPath = Path.of(".").toAbsolutePath().normalize();
+        this.option = FileExplorerOption.FILE_SAVE;
+        this.updateFiles();
+        this.updateMenuSelect();
+
         this.state = PageState.ACTIVE;
         return true;
     }
@@ -166,24 +172,66 @@ public class FileExplorer extends Page<GalagaPage> {
 
         this.currentPath = Path.of(this.args.getBasePath()).toAbsolutePath().normalize();
         this.updateFiles();
+        this.updateMenuSelect();
+    }
+
+    private void updateMenuSelect() {
+        switch (this.option) {
+            case FILE_SAVE -> {
+                this.saveInput.setFocused(true);
+                this.saveInput.setColor(Color.ORANGE);
+
+                this.backText.setColor(Color.WHITE);
+                this.actionText.setColor(Color.WHITE);
+            }
+            case VIEW -> {
+                this.saveInput.setFocused(false);
+                this.saveInput.setColor(Color.WHITE);
+
+                this.backText.setColor(Color.WHITE);
+                this.actionText.setColor(Color.WHITE);
+            }
+            case ACTION -> {
+                this.saveInput.setFocused(false);
+                this.saveInput.setColor(Color.WHITE);
+
+                this.backText.setColor(Color.WHITE);
+                this.actionText.setColor(Color.WHITE);
+            }
+            case BACK -> {
+                this.saveInput.setFocused(false);
+                this.saveInput.setColor(Color.WHITE);
+
+                this.backText.setColor(Color.ORANGE);
+                this.actionText.setColor(Color.WHITE);
+            }
+        }
+
+        this.rebuildDisplayFiles();
     }
 
     @Override
     public void update(float dt) {
 
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_TAB)) {
-            this.option = this.option == FileExplorerOption.VIEW ? FileExplorerOption.FILE_SAVE
-                    : FileExplorerOption.VIEW;
-
-            if (this.option == FileExplorerOption.FILE_SAVE) {
-                this.saveInput.setFocused(true);
-                this.saveInput.setColor(Color.ORANGE);
-            } else {
-                this.saveInput.setFocused(false);
-                this.saveInput.setColor(Color.WHITE);
+            switch (this.option) {
+                case FILE_SAVE -> {
+                    this.option = FileExplorerOption.VIEW;
+                }
+                case VIEW -> {
+                    this.option = FileExplorerOption.ACTION;
+                    this.saveInput.setFocused(true);
+                }
+                case ACTION -> {
+                    this.option = FileExplorerOption.BACK;
+                    this.saveInput.setFocused(true);
+                }
+                case BACK -> {
+                    this.option = FileExplorerOption.FILE_SAVE;
+                    this.saveInput.setFocused(true);
+                }
             }
-
-            this.rebuildDisplayFiles();
+            this.updateMenuSelect();
         }
 
         if (this.option == FileExplorerOption.FILE_SAVE) {
@@ -191,17 +239,43 @@ public class FileExplorer extends Page<GalagaPage> {
             return;
         }
 
-        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
-            this.index--;
-            this.rebuildDisplayFiles();
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
-            this.index++;
-            this.rebuildDisplayFiles();
+        if (this.option == FileExplorerOption.VIEW) {
+            if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
+                this.index--;
+                this.rebuildDisplayFiles();
+            } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
+                this.index++;
+                this.rebuildDisplayFiles();
+            }
         }
 
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
-            Pair<String, Integer> selectedFile = this.files.get(this.index);
 
+            if(this.option == FileExplorerOption.BACK) {
+                Galaga.getContext().getApplication().setCurrentPage(this.args.getBackPage());
+                return;
+            }
+
+            if(this.option == FileExplorerOption.ACTION) {
+                if (this.args.isSaveMode()) {
+                    String filename = this.saveInput.getText().trim();
+                    if (filename.isEmpty()) {
+                        return;
+                    }
+
+                    String outputPath = this.currentPath.resolve(filename).toString();
+                    if (this.args.getCallback().run(outputPath)) {
+                        Galaga.getContext().getApplication().setCurrentPage(this.args.getNextPage());
+                    }
+                }
+                return;
+            }
+
+            if(this.option != FileExplorerOption.VIEW) {
+                return;
+            }
+
+            Pair<String, Integer> selectedFile = this.files.get(this.index);
             switch (selectedFile.getSecond()) {
                 case FILE_PARENT_DIRECTORY -> {
                     this.currentPath = this.currentPath.getParent();
@@ -212,9 +286,9 @@ public class FileExplorer extends Page<GalagaPage> {
                     this.updateFiles();
                 }
                 default -> {
-                    if (!this.args.isSaveMode()) {
-                        this.args.getCallback().run(
-                                this.currentPath.resolve(selectedFile.getFirst()).toString());
+                    String outputPath = this.currentPath.resolve(selectedFile.getFirst()).toString();
+                    if (!this.args.isSaveMode() && this.args.getCallback().run(outputPath)) {
+                        Galaga.getContext().getApplication().setCurrentPage(this.args.getNextPage());
                     }
                 }
             }

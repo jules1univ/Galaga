@@ -160,23 +160,21 @@ public class EditorMenu extends Page<GalagaPage> {
                     this.updateMenuSelect();
                 }
             }
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN,  KeyEvent.VK_TAB)) {
+        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN, KeyEvent.VK_TAB)) {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case EDITORS -> {
                     this.option = EditorMenuOption.SETTINGS;
-                    this.updateMenuSelect();
 
                 }
                 case SETTINGS -> {
                     this.option = EditorMenuOption.BACK;
-                    this.updateMenuSelect();
                 }
                 case BACK -> {
                     this.option = EditorMenuOption.EDITORS;
-                    this.updateMenuSelect();
                 }
             }
+            this.updateMenuSelect();
         } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
             this.selectSound.play(2.f);
             switch (this.option) {

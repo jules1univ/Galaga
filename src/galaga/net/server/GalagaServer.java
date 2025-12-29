@@ -15,7 +15,7 @@ import java.util.Optional;
 public class GalagaServer extends Server {
 
     private final Map<ClientConnection, NetPlayerData> players = new HashMap<>();
-    private final int maxPlayers = 4; // TODO: load from server config
+    private int maxPlayers = Config.NET_SERVER_MAX_PLAYERS;
 
     public GalagaServer() {
         super(false, Config.NET_TICKRATE);
@@ -37,6 +37,15 @@ public class GalagaServer extends Server {
                 port = newPort.get();
                 if (port < 1 || port > 65535) {
                     Log.error("Server config has invalid port number: %d", port);
+                    return;
+                }
+            }
+
+            Optional<Integer> newMaxPlayers = config.getVariable("server", "max_players").asInt();
+            if (newMaxPlayers.isPresent()) {
+                this.maxPlayers = newMaxPlayers.get();
+                if (this.maxPlayers < 1 || this.maxPlayers > 1000) {
+                    Log.error("Server config has invalid max players number: %d", this.maxPlayers);
                     return;
                 }
             }

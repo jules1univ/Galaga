@@ -3,6 +3,8 @@ package galaga.pages.editor.sprite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +18,7 @@ import engine.graphics.Renderer;
 import engine.graphics.sprite.Sprite;
 import engine.utils.Position;
 import engine.utils.Size;
+import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
@@ -205,7 +208,8 @@ public class SpriteEditor extends Page<GalagaPage> {
                 }
                 case SAVE -> {
                     Galaga.getContext().getApplication().setCurrentPage(GalagaPage.FILE_EXPLORER,
-                            FileExplorerArgs.ofSaveMode(Config.PATH_CUSTOM_SHIPS, this.id));
+                            FileExplorerArgs.ofSaveMode(Config.PATH_CUSTOM_SHIPS, this.id,
+                                    GalagaPage.EDITOR_MENU, this::exportSprite));
                 }
                 default -> {
                 }
@@ -214,6 +218,17 @@ public class SpriteEditor extends Page<GalagaPage> {
 
         this.cursor.clampX(0, this.canvasSize.getWidth() - CELL / 2);
         this.cursor.clampY(0, this.canvasSize.getHeight() - CELL / 2);
+    }
+
+    private boolean exportSprite(String path) {
+        Sprite sprite = Sprite.createSprite(this.pixels, SIZE, SIZE);
+        try {
+            Sprite.saveSprite(sprite, new FileOutputStream(path));
+            return true;
+        } catch (IOException e) {
+            Log.error("Sprite saving failed: %s", e.getMessage());
+        }
+        return false;
     }
 
     private void updateCursor() {
