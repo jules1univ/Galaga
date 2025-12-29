@@ -32,6 +32,8 @@ public class Config {
         public static final float SPEED_BULLET = 500.f;
         public static final float SPEED_ENEMY_FACTOR = 500.f;
         public static final float SPEED_ANGLE_ANIMATION = 400.f;
+        public static final float SPEED_DEFAULT_FORMATION_SPEED = 0.001f;
+        public static final float SPEED_DEFAULT_ENEMY_SPEED = 100.f;
         public static final float SPEED_CURSOR = 10000.f;
 
         public static final int DELAY_ENTER_INDEX = 2;
@@ -45,6 +47,8 @@ public class Config {
         public static final float DELAY_ENEMY_COOLDOWN_FACTOR_MISSILE = 0.001f;
         public static final float DELAY_ENEMY_CAPTURED_PLAYER_SHOOT_FACTOR = 0.2f;
         public static final float DELAY_ENEMY_BOSCONIAN_SHOOT_FACTOR = 0.3f;
+        public static final float DELAY_DEFAULT_ATTACK_COOLDOWN = 300.f;
+        public static final float DELAY_DEFAULT_MISSILE_COOLDOWN = 4000.f;
 
         public static final float TIME_BLINKSTAR_MAX = 10.0f;
         public static final float TIME_BLINKSTAR_MIN = 3.0f;
@@ -58,6 +62,9 @@ public class Config {
         public static final float SIZE_FONT_TEXT = 24.f;
         public static final int SIZE_SPRITE_CANVAS_EDITOR = 20;
         public static final int SIZE_SPRITE_CANVAS_EDITOR_CELL = 22;
+        public static final int SIZE_DEFAULT_FORMATION_LAYERS = 3;
+        public static final int SIZE_DEFAULT_FORMATION_ENEMIES_PER_LAYER = 5;
+        public static final int SIZE_DEFAULT_ENEMY_SCORE = 100;
         public static final Size SIZE_PARTICLE = Size.of(3.f, 3.f);
 
         public static final float POSITION_LEVEL_START_Y = 50.f;

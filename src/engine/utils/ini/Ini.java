@@ -1,11 +1,16 @@
 package engine.utils.ini;
 
 import engine.utils.logger.Log;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +18,25 @@ import java.util.Map;
 public final class Ini {
 
     private final Map<String, Map<String, IniVariable>> sections = new HashMap<>();
+
+    public static Ini load(String path) {
+        List<String> lines = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+                lines.add(line);
+            }
+            return load(lines);
+        } catch (IOException e) {
+            Log.error("Ini loading failed: %s", e.getMessage());
+            return null;
+        }
+    }
 
     public static Ini load(List<String> lines) {
         Ini ini = new Ini();

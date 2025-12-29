@@ -45,7 +45,7 @@ public class Bullet extends Entity {
 
     @Override
     public void draw(Renderer renderer) {
-        Galaga.getContext().getRenderer().drawRect(this.position, this.size, Config.COLOR_BULLET, this.angle + 90.f);
+        renderer.drawRect(this.position, this.size, Config.COLOR_BULLET, this.angle + 90.f);
         super.draw(renderer);
     }
 

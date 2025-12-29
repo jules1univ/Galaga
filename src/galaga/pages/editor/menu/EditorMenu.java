@@ -220,7 +220,7 @@ public class EditorMenu extends Page<GalagaPage> {
     @Override
     public void draw(Renderer renderer) {
         this.sky.draw(renderer);
-        Galaga.getContext().getRenderer().drawSprite(this.logo, this.logoPosition, Config.SPRITE_SCALE_ICON);
+        renderer.drawSprite(this.logo, this.logoPosition, Config.SPRITE_SCALE_ICON);
 
         this.etidorMode.draw(renderer);
         this.settings.draw(renderer);

@@ -267,10 +267,10 @@ public class SpriteEditor extends Page<GalagaPage> {
                 ? OPPOSITE_COLOR.get(this.pixels[this.cursorIndex])
                 : Sprite.charToColor(this.selectedColor);
 
-        Galaga.getContext().getRenderer().drawRectOutline(cursorPos, Size.of(CELL, CELL), 4, cursorColor);
+        renderer.drawRectOutline(cursorPos, Size.of(CELL, CELL), 4, cursorColor);
 
         if (this.option == SpriteEditorOption.EDIT) {
-            Galaga.getContext().getRenderer().drawRectOutline(this.canvasPosition, this.canvasSize, 2, Color.ORANGE);
+            renderer.drawRectOutline(this.canvasPosition, this.canvasSize, 2, Color.ORANGE);
         }
 
         this.info.draw(renderer);

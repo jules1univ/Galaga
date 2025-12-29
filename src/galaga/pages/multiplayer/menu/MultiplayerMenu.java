@@ -253,7 +253,7 @@ public class MultiplayerMenu extends Page<GalagaPage> {
 
         this.sky.draw(renderer);
 
-        Galaga.getContext().getRenderer().drawSprite(this.logo, this.logoPosition, Config.SPRITE_SCALE_ICON);
+        renderer.drawSprite(this.logo, this.logoPosition, Config.SPRITE_SCALE_ICON);
 
         this.username.draw(renderer);
         this.ip.draw(renderer);

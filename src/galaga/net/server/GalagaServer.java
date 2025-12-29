@@ -4,6 +4,7 @@ import engine.network.NetObject;
 import engine.network.server.ClientConnection;
 import engine.network.server.Server;
 import engine.utils.Args;
+import engine.utils.ini.Ini;
 import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.net.objects.request.NetRequest;
@@ -22,25 +23,38 @@ public class GalagaServer extends Server {
 
     public void launch(Args args) {
         int port = args.getInt("port", Config.NET_SERVER_PORT);
-        
-        String config = args.get("config", null);
-        if (config != null) {
-            // 
+
+        String configPath = args.get("config", null);
+        if (configPath != null) {
+            Ini config = Ini.load(configPath);
+            if (config == null) {
+                Log.error("Server config loading failed from path: %s", configPath);
+                return;
+            }
+
+            Optional<Integer> newPort = config.getVariable("server", "port").asInt();
+            if (newPort.isPresent()) {
+                port = newPort.get();
+                if (port < 1 || port > 65535) {
+                    Log.error("Server config has invalid port number: %d", port);
+                    return;
+                }
+            }
         }
 
-        if(!this.start(port)) {
+        if (!this.start(port)) {
             Log.error("Server failed to start on port %d", port);
             return;
         }
 
-        do{
+        do {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 Log.error("Server launch interrupted: %s", e.getMessage());
                 return;
             }
-        }while(!this.isActive());
+        } while (!this.isActive());
 
         while (this.isActive()) {
             Optional<String> input = Log.input(">");

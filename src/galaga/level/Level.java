@@ -107,16 +107,20 @@ public class Level {
 
         try {
             String name = levelConfig.getVariable("level", "name").asString();
-            float formationSpeed = levelConfig.getVariable("level", "formation_speed").asFloat();
-            float attackCooldown = levelConfig.getVariable("level", "attack_cooldown").asFloat();
-            float missileCooldown = levelConfig.getVariable("level", "missile_cooldown").asFloat();
+            float formationSpeed = levelConfig.getVariable("level", "formation_speed").asFloat()
+                    .orElse(Config.SPEED_DEFAULT_FORMATION_SPEED);
+            float attackCooldown = levelConfig.getVariable("level", "attack_cooldown").asFloat()
+                    .orElse(Config.DELAY_DEFAULT_ATTACK_COOLDOWN);
+            float missileCooldown = levelConfig.getVariable("level", "missile_cooldown").asFloat()
+                    .orElse(Config.DELAY_DEFAULT_MISSILE_COOLDOWN);
 
             Level level = new Level(name, formationSpeed, attackCooldown, missileCooldown);
             if (!levelConfig.containsSection("formation")) {
                 return level;
             }
 
-            int layers = levelConfig.getVariable("formation", "layers").asInt();
+            int layers = levelConfig.getVariable("formation", "layers").asInt()
+                    .orElse(Config.SIZE_DEFAULT_FORMATION_LAYERS);
             // int stages = levelConfig.getVariable("formation", "stages").asInt();
 
             float y = Config.POSITION_LEVEL_START_Y;
@@ -128,13 +132,15 @@ public class Level {
 
                 EnemyType type = EnemyType.valueOf(levelConfig.getVariable(section, "type").asString().toUpperCase());
                 Sprite sprite = Galaga.getContext().getResource().get(type);
-                if(sprite == null) {
+                if (sprite == null) {
                     continue;
                 }
 
-                int count = levelConfig.getVariable(section, "count").asInt();
-                float speed = levelConfig.getVariable(section, "speed").asFloat();
-                int score = levelConfig.getVariable(section, "score").asInt();
+                int count = levelConfig.getVariable(section, "count").asInt()
+                        .orElse(Config.SIZE_DEFAULT_FORMATION_ENEMIES_PER_LAYER);
+                float speed = levelConfig.getVariable(section, "speed").asFloat()
+                        .orElse(Config.SPEED_DEFAULT_ENEMY_SPEED);
+                int score = levelConfig.getVariable(section, "score").asInt().orElse(Config.SIZE_DEFAULT_ENEMY_SCORE);
 
                 List<EnemyConfig> enemies = EnemyConfig.create(type, score, speed, count, y, level);
                 level.enemiesConfig.addAll(enemies);
