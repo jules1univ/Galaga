@@ -54,7 +54,7 @@ public class Config {
         public static final float TIME_BLINKSTAR_MIN = 3.0f;
 
         public static final int SIZE_SKY_GRID = 50;
-        public static final int SIZE_MAX_DISPLAY_FILES = 20;
+        public static final int SIZE_MAX_DISPLAY_FILES = 15;
         public static final int SIZE_BULLET_CAPACITY = 32;
         public static final int SIZE_ENEMY_DIE_CAPACITY = 4;
         public static final float SIZE_FONT_XLARGE = 48.f;

@@ -109,14 +109,14 @@ public class FileExplorer extends Page<GalagaPage> {
         }
         this.saveInput.setCenter(TextPosition.CENTER, TextPosition.BEGIN);
 
+        int textHeight = this.saveInput.getSize().getIntHeight();
         this.displayFilesSize = Size.of(
                 Config.WINDOW_WIDTH - margin * 2,
-                Config.SIZE_MAX_DISPLAY_FILES * this.titleFont.getSize() + margin * 2);
+                Config.SIZE_MAX_DISPLAY_FILES * textHeight);
         this.displayFilesRenderer = Renderer.ofSub(this.displayFilesSize);
         this.displayFilesPosition = Position.of(
                 margin,
                 this.saveInput.getSize().getIntHeight() + margin * 2);
-
 
         this.backText = new Text("BACK",
                 Position.of(margin,
@@ -128,7 +128,7 @@ public class FileExplorer extends Page<GalagaPage> {
         this.backText.setCenter(TextPosition.BEGIN, TextPosition.END);
 
         this.actionText = new Text("SAVE",
-                Position.of(Config.WINDOW_WIDTH - margin,
+                Position.of(Config.WINDOW_WIDTH - margin*2,
                         this.displayFilesPosition.getY() + this.displayFilesSize.getHeight() + margin),
                 Color.WHITE, this.titleFont);
         if (!this.actionText.init()) {
@@ -196,7 +196,7 @@ public class FileExplorer extends Page<GalagaPage> {
                 this.saveInput.setColor(Color.WHITE);
 
                 this.backText.setColor(Color.WHITE);
-                this.actionText.setColor(Color.WHITE);
+                this.actionText.setColor(Color.ORANGE);
             }
             case BACK -> {
                 this.saveInput.setFocused(false);
