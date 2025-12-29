@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import engine.utils.logger.Log;
+
 public final class ResourceAlias {
 
     private static Set<String> aliases = new HashSet<>();
@@ -26,7 +28,39 @@ public final class ResourceAlias {
         return alias;
     }
 
-    public static <E extends Enum<E>> List<ResourceAlias> folder(String prefix, int from, int to, String path, String url) {
+    public static List<ResourceAlias> localFolder(String basePath) {
+        List<ResourceAlias> alias = new ArrayList<>();
+
+        File folder = new File(basePath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        File[] files = folder.listFiles();
+        if (files == null) {
+            return alias;
+        }
+
+        for (File file : files) {
+            if (file.isFile()) {
+                String name = file.getName();
+                int dotIndex = name.lastIndexOf('.');
+                if (dotIndex > 0) {
+                    name = name.substring(0, dotIndex);
+                }
+
+                if(aliases.contains(name)) {
+                    Log.warning("Alias already exists, skipping: %s", name);
+                    continue;
+                }
+                alias.add(ResourceAlias.file(name, file.getPath(), null));
+            }
+        }
+        return alias;
+    }
+
+    public static <E extends Enum<E>> List<ResourceAlias> folder(String prefix, int from, int to, String path,
+            String url) {
         List<ResourceAlias> alias = new ArrayList<>();
         for (int i = from; i <= to; i++) {
             String name = String.format(prefix, i);
@@ -44,12 +78,14 @@ public final class ResourceAlias {
         return alias;
     }
 
-    public static <E extends Enum<E>> List<ResourceAlias> folder(Class<E> enumClass, String path, String url, ResourceVariant... variants) {
+    public static <E extends Enum<E>> List<ResourceAlias> folder(Class<E> enumClass, String path, String url,
+            ResourceVariant... variants) {
         List<ResourceAlias> aliasFinal = new ArrayList<>();
 
         for (E enumConst : enumClass.getEnumConstants()) {
             String name = enumConst.name().toLowerCase();
-            List<ResourceAlias> alias = ResourceAlias.file(name, String.format(path, name), String.format(url, name)).variant(variants);
+            List<ResourceAlias> alias = ResourceAlias.file(name, String.format(path, name), String.format(url, name))
+                    .variant(variants);
             aliasFinal.addAll(alias);
         }
         return aliasFinal;
@@ -66,13 +102,13 @@ public final class ResourceAlias {
     private ResourceAlias(String name, String path, String url) {
         this.name = name;
         // try {
-        //     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        //     this.path = new File(classLoader.getResource(path).toURI());
+        // ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        // this.path = new File(classLoader.getResource(path).toURI());
         // } catch (Exception e) {
-        //     throw new IllegalArgumentException("Resource path is invalid: " + path);
+        // throw new IllegalArgumentException("Resource path is invalid: " + path);
         // }
         this.path = new File(new File(".").getAbsolutePath(), path);
-        this.url = URI.create(url);
+        this.url = url != null ? URI.create(url) : null;
     }
 
     private ResourceAlias(ResourceAlias base, ResourceVariant variant) {

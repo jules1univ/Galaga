@@ -134,6 +134,7 @@ public class Galaga extends Application<GalagaPage> {
         });
         rm.add(Config.SPRITE_LOGO, SpriteResource.NAME);
         rm.add(Config.SPRITES_SHIP, SpriteResource.NAME);
+        rm.add(Config.SPRITES_CUSTOM_SHIPS, SpriteResource.NAME);
         rm.add(Config.SPRITES_ENEMY, SpriteResource.NAME);
 
         rm.add(Config.LEVELS, LevelResource.NAME);

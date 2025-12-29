@@ -117,9 +117,16 @@ public class MainMenu extends Page<GalagaPage> {
                 this.size.getWidth() / 2,
                 this.size.getHeight() / 2));
 
-        Icon[] icons = new Icon[Config.SPRITES_SHIP.size()];
-        for (int i = 0; i < Config.SPRITES_SHIP.size(); i++) {
-            Sprite ship = Galaga.getContext().getResource().get(Config.SPRITES_SHIP.get(i));
+        final int iconsSize = Config.SPRITES_SHIP.size() + Config.SPRITES_CUSTOM_SHIPS.size();
+        Icon[] icons = new Icon[iconsSize];
+        for (int i = 0; i < iconsSize; i++) {
+            if (i < Config.SPRITES_SHIP.size()) {
+                Sprite ship = Galaga.getContext().getResource().get(Config.SPRITES_SHIP.get(i));
+                icons[i] = new Icon(ship, Config.SPRITE_SCALE_MENU_ICON);
+                continue;
+            }
+            Sprite ship = Galaga.getContext().getResource()
+                    .get(Config.SPRITES_CUSTOM_SHIPS.get(i - Config.SPRITES_SHIP.size()));
             icons[i] = new Icon(ship, Config.SPRITE_SCALE_MENU_ICON);
         }
 

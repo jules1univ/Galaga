@@ -128,6 +128,8 @@ public class Config {
                         "resources/sprites/ships/%s.spr",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sprites/ships/%s.spr");
 
+        public static final List<ResourceAlias> SPRITES_CUSTOM_SHIPS = ResourceAlias.localFolder("resources/sprites/ships/custom/");
+
         public static final List<ResourceAlias> SPRITES_ENEMY = ResourceAlias.folder(EnemyType.class,
                         "resources/sprites/enemies/%s.spr",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sprites/enemies/%s.spr");
@@ -146,7 +148,7 @@ public class Config {
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sounds/%s.wav");
 
         public static final List<ResourceAlias> LEVELS = ResourceAlias.folder(
-                        "level%d", 3, 3,
+                        "level%d", 1, 3,
                         "resources/levels/%s.lvl",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/levels/%s.lvl");
 
