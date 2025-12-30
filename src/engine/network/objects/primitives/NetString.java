@@ -6,7 +6,10 @@ import engine.network.NetObject;
 public class NetString implements NetObject {
     private String value;
 
-    public static NetString of(String value) {
+    public static NetObject of(String value) {
+        if(value == null) {
+            return NetNull.of();
+        }
         NetString obj = new NetString();
         obj.value = value;
         return obj;

@@ -33,6 +33,10 @@ public final class ClientConnection {
         return this.socket;
     }
 
+    public String getAddress() {
+        return this.socket.getRemoteSocketAddress().toString();
+    }
+
     public boolean isActive() {
         return this.active;
     }

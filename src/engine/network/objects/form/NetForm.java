@@ -6,33 +6,63 @@ import engine.network.NetBuffer;
 import engine.network.NetObject;
 import engine.network.NetworkManager;
 
-public class NetForm<T extends Enum<T>> implements NetObject {
+public class NetForm implements NetObject {
 
     private Map<String, NetObject> fields;
-    private T state;
+    private NetFormAction action;
+    private String resourceId;
 
     public NetForm() {
     }
 
-    public static <E extends Enum<E>> NetForm<E> create(E state) {
-        NetForm<E> form = new NetForm<>();
-        form.state = state;
-        return form;
-    }
-
-    public static <E extends Enum<E>> NetForm<E> create(E state, Map<String, NetObject> fields) {
-        NetForm<E> form = new NetForm<>();
-        form.state = state;
+    public static NetForm create(Class<?> resId, Map<String, NetObject> fields) {
+        NetForm form = new NetForm();
+        form.action = NetFormAction.REQ_CREATE;
+        form.resourceId = resId.getSimpleName().toLowerCase();
         form.fields = fields;
         return form;
     }
 
-    public void setState(T state) {
-        this.state = state;
+    public static NetForm read(Class<?> resId) {
+        NetForm form = new NetForm();
+        form.action = NetFormAction.REQ_READ;
+        form.resourceId = resId.getSimpleName().toLowerCase();
+        return form;
     }
 
-    public T getState() {
-        return this.state;
+    public static NetForm update(Class<?> resId, Map<String, NetObject> fields) {
+        NetForm form = new NetForm();
+        form.action = NetFormAction.REQ_UPDATE;
+        form.resourceId = resId.getSimpleName().toLowerCase();
+        form.fields = fields;
+        return form;
+    }
+
+    public static NetForm delete(Class<?> resId) {
+        NetForm form = new NetForm();
+        form.action = NetFormAction.REQ_DELETE;
+        form.resourceId = resId.getSimpleName().toLowerCase();
+        return form;
+    }
+
+    public static NetForm response(Class<?> resId, Map<String, NetObject> fields) {
+        NetForm form = new NetForm();
+        form.action = NetFormAction.RESPONSE;
+        form.resourceId = resId.getSimpleName().toLowerCase();
+        form.fields = fields;
+        return form;
+    }
+
+    public String getResourceId() {
+        return this.resourceId;
+    }
+
+    public boolean isResourceId(Class<?> class1) {
+        return this.resourceId.equals(class1.getSimpleName().toLowerCase());
+    }
+
+    public NetFormAction getAction() {
+        return this.action;
     }
 
     public void addField(String name, NetObject value) {
@@ -58,7 +88,9 @@ public class NetForm<T extends Enum<T>> implements NetObject {
     @Override
     public void read(NetBuffer buff) {
         int stateOrdinal = buff.readInt().orElse(0);
-        this.state = (T) this.state.getDeclaringClass().getEnumConstants()[stateOrdinal];
+        this.action = NetFormAction.values()[stateOrdinal];
+
+        this.resourceId = buff.readString().orElse(null);
 
         int fieldCount = buff.readInt().orElse(0);
         for (int i = 0; i < fieldCount; i++) {
@@ -77,7 +109,8 @@ public class NetForm<T extends Enum<T>> implements NetObject {
 
     @Override
     public void write(NetBuffer buff) {
-        buff.write(this.state.ordinal());
+        buff.write(this.action.ordinal());
+        buff.write(this.resourceId);
         buff.write(fields.size());
         for (String key : fields.keySet()) {
             buff.write(key);

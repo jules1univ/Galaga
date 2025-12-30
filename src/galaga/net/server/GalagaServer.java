@@ -2,15 +2,14 @@ package galaga.net.server;
 
 import engine.network.NetObject;
 import engine.network.objects.form.NetForm;
-import engine.network.objects.primitives.NetBool;
-import engine.network.objects.primitives.NetNull;
+import engine.network.objects.form.NetFormAction;
 import engine.network.server.ClientConnection;
 import engine.network.server.Server;
 import engine.utils.Args;
 import engine.utils.ini.Ini;
 import engine.utils.logger.Log;
 import galaga.Config;
-import galaga.net.GalagaNetState;
+import galaga.net.shared.NetPlayerData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -103,60 +102,56 @@ public class GalagaServer extends Server {
     protected void onTick() {
     }
 
-
-    @SuppressWarnings("unchecked")
     @Override
     protected void onClientReceive(ClientConnection client, NetObject obj) {
-        Log.message("Server receive from client %s : (%s) %s", client.getSocket().getRemoteSocketAddress(),
+        Log.message("Server receive from client %s : (%s) %s", client.getAddress(),
                 obj.getClass().getSimpleName(), obj.toString());
 
         if (!this.players.containsKey(client)) {
-            Log.warning("Server received data from unknown client: %s", client.getSocket().getRemoteSocketAddress());
-            client.stop();
-            return;
-        }
-
-        NetPlayerData player = this.players.get(client);
-        if (player == null) {
-            Log.warning("Server has null player data for client: %s", client.getSocket().getRemoteSocketAddress());
+            Log.warning("Server received data from unknown client: %s", client.getAddress());
             client.stop();
             return;
         }
 
         if (obj instanceof NetForm form) {
-            if(form.getState().getDeclaringClass() != GalagaNetState.class) {
-                Log.warning("Server received invalid form state from client: %s", client.getSocket().getRemoteSocketAddress());
-                return;
-            }
-            this.handleForm(client, player, form);
+            this.handleForm(client, form);
         }
     }
 
-    
-    private void handleForm(ClientConnection client, NetPlayerData player, NetForm<GalagaNetState> form) {
-       
+    private void handleForm(ClientConnection client, NetForm form) {
+        if (form.getAction() == NetFormAction.RESPONSE) {
+            if(form.isResourceId(NetPlayerData.class))
+            {
+                if (!form.hasField("data")) {
+                    return;
+                }
+                NetPlayerData newPlayerData = form.getFieldAs("data", NetPlayerData.class);
+                if (newPlayerData == null) {
+                    return;
+                }
+
+                this.players.put(client, newPlayerData);
+                return;
+            }
+            return;
+        }
     }
 
     @Override
     protected void onClientConnected(ClientConnection client) {
         if (this.players.size() >= this.maxPlayers) {
-            Log.message("Server rejected client (server full): %s", client.getSocket().getRemoteSocketAddress());
+            Log.message("Server rejected client (server full): %s", client.getAddress());
             client.stop();
             return;
         }
 
-        Log.message("Server new client connected: %s", client.getSocket().getRemoteSocketAddress());
-        this.players.put(client, new NetPlayerData());
-
-        client.send(NetForm.create(GalagaNetState.CLIENT_JOIN, Map.of(
-            "username", NetNull.of(),
-            "accepted", NetBool.of(true)
-        )));
+        Log.message("Server new client connected: %s", client.getAddress());
+        client.send(NetForm.read(NetPlayerData.class));
     }
 
     @Override
     protected void onClientDisconnected(ClientConnection client) {
-        Log.message("Server client disconnected: %s", client.getSocket().getRemoteSocketAddress());
+        Log.message("Server client disconnected: %s", client.getAddress());
 
         this.players.remove(client);
     }

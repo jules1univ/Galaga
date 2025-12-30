@@ -33,5 +33,4 @@ public class NetBool implements NetObject {
     @Override
     public void interpolate(NetObject other, float factor) {
     }
-    
 }

@@ -10,6 +10,8 @@ import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
 import galaga.net.client.GalagaClient;
+import galaga.net.shared.NetPlayerData;
+
 import java.awt.Color;
 import java.awt.Font;
 
@@ -85,7 +87,7 @@ public class MultiplayerLobby extends Page<GalagaPage> {
         this.username = (String) args[0];
         this.serverAddress = (String) args[1];
 
-        this.client = new GalagaClient();
+        this.client = new GalagaClient(NetPlayerData.of(this.username));
 
         String[] parts = this.serverAddress.split(":");
         if (parts.length != 2) {
