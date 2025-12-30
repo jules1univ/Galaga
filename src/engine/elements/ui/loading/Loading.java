@@ -14,7 +14,10 @@ public class Loading extends UIElement {
 
     private final Color color;
     private final Color oppositeColor;
+
     private float percent;
+    private boolean customText = false;
+
     private Position initialPosition;
 
     private final int padding;
@@ -38,6 +41,18 @@ public class Loading extends UIElement {
         this.font = font;
     }
 
+    
+    public int getPadding() {
+        return this.padding;
+    }
+
+    public void setCustomText(String text) {
+        this.customText = text != null && !text.isEmpty();
+        if (this.customText) {
+            this.text.setText(text);
+        }
+    }
+
     public void setFont(Font font) {
         this.font = font;
         this.text.setFont(font);
@@ -46,6 +61,10 @@ public class Loading extends UIElement {
     public void setPercent(float percent) {
         this.percent = percent;
         this.innerSize.setWidth((this.size.getWidth() - this.padding * 2) * this.percent);
+
+        if (this.customText) {
+            return;
+        }
         this.text.setText(String.format("%.0f%%", this.percent * 100));
     }
 
@@ -84,7 +103,7 @@ public class Loading extends UIElement {
                 this.position.getX() + this.size.getWidth() / 2,
                 this.position.getY() + this.size.getHeight() / 2);
         this.text = new Text(String.format("%.0f%%", this.percent * 100), textPos, this.color, this.font);
-        if(!this.text.init()){
+        if (!this.text.init()) {
             return false;
         }
         this.text.setCenter(Alignment.CENTER, Alignment.CENTER);
@@ -101,5 +120,6 @@ public class Loading extends UIElement {
         renderer.drawRect(this.innerPosition, this.innerSize, this.oppositeColor);
         this.text.draw(renderer);
     }
+
 
 }

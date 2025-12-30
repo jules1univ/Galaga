@@ -3,9 +3,11 @@ package galaga.pages.multiplayer.lobby;
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.elements.ui.Alignment;
+import engine.elements.ui.loading.Loading;
 import engine.elements.ui.text.Text;
 import engine.graphics.Renderer;
 import engine.utils.Position;
+import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
@@ -27,6 +29,7 @@ public class MultiplayerLobby extends Page<GalagaPage> {
     private Text status;
 
     private float redirectTimer = -1.f;
+    private Loading redirectBar;
 
     public MultiplayerLobby() {
         super(GalagaPage.MULTIPLAYER_LOBBY);
@@ -36,6 +39,7 @@ public class MultiplayerLobby extends Page<GalagaPage> {
         switch (this.lobbyState) {
             case WAITING_CONNECT -> this.status.setText("Connecting to server...");
             case CONNECTED -> this.status.setText("Connected! Waiting for other players...");
+            case DISCONNECTED -> this.status.setText("Disconnected from server.");
             case NOT_CONNECTED -> this.status.setText("Failed to connect to server.");
             case WAITING_PLAYERS -> this.status.setText("All players connected! Starting soon...");
             case STARTING_GAME -> this.status.setText("Starting game...");
@@ -44,7 +48,7 @@ public class MultiplayerLobby extends Page<GalagaPage> {
 
     private void setStatusFailConnect() {
         this.lobbyState = MultiplayerLobbyState.NOT_CONNECTED;
-        this.redirectTimer = 5.f;
+        this.redirectTimer = Config.DELAY_REDIRECT_MULTIPLAYER_LOBBY;
 
         this.updateStatus();
     }
@@ -57,7 +61,17 @@ public class MultiplayerLobby extends Page<GalagaPage> {
             return false;
         }
 
-        this.status = new Text("", Position.of(Config.WINDOW_WIDTH / 2.f, Config.WINDOW_HEIGHT / 2.f), Color.WHITE,
+        this.redirectBar = new Loading(Position.of(
+                Config.WINDOW_WIDTH / 2.f,
+                Config.WINDOW_HEIGHT / 2.f),
+                Size.of(Config.WINDOW_WIDTH * 0.6f, Config.WINDOW_HEIGHT * 0.05f), 5, Color.LIGHT_GRAY, this.titleFont);
+        if (!this.redirectBar.init()) {
+            return false;
+        }
+        this.redirectBar.setCenter(Alignment.CENTER, Alignment.CENTER);
+        this.redirectBar.setCustomText("Returning to menu...");
+
+        this.status = new Text("", Position.of(Config.WINDOW_WIDTH / 2.f, Config.WINDOW_HEIGHT / 2.f - this.redirectBar.getSize().getHeight() - this.redirectBar.getPadding()), Color.WHITE,
                 this.titleFont);
         if (!this.status.init()) {
             return false;
@@ -117,17 +131,23 @@ public class MultiplayerLobby extends Page<GalagaPage> {
     @Override
     public void update(float dt) {
 
-        if (this.lobbyState == MultiplayerLobbyState.NOT_CONNECTED) {
+        if (this.lobbyState == MultiplayerLobbyState.NOT_CONNECTED
+                || this.lobbyState == MultiplayerLobbyState.DISCONNECTED) {
             this.redirectTimer -= dt;
             if (this.redirectTimer <= 0.f) {
-                Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MULTIPLAYER_MENU, this.username, this.serverAddress);
+                Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MULTIPLAYER_MENU, this.username,
+                        this.serverAddress);
+                return;
             }
+
+            this.redirectBar.setPercent(1.f - (this.redirectTimer / Config.DELAY_REDIRECT_MULTIPLAYER_LOBBY));
             return;
         }
 
-        if(!this.client.isActive() && this.lobbyState != MultiplayerLobbyState.NOT_CONNECTED) {
-            this.setStatusFailConnect();
-            // return;
+        if (!this.client.isActive() && this.lobbyState != MultiplayerLobbyState.NOT_CONNECTED) {
+            this.lobbyState = MultiplayerLobbyState.DISCONNECTED;
+            this.redirectTimer = Config.DELAY_REDIRECT_MULTIPLAYER_LOBBY;
+            this.updateStatus();
         }
 
     }
@@ -135,6 +155,10 @@ public class MultiplayerLobby extends Page<GalagaPage> {
     @Override
     public void draw(Renderer renderer) {
         this.status.draw(renderer);
+
+        if (this.redirectTimer > 0.f) {
+            this.redirectBar.draw(renderer);
+        }
     }
 
 }

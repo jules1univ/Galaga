@@ -49,6 +49,7 @@ public class Config {
         public static final float DELAY_ENEMY_BOSCONIAN_SHOOT_FACTOR = 0.3f;
         public static final float DELAY_DEFAULT_ATTACK_COOLDOWN = 300.f;
         public static final float DELAY_DEFAULT_MISSILE_COOLDOWN = 4000.f;
+        public static final float DELAY_REDIRECT_MULTIPLAYER_LOBBY = 3.f;
 
         public static final float TIME_BLINKSTAR_MAX = 10.0f;
         public static final float TIME_BLINKSTAR_MIN = 3.0f;
@@ -104,7 +105,7 @@ public class Config {
 
         public static final String PATH_CUSTOM_SHIPS = "./resources/sprites/ships/custom/";
         public static final String PATH_CUSTOM_LEVELS = "./resources/levels/custom/";
-        
+
         public static final float NET_TICKRATE = 30.f;
         public static int NET_SERVER_PORT = 5555;
         public static int NET_SERVER_MAX_PLAYERS = 4;
@@ -129,7 +130,8 @@ public class Config {
                         "resources/sprites/ships/%s.spr",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sprites/ships/%s.spr");
 
-        public static final List<ResourceAlias> SPRITES_CUSTOM_SHIPS = ResourceAlias.localFolder("resources/sprites/ships/custom/");
+        public static final List<ResourceAlias> SPRITES_CUSTOM_SHIPS = ResourceAlias
+                        .localFolder("resources/sprites/ships/custom/");
 
         public static final List<ResourceAlias> SPRITES_ENEMY = ResourceAlias.folder(EnemyType.class,
                         "resources/sprites/enemies/%s.spr",
