@@ -40,7 +40,7 @@ public class SpriteEditor extends Page<GalagaPage> {
         }
     }
 
-    private final char[] pixels = new char[SIZE * SIZE];
+    private char[] pixels = new char[SIZE * SIZE];
     private boolean canvasDirty = true;
 
     private Size canvasSize;
@@ -146,6 +146,11 @@ public class SpriteEditor extends Page<GalagaPage> {
 
     @Override
     public void onReceiveArgs(Object... args) {
+        if(args == null || args.length != 1) {
+            return;
+        }
+
+        this.pixels = (char[]) args[0];
     }
 
     @Override
@@ -209,7 +214,7 @@ public class SpriteEditor extends Page<GalagaPage> {
                 case SAVE -> {
                     Galaga.getContext().getApplication().setCurrentPage(GalagaPage.FILE_EXPLORER,
                             FileExplorerArgs.ofSaveMode(Config.PATH_CUSTOM_SHIPS, this.id,
-                                    GalagaPage.EDITOR_MENU, this::exportSprite));
+                                    GalagaPage.EDITOR_MENU, this::exportSprite), this.pixels);
                 }
                 default -> {
                 }

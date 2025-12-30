@@ -29,6 +29,7 @@ public class FileExplorer extends Page<GalagaPage> {
     private static final int FILE_PARENT_DIRECTORY = -2;
 
     private FileExplorerArgs args = FileExplorerArgs.empty();
+    private Object lastState = null;
 
     private Path currentPath;
     private int index = 0;
@@ -155,11 +156,14 @@ public class FileExplorer extends Page<GalagaPage> {
 
     @Override
     public void onReceiveArgs(Object... rawArgs) {
-        if (rawArgs == null || rawArgs.length != 1) {
+        if (rawArgs == null || rawArgs.length < 1) {
+            Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MAIN_MENU);
             return;
         }
 
         this.args = (FileExplorerArgs) rawArgs[0];
+        this.lastState = rawArgs.length >= 2 ? rawArgs[1] : null;
+
         this.saveInput.setFocused(this.args.isSaveMode());
 
         if (this.args.isSaveMode()) {
@@ -252,7 +256,7 @@ public class FileExplorer extends Page<GalagaPage> {
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
 
             if(this.option == FileExplorerOption.BACK) {
-                Galaga.getContext().getApplication().setCurrentPage(this.args.getBackPage());
+                Galaga.getContext().getApplication().setCurrentPage(this.args.getBackPage(), this.lastState);
                 return;
             }
 
