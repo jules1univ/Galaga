@@ -6,6 +6,7 @@ import engine.elements.ui.input.Input;
 import engine.elements.ui.text.Text;
 import engine.elements.ui.text.TextPosition;
 import engine.graphics.Renderer;
+import engine.resource.sound.Sound;
 import engine.utils.Pair;
 import engine.utils.Position;
 import engine.utils.Size;
@@ -13,6 +14,8 @@ import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
+import galaga.GalagaSound;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -44,6 +47,10 @@ public class FileExplorer extends Page<GalagaPage> {
 
     private Text backText;
     private Text actionText;
+
+    private Sound themeSound;
+    private Sound selectSound;
+    private Sound keyboardSound;
 
     private FileExplorerOption option;
 
@@ -96,6 +103,24 @@ public class FileExplorer extends Page<GalagaPage> {
     @Override
     public boolean onActivate() {
         int margin = 20;
+        this.themeSound = Galaga.getContext().getResource().get(GalagaSound.menu_theme);
+        if (this.themeSound == null) {
+            return false;
+        }
+        this.themeSound.setLoop(true);
+        this.themeSound.play(0.2f);
+
+        this.selectSound = Galaga.getContext().getResource().get(GalagaSound.menu_select);
+        if (this.selectSound == null) {
+            return false;
+        }
+        this.selectSound.setCapacity(4);
+
+        this.keyboardSound = Galaga.getContext().getResource().get(GalagaSound.menu_keyboard);
+        if (this.keyboardSound == null) {
+            return false;
+        }
+        this.keyboardSound.setCapacity(4);
 
         this.titleFont = Galaga.getContext().getResource().get(Config.FONTS, Config.VARIANT_FONT_LARGE);
         if (this.titleFont == null) {
@@ -129,7 +154,7 @@ public class FileExplorer extends Page<GalagaPage> {
         this.backText.setCenter(TextPosition.BEGIN, TextPosition.END);
 
         this.actionText = new Text("SAVE",
-                Position.of(Config.WINDOW_WIDTH - margin*2,
+                Position.of(Config.WINDOW_WIDTH - margin * 2,
                         this.displayFilesPosition.getY() + this.displayFilesSize.getHeight() + margin),
                 Color.WHITE, this.titleFont);
         if (!this.actionText.init()) {
@@ -137,7 +162,6 @@ public class FileExplorer extends Page<GalagaPage> {
         }
         this.actionText.setCenter(TextPosition.END, TextPosition.END);
 
-        
         this.currentPath = Path.of(".").toAbsolutePath().normalize();
         this.option = FileExplorerOption.FILE_SAVE;
         this.updateFiles();
@@ -149,7 +173,9 @@ public class FileExplorer extends Page<GalagaPage> {
 
     @Override
     public boolean onDeactivate() {
-
+        this.themeSound.stop();
+        this.selectSound.stop();
+        this.keyboardSound.stop();
         this.state = PageState.INACTIVE;
         return true;
     }
@@ -169,6 +195,7 @@ public class FileExplorer extends Page<GalagaPage> {
         if (this.args.isSaveMode()) {
             this.option = FileExplorerOption.FILE_SAVE;
             this.actionText.setText("SAVE");
+            this.saveInput.setText(this.args.getDefaultSaveName());
         } else {
             this.option = FileExplorerOption.VIEW;
             this.actionText.setText("OPEN");
@@ -216,8 +243,12 @@ public class FileExplorer extends Page<GalagaPage> {
 
     @Override
     public void update(float dt) {
+        if (this.option == FileExplorerOption.FILE_SAVE && Galaga.getContext().getInput().isTyping()) {
+           this.keyboardSound.play(.5f);
+        }
 
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_TAB)) {
+            this.selectSound.play(2.f);
             switch (this.option) {
                 case FILE_SAVE -> {
                     this.option = FileExplorerOption.VIEW;
@@ -254,13 +285,13 @@ public class FileExplorer extends Page<GalagaPage> {
         }
 
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
-
-            if(this.option == FileExplorerOption.BACK) {
+            this.selectSound.play(2.f);
+            if (this.option == FileExplorerOption.BACK) {
                 Galaga.getContext().getApplication().setCurrentPage(this.args.getBackPage(), this.lastState);
                 return;
             }
 
-            if(this.option == FileExplorerOption.ACTION) {
+            if (this.option == FileExplorerOption.ACTION) {
                 if (this.args.isSaveMode()) {
                     String filename = this.saveInput.getText().trim();
                     if (filename.isEmpty()) {
@@ -275,7 +306,7 @@ public class FileExplorer extends Page<GalagaPage> {
                 return;
             }
 
-            if(this.option != FileExplorerOption.VIEW) {
+            if (this.option != FileExplorerOption.VIEW) {
                 return;
             }
 

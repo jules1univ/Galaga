@@ -102,11 +102,12 @@ public class Config {
 
         public static final Color COLOR_BULLET = Color.RED;
 
+        public static final String PATH_CUSTOM_SHIPS = "./resources/sprites/ships/custom/";
+        public static final String PATH_CUSTOM_LEVELS = "./resources/levels/custom/";
+        
         public static final float NET_TICKRATE = 30.f;
         public static int NET_SERVER_PORT = 5555;
         public static int NET_SERVER_MAX_PLAYERS = 4;
-
-        public static final String PATH_CUSTOM_SHIPS = ".";
 
         public static final String VARIANT_FONT_TEXT = "text";
         public static final String VARIANT_FONT_LARGE = "large";
@@ -151,6 +152,8 @@ public class Config {
                         "level%d", 1, 3,
                         "resources/levels/%s.lvl",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/levels/%s.lvl");
+
+        public static final List<ResourceAlias> LEVELS_CUSTOM = ResourceAlias.localFolder("resources/levels/custom/");
 
         public static final ResourceAlias BEST_SCORE = ResourceAlias.file(
                         "best_score",

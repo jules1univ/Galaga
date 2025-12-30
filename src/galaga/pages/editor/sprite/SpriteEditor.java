@@ -16,12 +16,14 @@ import engine.elements.ui.text.TextPosition;
 import engine.elements.ui.textarea.Textarea;
 import engine.graphics.Renderer;
 import engine.graphics.sprite.Sprite;
+import engine.resource.sound.Sound;
 import engine.utils.Position;
 import engine.utils.Size;
 import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
+import galaga.GalagaSound;
 import galaga.pages.files.FileExplorerArgs;
 
 public class SpriteEditor extends Page<GalagaPage> {
@@ -61,6 +63,10 @@ public class SpriteEditor extends Page<GalagaPage> {
     private Text save;
     private Textarea info;
 
+    
+    private Sound themeSound;
+    private Sound selectSound;
+
     private SpriteEditorOption option = SpriteEditorOption.EDIT;
 
     private final Map<Integer, Character> keyToColor = Map.ofEntries(
@@ -84,6 +90,20 @@ public class SpriteEditor extends Page<GalagaPage> {
     @Override
     public boolean onActivate() {
         int padding = 50;
+
+         this.themeSound = Galaga.getContext().getResource().get(GalagaSound.menu_theme);
+        if (this.themeSound == null) {
+            return false;
+        }
+        this.themeSound.setLoop(true);
+        this.themeSound.play(0.2f);
+
+        this.selectSound = Galaga.getContext().getResource().get(GalagaSound.menu_select);
+        if (this.selectSound == null) {
+            return false;
+        }
+        this.selectSound.setCapacity(4);
+
 
         this.canvasSize = Size.of(SIZE * CELL + 1, SIZE * CELL + 1);
         this.canvasPosition = Position.of(
@@ -134,19 +154,26 @@ public class SpriteEditor extends Page<GalagaPage> {
         this.canvasRenderer = Renderer.ofSub(this.canvasSize);
         this.canvasDirty = true;
 
+        this.option = SpriteEditorOption.EDIT;
+        this.back.setColor(Color.WHITE);
+        this.save.setColor(Color.WHITE);
+        this.rebuildCanvas();
+
         this.state = PageState.ACTIVE;
         return true;
     }
 
     @Override
     public boolean onDeactivate() {
+        this.themeSound.stop();
+        this.selectSound.stop();
         this.state = PageState.INACTIVE;
         return true;
     }
 
     @Override
     public void onReceiveArgs(Object... args) {
-        if(args == null || args.length != 1) {
+        if (args == null || args.length != 1) {
             return;
         }
 
@@ -186,6 +213,7 @@ public class SpriteEditor extends Page<GalagaPage> {
         }
 
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_TAB)) {
+            this.selectSound.play(2.f);
             switch (this.option) {
                 case EDIT -> {
                     this.option = SpriteEditorOption.BACK;
@@ -206,6 +234,7 @@ public class SpriteEditor extends Page<GalagaPage> {
         }
 
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+            this.selectSound.play(2.f);
             switch (this.option) {
                 case BACK -> {
                     Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_MENU);
@@ -213,8 +242,9 @@ public class SpriteEditor extends Page<GalagaPage> {
                 }
                 case SAVE -> {
                     Galaga.getContext().getApplication().setCurrentPage(GalagaPage.FILE_EXPLORER,
-                            FileExplorerArgs.ofSaveMode(Config.PATH_CUSTOM_SHIPS, this.id,
-                                    GalagaPage.EDITOR_MENU, this::exportSprite), this.pixels);
+                            FileExplorerArgs.ofSaveMode(Config.PATH_CUSTOM_SHIPS, "custom_ship_0.spr", this.id,
+                                    GalagaPage.EDITOR_MENU, this::exportSprite),
+                            this.pixels);
                 }
                 default -> {
                 }
