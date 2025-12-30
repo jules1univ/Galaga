@@ -2,11 +2,11 @@ package galaga.pages.menu;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
+import engine.elements.ui.Alignment;
 import engine.elements.ui.icon.Icon;
 import engine.elements.ui.select.IconSelect;
 import engine.elements.ui.select.TextSelectEnum;
 import engine.elements.ui.text.Text;
-import engine.elements.ui.text.TextPosition;
 import engine.graphics.Renderer;
 import engine.graphics.sprite.Sprite;
 import engine.resource.sound.Sound;
@@ -153,7 +153,7 @@ public class MainMenu extends Page<GalagaPage> {
         if (!this.quit.init()) {
             return false;
         }
-        this.quit.setCenter(TextPosition.CENTER, TextPosition.END);
+        this.quit.setCenter(Alignment.CENTER, Alignment.END);
 
         this.option = MainMenuOption.GAMEMODE;
         this.updateMenuSelect();

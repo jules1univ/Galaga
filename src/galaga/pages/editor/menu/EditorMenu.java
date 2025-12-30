@@ -2,9 +2,9 @@ package galaga.pages.editor.menu;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
+import engine.elements.ui.Alignment;
 import engine.elements.ui.select.TextSelectEnum;
 import engine.elements.ui.text.Text;
-import engine.elements.ui.text.TextPosition;
 import engine.graphics.Renderer;
 import engine.graphics.sprite.Sprite;
 import engine.resource.sound.Sound;
@@ -99,7 +99,7 @@ public class EditorMenu extends Page<GalagaPage> {
         if (!this.settings.init()) {
             return false;
         }
-        this.settings.setCenter(TextPosition.CENTER, TextPosition.END);
+        this.settings.setCenter(Alignment.CENTER, Alignment.END);
 
         this.back = new Text(
                 "BACK",
@@ -110,7 +110,7 @@ public class EditorMenu extends Page<GalagaPage> {
         if (!this.back.init()) {
             return false;
         }
-        this.back.setCenter(TextPosition.CENTER, TextPosition.END);
+        this.back.setCenter(Alignment.CENTER, Alignment.END);
 
         this.option = EditorMenuOption.EDITORS;
         this.updateMenuSelect();

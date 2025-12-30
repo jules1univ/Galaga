@@ -1,9 +1,9 @@
 package engine.elements.ui.input;
 
 import engine.Application;
+import engine.elements.ui.Alignment;
 import engine.elements.ui.UIElement;
 import engine.elements.ui.text.Text;
-import engine.elements.ui.text.TextPosition;
 import engine.graphics.Renderer;
 import engine.input.InputKeyListener;
 import engine.utils.Position;
@@ -23,8 +23,8 @@ public class Input extends UIElement {
     private final String placeholder;
 
     private Text text;
-    private TextPosition horizontal;
-    private TextPosition vertical;
+    private Alignment horizontal;
+    private Alignment vertical;
 
     private boolean focused = false;
     private boolean outline = true;
@@ -47,8 +47,8 @@ public class Input extends UIElement {
         this.position = position.copy();
         this.size = Size.of(width, 0);
 
-        this.horizontal = TextPosition.BEGIN;
-        this.vertical = TextPosition.BEGIN;
+        this.horizontal = Alignment.BEGIN;
+        this.vertical = Alignment.BEGIN;
 
         this.cursorPosition = position.copy();
     }
@@ -97,7 +97,7 @@ public class Input extends UIElement {
         return this.focused;
     }
 
-    public void setCenter(TextPosition hor, TextPosition ver) {
+    public void setCenter(Alignment hor, Alignment ver) {
         this.horizontal = hor;
         this.vertical = ver;
         this.updatePosition();
@@ -179,7 +179,7 @@ public class Input extends UIElement {
         if (!this.text.init()) {
             return false;
         }
-        this.text.setCenter(TextPosition.BEGIN, TextPosition.END);
+        this.text.setCenter(Alignment.BEGIN, Alignment.END);
         this.updateText();
         return true;
     }

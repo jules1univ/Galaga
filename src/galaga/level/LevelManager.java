@@ -5,8 +5,8 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
+import engine.elements.ui.Alignment;
 import engine.elements.ui.text.Text;
-import engine.elements.ui.text.TextPosition;
 import engine.graphics.Renderer;
 import engine.resource.sound.Sound;
 import engine.utils.Position;
@@ -59,7 +59,7 @@ public class LevelManager {
 
         this.title = new Text("", Position.of(
                 Galaga.getContext().getApplication().getSize()).half(), Color.CYAN, titleFont);
-        this.title.setCenter(TextPosition.CENTER, TextPosition.BEGIN);
+        this.title.setCenter(Alignment.CENTER, Alignment.BEGIN);
 
         return true;
     }

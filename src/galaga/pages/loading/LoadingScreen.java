@@ -8,20 +8,22 @@ import java.awt.GraphicsEnvironment;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
+import engine.elements.ui.Alignment;
+import engine.elements.ui.loading.Loading;
 import engine.elements.ui.text.Text;
-import engine.elements.ui.text.TextPosition;
 import engine.graphics.Renderer;
 import engine.utils.Position;
-
+import engine.utils.Size;
 import galaga.Galaga;
 import galaga.GalagaPage;
 import galaga.Config;
 
-public class Loading extends Page<GalagaPage> {
+public class LoadingScreen extends Page<GalagaPage> {
 
     private Text text;
+    private Loading loading;
 
-    public Loading() {
+    public LoadingScreen() {
         super(GalagaPage.LOADING);
     }
 
@@ -40,10 +42,24 @@ public class Loading extends Page<GalagaPage> {
             }
         }
 
+        int padding = 5;
+        this.loading = new Loading(
+                Position.of(Config.WINDOW_WIDTH / 2.f, Config.WINDOW_HEIGHT / 2.f),
+                Size.of(Config.WINDOW_WIDTH * 0.6f, Config.WINDOW_HEIGHT * 0.05f),
+                padding, Color.LIGHT_GRAY, defaultFont);
+        if (!this.loading.init()) {
+            return false;
+        }
+        this.loading.setCenter(Alignment.CENTER, Alignment.CENTER);
+
         this.text = new Text("Loading", Position.of(
-                Galaga.getContext().getFrame().getWidth() / 2,
-                Galaga.getContext().getFrame().getHeight() / 2), Color.WHITE, defaultFont);
-        this.text.setCenter(TextPosition.CENTER, TextPosition.BEGIN);
+                Config.WINDOW_WIDTH / 2.f,
+                Config.WINDOW_HEIGHT / 2.f - this.loading.getSize().getHeight() + padding * 2), Color.WHITE,
+                defaultFont);
+        if (!this.text.init()) {
+            return false;
+        }
+        this.text.setCenter(Alignment.CENTER, Alignment.BEGIN);
         this.state = PageState.ACTIVE;
         return true;
     }
@@ -59,6 +75,7 @@ public class Loading extends Page<GalagaPage> {
     }
 
     public void setFont(Font font) {
+        this.loading.setFont(font);
         this.text.setFont(font);
     }
 
@@ -66,14 +83,16 @@ public class Loading extends Page<GalagaPage> {
     public void update(float dt) {
         this.text.setText(
                 String.format(
-                        "Loading... %.2f%% (%s)",
-                        Galaga.getContext().getResource().getProgress() * 100.0f,
-                        Galaga.getContext().getResource().getStatus()));
+                        "Loading (%s)",
+                        Galaga.getContext().getResource().getLoadingStatus()));
+        this.loading.setPercent(Galaga.getContext().getResource().getLoadingProgress());
+
     }
 
     @Override
     public void draw(Renderer renderer) {
         this.text.draw(renderer);
+        this.loading.draw(renderer);
     }
 
 }

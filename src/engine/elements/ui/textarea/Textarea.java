@@ -1,8 +1,8 @@
 package engine.elements.ui.textarea;
 
 import engine.Application;
+import engine.elements.ui.Alignment;
 import engine.elements.ui.UIElement;
-import engine.elements.ui.text.TextPosition;
 import engine.graphics.Renderer;
 import engine.utils.Position;
 import java.awt.Color;
@@ -19,8 +19,8 @@ public final class Textarea extends UIElement {
     private boolean fixedSize = false;
     private float lineHeight;
 
-    private TextPosition horizontal;
-    private TextPosition vertical;
+    private Alignment horizontal;
+    private Alignment vertical;
 
     public Textarea(String text, Position position, Color color, Font font) {
         super();
@@ -31,8 +31,8 @@ public final class Textarea extends UIElement {
 
         this.font = font;
         this.color = color;
-        this.horizontal = TextPosition.BEGIN;
-        this.vertical = TextPosition.BEGIN;
+        this.horizontal = Alignment.BEGIN;
+        this.vertical = Alignment.BEGIN;
     }
 
     public void setFixSize(String text, boolean enable) {
@@ -69,7 +69,7 @@ public final class Textarea extends UIElement {
         return this.lines;
     }
 
-    public void setCenter(TextPosition horizontal, TextPosition vertical) {
+    public void setCenter(Alignment horizontal, Alignment vertical) {
         this.horizontal = horizontal;
         this.vertical = vertical;
         this.updateText();

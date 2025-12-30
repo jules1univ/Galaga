@@ -1,7 +1,7 @@
 package engine.elements.ui.select;
 
+import engine.elements.ui.Alignment;
 import engine.elements.ui.text.Text;
-import engine.elements.ui.text.TextPosition;
 import engine.utils.Position;
 import java.awt.Color;
 import java.awt.Font;
@@ -24,7 +24,7 @@ public final class TextSelectEnum<T extends Enum<T>> extends Select<Text> {
                 color,
                 font
             );
-            textOptions[i].setCenter(TextPosition.CENTER, TextPosition.CENTER);
+            textOptions[i].setCenter(Alignment.CENTER, Alignment.CENTER);
         }
         this.options = textOptions;
         this.element = this.options[this.index];

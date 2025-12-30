@@ -5,9 +5,9 @@ import java.awt.Font;
 import java.awt.event.KeyEvent;
 
 import engine.elements.page.Page;
+import engine.elements.ui.Alignment;
 import engine.elements.ui.input.Input;
 import engine.elements.ui.text.Text;
-import engine.elements.ui.text.TextPosition;
 import engine.graphics.Renderer;
 import engine.graphics.sprite.Sprite;
 import engine.resource.sound.Sound;
@@ -138,7 +138,7 @@ public class MultiplayerMenu extends Page<GalagaPage> {
         if (!this.username.init()) {
             return false;
         }
-        this.username.setCenter(TextPosition.CENTER, TextPosition.CENTER);
+        this.username.setCenter(Alignment.CENTER, Alignment.CENTER);
 
         this.ip = new Input(Position.of(
                 Config.WINDOW_WIDTH / 2.f,
@@ -150,7 +150,7 @@ public class MultiplayerMenu extends Page<GalagaPage> {
             return false;
         }
 
-        this.ip.setCenter(TextPosition.CENTER, TextPosition.CENTER);
+        this.ip.setCenter(Alignment.CENTER, Alignment.CENTER);
 
         this.next = new Text("Next", Position.of(
                 this.ip.getPosition().getX() + this.ip.getSize().getWidth(),
@@ -160,7 +160,7 @@ public class MultiplayerMenu extends Page<GalagaPage> {
         if (!this.next.init()) {
             return false;
         }
-        this.next.setCenter(TextPosition.END, TextPosition.END);
+        this.next.setCenter(Alignment.END, Alignment.END);
 
         this.back = new Text("Back", Position.of(
                 this.ip.getPosition().getX(),
@@ -170,7 +170,7 @@ public class MultiplayerMenu extends Page<GalagaPage> {
         if (!this.back.init()) {
             return false;
         }
-        this.back.setCenter(TextPosition.BEGIN, TextPosition.END);
+        this.back.setCenter(Alignment.BEGIN, Alignment.END);
 
         this.option = MultiplayerMenuOption.USERNAME;
         this.updateMenuSelect();

@@ -153,11 +153,11 @@ public final class ResourceManager {
         }
     }
 
-    public String getStatus() {
+    public String getLoadingStatus() {
         return this.status;
     }
 
-    public float getProgress() {
+    public float getLoadingProgress() {
         return this.progress;
     }
 

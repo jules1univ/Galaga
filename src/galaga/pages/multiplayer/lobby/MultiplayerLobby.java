@@ -2,8 +2,8 @@ package galaga.pages.multiplayer.lobby;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
+import engine.elements.ui.Alignment;
 import engine.elements.ui.text.Text;
-import engine.elements.ui.text.TextPosition;
 import engine.graphics.Renderer;
 import engine.utils.Position;
 import galaga.Config;
@@ -62,7 +62,7 @@ public class MultiplayerLobby extends Page<GalagaPage> {
         if (!this.status.init()) {
             return false;
         }
-        this.status.setCenter(TextPosition.CENTER, TextPosition.CENTER);
+        this.status.setCenter(Alignment.CENTER, Alignment.CENTER);
 
         this.updateStatus();
         this.state = PageState.ACTIVE;

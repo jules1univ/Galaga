@@ -1,6 +1,7 @@
 package engine.elements.ui.text;
 
 import engine.Application;
+import engine.elements.ui.Alignment;
 import engine.elements.ui.UIElement;
 import engine.graphics.Renderer;
 import engine.utils.Position;
@@ -16,8 +17,8 @@ public final class Text extends UIElement {
     private Position initial;
     private boolean fixedSize = false;
 
-    private TextPosition horizontal;
-    private TextPosition vertical;
+    private Alignment horizontal;
+    private Alignment vertical;
 
     public Text(String text, Position position, Color color, Font font) {
         super();
@@ -28,8 +29,8 @@ public final class Text extends UIElement {
 
         this.font = font;
         this.color = color;
-        this.horizontal = TextPosition.BEGIN;
-        this.vertical = TextPosition.BEGIN;
+        this.horizontal = Alignment.BEGIN;
+        this.vertical = Alignment.BEGIN;
     }
 
     public void setFixSize(String text, boolean enable) {
@@ -66,7 +67,7 @@ public final class Text extends UIElement {
         return this.text;
     }
 
-    public void setCenter(TextPosition horizontal, TextPosition vertical) {
+    public void setCenter(Alignment horizontal, Alignment vertical) {
         this.horizontal = horizontal;
         this.vertical = vertical;
         this.updateText();

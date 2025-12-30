@@ -11,8 +11,8 @@ import java.util.Map;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
+import engine.elements.ui.Alignment;
 import engine.elements.ui.text.Text;
-import engine.elements.ui.text.TextPosition;
 import engine.elements.ui.textarea.Textarea;
 import engine.graphics.Renderer;
 import engine.graphics.sprite.Sprite;
@@ -130,7 +130,7 @@ public class SpriteEditor extends Page<GalagaPage> {
             return false;
 
         }
-        this.info.setCenter(TextPosition.BEGIN, TextPosition.BEGIN);
+        this.info.setCenter(Alignment.BEGIN, Alignment.BEGIN);
 
         this.back = new Text("BACK",
                 Position.of(Config.WINDOW_WIDTH - padding, this.info.getPosition().getY()),
@@ -139,7 +139,7 @@ public class SpriteEditor extends Page<GalagaPage> {
             return false;
 
         }
-        this.back.setCenter(TextPosition.END, TextPosition.CENTER);
+        this.back.setCenter(Alignment.END, Alignment.CENTER);
 
         this.save = new Text("SAVE",
                 Position.of(Config.WINDOW_WIDTH - padding,
@@ -149,7 +149,7 @@ public class SpriteEditor extends Page<GalagaPage> {
             return false;
 
         }
-        this.save.setCenter(TextPosition.END, TextPosition.BEGIN);
+        this.save.setCenter(Alignment.END, Alignment.BEGIN);
 
         this.canvasRenderer = Renderer.ofSub(this.canvasSize);
         this.canvasDirty = true;

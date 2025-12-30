@@ -2,9 +2,9 @@ package galaga.pages.files;
 
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
+import engine.elements.ui.Alignment;
 import engine.elements.ui.input.Input;
 import engine.elements.ui.text.Text;
-import engine.elements.ui.text.TextPosition;
 import engine.graphics.Renderer;
 import engine.resource.sound.Sound;
 import engine.utils.Pair;
@@ -133,7 +133,7 @@ public class FileExplorer extends Page<GalagaPage> {
         if (!this.saveInput.init()) {
             return false;
         }
-        this.saveInput.setCenter(TextPosition.CENTER, TextPosition.BEGIN);
+        this.saveInput.setCenter(Alignment.CENTER, Alignment.BEGIN);
 
         int textHeight = this.saveInput.getSize().getIntHeight();
         this.displayFilesSize = Size.of(
@@ -151,7 +151,7 @@ public class FileExplorer extends Page<GalagaPage> {
         if (!this.backText.init()) {
             return false;
         }
-        this.backText.setCenter(TextPosition.BEGIN, TextPosition.END);
+        this.backText.setCenter(Alignment.BEGIN, Alignment.END);
 
         this.actionText = new Text("SAVE",
                 Position.of(Config.WINDOW_WIDTH - margin * 2,
@@ -160,7 +160,7 @@ public class FileExplorer extends Page<GalagaPage> {
         if (!this.actionText.init()) {
             return false;
         }
-        this.actionText.setCenter(TextPosition.END, TextPosition.END);
+        this.actionText.setCenter(Alignment.END, Alignment.END);
 
         this.currentPath = Path.of(".").toAbsolutePath().normalize();
         this.option = FileExplorerOption.FILE_SAVE;

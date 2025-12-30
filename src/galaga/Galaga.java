@@ -20,7 +20,7 @@ import galaga.pages.editor.menu.EditorMenu;
 import galaga.pages.editor.settings.Settings;
 import galaga.pages.editor.sprite.SpriteEditor;
 import galaga.pages.files.FileExplorer;
-import galaga.pages.loading.Loading;
+import galaga.pages.loading.LoadingScreen;
 import galaga.pages.menu.MainMenu;
 import galaga.pages.multiplayer.lobby.MultiplayerLobby;
 import galaga.pages.multiplayer.menu.MultiplayerMenu;
@@ -108,7 +108,7 @@ public class Galaga extends Application<GalagaPage> {
 
     @Override
     protected boolean init() {
-        this.registerPage(GalagaPage.LOADING, Loading.class);
+        this.registerPage(GalagaPage.LOADING, LoadingScreen.class);
         this.setCurrentPage(GalagaPage.LOADING);
 
         ResourceManager rm = getContext().getResource();
@@ -119,7 +119,7 @@ public class Galaga extends Application<GalagaPage> {
             if (variant != null && variant.getName().equals(Config.VARIANT_FONT_LARGE)) {
                 FontResource font = (FontResource) rawRes;
                 Page<?> page = this.getCurrentPage();
-                if (page instanceof Loading loadingPage) {
+                if (page instanceof LoadingScreen loadingPage) {
                     loadingPage.setFont(font.getData());
                 }
             }

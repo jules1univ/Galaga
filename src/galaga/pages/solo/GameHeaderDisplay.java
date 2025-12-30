@@ -1,8 +1,8 @@
 package galaga.pages.solo;
 
+import engine.elements.ui.Alignment;
 import engine.elements.ui.UIElement;
 import engine.elements.ui.text.Text;
-import engine.elements.ui.text.TextPosition;
 import engine.graphics.Renderer;
 import engine.utils.Position;
 import engine.utils.Size;
@@ -36,17 +36,17 @@ public class GameHeaderDisplay extends UIElement {
         
         // hack fix to avoid resizing when fps change
         this.fps.setFixSize("FPS: XXXXX.XX", true);
-        this.fps.setCenter(TextPosition.END, TextPosition.BEGIN);
+        this.fps.setCenter(Alignment.END, Alignment.BEGIN);
 
         this.score = new Text("SCORE: 0", Position.of(this.size.getWidth()/2, this.size.getHeight()/2), Color.WHITE, this.textFont);
-        this.score.setCenter(TextPosition.CENTER, TextPosition.BEGIN);
+        this.score.setCenter(Alignment.CENTER, Alignment.BEGIN);
 
         Score bestScoreVal = Galaga.getContext().getResource().get(Config.BEST_SCORE);
         if(bestScoreVal == null) {
             return false;
         }
         this.bestScore = new Text(String.format("BEST: %d", bestScoreVal.getValue()), Position.of(0, this.size.getHeight()/2), Color.RED, this.textFont);
-        this.bestScore.setCenter(TextPosition.BEGIN, TextPosition.BEGIN);
+        this.bestScore.setCenter(Alignment.BEGIN, Alignment.BEGIN);
         return true;
     }
 
