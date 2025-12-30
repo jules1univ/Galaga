@@ -64,7 +64,7 @@ public abstract class Client {
         try {
             while (!this.socket.isClosed() && this.active) {
                 int id = this.in.readInt();
-
+                
                 int length = this.in.readInt();
                 byte[] data = this.in.readNBytes(length);
 

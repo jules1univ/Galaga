@@ -69,7 +69,7 @@ public class GalagaServer extends Server {
         } while (!this.isActive());
 
         while (this.isActive()) {
-            Optional<String> input = Log.input(">");
+            Optional<String> input = Log.input("");
             if (input.isEmpty()) {
                 Log.message("Server stopping...");
                 this.stop();
@@ -84,7 +84,7 @@ public class GalagaServer extends Server {
                 case "status" -> {
                     Log.message("Server Status: %d/%d players connected.", this.players.size(), this.maxPlayers);
                 }
-                default -> Log.message("Unknown command: '%s'", input);
+                default -> {}
             }
         }
     }
@@ -107,12 +107,6 @@ public class GalagaServer extends Server {
         Log.message("Server receive from client %s : (%s) %s", client.getAddress(),
                 obj.getClass().getSimpleName(), obj.toString());
 
-        if (!this.players.containsKey(client)) {
-            Log.warning("Server received data from unknown client: %s", client.getAddress());
-            client.stop();
-            return;
-        }
-
         if (obj instanceof NetForm form) {
             this.handleForm(client, form);
         }
@@ -120,6 +114,23 @@ public class GalagaServer extends Server {
 
     private void handleForm(ClientConnection client, NetForm form) {
         if (form.getAction() == NetFormAction.RESPONSE) {
+            if(form.isResourceId(NetPlayerData.class))
+            {
+                if (!form.hasField("data")) {
+                    return;
+                }
+                NetPlayerData newPlayerData = form.getFieldAs("data", NetPlayerData.class);
+                if (newPlayerData == null) {
+                    return;
+                }
+
+                this.players.put(client, newPlayerData);
+                return;
+            }
+            return;
+        }
+
+        if(form.getAction() == NetFormAction.REQ_UPDATE) {
             if(form.isResourceId(NetPlayerData.class))
             {
                 if (!form.hasField("data")) {

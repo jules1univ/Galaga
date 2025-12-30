@@ -4,6 +4,7 @@ import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.graphics.Renderer;
 import engine.network.NetworkManager;
+import engine.network.objects.form.NetForm;
 import engine.network.objects.primitives.NetBool;
 import engine.network.objects.primitives.NetFloat;
 import engine.network.objects.primitives.NetInt;
@@ -34,11 +35,14 @@ public abstract class Application<PageId extends Enum<PageId>> {
 
     static {
         NetworkManager.register(List.of(
+            NetForm.class,
+
             NetNull.class,
             NetBool.class,
             NetInt.class,
             NetFloat.class,
             NetString.class,
+            
             Position.class,
             Size.class
         ));

@@ -37,6 +37,10 @@ public class NetworkManager {
     }
 
     public static NetObject createObjectById(int id) {
+        if (!networkClass.containsKey(id)) {
+            return null;
+        }
+        
         try {
             return networkClass.get(id).getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException

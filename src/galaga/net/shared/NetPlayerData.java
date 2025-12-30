@@ -22,14 +22,20 @@ public class NetPlayerData implements NetObject {
 
     @Override
     public void read(NetBuffer buff) {
+        buff.readString().ifPresent(name -> this.username = name);
     }
 
     @Override
     public void write(NetBuffer buff) {
+        buff.write(this.username);
     }
 
     @Override
     public void interpolate(NetObject other, float factor) {
     }
 
+    @Override
+    public String toString() {
+        return "NetPlayerData{username=" + this.username + "}";
+    }
 }

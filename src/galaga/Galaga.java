@@ -3,6 +3,7 @@ package galaga;
 import engine.AppContext;
 import engine.Application;
 import engine.elements.page.Page;
+import engine.network.NetworkManager;
 import engine.resource.Resource;
 import engine.resource.ResourceManager;
 import engine.resource.ResourceVariant;
@@ -13,6 +14,7 @@ import engine.resource.sprite.SpriteResource;
 import engine.utils.Args;
 import galaga.level.LevelResource;
 import galaga.net.server.GalagaServer;
+import galaga.net.shared.NetPlayerData;
 import galaga.pages.editor.level.LevelEditor;
 import galaga.pages.editor.menu.EditorMenu;
 import galaga.pages.editor.settings.Settings;
@@ -24,12 +26,17 @@ import galaga.pages.multiplayer.lobby.MultiplayerLobby;
 import galaga.pages.multiplayer.menu.MultiplayerMenu;
 import galaga.pages.solo.GameSolo;
 import galaga.score.ScoreResource;
+
 import java.awt.event.KeyEvent;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.management.ManagementFactory;
 
 public class Galaga extends Application<GalagaPage> {
+
+    static {
+        NetworkManager.register( NetPlayerData.class);
+    }
 
     @SuppressWarnings("unchecked")
     public static AppContext<State, GalagaPage> getContext() {

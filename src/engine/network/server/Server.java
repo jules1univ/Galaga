@@ -4,12 +4,13 @@ import engine.network.NetObject;
 import engine.utils.logger.Log;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.List;
 import java.util.concurrent.locks.LockSupport;
 
 public abstract class Server {
-    private final CopyOnWriteArrayList<ClientConnection> clients = new CopyOnWriteArrayList<>();
+    private final List<ClientConnection> clients = new ArrayList<>();
 
     private Thread handleThread;
     private Thread updateThread;

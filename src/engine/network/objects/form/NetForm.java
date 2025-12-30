@@ -1,5 +1,6 @@
 package engine.network.objects.form;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import engine.network.NetBuffer;
@@ -93,6 +94,7 @@ public class NetForm implements NetObject {
         this.resourceId = buff.readString().orElse(null);
 
         int fieldCount = buff.readInt().orElse(0);
+        this.fields = new HashMap<>();
         for (int i = 0; i < fieldCount; i++) {
             String key = buff.readString().orElse(null);
             if (key == null) {
@@ -111,11 +113,16 @@ public class NetForm implements NetObject {
     public void write(NetBuffer buff) {
         buff.write(this.action.ordinal());
         buff.write(this.resourceId);
-        buff.write(fields.size());
-        for (String key : fields.keySet()) {
+        if(this.fields == null) {
+            buff.write(0);
+            return;
+        }
+
+        buff.write(this.fields.size());
+        for (String key : this.fields.keySet()) {
             buff.write(key);
 
-            NetObject obj = fields.get(key);
+            NetObject obj = this.fields.get(key);
             buff.write(NetworkManager.getObjectId(obj));
             buff.write(obj);
         }
@@ -125,4 +132,9 @@ public class NetForm implements NetObject {
     public void interpolate(NetObject other, float factor) {
     }
 
+
+    @Override
+    public String toString() {
+        return "NetForm{action=" + this.action + ", resourceId=" + this.resourceId + ", fields=" + this.fields + "}";
+    }
 }
