@@ -1,6 +1,6 @@
 name: Build Galaga Installers
 
-on: [release]
+on: [push, pull_request]
 
 jobs:
   build:
