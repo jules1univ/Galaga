@@ -65,10 +65,7 @@ jobs:
 
       - name: Create JAR
         run: |
-          jar --create \
-            --file Galaga.jar \
-            --main-class galaga.Galaga \
-            -C classes .
+          jar --create --file Galaga.jar --main-class galaga.Galaga -C classes .
 
       - name: Prepare pkg folder (Windows)
         if: matrix.os == 'windows-latest'
