@@ -14,7 +14,7 @@ public class Config {
         public static final int WINDOW_HEIGHT = 700;
         public static final String WINDOW_TITLE = "Galaga - @jules1univ";
 
-        public static final int PLAYER_INITIAL_LIFE = 300;
+        public static final int PLAYER_INITIAL_LIFE = 3;
 
         public static final float SPRITE_SCALE_MENU_ICON = 3.f;
         public static final float SPRITE_SCALE_DEFAULT = 2.5f;
