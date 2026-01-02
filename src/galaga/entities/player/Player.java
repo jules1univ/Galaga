@@ -102,6 +102,10 @@ public final class Player extends SpriteEntity implements BulletShooter {
     }
 
     private void onHit() {
+        if(this.isReswawning()) {
+            return;
+        }
+
         this.dieSound.play();
         Galaga.getContext().getState().particles.createExplosion(this);
 

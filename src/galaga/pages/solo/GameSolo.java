@@ -199,14 +199,12 @@ public class GameSolo extends Page<GalagaPage> {
                 continue;
             }
 
-            if (bullet.getShooter() instanceof Enemy) {
-                if (player.isBulletColliding(bullet)) {
-                    bullet.getShooter().onBulletHitOther(player);
-                    bulletIt.remove();
+            if (!this.player.isReswawning() && bullet.getShooter() instanceof Enemy && this.player.isBulletColliding(bullet)) {
+                bullet.getShooter().onBulletHitOther(this.player);
+                bulletIt.remove();
 
-                    if (player.isDead()) {
-                        break;
-                    }
+                if (this.player.isDead()) {
+                    break;
                 }
                 continue;
             }
@@ -214,8 +212,8 @@ public class GameSolo extends Page<GalagaPage> {
             enemyIt = this.level.getEnemies().iterator();
             while (enemyIt.hasNext()) {
                 Enemy enemy = enemyIt.next();
-                if (enemy.isBulletColliding(bullet)) {
-                    player.onBulletHitOther(enemy);
+                if (bullet.getShooter() instanceof Player && enemy.isBulletColliding(bullet)) {
+                    this.player.onBulletHitOther(enemy);
                     enemyIt.remove();
                     bulletIt.remove();
                     break;

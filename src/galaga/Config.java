@@ -73,7 +73,7 @@ public class Config {
 
         public static final float POSITION_LOCK_THRESHOLD = 1.f;
         public static final float POSITION_NEAR_THRESHOLD = 10.f;
-        public static final float POSITION_NEAR_CAPTURED_PLAYER_THRESHOLD = 100.f;
+        public static final float POSITION_ENEMY_CAPTURED_PLAYER_MAX_Y = 80.f;
 
         public static final Position POSITION_ENEMY_LEFT = Position.of(-100.f, 600.f);
         public static final Position POSITION_ENEMY_MID_LEFT = Position.of(WINDOW_WIDTH / 4.f, WINDOW_HEIGHT / 2.f);

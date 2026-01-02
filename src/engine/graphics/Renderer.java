@@ -79,6 +79,25 @@ public final class Renderer {
         return this;
     }
 
+    public Renderer draw(Renderer subrenderer, Position position, Size size, boolean stretch) {
+        if (subrenderer.image == null) {
+            Log.warning("Attempted to draw null sub-renderer image.");
+            return this;
+        }
+
+        if (stretch) {
+            this.g.drawImage(subrenderer.image, position.getIntX(), position.getIntY(), size.getIntWidth(),
+                    size.getIntHeight(), null);
+            return this;
+        }
+
+        this.g.drawImage(subrenderer.image, position.getIntX(), position.getIntY(),
+                position.getIntX() + size.getIntWidth(), position.getIntY() + size.getIntHeight(),
+                0, 0, size.getIntWidth(), size.getIntHeight(),
+                null);
+        return this;
+    }
+
     public Size getTextSize(String text, Font font) {
         if (font == null || text == null || text.isEmpty()) {
             Log.warning("Attempted to get size of null or empty text.");
