@@ -14,7 +14,7 @@ public class Config {
         public static final int WINDOW_HEIGHT = 700;
         public static final String WINDOW_TITLE = "Galaga - @jules1univ";
 
-        public static final int PLAYER_INITIAL_LIFE = 3;
+        public static final int PLAYER_INITIAL_LIFE = 300;
 
         public static final float SPRITE_SCALE_MENU_ICON = 3.f;
         public static final float SPRITE_SCALE_DEFAULT = 2.5f;
@@ -82,14 +82,11 @@ public class Config {
         public static final Position POSITION_ENEMY_MID_RIGHT = Position.of(WINDOW_WIDTH * 3.f / 4.f,
                         WINDOW_HEIGHT / 2.f);
 
-        public static final Position POSITION_ENTER_MID_LEFT_CTRL = Position.of(Config.WINDOW_WIDTH / 2.f,
-                        Config.WINDOW_HEIGHT / 6.f);
-        public static Position POSITION_ENTER_MID_LEFT_CTRL_2 = Position.of(Config.WINDOW_WIDTH,
-                        Config.WINDOW_HEIGHT * 2.f / 4.f);
+        public static final Position POSITION_ENTER_MID_LEFT_CTRL = Position.of(566.35284f, 20.880125f);
+        public static final Position POSITION_ENTER_MID_LEFT_CTRL_2 = Position.of(278.53122f, 850.81036f);
 
-        public static Position POSITION_ENTER_MID_RIGHT_CTRL = Position.of(Config.WINDOW_WIDTH / 2.f,
-                        Config.WINDOW_HEIGHT / 6.f);
-        public static Position POSITION_ENTER_MID_RIGHT_CTRL_2 = Position.of(0.f, Config.WINDOW_HEIGHT * 2.f / 4.f);
+        public static final Position POSITION_ENTER_MID_RIGHT_CTRL = Position.of(141.27112f, 3.684825f);
+        public static final Position POSITION_ENTER_MID_RIGHT_CTRL_2 = Position.of(435.77835f, 863.1522f);
 
         public static final Position POSITION_ENTER_LOCK_CTRL = Position.of(Config.WINDOW_WIDTH / 2.f,
                         Config.WINDOW_HEIGHT / 4.f);
