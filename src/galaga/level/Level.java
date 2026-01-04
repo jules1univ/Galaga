@@ -1,6 +1,7 @@
 package galaga.level;
 
 import engine.graphics.sprite.Sprite;
+import engine.utils.Pair;
 import engine.utils.ini.Ini;
 import engine.utils.logger.Log;
 import galaga.Config;
@@ -124,6 +125,7 @@ public class Level {
             // int stages = levelConfig.getVariable("formation", "stages").asInt();
 
             float y = Config.POSITION_LEVEL_START_Y;
+            Pair<Integer, Integer> lrIndex = Pair.of(0, 0);
             for (int i = layers; i >= 0; i--) {
                 String section = "layer" + i;
                 if (!levelConfig.containsSection(section)) {
@@ -142,8 +144,10 @@ public class Level {
                         .orElse(Config.SPEED_DEFAULT_ENEMY_SPEED);
                 int score = levelConfig.getVariable(section, "score").asInt().orElse(Config.SIZE_DEFAULT_ENEMY_SCORE);
 
-                List<EnemyConfig> enemies = EnemyConfig.create(type, score, speed, count, y, level);
-                level.enemiesConfig.addAll(enemies);
+                Pair<List<EnemyConfig>, Pair<Integer, Integer>> result = EnemyConfig.create(type, score, speed, count, y, level, lrIndex);
+                lrIndex = result.getSecond();
+                
+                level.enemiesConfig.addAll(result.getFirst());
 
                 y += sprite.getSize().getHeight() * Config.SPRITE_SCALE_DEFAULT + Config.POSITION_LEVEL_STEP_Y;
             }

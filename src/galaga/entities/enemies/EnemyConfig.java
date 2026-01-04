@@ -1,6 +1,7 @@
 package galaga.entities.enemies;
 
 import engine.graphics.sprite.Sprite;
+import engine.utils.Pair;
 import engine.utils.Position;
 import engine.utils.logger.Log;
 import galaga.Config;
@@ -52,31 +53,38 @@ public class EnemyConfig {
         }
     }
 
-    public static List<EnemyConfig> create(EnemyType type, int score, float speed, int count, float y, Level level) {
+    public static Pair<List<EnemyConfig>, Pair<Integer, Integer>> create(EnemyType type, int score, float speed, int count, float y, Level level, Pair<Integer, Integer> lrIndex) {
         List<EnemyConfig> enemies = new ArrayList<>();
 
         Sprite sprite = Galaga.getContext().getResource().get(type);
-        if(sprite == null) {
-            return enemies;
+        if (sprite == null) {
+            return Pair.of(enemies, lrIndex);
         }
 
-
         float width = sprite.getSize().getWidth() * Config.SPRITE_SCALE_DEFAULT;
-        float spacing = width/8.f;
+        float spacing = width / 8.f;
         float x = Config.WINDOW_WIDTH / 2.f - ((count - 1) * (width + spacing)) / 2.f;
 
+        int left = lrIndex.getFirst();
+        int right = lrIndex.getSecond();
         for (int i = 0; i < count; i++) {
             Position lock = Position.of(
-                x,
-                y
-            );
-            EnemyConfig config = new EnemyConfig(type, lock, score, speed * Config.SPEED_ENEMY_FACTOR, 0, level);
-            enemies.add(config);
+                    x,
+                    y);
+            EnemyConfig enemy = new EnemyConfig(type, lock, score, speed * Config.SPEED_ENEMY_FACTOR, 0, level);
+            if (x < Config.WINDOW_WIDTH / 2.f) {
+                enemy.setIndex(left);
+                left++;
+            } else {
+                enemy.setIndex(right);
+                right++;
+            }
+            enemies.add(enemy);
 
             x += width + spacing;
         }
 
-        return enemies;
+        return Pair.of(enemies, Pair.of(left, right));
     }
 
     public EnemyConfig(EnemyType type, Position lock, int value, float speed, int index, Level level) {
