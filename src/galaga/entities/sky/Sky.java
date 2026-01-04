@@ -70,6 +70,11 @@ public final class Sky extends Entity {
 
     @Override
     public void update(float dt) {
+        if(Galaga.getContext().getApplication().hasFreeze())
+        {
+            return;
+        }
+
         for (Star s : stars)
             s.update(dt);
     }

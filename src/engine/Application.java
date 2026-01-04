@@ -24,6 +24,9 @@ public abstract class Application<PageId extends Enum<PageId>> {
     public static boolean DEBUG_MODE = false;
     private static AppContext<?, ?> context;
 
+    private float maxDt = 1/10.f;
+    private boolean freeze = false;
+
     private Page<PageId> currentPage;
     private Page<PageId> nextPage;
     private Object[] pageArgs;
@@ -35,17 +38,16 @@ public abstract class Application<PageId extends Enum<PageId>> {
 
     static {
         NetworkManager.register(List.of(
-            NetForm.class,
+                NetForm.class,
 
-            NetNull.class,
-            NetBool.class,
-            NetInt.class,
-            NetFloat.class,
-            NetString.class,
-            
-            Position.class,
-            Size.class
-        ));
+                NetNull.class,
+                NetBool.class,
+                NetInt.class,
+                NetFloat.class,
+                NetString.class,
+
+                Position.class,
+                Size.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -87,7 +89,7 @@ public abstract class Application<PageId extends Enum<PageId>> {
     }
 
     public final void stop() {
-        if(this.currentPage != null) {
+        if (this.currentPage != null) {
             this.currentPage.onDeactivate();
         }
         getContext().getResource().cancel();
@@ -115,7 +117,7 @@ public abstract class Application<PageId extends Enum<PageId>> {
 
         if (this.currentPage != null) {
             if (!this.currentPage.onDeactivate()) {
-                Log.error("Failed to deactivate page: %s",  this.currentPage.getClass().getName());
+                Log.error("Failed to deactivate page: %s", this.currentPage.getClass().getName());
                 this.stop();
                 return false;
             }
@@ -137,16 +139,27 @@ public abstract class Application<PageId extends Enum<PageId>> {
         this.pages.put(id, pageClass);
     }
 
+    public final boolean hasFreeze() {
+        return this.freeze;
+    }
+
     protected abstract boolean init();
 
     protected abstract void destroy();
 
     protected void update(float dt) {
+
+        this.freeze = dt > this.maxDt * 2.f;
+        if(!this.freeze)
+        {
+            this.maxDt = Math.max(this.maxDt, dt);
+        }
+
         if (this.nextPage != null && this.currentPage.getState() == PageState.INACTIVE) {
             this.currentPage = this.nextPage;
             this.nextPage = null;
             if (!this.currentPage.onActivate()) {
-                Log.error("Failed to activate page: %s" , this.currentPage.getClass().getName());
+                Log.error("Failed to activate page: %s", this.currentPage.getClass().getName());
                 this.stop();
                 return;
             }
