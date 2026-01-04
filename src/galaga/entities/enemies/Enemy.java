@@ -89,6 +89,16 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
         float uu = u * u;
         float uuu = uu * u;
 
+        float dx = 3 * uu * (control1.getX() - start.getX()) +
+                6 * u * this.bezierTime * (control2.getX() - control1.getX()) +
+                3 * tt * (end.getX() - control2.getX());
+
+        float dy = 3 * uu * (control1.getY() - start.getY()) +
+                6 * u * this.bezierTime * (control2.getY() - control1.getY()) +
+                3 * tt * (end.getY() - control2.getY());
+
+        this.angle = (float) Math.toDegrees(Math.atan2(dy, dx)) + 90.f;
+
         this.position.setX(uuu * start.getX() +
                 3 * uu * this.bezierTime * control1.getX() +
                 3 * u * tt * control2.getX() +
@@ -98,6 +108,7 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
                 3 * uu * this.bezierTime * control1.getY() +
                 3 * u * tt * control2.getY() +
                 ttt * end.getY());
+
     }
 
     private void animateEnterToMidPoint(float dt) {
@@ -109,9 +120,7 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
                 this.enterLeft ? Config.POSITION_ENTER_MID_LEFT_CTRL : Config.POSITION_ENTER_MID_RIGHT_CTRL,
                 this.enterLeft ? Config.POSITION_ENTER_MID_LEFT_CTRL_2 : Config.POSITION_ENTER_MID_RIGHT_CTRL_2,
                 this.midPosition,
-                dt * this.config.getSpeed() / 2.f);
-
-        this.angle = this.midPosition.angleTo(this.position) + 90.f;
+                dt * Config.SPEED_ENEMY_ANIMATION_ENTER / 2.f);
 
         float distance = this.position.distance(this.midPosition);
         if (distance <= Config.POSITION_LOCK_THRESHOLD * 10) {
@@ -129,8 +138,7 @@ public abstract class Enemy extends SpriteEntity implements BulletShooter {
 
         this.animateCubicBezier(this.midPosition, Config.POSITION_ENTER_LOCK_CTRL, Config.POSITION_ENTER_LOCK_CTRL_2,
                 this.config.getLockPosition(),
-                dt * this.config.getSpeed() );
-        this.angle = this.config.getLockPosition().angleTo(this.position) + 90.f;
+                dt * Config.SPEED_ENEMY_ANIMATION_ENTER);
     }
 
     protected final boolean isInLockPosition() {

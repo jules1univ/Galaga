@@ -35,9 +35,10 @@ public class Config {
         public static final float SPEED_DEFAULT_FORMATION_SPEED = 0.001f;
         public static final float SPEED_DEFAULT_ENEMY_SPEED = 100.f;
         public static final float SPEED_CURSOR = 10000.f;
+        public static final float SPEED_ENEMY_ANIMATION_ENTER = 0.5f;
 
         public static final int DELAY_ENTER_INDEX = 2;
-        public static final float DELAY_ENEMY_ENTER = .5f;
+        public static final float DELAY_ENEMY_ENTER = .3f;
         public static final float DELAY_SHOOT_PLAYER = .5f;
         public static final float DELAY_LEVEL_TITLE = 3.f;
         public static final float DELAY_LEVEL_TITLE_DEAD = 5.f;

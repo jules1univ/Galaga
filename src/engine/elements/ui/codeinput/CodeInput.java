@@ -4,6 +4,7 @@ import engine.Application;
 import engine.elements.ui.UIElement;
 import engine.graphics.Renderer;
 import engine.input.InputKeyListener;
+import engine.utils.Pair;
 import engine.utils.Position;
 import engine.utils.Size;
 import galaga.Galaga;
@@ -34,6 +35,7 @@ public final class CodeInput extends UIElement {
     private boolean isDirty = true;
 
     private final SyntaxHighlighter highlighter;
+    private final List<Pair<String, Color>[]> highlightedLines = new ArrayList<>();
 
     public CodeInput(Position position, Size size,SyntaxHighlighter highlighter, Font font) {
         super();
@@ -49,7 +51,7 @@ public final class CodeInput extends UIElement {
 
 
     private void rebuildLinesView() {
-
+        
         this.isDirty = false;
     }
 
@@ -59,6 +61,8 @@ public final class CodeInput extends UIElement {
 
         int textHeight = Galaga.getContext().getRenderer().getTextSize("X", this.font).getIntHeight();
         this.maxDisplayLines = (int) (this.size.getHeight() / textHeight);
+
+        this.viewRenderer = Renderer.ofSub(this.size);
 
         return true;
     }
