@@ -16,7 +16,9 @@ import engine.elements.ui.text.Text;
 import engine.elements.ui.textarea.Textarea;
 import engine.graphics.Renderer;
 import engine.graphics.sprite.Sprite;
+import engine.resource.ResourceAlias;
 import engine.resource.sound.Sound;
+import engine.resource.sprite.SpriteResource;
 import engine.utils.Position;
 import engine.utils.Size;
 import engine.utils.logger.Log;
@@ -63,7 +65,6 @@ public class SpriteEditor extends Page<GalagaPage> {
     private Text save;
     private Textarea info;
 
-    
     private Sound themeSound;
     private Sound selectSound;
 
@@ -91,7 +92,7 @@ public class SpriteEditor extends Page<GalagaPage> {
     public boolean onActivate() {
         int padding = 50;
 
-         this.themeSound = Galaga.getContext().getResource().get(GalagaSound.menu_theme);
+        this.themeSound = Galaga.getContext().getResource().get(GalagaSound.menu_theme);
         if (this.themeSound == null) {
             return false;
         }
@@ -103,7 +104,6 @@ public class SpriteEditor extends Page<GalagaPage> {
             return false;
         }
         this.selectSound.setCapacity(4);
-
 
         this.canvasSize = Size.of(SIZE * CELL + 1, SIZE * CELL + 1);
         this.canvasPosition = Position.of(
@@ -255,10 +255,24 @@ public class SpriteEditor extends Page<GalagaPage> {
         this.cursor.clampY(0, this.canvasSize.getHeight() - CELL / 2);
     }
 
-    private boolean exportSprite(String path) {
+    private boolean exportSprite(String filename, String path) {
         Sprite sprite = Sprite.createSprite(this.pixels, SIZE, SIZE);
         try {
             Sprite.saveSprite(sprite, new FileOutputStream(path));
+
+            String aliasname = filename.replaceAll("\\.\\w+$", "");
+            while(ResourceAlias.exists(aliasname)) {
+                aliasname += "_new";
+            }
+            
+            ResourceAlias alias = ResourceAlias.file(
+                    aliasname,
+                    path,
+                    null);
+            Config.SPRITES_CUSTOM_SHIPS.add(alias);
+            Galaga.getContext().getResource().add(alias, SpriteResource.NAME);
+
+            Galaga.getContext().getResource().load(alias);
             return true;
         } catch (IOException e) {
             Log.error("Sprite saving failed: %s", e.getMessage());

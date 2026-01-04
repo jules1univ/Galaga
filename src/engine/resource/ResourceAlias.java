@@ -18,6 +18,10 @@ public final class ResourceAlias {
     private final URI url;
     private ResourceVariant variant = null;
 
+    public static boolean exists(String name) {
+        return aliases.contains(name);
+    }
+
     public static ResourceAlias file(String name, String path, String url) {
         if (aliases.contains(name)) {
             throw new IllegalArgumentException("Alias already exists: " + name);
@@ -99,7 +103,7 @@ public final class ResourceAlias {
         return alias;
     }
 
-    private ResourceAlias(String name, String path, String url) {
+    private ResourceAlias(String name, String rawPath, String rawUrl) {
         this.name = name;
         // try {
         // ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -107,8 +111,13 @@ public final class ResourceAlias {
         // } catch (Exception e) {
         // throw new IllegalArgumentException("Resource path is invalid: " + path);
         // }
-        this.path = new File(new File(".").getAbsolutePath(), path);
-        this.url = url != null ? URI.create(url) : null;
+        File p = new File(rawPath);
+        if(p.isAbsolute()) {
+            this.path = p;
+        } else {
+            this.path = new File(new File(".").getAbsolutePath(), rawPath);
+        }
+        this.url = rawUrl != null ? URI.create(rawUrl) : null;
     }
 
     private ResourceAlias(ResourceAlias base, ResourceVariant variant) {

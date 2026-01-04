@@ -299,7 +299,7 @@ public class FileExplorer extends Page<GalagaPage> {
                     }
 
                     String outputPath = this.currentPath.resolve(filename).toString();
-                    if (this.args.getCallback().run(outputPath)) {
+                    if (this.args.getCallback().run(filename, outputPath)) {
                         Galaga.getContext().getApplication().setCurrentPage(this.args.getNextPage());
                     }
                 }
@@ -322,7 +322,7 @@ public class FileExplorer extends Page<GalagaPage> {
                 }
                 default -> {
                     String outputPath = this.currentPath.resolve(selectedFile.getFirst()).toString();
-                    if (!this.args.isSaveMode() && this.args.getCallback().run(outputPath)) {
+                    if (!this.args.isSaveMode() && this.args.getCallback().run(selectedFile.getFirst(), outputPath)) {
                         Galaga.getContext().getApplication().setCurrentPage(this.args.getNextPage());
                     }
                 }

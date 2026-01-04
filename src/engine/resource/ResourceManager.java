@@ -95,6 +95,13 @@ public final class ResourceManager {
         return this.write(alias.getName(), data);
     }
 
+    public void load(ResourceAlias alias) {
+        Resource<?> res = this.resources.get(alias.getFullName());
+        if (res != null && !res.isLoaded()) {
+            res.load();
+        }
+    }
+
     public void load(Runnable callback, long delay) {
         this.loading = true;
         this.loadingThread = new Thread(() -> {
