@@ -5,7 +5,7 @@ import engine.resource.Resource;
 import engine.resource.ResourceAlias;
 import engine.resource.ResourceCallback;
 
-public class SoundResource extends Resource<Sound> {
+public final class SoundResource extends Resource<Sound> {
     public static final String NAME = "sound";
 
     public SoundResource(ResourceAlias alias, ResourceCallback callback) {

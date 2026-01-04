@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NetworkManager {
+public final class NetworkManager {
     private static final Map<Integer, Class<? extends NetObject>> networkClass = new HashMap<>();
     private static int nextId = 1;
 

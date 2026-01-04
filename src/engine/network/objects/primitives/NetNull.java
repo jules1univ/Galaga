@@ -3,7 +3,7 @@ package engine.network.objects.primitives;
 import engine.network.NetBuffer;
 import engine.network.NetObject;
 
-public class NetNull implements NetObject {
+public final class NetNull implements NetObject {
 
     public static NetNull of() {
         return new NetNull();

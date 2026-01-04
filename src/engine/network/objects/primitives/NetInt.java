@@ -3,7 +3,7 @@ package engine.network.objects.primitives;
 import engine.network.NetBuffer;
 import engine.network.NetObject;
 
-public class NetInt implements NetObject {
+public final class NetInt implements NetObject {
     private int value;
 
     public static NetInt of(int value) {
@@ -32,6 +32,9 @@ public class NetInt implements NetObject {
 
     @Override
     public void interpolate(NetObject other, float factor) {
+        if (other instanceof NetInt o) {
+            this.value = this.value + (int)((o.value - this.value) * factor);
+        }
     }
     
 }

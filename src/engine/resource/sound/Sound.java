@@ -14,7 +14,7 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-public class Sound {
+public final class Sound {
     private final ArrayList<Clip> clips = new ArrayList<>();
     private final AudioFormat format;
     private final byte[] audioData;

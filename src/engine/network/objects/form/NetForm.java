@@ -7,7 +7,7 @@ import engine.network.NetBuffer;
 import engine.network.NetObject;
 import engine.network.NetworkManager;
 
-public class NetForm implements NetObject {
+public final class NetForm implements NetObject {
 
     private Map<String, NetObject> fields;
     private NetFormAction action;

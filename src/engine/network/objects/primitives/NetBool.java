@@ -3,7 +3,7 @@ package engine.network.objects.primitives;
 import engine.network.NetBuffer;
 import engine.network.NetObject;
 
-public class NetBool implements NetObject {
+public final class NetBool implements NetObject {
     private boolean value;
 
     public static NetBool of(boolean value) {
@@ -32,5 +32,8 @@ public class NetBool implements NetObject {
 
     @Override
     public void interpolate(NetObject other, float factor) {
+        if (other instanceof NetBool o) {
+            this.value = o.value;
+        }
     }
 }

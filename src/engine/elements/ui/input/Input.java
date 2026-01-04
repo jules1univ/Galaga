@@ -12,7 +12,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 
-public class Input extends UIElement {
+public final class Input extends UIElement {
     private static final float CURSOR_SIZE = 5.f;
     private static final int NO_MAX_LENGTH = -1;
 

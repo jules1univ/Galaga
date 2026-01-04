@@ -10,7 +10,7 @@ import engine.graphics.Renderer;
 import engine.utils.Position;
 import engine.utils.Size;
 
-public class Loading extends UIElement {
+public final class Loading extends UIElement {
 
     private final Color color;
     private final Color oppositeColor;

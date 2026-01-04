@@ -1,5 +1,7 @@
 package engine.graphics.sprite;
 
+import engine.network.NetBuffer;
+import engine.network.NetObject;
 import engine.utils.Size;
 import engine.utils.logger.Log;
 import java.awt.Color;
@@ -14,13 +16,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class Sprite {
+public final class Sprite implements NetObject {
 
-    private final BufferedImage image;
-    private final Map<Color, Integer> colorMap;
+    private BufferedImage image;
+    private char[] pixels;
+    private Map<Color, Integer> colorMap;
 
-    private Sprite(BufferedImage image, Map<Color, Integer> colorMap) {
+    public Sprite() {
+
+    }
+
+    private Sprite(BufferedImage image, char[] pixels, Map<Color, Integer> colorMap) {
         this.image = image;
+        this.pixels = pixels;
         this.colorMap = colorMap;
     }
 
@@ -38,7 +46,7 @@ public final class Sprite {
                 base.setRGB(x, y, color.getRGB());
             }
         }
-        return new Sprite(base, colorMap);
+        return new Sprite(base, pixels, colorMap);
     }
 
     public static Sprite createSprite(InputStream in) {
@@ -77,10 +85,14 @@ public final class Sprite {
         BufferedImage base = new BufferedImage(width, height,
                 BufferedImage.TYPE_INT_ARGB);
         Map<Color, Integer> colorMap = new HashMap<>();
+        char[] pixels = new char[width * height];
+
         for (int y = 0; y < height; y++) {
             String row = lines.get(y);
             for (int x = 0; x < width; x++) {
                 char c = row.charAt(x);
+                pixels[y * width + x] = c;
+
                 Color color = charToColor(c);
 
                 colorMap.putIfAbsent(color, 0);
@@ -88,7 +100,8 @@ public final class Sprite {
                 base.setRGB(x, y, color.getRGB());
             }
         }
-        return new Sprite(base, colorMap);
+
+        return new Sprite(base, pixels, colorMap);
     }
 
     public static boolean saveSprite(Sprite data, OutputStream out) {
@@ -167,6 +180,34 @@ public final class Sprite {
 
     public BufferedImage getImage() {
         return this.image;
+    }
+
+    @Override
+    public void read(NetBuffer buff) {
+        float width = buff.readFloat().orElse(0.f);
+        float height = buff.readFloat().orElse(0.f);
+        char[] pixels = buff.readString().orElse("").toCharArray();
+
+        Sprite sprite = Sprite.createSprite(pixels, (int) width, (int) height);
+        this.image = sprite.image;
+        this.pixels = sprite.pixels;
+        this.colorMap = sprite.colorMap;
+    }
+
+    @Override
+    public void write(NetBuffer buff) {
+        buff.write(this.image.getWidth());
+        buff.write(this.image.getHeight());
+        buff.write(new String(this.pixels));
+    }
+
+    @Override
+    public void interpolate(NetObject other, float factor) {
+        if( other instanceof Sprite o) {
+            this.image = o.image;
+            this.pixels = o.pixels;
+            this.colorMap = o.colorMap;
+        }
     }
 
 }
