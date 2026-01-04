@@ -241,8 +241,14 @@ public class SpriteEditor extends Page<GalagaPage> {
 
                 }
                 case SAVE -> {
+                    int id = 0;
+                    String filename = "custom_ship_" + id;
+                    while (ResourceAlias.exists(filename)) {
+                        id++;
+                        filename = "custom_ship_" + id;
+                    }
                     Galaga.getContext().getApplication().setCurrentPage(GalagaPage.FILE_EXPLORER,
-                            FileExplorerArgs.ofSaveMode(Config.PATH_CUSTOM_SHIPS, "custom_ship_0.spr", this.id,
+                            FileExplorerArgs.ofSaveMode(Config.PATH_CUSTOM_SHIPS, filename + ".spr", this.id,
                                     GalagaPage.EDITOR_MENU, this::exportSprite),
                             this.pixels);
                 }
@@ -261,10 +267,10 @@ public class SpriteEditor extends Page<GalagaPage> {
             Sprite.saveSprite(sprite, new FileOutputStream(path));
 
             String aliasname = filename.replaceAll("\\.\\w+$", "");
-            while(ResourceAlias.exists(aliasname)) {
+            while (ResourceAlias.exists(aliasname)) {
                 aliasname += "_new";
             }
-            
+
             ResourceAlias alias = ResourceAlias.file(
                     aliasname,
                     path,
