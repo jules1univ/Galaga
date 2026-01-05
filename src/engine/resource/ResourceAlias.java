@@ -1,13 +1,12 @@
 package engine.resource;
 
+import engine.utils.logger.Log;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import engine.utils.logger.Log;
 
 public final class ResourceAlias {
 
@@ -24,7 +23,8 @@ public final class ResourceAlias {
 
     public static ResourceAlias file(String name, String path, String url) {
         if (aliases.contains(name)) {
-            throw new IllegalArgumentException("Alias already exists: " + name);
+            Log.error("Alias already exists: %s", name);
+            return null;
         }
         aliases.add(name);
 
@@ -68,6 +68,10 @@ public final class ResourceAlias {
         List<ResourceAlias> alias = new ArrayList<>();
         for (int i = from; i <= to; i++) {
             String name = String.format(prefix, i);
+            if(aliases.contains(name)) {
+                Log.warning("Alias already exists, skipping: %s", name);
+                continue;
+            }
             alias.add(ResourceAlias.file(name, String.format(path, name), String.format(url, name)));
         }
         return alias;
@@ -77,6 +81,10 @@ public final class ResourceAlias {
         List<ResourceAlias> alias = new ArrayList<>();
         for (E enumConst : enumClass.getEnumConstants()) {
             String name = enumConst.name().toLowerCase();
+            if(aliases.contains(name)) {
+                Log.warning("Alias already exists, skipping: %s", name);
+                continue;
+            }
             alias.add(ResourceAlias.file(name, String.format(path, name), String.format(url, name)));
         }
         return alias;
@@ -109,11 +117,11 @@ public final class ResourceAlias {
         // ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         // this.path = new File(classLoader.getResource(path).toURI());
         // } catch (Exception e) {
-        // throw new IllegalArgumentException("Resource path is invalid: " + path);
         // }
-        File p = new File(rawPath);
-        if(p.isAbsolute()) {
-            this.path = p;
+        
+        File localPath = new File(rawPath);
+        if(localPath.isAbsolute()) {
+            this.path = localPath;
         } else {
             this.path = new File(new File(".").getAbsolutePath(), rawPath);
         }

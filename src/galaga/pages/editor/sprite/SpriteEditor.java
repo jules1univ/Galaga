@@ -1,14 +1,5 @@
 package galaga.pages.editor.sprite;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.KeyEvent;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Map.Entry;
-import java.util.HashMap;
-import java.util.Map;
-
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.elements.ui.Alignment;
@@ -27,6 +18,14 @@ import galaga.Galaga;
 import galaga.GalagaPage;
 import galaga.GalagaSound;
 import galaga.pages.files.FileExplorerArgs;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.KeyEvent;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class SpriteEditor extends Page<GalagaPage> {
 
@@ -241,11 +240,11 @@ public class SpriteEditor extends Page<GalagaPage> {
 
                 }
                 case SAVE -> {
-                    int id = 0;
-                    String filename = "custom_ship_" + id;
+                    int aliasId = 0;
+                    String filename = "custom_ship_" + aliasId;
                     while (ResourceAlias.exists(filename)) {
-                        id++;
-                        filename = "custom_ship_" + id;
+                        aliasId++;
+                        filename = "custom_ship_" + aliasId;
                     }
                     Galaga.getContext().getApplication().setCurrentPage(GalagaPage.FILE_EXPLORER,
                             FileExplorerArgs.ofSaveMode(Config.PATH_CUSTOM_SHIPS, filename + ".spr", this.id,
@@ -266,13 +265,16 @@ public class SpriteEditor extends Page<GalagaPage> {
         try {
             Sprite.saveSprite(sprite, new FileOutputStream(path));
 
-            String aliasname = filename.replaceAll("\\.\\w+$", "");
-            while (ResourceAlias.exists(aliasname)) {
-                aliasname += "_new";
+            String filenameNoExt = filename.replaceAll("\\.\\w+$", "");
+            
+            int aliasId = 0;
+            String aliasName = filenameNoExt;
+            while (ResourceAlias.exists(aliasName)) {
+                aliasId++;
+                aliasName = filenameNoExt + "_" + aliasId;
             }
 
-            ResourceAlias alias = ResourceAlias.file(
-                    aliasname,
+            ResourceAlias alias = ResourceAlias.file(aliasName,
                     path,
                     null);
             Config.SPRITES_CUSTOM_SHIPS.add(alias);
