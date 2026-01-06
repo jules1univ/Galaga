@@ -19,7 +19,7 @@ public final class FontResource extends Resource<Font> {
 
     @Override
     public boolean load() {
-        InputStream in = this.getResourceData();
+        InputStream in = this.getResourceInput();
         if (in == null) {
             return false;
         }

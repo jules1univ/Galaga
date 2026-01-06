@@ -4,7 +4,6 @@ import engine.graphics.sprite.Sprite;
 import engine.resource.Resource;
 import engine.resource.ResourceAlias;
 import engine.resource.ResourceCallback;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -17,7 +16,7 @@ public final class SpriteResource extends Resource<Sprite> {
 
     @Override
     public boolean load() {
-        InputStream in = this.getResourceData();
+        InputStream in = this.getResourceInput();
         if(in == null) {
             return false;
         }

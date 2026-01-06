@@ -1,9 +1,9 @@
 package engine.resource.sound;
 
-import java.io.InputStream;
 import engine.resource.Resource;
 import engine.resource.ResourceAlias;
 import engine.resource.ResourceCallback;
+import java.io.InputStream;
 
 public final class SoundResource extends Resource<Sound> {
     public static final String NAME = "sound";
@@ -12,8 +12,9 @@ public final class SoundResource extends Resource<Sound> {
         super(alias, callback);
     }
 
+    @Override
     public boolean load() {
-        InputStream in = this.getResourceData();
+        InputStream in = this.getResourceInput();
         if (in == null) {
             return false;
         }

@@ -106,7 +106,7 @@ public class LevelManager {
         this.title.setText(level.getName());
         this.title.setColor(Color.CYAN);
 
-        this.enemies = level.getEnemiesConfig();
+        this.enemies = level.getEnemies();
         if (this.enemies == null || this.enemies.isEmpty()) {
             return false;
         }

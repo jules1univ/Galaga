@@ -201,7 +201,11 @@ public class Level {
         return missileCooldown;
     }
 
-    public List<Enemy> getEnemiesConfig() {
+    public List<EnemyConfig> getEnemiesConfig() {
+        return this.enemiesConfig;
+    }
+
+    public List<Enemy> getEnemies() {
         List<Enemy> enemyInst = new ArrayList<>();
         for (EnemyConfig config : this.enemiesConfig) {
             Enemy enemy = EnemyFactory.create(config);

@@ -32,7 +32,7 @@ public abstract class Resource<ResourceData> {
         }
     }
 
-    protected final InputStream getResourceData() {
+    protected final InputStream getResourceInput() {
         File file = this.alias.getPath();
         if (file.exists()) {
             try {
@@ -48,18 +48,16 @@ public abstract class Resource<ResourceData> {
             Log.error("Resource '%s' has no url to load from.", this.alias.getFullName());
             return null;
         }
-        try {
-            InputStream in = url.toURL().openStream();
-            new Thread(() -> {
-                this.alias.getPath().getParentFile().mkdirs();
-                try (FileOutputStream out = new FileOutputStream(this.alias.getPath())) {
-                    in.transferTo(out);
-                    Log.message("Resource '%s' saved to local file system.", this.alias.getFullName());
-                } catch (Exception e) {
-                    Log.error("Resource '%s' saving failed: %s", this.alias.getFullName(), e.getMessage());
-                }
-            }).start();
-            return url.toURL().openStream();
+
+        try (InputStream in = url.toURL().openStream()) {
+            file.getParentFile().mkdirs();
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                in.transferTo(out);
+                Log.message("Resource '%s' saved to local file system.", this.alias.getFullName());
+            } catch (IOException e) {
+                Log.error("Resource '%s' saving failed: %s", this.alias.getFullName(), e.getMessage());
+            }
+            return new FileInputStream(file);
         } catch (IOException e) {
             Log.error("Resource '%s' download failed: %s", this.alias.getFullName(), e.getMessage());
         }

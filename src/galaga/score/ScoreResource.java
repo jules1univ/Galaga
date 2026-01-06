@@ -16,7 +16,7 @@ public class ScoreResource extends Resource<Score> {
 
     @Override
     public boolean load() {
-        InputStream in = this.getResourceData();
+        InputStream in = this.getResourceInput();
         if(in == null) {
             return false;
         }
