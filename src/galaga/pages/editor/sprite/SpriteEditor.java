@@ -177,6 +177,7 @@ public class SpriteEditor extends Page<GalagaPage> {
         }
 
         this.pixels = (char[]) args[0];
+        this.canvasDirty = true;
     }
 
     @Override

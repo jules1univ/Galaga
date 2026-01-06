@@ -9,26 +9,30 @@
 
 |                                              |                                             |
 | -------------------------------------------- | ------------------------------------------- |
-| ![image 0](./.github/preview/game_menu.png) | ![image 1](./.github/preview/game_play.png) |
+| ![image 0](./.github/preview/game_menu.png) | ![image 1](./.github/preview/game_multi.png) |
+| -------------------------------------------- | ------------------------------------------- |
+| ![image 2](./.github/preview/game_sprite.png) | ![image 3](./.github/preview/game_files.png) |
 
 
 ## 🛠️ Features
 
 - **Player Mechanics**: Control your spaceship, shoot bullets, and dodge enemies.
 - **Enemy Types**: 
-    - Bees: Move in zig-zag patterns.
-    - Butterflies: Move straight downwards.
-    - Moths: Follow the player and trys to capture it.
-    - **Bosses**: Not implemented yet.
+    - Bee: Move in zig-zag patterns.
+    - Butterflie: Move straight downwards.
+    - Moth: Follow the player and trys to capture it.
+    - Bosconian: The boss enemy with double shooting capabilities.
 - **Level Progression**: 
     - **Default Levels**: Predefined levels with increasing difficulty.
         - Level 1: Basic enemy waves.
         - Level 2: Increased enemy speed and frequency and intoduction of Moth enemies.
-        - Level 3: Introduction of Boss enemies.
+        - Level 3: Introduction of Bosconian.
     - **Custom Levels**: Create and load your own levels.
-- **Ship Skins**: Choose from various spaceship designs.
+- **Sprite Editor**: Design and edit your own sprites for ships and enemies.
+- **File Management**: Save and load custom levels and sprites.
 - **Sound Effects**: Original sound effects from the classic game.
 - **High Scores**: Track and beat your best scores.
+- **Multiplayer Mode**: In development.
 
 
 ## 🤝 Get Involved
