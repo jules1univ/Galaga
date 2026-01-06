@@ -31,22 +31,39 @@ public class LevelEditor extends Page<GalagaPage> {
             return false;
         }
 
-        SyntaxHighlighter highlighter = new SyntaxHighlighter();
-        highlighter.addToken("[", Color.ORANGE);
-        highlighter.addToken("]", Color.ORANGE);
-        highlighter.addPattern("\\[.*?\\]", Color.LIGHT_GRAY);
-        
-        highlighter.addPattern("\\d+", Color.MAGENTA);
+        SyntaxHighlighter iniHighlighter = new SyntaxHighlighter();
 
-        highlighter.addToken("=", Color.RED);
-
-        highlighter.addPattern("\".*?\"", Color.YELLOW);
+        iniHighlighter.addPattern("[;#].*", new Color(120, 120, 120));
+        iniHighlighter.addPattern("\\[[^\\]]+\\]", Color.LIGHT_GRAY);
+        iniHighlighter.addPattern("^[ \\t]*[a-zA-Z0-9_.-]+(?=\\s*=)", new Color(80, 160, 220));
+        iniHighlighter.addPattern("=", Color.RED);
+        iniHighlighter.addPattern("\"(\\\\.|[^\"])*\"", Color.YELLOW);
+        iniHighlighter.addPattern("\\b\\d+\\b", Color.MAGENTA);
+        iniHighlighter.addPattern("(?<=\\=).*", new Color(200, 200, 200));
 
         this.levelCode = new CodeInput(Position.zero(), Size.of(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT * 0.9f),
-                highlighter, this.textFont);
+                iniHighlighter, this.textFont);
         if (!this.levelCode.init()) {
             return false;
         }
+
+        // mini ini file as example
+        this.levelCode.setText(
+                "[Level]\n" +
+                        "Name = \"First Level\"\n" +
+                        "EnemyCount = 10\n" +
+                        "SpawnRate = 2.5\n" +
+                        "\n" +
+                        "[Enemy1]\n" +
+                        "Type = \"Bee\"\n" +
+                        "PositionX = 100\n" +
+                        "PositionY = 50\n" +
+                        "\n" +
+                        "[Enemy2]\n" +
+                        "Type = \"Butterfly\"\n" +
+                        "PositionX= 200\n" +
+                        "PositionY=75\n");
+        this.levelCode.setFocused(true);
 
         this.state = PageState.ACTIVE;
         return true;

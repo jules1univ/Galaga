@@ -100,7 +100,7 @@ public final class Renderer {
 
     public Size getTextSize(String text, Font font) {
         if (font == null || text == null || text.isEmpty()) {
-            Log.warning("Attempted to get size of null or empty text.");
+            Log.warning("Attempted to get size of null text.");
             return Size.zero();
         }
         this.g.setFont(font);
@@ -111,8 +111,8 @@ public final class Renderer {
     }
 
     public Renderer drawText(String text, Position position, Color color, Font font) {
-        if (font == null || text == null || text.isEmpty()) {
-            Log.warning("Attempted to draw null or empty text.");
+        if (font == null || text == null) {
+            Log.warning("Attempted to draw null text.");
             return this;
         }
         this.g.setColor(color);

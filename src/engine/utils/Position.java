@@ -172,6 +172,22 @@ public final class Position implements NetObject {
         return "Position(" + this.x + ", " + this.y + ")";
     }
 
+    public boolean isZero() {
+        return this.x == 0.0f && this.y == 0.0f;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Position other = (Position) obj;
+        return other.x == this.x && other.y == this.y;
+    }
+
     @Override
     public void read(NetBuffer buff) {
         this.x = buff.readFloat().orElse(0.0f);

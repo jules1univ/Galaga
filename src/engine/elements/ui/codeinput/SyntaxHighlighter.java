@@ -1,55 +1,51 @@
 package engine.elements.ui.codeinput;
 
 import java.awt.Color;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
 
 import engine.utils.Pair;
 
 public final class SyntaxHighlighter {
-    
-    private final Map<String, Color> tokens = new HashMap<>();
-    private final Map<Pattern, Color> patterns = new HashMap<>();
 
-    public SyntaxHighlighter() {
-        
-    }
-
-    public void addToken(String token, Color color) {
-        this.tokens.put(token, color);
-    }
-
-    public void addPattern(Pattern  pattern, Color color) {
-        this.patterns.put(pattern, color);
-    }
+    private final List<SyntaxRule> rules = new ArrayList<>();
 
     public void addPattern(String regex, Color color) {
-        this.patterns.put(Pattern.compile(regex), color);
+        rules.add(new SyntaxRule(regex, color));
     }
 
-    public Pair<String, Color>[] highlightLine(String line , Color defaultColor) {
-        String[] tokens = line.split(" ");
+    public List<Pair<String, Color>> highlightLine(String line, Color defaultColor) {
 
-        @SuppressWarnings("unchecked")
-        Pair<String, Color>[] result = new Pair[tokens.length];
-        
-        for (int i = 0; i < tokens.length; i++) {
-            Color color = this.tokens.getOrDefault(tokens[i], defaultColor);
+        List<Pair<String, Color>> result = new ArrayList<>();
+        int index = 0;
 
-            if (color == defaultColor) {
-                for (Pattern pattern : this.patterns.keySet()) {
-                    if (pattern.matcher(tokens[i]).matches()) {
-                        color = this.patterns.get(pattern);
-                        break;
-                    }
+        while (index < line.length()) {
+
+            boolean matched = false;
+
+            for (SyntaxRule rule : rules) {
+                Matcher matcher = rule.pattern.matcher(line);
+                matcher.region(index, line.length());
+
+                if (matcher.lookingAt()) {
+                    String token = matcher.group();
+                    result.add(Pair.of(token, rule.color));
+                    index += token.length();
+                    matched = true;
+                    break;
                 }
             }
 
-            result[i] = Pair.of(tokens[i], color);
+            if (!matched) {
+                result.add(Pair.of(
+                        String.valueOf(line.charAt(index)),
+                        defaultColor
+                ));
+                index++;
+            }
         }
-        
+
         return result;
     }
-   
 }
