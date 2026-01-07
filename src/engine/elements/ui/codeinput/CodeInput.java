@@ -172,17 +172,59 @@ public final class CodeInput extends UIElement {
         }
 
         if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_BACK_SPACE, KeyEvent.VK_DELETE)) {
-            if (this.cursorColumnIndex > 0) {
-                String line = this.lines.get(this.cursorLineIndex);
+            String line = this.lines.get(this.cursorLineIndex);
+
+            if (this.cursorColumnIndex == 0 && line.isEmpty() && this.lines.size() > 1) {
+                this.lines.remove(this.cursorLineIndex);
+                this.highlightedLines.remove(this.cursorLineIndex);
+
+                this.cursorColumnIndex = 0;
+                this.cursorLineIndex = Math.max(0, this.cursorLineIndex - 1);
+            } else if (this.cursorColumnIndex == 0 && this.cursorLineIndex > 0) {
+                String previousLine = this.lines.get(this.cursorLineIndex - 1);
+                int previousLineLength = previousLine.length();
+                previousLine += line;
+
+                this.lines.set(this.cursorLineIndex - 1, previousLine);
+                this.highlightedLines.set(this.cursorLineIndex - 1,
+                        this.highlighter.highlightLine(previousLine, Color.WHITE));
+
+                this.lines.remove(this.cursorLineIndex);
+                this.highlightedLines.remove(this.cursorLineIndex);
+
+                this.cursorLineIndex--;
+                this.cursorColumnIndex = previousLineLength;
+            } else if (this.cursorColumnIndex > 0) {
                 line = line.substring(0, this.cursorColumnIndex - 1) + line.substring(this.cursorColumnIndex);
                 this.lines.set(this.cursorLineIndex, line);
                 this.highlightedLines.set(this.cursorLineIndex,
                         this.highlighter.highlightLine(line, Color.WHITE));
-
                 this.cursorColumnIndex--;
-                moved = true;
-                this.isViewDirty = true;
+
             }
+            moved = true;
+            this.isViewDirty = true;
+
+        }
+
+        if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+            String line = this.lines.get(this.cursorLineIndex);
+            String newLine = line.substring(this.cursorColumnIndex);
+
+            line = line.substring(0, this.cursorColumnIndex);
+            this.lines.set(this.cursorLineIndex, line);
+            this.highlightedLines.set(this.cursorLineIndex,
+                    this.highlighter.highlightLine(line, Color.WHITE));
+
+            this.lines.add(this.cursorLineIndex + 1, newLine);
+            this.highlightedLines.add(this.cursorLineIndex + 1,
+                    this.highlighter.highlightLine(newLine, Color.WHITE));
+
+            this.cursorLineIndex++;
+            this.cursorColumnIndex = 0;
+
+            moved = true;
+            this.isViewDirty = true;
         }
 
         if (moved || this.cursorPosition.isZero()) {
