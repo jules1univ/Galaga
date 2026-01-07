@@ -37,6 +37,7 @@ public class GameSolo extends Page<GalagaPage> {
     private Sound themeSound;
 
     private boolean playerDiedUpdated = false;
+    private boolean playerWinUpdated = false;
     private boolean bestScoreUpdated = false;
     private int bestScore = 0;
 
@@ -125,23 +126,31 @@ public class GameSolo extends Page<GalagaPage> {
     @Override
     public void update(float dt) {
         if (this.player.getScore() > this.bestScore && !this.bestScoreUpdated) {
-            this.level.onNewBestScore();
+            this.level.onPlayerBestScore();
             this.sky.setColor(Color.ORANGE);
             this.bestScoreUpdated = true;
         }
 
+        this.sky.update(dt);
+        this.player.update(dt);
+
         if (this.level.isTitleActive()) {
             this.level.updateTitle(dt);
-        } else if (this.sky.isActiveColor()) {
-            if (this.playerDiedUpdated) {
+
+            if (this.playerWinUpdated || this.playerDiedUpdated) {
+                return;
+            }
+        } else {
+            if (this.sky.isActiveColor()) {
+                this.sky.restoreColor();
+            }
+
+            if (this.playerWinUpdated || this.playerDiedUpdated) {
                 Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MAIN_MENU);
                 return;
             }
-            this.sky.restoreColor();
         }
 
-        this.sky.update(dt);
-        this.player.update(dt);
 
         boolean allActionDone = true;
         boolean allInFormation = true;
@@ -199,7 +208,8 @@ public class GameSolo extends Page<GalagaPage> {
                 continue;
             }
 
-            if (!this.player.isReswawning() && bullet.getShooter() instanceof Enemy && this.player.isBulletColliding(bullet)) {
+            if (!this.player.isReswawning() && bullet.getShooter() instanceof Enemy
+                    && this.player.isBulletColliding(bullet)) {
                 bullet.getShooter().onBulletHitOther(this.player);
                 bulletIt.remove();
 
@@ -224,7 +234,7 @@ public class GameSolo extends Page<GalagaPage> {
         this.level.flushSpawnedEnemies();
 
         if (this.player.isDead() && !this.playerDiedUpdated) {
-            this.level.onPlayerDied();
+            this.level.onPlayerDied(this.player.getScore());
             this.sky.setColor(Color.RED);
 
             this.playerDiedUpdated = true;
@@ -233,8 +243,10 @@ public class GameSolo extends Page<GalagaPage> {
         if (this.level.getEnemies().isEmpty()) {
             if (this.level.next()) {
                 this.player.setShooting(false);
-            } else {
-                Galaga.getContext().getApplication().setCurrentPage(GalagaPage.MAIN_MENU);
+            } else if (!this.playerWinUpdated) {
+                this.playerWinUpdated = true;
+                this.level.onPlayerWin(this.player.getScore());
+                this.sky.setColor(Color.ORANGE);
             }
         }
 

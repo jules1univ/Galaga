@@ -18,14 +18,15 @@ import galaga.entities.player.Player;
 
 public class LevelManager {
     private final List<Enemy> pendingEnemies = new ArrayList<>();
-    
-    private List<Enemy> enemies;    
+
+    private List<Enemy> enemies;
     private Player player;
 
     private int index = -1;
     private Level level;
 
     private Text title;
+    private Text subtitle;
     private float titleTime;
 
     private Sound startSound;
@@ -60,6 +61,11 @@ public class LevelManager {
         this.title = new Text("", Position.of(
                 Galaga.getContext().getApplication().getSize()).half(), Color.CYAN, titleFont);
         this.title.setCenter(Alignment.CENTER, Alignment.BEGIN);
+
+        this.subtitle = new Text("", Position.of(
+                Galaga.getContext().getApplication().getSize()).half().addY(50.f), Color.LIGHT_GRAY,
+                titleFont.deriveFont(24f));
+        this.subtitle.setCenter(Alignment.CENTER, Alignment.BEGIN);
 
         return true;
     }
@@ -132,16 +138,26 @@ public class LevelManager {
     }
 
     public void updateTitle(float dt) {
-        if (this.titleTime > 0.f) {
-            this.titleTime -= dt;
-
-            int alpha = (int)Math.clamp((255.f * (this.titleTime / Config.DELAY_LEVEL_TITLE)), 0.f, 255.f);
-            this.title.setColor(new Color(
-                    this.title.getColor().getRed(),
-                    this.title.getColor().getGreen(),
-                    this.title.getColor().getBlue(),
-                    alpha));
+        if (this.titleTime <= 0.f) {
+            return;
         }
+        this.titleTime -= dt;
+
+        int alpha = (int) Math.clamp((255.f * (this.titleTime / Config.DELAY_LEVEL_TITLE)), 0.f, 255.f);
+        this.title.setColor(new Color(
+                this.title.getColor().getRed(),
+                this.title.getColor().getGreen(),
+                this.title.getColor().getBlue(),
+                alpha));
+
+        if (this.subtitle.getText().isBlank()) {
+            return;
+        }
+        this.subtitle.setColor(new Color(
+                this.subtitle.getColor().getRed(),
+                this.subtitle.getColor().getGreen(),
+                this.subtitle.getColor().getBlue(),
+                alpha));
     }
 
     public boolean isTitleActive() {
@@ -150,9 +166,12 @@ public class LevelManager {
 
     public void drawTitle(Renderer renderer) {
         this.title.draw(renderer);
+        if (!this.subtitle.getText().isBlank()) {
+            this.subtitle.draw(renderer);
+        }
     }
 
-    public void onNewBestScore() {
+    public void onPlayerBestScore() {
         this.bestScoreSound.play();
 
         this.titleTime = Config.DELAY_LEVEL_TITLE;
@@ -160,12 +179,26 @@ public class LevelManager {
         this.title.setColor(Color.YELLOW);
     }
 
-    public void onPlayerDied() {
+    public void onPlayerWin(int score) {
+        this.bestScoreSound.play();
+
+        this.titleTime = Config.DELAY_LEVEL_TITLE * 2.f;
+        this.title.setText("Congratulations you win!");
+        this.title.setColor(Color.YELLOW);
+
+        this.subtitle.setText("Final Score: " + score);
+        this.subtitle.setColor(Color.YELLOW);
+    }
+
+    public void onPlayerDied(int score) {
         this.endSound.play();
-    
+
         this.titleTime = Config.DELAY_LEVEL_TITLE_DEAD;
         this.title.setText("Game Over");
         this.title.setColor(Color.RED);
+
+        this.subtitle.setText("Final Score: " + score);
+        this.subtitle.setColor(Color.RED);
     }
 
 }
