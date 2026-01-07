@@ -102,12 +102,12 @@ public class Level {
             return null;
         }
 
-        if (!levelConfig.containsSection("level")) {
+        if (!levelConfig.hasSection("level")) {
             return null;
         }
 
         try {
-            String name = levelConfig.getVariable("level", "name").asString();
+            String name = levelConfig.getVariable("level", "name").toString();
             float formationSpeed = levelConfig.getVariable("level", "formation_speed").asFloat()
                     .orElse(Config.SPEED_DEFAULT_FORMATION_SPEED);
             float attackCooldown = levelConfig.getVariable("level", "attack_cooldown").asFloat()
@@ -116,7 +116,7 @@ public class Level {
                     .orElse(Config.DELAY_DEFAULT_MISSILE_COOLDOWN);
 
             Level level = new Level(name, formationSpeed, attackCooldown, missileCooldown);
-            if (!levelConfig.containsSection("formation")) {
+            if (!levelConfig.hasSection("formation")) {
                 return level;
             }
 
@@ -128,11 +128,11 @@ public class Level {
             Pair<Integer, Integer> lrIndex = Pair.of(0, 0);
             for (int i = layers; i >= 0; i--) {
                 String section = "layer" + i;
-                if (!levelConfig.containsSection(section)) {
+                if (!levelConfig.hasSection(section)) {
                     continue;
                 }
 
-                EnemyType type = EnemyType.valueOf(levelConfig.getVariable(section, "type").asString().toUpperCase());
+                EnemyType type = EnemyType.valueOf(levelConfig.getVariable(section, "type").toString().toUpperCase());
                 Sprite sprite = Galaga.getContext().getResource().get(type);
                 if (sprite == null) {
                     continue;

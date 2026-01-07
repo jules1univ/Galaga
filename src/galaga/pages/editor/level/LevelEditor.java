@@ -10,6 +10,8 @@ import engine.elements.ui.codeinput.SyntaxHighlighter;
 import engine.graphics.Renderer;
 import engine.utils.Position;
 import engine.utils.Size;
+import engine.utils.ini.Ini;
+import engine.utils.ini.IniSection;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
@@ -46,23 +48,26 @@ public class LevelEditor extends Page<GalagaPage> {
         if (!this.levelCode.init()) {
             return false;
         }
+
+        Ini levelTemplate = Ini.empty();
         
-        this.levelCode.setText(
-                "[level]\n" +
-                        "name=Level ?\n" +
-                        "formation_speed= ?\n" +
-                        "attack_cooldown= ?\n" +
-                        "\n" +
-                        "[formation]\n" +
-                        "layers= ?\n" +
-                        "stages= ?\n" +
-                        "\n" +
-                        "[layer0]\n" +
-                        "type= ?\n" +
-                        "speed= ?\n" +
-                        "score= ?\n" +
-                        "count= ?\n" +
-                        "\n");
+        IniSection levelSection =  levelTemplate.addSection("level");
+        levelSection.set("name", "Level ?");
+        levelSection.set("formation_speed", "?");
+        levelSection.set("attack_cooldown", "?");
+
+        IniSection formationSection = levelTemplate.addSection("formation");
+        formationSection.set("layers", "?");
+        formationSection.set("stages", "?");
+
+        IniSection layerSection = levelTemplate.addSection("layer0");
+        layerSection.set("type", "?");
+        layerSection.set("speed", "?");
+        layerSection.set("score", "?");
+        layerSection.set("count", "?");
+
+
+        this.levelCode.setText(levelTemplate.toString());
         this.levelCode.setFocused(true);
 
         this.state = PageState.ACTIVE;

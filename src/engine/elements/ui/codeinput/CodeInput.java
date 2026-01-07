@@ -74,6 +74,10 @@ public final class CodeInput extends UIElement {
         this.lineBegin = LINE_SPACE_BEGIN + textLineSize.getWidth();
     }
 
+    public String getText() {
+        return String.join("\n", this.lines);
+    }
+
     public void setFocused(boolean focused) {
         this.focused = focused;
         if (focused) {
@@ -130,6 +134,118 @@ public final class CodeInput extends UIElement {
         return true;
     }
 
+    private boolean handleUpDown() {
+        if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
+            this.cursorLineIndex--;
+            return true;
+        } else if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
+            this.cursorLineIndex++;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean handleLeftRight() {
+        if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_LEFT)) {
+            this.cursorColumnIndex--;
+            if (this.cursorColumnIndex < 0) {
+                this.cursorLineIndex = Math.max(0, this.cursorLineIndex - 1);
+                this.cursorColumnIndex = this.lines.get(this.cursorLineIndex).length();
+            }
+            return true;
+        } else if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
+            this.cursorColumnIndex++;
+            if (this.cursorColumnIndex > this.lines.get(this.cursorLineIndex).length()) {
+                this.cursorLineIndex = Math.min(this.lines.size() - 1, this.cursorLineIndex + 1);
+                this.cursorColumnIndex = 0;
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean handleTextEnter() {
+        if (!Application.getContext().getInput().isTyping()) {
+            return false;
+        }
+
+        char ch = Application.getContext().getInput().getTypedChar();
+        String line = this.lines.get(this.cursorLineIndex);
+        line = line.substring(0, this.cursorColumnIndex) + ch + line.substring(this.cursorColumnIndex);
+
+        this.lines.set(this.cursorLineIndex, line);
+        this.highlightedLines.set(this.cursorLineIndex,
+                this.highlighter.highlightLine(line, Color.WHITE));
+
+        this.cursorColumnIndex++;
+        this.isViewDirty = true;
+        return true;
+    }
+
+    private boolean handleTextDelete() {
+        if (!Application.getContext().getInput().isKeyPressed(KeyEvent.VK_BACK_SPACE, KeyEvent.VK_DELETE)) {
+            return false;
+        }
+        String line = this.lines.get(this.cursorLineIndex);
+
+        if (this.cursorColumnIndex == 0 && line.isEmpty() && this.lines.size() > 1) {
+            this.lines.remove(this.cursorLineIndex);
+            this.highlightedLines.remove(this.cursorLineIndex);
+
+            this.cursorColumnIndex = 0;
+            this.cursorLineIndex = Math.max(0, this.cursorLineIndex - 1);
+        } else if (this.cursorColumnIndex == 0 && this.cursorLineIndex > 0) {
+            String previousLine = this.lines.get(this.cursorLineIndex - 1);
+            int previousLineLength = previousLine.length();
+            previousLine += line;
+
+            this.lines.set(this.cursorLineIndex - 1, previousLine);
+            this.highlightedLines.set(this.cursorLineIndex - 1,
+                    this.highlighter.highlightLine(previousLine, Color.WHITE));
+
+            this.lines.remove(this.cursorLineIndex);
+            this.highlightedLines.remove(this.cursorLineIndex);
+
+            this.cursorLineIndex--;
+            this.cursorColumnIndex = previousLineLength;
+        } else if (this.cursorColumnIndex > 0) {
+            line = line.substring(0, this.cursorColumnIndex - 1) + line.substring(this.cursorColumnIndex);
+            this.lines.set(this.cursorLineIndex, line);
+            this.highlightedLines.set(this.cursorLineIndex,
+                    this.highlighter.highlightLine(line, Color.WHITE));
+            this.cursorColumnIndex--;
+
+        }
+
+        this.isViewDirty = true;
+        return true;
+    }
+
+    private boolean handleTextNewLine() {
+        if (!Application.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+            return false;
+        }
+
+        String line = this.lines.get(this.cursorLineIndex);
+        String newLine = line.substring(this.cursorColumnIndex);
+
+        line = line.substring(0, this.cursorColumnIndex);
+        this.lines.set(this.cursorLineIndex, line);
+        this.highlightedLines.set(this.cursorLineIndex,
+                this.highlighter.highlightLine(line, Color.WHITE));
+
+        this.lines.add(this.cursorLineIndex + 1, newLine);
+        this.highlightedLines.add(this.cursorLineIndex + 1,
+                this.highlighter.highlightLine(newLine, Color.WHITE));
+
+        this.cursorLineIndex++;
+        this.cursorColumnIndex = 0;
+
+        this.isViewDirty = true;
+        return true;
+    }
+
     @Override
     public void update(float dt) {
         if (this.isViewDirty) {
@@ -141,99 +257,11 @@ public final class CodeInput extends UIElement {
             return;
         }
 
-        boolean moved = false;
-        if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
-            this.cursorLineIndex--;
-            moved = true;
-        } else if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
-            this.cursorLineIndex++;
-            moved = true;
-        }
-
-        if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_LEFT)) {
-            this.cursorColumnIndex--;
-            if(this.cursorColumnIndex < 0) {
-                this.cursorLineIndex = Math.max(0, this.cursorLineIndex - 1);
-                this.cursorColumnIndex = this.lines.get(this.cursorLineIndex).length();
-            }
-            moved = true;
-        } else if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
-            this.cursorColumnIndex++;
-            if(this.cursorColumnIndex > this.lines.get(this.cursorLineIndex).length()) {
-                this.cursorLineIndex = Math.min(this.lines.size() -1, this.cursorLineIndex + 1);
-                this.cursorColumnIndex = 0;
-            }
-            moved = true;
-        }
-
-        if (Application.getContext().getInput().isTyping()) {
-            char ch = Application.getContext().getInput().getTypedChar();
-            String line = this.lines.get(this.cursorLineIndex);
-            line = line.substring(0, this.cursorColumnIndex) + ch + line.substring(this.cursorColumnIndex);
-            this.lines.set(this.cursorLineIndex, line);
-            this.highlightedLines.set(this.cursorLineIndex,
-                    this.highlighter.highlightLine(line, Color.WHITE));
-
-            moved = true;
-            this.cursorColumnIndex++;
-            this.isViewDirty = true;
-        }
-
-        if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_BACK_SPACE, KeyEvent.VK_DELETE)) {
-            String line = this.lines.get(this.cursorLineIndex);
-
-            if (this.cursorColumnIndex == 0 && line.isEmpty() && this.lines.size() > 1) {
-                this.lines.remove(this.cursorLineIndex);
-                this.highlightedLines.remove(this.cursorLineIndex);
-
-                this.cursorColumnIndex = 0;
-                this.cursorLineIndex = Math.max(0, this.cursorLineIndex - 1);
-            } else if (this.cursorColumnIndex == 0 && this.cursorLineIndex > 0) {
-                String previousLine = this.lines.get(this.cursorLineIndex - 1);
-                int previousLineLength = previousLine.length();
-                previousLine += line;
-
-                this.lines.set(this.cursorLineIndex - 1, previousLine);
-                this.highlightedLines.set(this.cursorLineIndex - 1,
-                        this.highlighter.highlightLine(previousLine, Color.WHITE));
-
-                this.lines.remove(this.cursorLineIndex);
-                this.highlightedLines.remove(this.cursorLineIndex);
-
-                this.cursorLineIndex--;
-                this.cursorColumnIndex = previousLineLength;
-            } else if (this.cursorColumnIndex > 0) {
-                line = line.substring(0, this.cursorColumnIndex - 1) + line.substring(this.cursorColumnIndex);
-                this.lines.set(this.cursorLineIndex, line);
-                this.highlightedLines.set(this.cursorLineIndex,
-                        this.highlighter.highlightLine(line, Color.WHITE));
-                this.cursorColumnIndex--;
-
-            }
-            moved = true;
-            this.isViewDirty = true;
-
-        }
-
-        if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
-            String line = this.lines.get(this.cursorLineIndex);
-            String newLine = line.substring(this.cursorColumnIndex);
-
-            line = line.substring(0, this.cursorColumnIndex);
-            this.lines.set(this.cursorLineIndex, line);
-            this.highlightedLines.set(this.cursorLineIndex,
-                    this.highlighter.highlightLine(line, Color.WHITE));
-
-            this.lines.add(this.cursorLineIndex + 1, newLine);
-            this.highlightedLines.add(this.cursorLineIndex + 1,
-                    this.highlighter.highlightLine(newLine, Color.WHITE));
-
-            this.cursorLineIndex++;
-            this.cursorColumnIndex = 0;
-
-            moved = true;
-            this.isViewDirty = true;
-        }
+        boolean moved = this.handleUpDown() ||
+                        this.handleLeftRight() ||
+                        this.handleTextEnter() ||
+                        this.handleTextDelete() ||
+                        this.handleTextNewLine();
 
         if (moved || this.cursorPosition.isZero()) {
             this.cursorBlink = true;

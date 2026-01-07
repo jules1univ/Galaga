@@ -11,13 +11,17 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public final class Ini {
 
-    private final Map<String, Map<String, IniVariable>> sections = new HashMap<>();
+    private final Map<String, IniSection> sections = new LinkedHashMap<>();
+
+    public static Ini empty() {
+        return new Ini();
+    }
 
     public static Ini load(String path) {
         List<String> lines = new ArrayList<>();
@@ -41,18 +45,30 @@ public final class Ini {
     public static Ini load(List<String> lines) {
         Ini ini = new Ini();
 
-        String currentSection = "";
-        ini.sections.put(currentSection, new HashMap<>());
-        for (String rawLine : lines) {
-            String line = rawLine.trim();
-
-            if (line.isEmpty() || line.startsWith("#") || line.startsWith(";")) {
+        IniSection current = null;
+        for (String raw : lines) {
+            String line = raw.trim();
+            if (line.isEmpty()) {
                 continue;
             }
 
+            boolean quoted = false;
+            for (int i = 0; i < raw.length(); i++) {
+                char c = raw.charAt(i);
+
+                if (c == '"') {
+                    quoted = !quoted;
+                }
+
+                if (!quoted && (c == ';' || c == '#')) {
+                    line = raw.substring(0, i).trim();
+                    break;
+                }
+            }
+
             if (line.startsWith("[") && line.endsWith("]")) {
-                currentSection = line.substring(1, line.length() - 1).trim().toLowerCase();
-                ini.sections.putIfAbsent(currentSection, new HashMap<>());
+                String name = line.substring(1, line.length() - 1).trim().toLowerCase();
+                current = ini.sections.computeIfAbsent(name, sec -> new IniSection(name));
                 continue;
             }
 
@@ -63,10 +79,10 @@ public final class Ini {
 
             String key = line.substring(0, eq).trim().toLowerCase();
             String value = line.substring(eq + 1).trim();
-
-            ini.sections
-                    .computeIfAbsent(currentSection, s -> new HashMap<>())
-                    .put(key, new IniVariable(value));
+            if (current == null) {
+                continue;
+            }
+            current.set(key, IniValue.of(value));
         }
 
         Log.message("Ini loaded successfully.");
@@ -78,25 +94,7 @@ public final class Ini {
 
     public void write(OutputStream out) {
         try (Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
-
-            for (Map.Entry<String, Map<String, IniVariable>> sectionEntry : sections.entrySet()) {
-                String sectionName = sectionEntry.getKey();
-                Map<String, IniVariable> vars = sectionEntry.getValue();
-
-                if (!sectionName.isEmpty()) {
-                    writer.write("[" + sectionName + "]\n");
-                }
-
-                for (Map.Entry<String, IniVariable> varEntry : vars.entrySet()) {
-                    writer.write(varEntry.getKey());
-                    writer.write(" = ");
-                    writer.write(varEntry.getValue().toString());
-                    writer.write("\n");
-                }
-
-                writer.write("\n");
-            }
-
+            writer.write(this.toString());
             writer.flush();
             Log.message("Ini saved successfully.");
         } catch (IOException e) {
@@ -104,24 +102,45 @@ public final class Ini {
         }
     }
 
-    public Map<String, IniVariable> getSection(String name) {
-        return sections.get(name.toLowerCase());
+    public IniSection addSection(String name) {
+        IniSection section = new IniSection(name);
+        this.sections.put(name.toLowerCase(), section);
+        return section;
     }
 
-    public IniVariable getVariable(String section, String name) {
-        Map<String, IniVariable> vars = sections.get(section.toLowerCase());
-        if (vars == null) {
-            return null;
+    public IniSection addSection(IniSection section) {
+        this.sections.put(section.getName().toLowerCase(), section);
+        return section;
+    }
+
+    public IniSection getSection(String name) {
+        return this.sections.get(name.toLowerCase());
+    }
+
+    public IniValue getVariable(String section, String name) {
+        if(this.sections.containsKey(section)) {
+            return this.sections.get(section).get(name);
         }
-        return vars.get(name.toLowerCase());
+        return null;
     }
 
-    public boolean containsSection(String name) {
-        return sections.containsKey(name);
+    public boolean hasSection(String name) {
+        return this.sections.containsKey(name);
     }
 
-    public boolean containsVariable(String section, String name) {
-        Map<String, IniVariable> vars = sections.get(section);
-        return vars != null && vars.containsKey(name);
+    public boolean hasVariable(String section, String name) {
+        if(this.sections.containsKey(section)) {
+            return this.sections.get(section).has(name);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        String output = "";
+        for (IniSection section : this.sections.values()) {
+            output += section.toString() + "\n";
+        }
+        return output;
     }
 }
