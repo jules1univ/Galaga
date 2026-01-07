@@ -6,7 +6,6 @@ import engine.graphics.Renderer;
 import engine.utils.Pair;
 import engine.utils.Position;
 import engine.utils.Size;
-import engine.utils.logger.Log;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -17,8 +16,9 @@ import java.util.List;
 public final class CodeInput extends UIElement {
 
     private static final float CURSOR_WIDTH = 3f;
-    private final int LINE_SPACE_HEIGHT = 2;
-    private final int LINE_SPACE_BEGIN = 10;
+    private static final float CURSOR_BLINK_INTERVAL = 0.5f;
+    private static final int LINE_SPACE_HEIGHT = 2;
+    private static final int LINE_SPACE_BEGIN = 10;
 
     private final Font font;
 
@@ -40,6 +40,7 @@ public final class CodeInput extends UIElement {
     private int cursorColumnIndex = 0;
 
     private Renderer viewRenderer;
+    private boolean isViewDirty = true;
 
     private final SyntaxHighlighter highlighter;
     private final List<String> lines = new ArrayList<>();
@@ -57,6 +58,7 @@ public final class CodeInput extends UIElement {
         this.cursorLineIndex = 0;
         this.cursorColumnIndex = 0;
         this.scrollLineIndex = 0;
+        this.isViewDirty = true;
 
         this.highlightedLines.clear();
         this.lines.clear();
@@ -67,18 +69,16 @@ public final class CodeInput extends UIElement {
             this.highlightedLines.add(this.highlighter.highlightLine(line, Color.WHITE));
         }
 
-        Size textLineSize =  Application.getContext().getRenderer().getTextSize(Integer.toString(this.maxDisplayLines), this.font);
-        this.lineBegin = this.LINE_SPACE_BEGIN + textLineSize.getWidth();
-
-        this.rebuildLinesView();
-
+        Size textLineSize = Application.getContext().getRenderer().getTextSize(Integer.toString(this.maxDisplayLines),
+                this.font);
+        this.lineBegin = LINE_SPACE_BEGIN + textLineSize.getWidth();
     }
 
     public void setFocused(boolean focused) {
         this.focused = focused;
         if (focused) {
             this.cursorBlink = true;
-            this.cursorBlinkTime = 0.3f;
+            this.cursorBlinkTime = CURSOR_BLINK_INTERVAL;
         }
     }
 
@@ -116,21 +116,27 @@ public final class CodeInput extends UIElement {
     @Override
     public boolean init() {
         this.lineHeight = Application.getContext().getRenderer().getMaxCharSize(this.font).getHeight()
-                + this.LINE_SPACE_HEIGHT;
+                + LINE_SPACE_HEIGHT;
         this.maxDisplayLines = Math.floorDiv((int) this.size.getHeight(),
                 (int) this.lineHeight) - 1;
 
         this.viewRenderer = Renderer.ofSub(this.size);
 
-        Size textLineSize =  Application.getContext().getRenderer().getTextSize(Integer.toString(this.maxDisplayLines), this.font);
-        this.lineBegin = this.LINE_SPACE_BEGIN + textLineSize.getWidth();
+        Size textLineSize = Application.getContext().getRenderer().getTextSize(Integer.toString(this.maxDisplayLines),
+                this.font);
+        this.lineBegin = LINE_SPACE_BEGIN + textLineSize.getWidth();
 
-        this.cursorSize = Size.of(CURSOR_WIDTH, this.lineHeight - this.LINE_SPACE_HEIGHT);
+        this.cursorSize = Size.of(CURSOR_WIDTH, this.lineHeight - LINE_SPACE_HEIGHT);
         return true;
     }
 
     @Override
     public void update(float dt) {
+        if (this.isViewDirty) {
+            this.rebuildLinesView();
+            this.isViewDirty = false;
+        }
+
         if (!this.focused) {
             return;
         }
@@ -152,16 +158,45 @@ public final class CodeInput extends UIElement {
             moved = true;
         }
 
+        if (Application.getContext().getInput().isTyping()) {
+            char ch = Application.getContext().getInput().getTypedChar();
+            String line = this.lines.get(this.cursorLineIndex);
+            line = line.substring(0, this.cursorColumnIndex) + ch + line.substring(this.cursorColumnIndex);
+            this.lines.set(this.cursorLineIndex, line);
+            this.highlightedLines.set(this.cursorLineIndex,
+                    this.highlighter.highlightLine(line, Color.WHITE));
+
+            moved = true;
+            this.cursorColumnIndex++;
+            this.isViewDirty = true;
+        }
+
+        if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_BACK_SPACE, KeyEvent.VK_DELETE)) {
+            if (this.cursorColumnIndex > 0) {
+                String line = this.lines.get(this.cursorLineIndex);
+                line = line.substring(0, this.cursorColumnIndex - 1) + line.substring(this.cursorColumnIndex);
+                this.lines.set(this.cursorLineIndex, line);
+                this.highlightedLines.set(this.cursorLineIndex,
+                        this.highlighter.highlightLine(line, Color.WHITE));
+
+                this.cursorColumnIndex--;
+                moved = true;
+                this.isViewDirty = true;
+            }
+        }
+
         if (moved || this.cursorPosition.isZero()) {
             this.cursorBlink = true;
             this.cursorLineIndex = Math.clamp(this.cursorLineIndex, 0, this.lines.size() - 1);
             this.cursorColumnIndex = Math.clamp(this.cursorColumnIndex, 0,
                     this.lines.get(this.cursorLineIndex).length());
-            
+
             if (this.cursorLineIndex < this.scrollLineIndex) {
                 this.scrollLineIndex = this.cursorLineIndex;
+                this.isViewDirty = true;
             } else if (this.cursorLineIndex >= this.scrollLineIndex + this.maxDisplayLines) {
                 this.scrollLineIndex = this.cursorLineIndex - this.maxDisplayLines + 1;
+                this.isViewDirty = true;
             }
 
             int visibleLine = this.cursorLineIndex - this.scrollLineIndex;
@@ -171,13 +206,12 @@ public final class CodeInput extends UIElement {
 
             this.cursorPosition = Position.of(
                     this.position.getX() + this.lineBegin + cuttedWidth,
-                    this.position.getY() + (visibleLine) * this.lineHeight + this.LINE_SPACE_HEIGHT/2.f);
+                    this.position.getY() + (visibleLine * this.lineHeight) + (LINE_SPACE_HEIGHT / 2.f));
 
-            this.rebuildLinesView();
         }
 
         if (this.cursorBlinkTime < 0.f) {
-            this.cursorBlinkTime = 0.3f;
+            this.cursorBlinkTime = CURSOR_BLINK_INTERVAL;
             this.cursorBlink = !this.cursorBlink;
         } else {
             this.cursorBlinkTime -= dt;
