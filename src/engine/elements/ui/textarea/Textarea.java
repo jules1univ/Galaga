@@ -77,7 +77,7 @@ public final class Textarea extends UIElement {
 
     private void updateText() {
         if (!this.fixedSize) {
-            this.size = Application.getContext().getRenderer().getTextSize("X", this.font);
+            this.size = Application.getContext().getRenderer().getMaxCharSize(this.font);
             for (String line : lines) {
                 if (line.isEmpty())
                     continue;

@@ -7,7 +7,6 @@ import engine.utils.Pair;
 import engine.utils.Position;
 import engine.utils.Size;
 import engine.utils.logger.Log;
-import galaga.Galaga;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -18,30 +17,33 @@ import java.util.List;
 public final class CodeInput extends UIElement {
 
     private static final float CURSOR_WIDTH = 3f;
+    private final int LINE_SPACE_HEIGHT = 2;
+    private final int LINE_SPACE_BEGIN = 10;
 
     private final Font font;
 
-    private int lineIndex = 0;
-    private int colIndex = 0;
-
     private int maxDisplayLines;
+    private int scrollLineIndex = 0;
+
+    private float lineBegin;
+    private float lineHeight;
 
     private boolean focused = false;
+
     private float cursorBlinkTime = 0.f;
     private boolean cursorBlink = true;
+
     private Size cursorSize = Size.zero();
     private Position cursorPosition = Position.zero();
 
+    private int cursorLineIndex = 0;
+    private int cursorColumnIndex = 0;
+
     private Renderer viewRenderer;
-    private boolean isViewDirty = true;
 
     private final SyntaxHighlighter highlighter;
     private final List<String> lines = new ArrayList<>();
     private final List<List<Pair<String, Color>>> highlightedLines = new ArrayList<>();
-
-    private float textBeginX;
-    private final int lineSpaceHeight = 2;
-    private final int lineSpaceBegin = 10;
 
     public CodeInput(Position position, Size size, SyntaxHighlighter highlighter, Font font) {
         super();
@@ -52,14 +54,24 @@ public final class CodeInput extends UIElement {
     }
 
     public void setText(String text) {
+        this.cursorLineIndex = 0;
+        this.cursorColumnIndex = 0;
+        this.scrollLineIndex = 0;
+
         this.highlightedLines.clear();
         this.lines.clear();
+
         String[] splitLines = text.split("\n");
         for (String line : splitLines) {
             this.lines.add(line);
             this.highlightedLines.add(this.highlighter.highlightLine(line, Color.WHITE));
         }
-        this.isViewDirty = true;
+
+        Size textLineSize =  Application.getContext().getRenderer().getTextSize(Integer.toString(this.maxDisplayLines), this.font);
+        this.lineBegin = this.LINE_SPACE_BEGIN + textLineSize.getWidth();
+
+        this.rebuildLinesView();
+
     }
 
     public void setFocused(boolean focused) {
@@ -71,92 +83,97 @@ public final class CodeInput extends UIElement {
     }
 
     private void rebuildLinesView() {
+
         this.viewRenderer.beginSub();
 
-        int lines = Math.min(this.highlightedLines.size(), this.lineIndex + this.maxDisplayLines);
-        Size textLineSize = this.viewRenderer.getTextSize(Integer.toString(lines + 1), this.font);
-
-        this.textBeginX = lineSpaceBegin + textLineSize.getWidth();
-
-        for (int i = this.lineIndex; i < lines; i++) {
+        int lineEndIndex = Math.min(this.highlightedLines.size(), this.cursorLineIndex + this.maxDisplayLines);
+        for (int i = this.scrollLineIndex; i < lineEndIndex; i++) {
             List<Pair<String, Color>> line = this.highlightedLines.get(i);
 
-            int index = ((i + 1) - this.lineIndex);
-            float y = (lineSpaceHeight + textLineSize.getHeight()) * index;
+            int visibleIndex = i - this.scrollLineIndex;
+            float y = (visibleIndex + 1) * lineHeight;
 
             this.viewRenderer.drawText(Integer.toString(i + 1),
-                    Position.of(this.position.getX(), y),
+                    Position.of(0, y),
                     Color.WHITE, this.font);
 
             int spacing = 0;
             for (Pair<String, Color> word : line) {
-                this.viewRenderer.drawText(word.getFirst(),
-                        Position.of(this.position.getX() + this.textBeginX + spacing, y),
-                        word.getSecond(), this.font);
+
+                this.viewRenderer.drawText(
+                        word.getFirst(),
+                        Position.of(this.lineBegin + spacing, y),
+                        word.getSecond(),
+                        this.font);
+
                 spacing += this.viewRenderer.getTextSize(word.getFirst(), this.font).getIntWidth();
             }
         }
 
         this.viewRenderer.end();
-        this.isViewDirty = false;
     }
 
     @Override
     public boolean init() {
-        int textHeight = Galaga.getContext().getRenderer().getTextSize("X", this.font).getIntHeight();
-        this.maxDisplayLines = (int) (this.size.getHeight() / textHeight);
+        this.lineHeight = Application.getContext().getRenderer().getMaxCharSize(this.font).getHeight()
+                + this.LINE_SPACE_HEIGHT;
+        this.maxDisplayLines = Math.floorDiv((int) this.size.getHeight(),
+                (int) this.lineHeight) - 1;
 
         this.viewRenderer = Renderer.ofSub(this.size);
-        this.cursorSize = Size.of(CURSOR_WIDTH, textHeight);
+
+        Size textLineSize =  Application.getContext().getRenderer().getTextSize(Integer.toString(this.maxDisplayLines), this.font);
+        this.lineBegin = this.LINE_SPACE_BEGIN + textLineSize.getWidth();
+
+        this.cursorSize = Size.of(CURSOR_WIDTH, this.lineHeight - this.LINE_SPACE_HEIGHT);
         return true;
     }
 
     @Override
     public void update(float dt) {
-        if (this.isViewDirty) {
-            this.rebuildLinesView();
-        }
-
         if (!this.focused) {
             return;
         }
 
         boolean moved = false;
         if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
-            this.lineIndex--;
+            this.cursorLineIndex--;
             moved = true;
         } else if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
-            this.lineIndex++;
+            this.cursorLineIndex++;
             moved = true;
         }
 
         if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_LEFT)) {
-            this.colIndex--;
+            this.cursorColumnIndex--;
             moved = true;
         } else if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
-            this.colIndex++;
+            this.cursorColumnIndex++;
             moved = true;
         }
 
         if (moved || this.cursorPosition.isZero()) {
-            this.lineIndex = Math.clamp(this.lineIndex, 0, this.maxDisplayLines);
-            this.colIndex = Math.clamp(this.colIndex, 0, this.lines.get(this.lineIndex).length());
-
-            String cuttedLine = this.lines.get(this.lineIndex).substring(0, this.colIndex);
-            Size lineSize;
-            if (cuttedLine.isEmpty()) {
-                lineSize = Application.getContext().getRenderer().getTextSize("X", this.font);
-                lineSize.setWidth(0);
-            } else {
-                lineSize = Application.getContext().getRenderer().getTextSize(cuttedLine, this.font);
+            this.cursorBlink = true;
+            this.cursorLineIndex = Math.clamp(this.cursorLineIndex, 0, this.lines.size() - 1);
+            this.cursorColumnIndex = Math.clamp(this.cursorColumnIndex, 0,
+                    this.lines.get(this.cursorLineIndex).length());
+            
+            if (this.cursorLineIndex < this.scrollLineIndex) {
+                this.scrollLineIndex = this.cursorLineIndex;
+            } else if (this.cursorLineIndex >= this.scrollLineIndex + this.maxDisplayLines) {
+                this.scrollLineIndex = this.cursorLineIndex - this.maxDisplayLines + 1;
             }
 
+            int visibleLine = this.cursorLineIndex - this.scrollLineIndex;
+
+            String cuttedLine = lines.get(this.cursorLineIndex).substring(0, this.cursorColumnIndex);
+            float cuttedWidth = cuttedLine.isBlank() ? 0f : viewRenderer.getTextSize(cuttedLine, font).getWidth();
+
             this.cursorPosition = Position.of(
-                    this.position.getX() + lineSize.getWidth() + this.textBeginX,
-                    this.position.getY() + this.lineIndex * ((lineSize.getHeight() + this.lineSpaceHeight)));
-                    
-            this.cursorBlink = true;
-            this.isViewDirty = true;
+                    this.position.getX() + this.lineBegin + cuttedWidth,
+                    this.position.getY() + (visibleLine) * this.lineHeight + this.LINE_SPACE_HEIGHT/2.f);
+
+            this.rebuildLinesView();
         }
 
         if (this.cursorBlinkTime < 0.f) {

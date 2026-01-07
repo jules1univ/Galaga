@@ -17,7 +17,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 public final class Renderer {
-
     private Graphics2D g;
     private BufferedImage image;
 
@@ -39,6 +38,10 @@ public final class Renderer {
     private Renderer(Graphics2D g, BufferedImage image) {
         this.g = g;
         this.image = image;
+    }
+
+    public Graphics2D getGraphics() {
+        return this.g;
     }
 
     public void setGraphics(Graphics2D newG) {
@@ -105,6 +108,18 @@ public final class Renderer {
         }
         this.g.setFont(font);
         Rectangle2D rect = font.getStringBounds(text, this.g.getFontRenderContext());
+        return Size.of(
+                (float) rect.getWidth(),
+                (float) rect.getHeight());
+    }
+
+    public Size getMaxCharSize(Font font) {
+        if (font == null) {
+            Log.warning("Attempted to get size of null font.");
+            return Size.zero();
+        }
+        this.g.setFont(font);
+        Rectangle2D rect = font.getMaxCharBounds(this.g.getFontRenderContext());
         return Size.of(
                 (float) rect.getWidth(),
                 (float) rect.getHeight());
