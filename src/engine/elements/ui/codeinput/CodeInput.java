@@ -152,9 +152,17 @@ public final class CodeInput extends UIElement {
 
         if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_LEFT)) {
             this.cursorColumnIndex--;
+            if(this.cursorColumnIndex < 0) {
+                this.cursorLineIndex = Math.max(0, this.cursorLineIndex - 1);
+                this.cursorColumnIndex = this.lines.get(this.cursorLineIndex).length();
+            }
             moved = true;
         } else if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
             this.cursorColumnIndex++;
+            if(this.cursorColumnIndex > this.lines.get(this.cursorLineIndex).length()) {
+                this.cursorLineIndex = Math.min(this.lines.size() -1, this.cursorLineIndex + 1);
+                this.cursorColumnIndex = 0;
+            }
             moved = true;
         }
 
@@ -264,9 +272,6 @@ public final class CodeInput extends UIElement {
     @Override
     public void draw(Renderer renderer) {
         renderer.draw(this.viewRenderer, this.position);
-
-        renderer.drawRectOutline(position, size, Color.WHITE);
-
         if (this.focused && this.cursorBlink) {
             renderer.drawRect(this.cursorPosition, this.cursorSize, Color.WHITE);
         }

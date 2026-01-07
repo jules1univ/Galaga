@@ -41,59 +41,28 @@ public class LevelEditor extends Page<GalagaPage> {
         iniHighlighter.addPattern("\\b\\d+\\b", Color.MAGENTA);
         iniHighlighter.addPattern("(?<=\\=).*", new Color(200, 200, 200));
 
-        this.levelCode = new CodeInput(Position.zero(), Size.of(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT * 0.9f),
+        this.levelCode = new CodeInput(Position.zero(), Size.of(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT * 0.8f),
                 iniHighlighter, this.textFont);
         if (!this.levelCode.init()) {
             return false;
         }
-
-        // mini ini file as example
+        
         this.levelCode.setText(
-                "[Level]\n" +
-                        "Name = \"First Level\"\n" +
-                        "EnemyCount = 10\n" +
-                        "SpawnRate = 2.5\n" +
+                "[level]\n" +
+                        "name=Level ?\n" +
+                        "formation_speed= ?\n" +
+                        "attack_cooldown= ?\n" +
                         "\n" +
-                        "[Enemy1]\n" +
-                        "Type = \"Bee\"\n" +
-                        "PositionX = 100\n" +
-                        "PositionY = 50\n" +
+                        "[formation]\n" +
+                        "layers= ?\n" +
+                        "stages= ?\n" +
                         "\n" +
-                        "[Enemy2]\n" +
-                        "Type = \"Butterfly\"\n" +
-                        "PositionX= 200\n" +
-                        "PositionY=75\n" +
-                    
-                        "[Level]\n" +
-                        "Name = \"First Level\"\n" +
-                        "EnemyCount = 10\n" +
-                        "SpawnRate = 2.5\n" +
-                        "\n" +
-                        "[Enemy1]\n" +
-                        "Type = \"Bee\"\n" +
-                        "PositionX = 100\n" +
-                        "PositionY = 50\n" +
-                        "\n" +
-                        "[Enemy2]\n" +
-                        "Type = \"Butterfly\"\n" +
-                        "PositionX= 200\n" +
-                        "PositionY=75\n"
-                        +
-                            "[Level]\n" +
-                        "Name = \"First Level\"\n" +
-                        "EnemyCount = 10\n" +
-                        "SpawnRate = 2.5\n" +
-                        "\n" +
-                        "[Enemy1]\n" +
-                        "Type = \"Bee\"\n" +
-                        "PositionX = 100\n" +
-                        "PositionY = 50\n" +
-                        "\n" +
-                        "[Enemy2]\n" +
-                        "Type = \"Butterfly\"\n" +
-                        "PositionX= 200\n" +
-                        "PositionY=75\n"
-                    );
+                        "[layer0]\n" +
+                        "type= ?\n" +
+                        "speed= ?\n" +
+                        "score= ?\n" +
+                        "count= ?\n" +
+                        "\n");
         this.levelCode.setFocused(true);
 
         this.state = PageState.ACTIVE;
