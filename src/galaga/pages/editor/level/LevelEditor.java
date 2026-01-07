@@ -62,7 +62,38 @@ public class LevelEditor extends Page<GalagaPage> {
                         "[Enemy2]\n" +
                         "Type = \"Butterfly\"\n" +
                         "PositionX= 200\n" +
-                        "PositionY=75\n");
+                        "PositionY=75\n" +
+                    
+                        "[Level]\n" +
+                        "Name = \"First Level\"\n" +
+                        "EnemyCount = 10\n" +
+                        "SpawnRate = 2.5\n" +
+                        "\n" +
+                        "[Enemy1]\n" +
+                        "Type = \"Bee\"\n" +
+                        "PositionX = 100\n" +
+                        "PositionY = 50\n" +
+                        "\n" +
+                        "[Enemy2]\n" +
+                        "Type = \"Butterfly\"\n" +
+                        "PositionX= 200\n" +
+                        "PositionY=75\n"
+                        +
+                            "[Level]\n" +
+                        "Name = \"First Level\"\n" +
+                        "EnemyCount = 10\n" +
+                        "SpawnRate = 2.5\n" +
+                        "\n" +
+                        "[Enemy1]\n" +
+                        "Type = \"Bee\"\n" +
+                        "PositionX = 100\n" +
+                        "PositionY = 50\n" +
+                        "\n" +
+                        "[Enemy2]\n" +
+                        "Type = \"Butterfly\"\n" +
+                        "PositionX= 200\n" +
+                        "PositionY=75\n"
+                    );
         this.levelCode.setFocused(true);
 
         this.state = PageState.ACTIVE;
