@@ -39,6 +39,10 @@ public final class CodeInput extends UIElement {
     private int cursorLineIndex = 0;
     private int cursorColumnIndex = 0;
 
+    private boolean selectionActive = false;
+    private int selectStartLineIndex = -1;
+    private int selectStartColumnIndex = -1;
+
     private Renderer viewRenderer;
     private boolean isViewDirty = true;
 
@@ -91,8 +95,20 @@ public final class CodeInput extends UIElement {
         this.viewRenderer.beginSub();
 
         int lineEndIndex = Math.min(this.highlightedLines.size(), this.cursorLineIndex + this.maxDisplayLines);
+
+        int selectStartLine = Math.min(this.selectStartLineIndex, this.cursorLineIndex);
+        int selectEndLine = Math.max(this.selectStartLineIndex, this.cursorLineIndex);
+
+        int selectStartColumn = (this.cursorLineIndex == selectStartLine)
+                ? this.selectStartColumnIndex
+                : 0;
+        int selectEndColumn = (this.cursorLineIndex == selectEndLine)
+                ? this.cursorColumnIndex
+                : this.lines.get(this.cursorLineIndex).length();
+
         for (int i = this.scrollLineIndex; i < lineEndIndex; i++) {
             List<Pair<String, Color>> line = this.highlightedLines.get(i);
+            boolean selected = this.selectionActive && i >= selectStartLine && i <= selectEndLine;
 
             int visibleIndex = i - this.scrollLineIndex;
             float y = (visibleIndex + 1) * lineHeight;
@@ -102,8 +118,34 @@ public final class CodeInput extends UIElement {
                     Color.WHITE, this.font);
 
             int spacing = 0;
+            int columnIndex = 0;
             for (Pair<String, Color> word : line) {
+                if (selected) {
+                    columnIndex += word.getFirst().length();
+                    int selStart = (i == selectStartLine) ? selectStartColumn : 0;
+                    int selEnd = (i == selectEndLine) ? selectEndColumn : this.lines.get(i).length();
 
+                    if (columnIndex > selStart && (columnIndex - word.getFirst().length()) < selEnd) {
+                        int startIndex = Math.max(selStart - (columnIndex - word.getFirst().length()), 0);
+                        int endIndex = Math.min(selEnd - (columnIndex - word.getFirst().length()),
+                                word.getFirst().length());
+
+                        String preSelection = word.getFirst().substring(0, startIndex);
+                        String selection = word.getFirst().substring(startIndex, endIndex);
+
+                        float preSelectionWidth = preSelection.isBlank() ? 0
+                                : this.viewRenderer.getTextSize(preSelection, this.font).getWidth();
+                        float selectionWidth = selection.isBlank() ? 0
+                                : this.viewRenderer.getTextSize(selection, this.font).getWidth();
+
+                        this.viewRenderer.drawRect(
+                                Position.of(this.lineBegin + spacing + preSelectionWidth,
+                                        y - lineHeight + LINE_SPACE_HEIGHT / 2f),
+                                Size.of(selectionWidth, lineHeight - LINE_SPACE_HEIGHT),
+                                new Color(100, 100, 255, 100)
+                        );
+                    }
+                }
                 this.viewRenderer.drawText(
                         word.getFirst(),
                         Position.of(this.lineBegin + spacing, y),
@@ -134,12 +176,39 @@ public final class CodeInput extends UIElement {
         return true;
     }
 
+    private boolean handleSelection() {
+        if (Application.getContext().getInput().isKeyDown(KeyEvent.VK_SHIFT)) {
+            if (!this.selectionActive) {
+                this.selectionActive = true;
+                this.selectStartLineIndex = this.cursorLineIndex;
+                this.selectStartColumnIndex = this.cursorColumnIndex;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void handleSelectionUpdate() {
+        if (this.selectionActive) {
+            if (!Application.getContext().getInput().isKeyDown(KeyEvent.VK_SHIFT)) {
+                this.selectionActive = false;
+                this.selectStartLineIndex = -1;
+                this.selectStartColumnIndex = -1;
+            }
+
+            this.isViewDirty = true;
+        }
+    }
+
     private boolean handleUpDown() {
         if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
             this.cursorLineIndex--;
+            this.handleSelectionUpdate();
             return true;
         } else if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
             this.cursorLineIndex++;
+            this.handleSelectionUpdate();
             return true;
         }
         return false;
@@ -152,6 +221,7 @@ public final class CodeInput extends UIElement {
                 this.cursorLineIndex = Math.max(0, this.cursorLineIndex - 1);
                 this.cursorColumnIndex = this.lines.get(this.cursorLineIndex).length();
             }
+            this.handleSelectionUpdate();
             return true;
         } else if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
             this.cursorColumnIndex++;
@@ -159,6 +229,7 @@ public final class CodeInput extends UIElement {
                 this.cursorLineIndex = Math.min(this.lines.size() - 1, this.cursorLineIndex + 1);
                 this.cursorColumnIndex = 0;
             }
+            this.handleSelectionUpdate();
             return true;
         }
 
@@ -257,11 +328,12 @@ public final class CodeInput extends UIElement {
             return;
         }
 
-        boolean moved = this.handleUpDown() ||
-                        this.handleLeftRight() ||
-                        this.handleTextEnter() ||
-                        this.handleTextDelete() ||
-                        this.handleTextNewLine();
+        boolean moved = this.handleSelection() ||
+                this.handleUpDown() ||
+                this.handleLeftRight() ||
+                this.handleTextEnter() ||
+                this.handleTextDelete() ||
+                this.handleTextNewLine();
 
         if (moved || this.cursorPosition.isZero()) {
             this.cursorBlink = true;
