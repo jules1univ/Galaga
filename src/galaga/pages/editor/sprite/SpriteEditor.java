@@ -71,15 +71,35 @@ public class SpriteEditor extends Page<GalagaPage> {
 
     private final Map<Integer, Character> keyToColor = Map.ofEntries(
             Map.entry(KeyEvent.VK_1, 'W'),
+            Map.entry(KeyEvent.VK_NUMPAD1, 'W'),
+
             Map.entry(KeyEvent.VK_2, 'B'),
+            Map.entry(KeyEvent.VK_NUMPAD2, 'W'),
+
             Map.entry(KeyEvent.VK_3, 'R'),
+            Map.entry(KeyEvent.VK_NUMPAD3, 'W'),
+
             Map.entry(KeyEvent.VK_4, 'Y'),
+            Map.entry(KeyEvent.VK_NUMPAD4, 'W'),
+
             Map.entry(KeyEvent.VK_5, 'G'),
+            Map.entry(KeyEvent.VK_NUMPAD5, 'W'),
+
             Map.entry(KeyEvent.VK_6, 'C'),
+            Map.entry(KeyEvent.VK_NUMPAD6, 'W'),
+
             Map.entry(KeyEvent.VK_7, 'M'),
+            Map.entry(KeyEvent.VK_NUMPAD7, 'W'),
+
             Map.entry(KeyEvent.VK_8, 'O'),
+            Map.entry(KeyEvent.VK_NUMPAD8, 'W'),
+
             Map.entry(KeyEvent.VK_9, 'P'),
+            Map.entry(KeyEvent.VK_NUMPAD9, 'W'),
+
             Map.entry(KeyEvent.VK_0, 'L'),
+            Map.entry(KeyEvent.VK_NUMPAD0, 'W'),
+
             Map.entry(KeyEvent.VK_BACK_SPACE, 'N'),
             Map.entry(KeyEvent.VK_DELETE, 'N'));
 
@@ -199,6 +219,7 @@ public class SpriteEditor extends Page<GalagaPage> {
         if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
             this.cursor.addX(move);
         }
+
 
         for (Entry<Integer, Character> e : this.keyToColor.entrySet()) {
             if (Galaga.getContext().getInput().isKeyPressed(e.getKey())) {
