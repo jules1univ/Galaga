@@ -10,7 +10,6 @@
 |                                              |                                             |
 | -------------------------------------------- | ------------------------------------------- |
 | ![image 0](./.github/preview/game_menu.png) | ![image 1](./.github/preview/game_multi.png) |
-| -------------------------------------------- | ------------------------------------------- |
 | ![image 2](./.github/preview/game_sprite.png) | ![image 3](./.github/preview/game_files.png) |
 
 
