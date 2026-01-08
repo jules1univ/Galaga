@@ -49,6 +49,7 @@ public final class CodeInput extends UIElement {
     private final SyntaxHighlighter highlighter;
     private final List<String> lines = new ArrayList<>();
     private final List<List<Pair<String, Color>>> highlightedLines = new ArrayList<>();
+    private final List<String> history = new ArrayList<>();
 
     public CodeInput(Position position, Size size, SyntaxHighlighter highlighter, Font font) {
         super();
@@ -59,9 +60,15 @@ public final class CodeInput extends UIElement {
     }
 
     public void setText(String text) {
+        this.scrollLineIndex = 0;
         this.cursorLineIndex = 0;
         this.cursorColumnIndex = 0;
         this.scrollLineIndex = 0;
+
+        this.selectionActive = false;
+        this.selectStartColumnIndex = -1;
+        this.selectStartLineIndex = -1;
+
         this.isViewDirty = true;
 
         this.highlightedLines.clear();
@@ -408,9 +415,42 @@ public final class CodeInput extends UIElement {
         return;
     }
 
+    private void handleHistory() {
+        String text = this.getText();
+        if (this.history.isEmpty() || !this.history.get(this.history.size() - 1).equals(text)) {
+            this.history.add(text);
+        }
+    }
+
+    private boolean handleBackHistory() {
+        if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_Z)
+                && Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
+            if (this.history.size() < 2) {
+                return false;
+            }
+            this.history.remove(this.history.size() - 1);
+            String previousText = this.history.get(this.history.size() - 1);
+            
+            int cursorLine = this.cursorLineIndex;
+            int cursorColumn = this.cursorColumnIndex;
+            int scroolLine = this.scrollLineIndex;
+            
+            this.setText(previousText);
+
+            this.cursorLineIndex = Math.min(cursorLine, this.lines.size() - 1);
+            this.cursorColumnIndex = Math.min(cursorColumn, this.lines.get(this.cursorLineIndex).length());
+            this.scrollLineIndex = scroolLine;
+
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public void update(float dt) {
         if (this.isViewDirty) {
+            this.handleHistory();
             this.rebuildLinesView();
             this.isViewDirty = false;
         }
@@ -424,7 +464,8 @@ public final class CodeInput extends UIElement {
                 this.handleLeftRight() ||
                 this.handleTextEnter() ||
                 this.handleTextDelete() ||
-                this.handleTextNewLine();
+                this.handleTextNewLine() ||
+                this.handleBackHistory();
 
         this.handleCopy();
         this.handleCut();
