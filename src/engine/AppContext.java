@@ -6,6 +6,7 @@ import engine.resource.ResourceManager;
 import engine.resource.font.FontResource;
 import engine.resource.sound.SoundResource;
 import engine.resource.sprite.SpriteResource;
+import engine.utils.ClipboardManager;
 
 public final class AppContext<GameState, T extends Enum<T>> {
     private final AppFrame frame;
@@ -39,6 +40,12 @@ public final class AppContext<GameState, T extends Enum<T>> {
     public Application<T> getApplication() {
         return this.application;
     }
+
+    
+    public ClipboardManager getClipboard() {
+        return this.frame.getClipboard();
+    }
+
 
     public Renderer getRenderer() {
         return this.renderer;

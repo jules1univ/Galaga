@@ -82,6 +82,25 @@ public final class CodeInput extends UIElement {
         return String.join("\n", this.lines);
     }
 
+    public List<String> getLines() {
+        return this.lines;
+    }
+
+    public String getSelectedText() {
+        return String.join("\n", this.getSelectedLines());
+    }
+
+    public List<String> getSelectedLines() {
+        if (!this.selectionActive) {
+            return new ArrayList<>();
+        }
+
+        int startLine = Math.min(this.selectStartLineIndex, this.cursorLineIndex);
+        int endLine = Math.max(this.selectStartLineIndex, this.cursorLineIndex);
+
+        return this.lines.subList(startLine, endLine + 1);
+    }
+
     public void setFocused(boolean focused) {
         this.focused = focused;
         if (focused) {
@@ -142,8 +161,7 @@ public final class CodeInput extends UIElement {
                                 Position.of(this.lineBegin + spacing + preSelectionWidth,
                                         y - lineHeight + LINE_SPACE_HEIGHT / 2f),
                                 Size.of(selectionWidth, lineHeight - LINE_SPACE_HEIGHT),
-                                new Color(100, 100, 255, 100)
-                        );
+                                new Color(100, 100, 255, 100));
                     }
                 }
                 this.viewRenderer.drawText(
@@ -317,6 +335,79 @@ public final class CodeInput extends UIElement {
         return true;
     }
 
+    private void handleCopy() {
+        if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_C)
+                && Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
+            String selectedText = this.getSelectedText();
+            if (!selectedText.isEmpty()) {
+                Application.getContext().getClipboard().set(selectedText);
+            }
+        }
+    }
+
+    private void handleCut() {
+        if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_X)
+                && Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
+            String selectedText = this.getSelectedText();
+            if (!selectedText.isEmpty()) {
+                Application.getContext().getClipboard().set(selectedText);
+            }
+
+            if (this.selectionActive) {
+                int startLine = Math.min(this.selectStartLineIndex, this.cursorLineIndex);
+                int endLine = Math.max(this.selectStartLineIndex, this.cursorLineIndex);
+
+                for (int i = endLine; i >= startLine; i--) {
+                    this.lines.remove(i);
+                    this.highlightedLines.remove(i);
+                }
+
+                this.cursorLineIndex = startLine;
+                this.cursorColumnIndex = 0;
+
+                this.selectionActive = false;
+                this.selectStartLineIndex = -1;
+                this.selectStartColumnIndex = -1;
+
+                this.isViewDirty = true;
+            }
+
+        }
+    }
+
+    private void handlePaste() {
+        if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_V)
+                && Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
+            String text = Application.getContext().getClipboard().get();
+            if (text == null || text.isEmpty()) {
+                return;
+            }
+
+            String[] pasteLines = text.split("\n");
+            for (int i = 0; i < pasteLines.length; i++) {
+                String pasteLine = pasteLines[i];
+                if (i == 0) {
+                    String line = this.lines.get(this.cursorLineIndex);
+                    line = line.substring(0, this.cursorColumnIndex) + pasteLine
+                            + line.substring(this.cursorColumnIndex);
+                    this.lines.set(this.cursorLineIndex, line);
+                    this.highlightedLines.set(this.cursorLineIndex,
+                            this.highlighter.highlightLine(line, Color.WHITE));
+                    this.cursorColumnIndex += pasteLine.length();
+                } else {
+                    this.cursorLineIndex++;
+                    this.lines.add(this.cursorLineIndex, pasteLine);
+                    this.highlightedLines.add(this.cursorLineIndex,
+                            this.highlighter.highlightLine(pasteLine, Color.WHITE));
+                    this.cursorColumnIndex = pasteLine.length();
+                }
+            }
+
+            this.isViewDirty = true;
+        }
+        return;
+    }
+
     @Override
     public void update(float dt) {
         if (this.isViewDirty) {
@@ -334,6 +425,10 @@ public final class CodeInput extends UIElement {
                 this.handleTextEnter() ||
                 this.handleTextDelete() ||
                 this.handleTextNewLine();
+
+        this.handleCopy();
+        this.handleCut();
+        this.handlePaste();
 
         if (moved || this.cursorPosition.isZero()) {
             this.cursorBlink = true;

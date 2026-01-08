@@ -2,6 +2,8 @@ package engine;
 
 import engine.graphics.Renderer;
 import engine.input.InputKeyListener;
+import engine.utils.ClipboardManager;
+
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -10,6 +12,7 @@ import javax.swing.JFrame;
 public final class AppFrame extends JFrame {
     private final AppCanvas canvas;
     private final InputKeyListener input;
+    private final ClipboardManager clipboard;
 
     public AppFrame(Application<?> app) {
         super(app.getTitle());
@@ -33,6 +36,7 @@ public final class AppFrame extends JFrame {
         this.canvas.addKeyListener(this.input);
         this.canvas.requestFocus();
 
+        this.clipboard = new ClipboardManager(this.getToolkit().getSystemClipboard());
 
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -48,6 +52,10 @@ public final class AppFrame extends JFrame {
 
     public Renderer getRenderer() {
         return this.canvas.getRenderer();
+    }
+
+    public ClipboardManager getClipboard() {
+        return this.clipboard;
     }
 
     public void start() {
