@@ -3,7 +3,6 @@ package engine;
 import engine.graphics.Renderer;
 import engine.utils.Time;
 import engine.utils.logger.Log;
-
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -62,9 +61,22 @@ public final class AppCanvas extends Canvas implements Runnable {
 
     @Override
     public void run() {
-        BufferStrategy strategy = getBufferStrategy();
-        Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
-        this.renderer.setGraphics(g);
+        BufferStrategy strategy;
+        try {
+            strategy = this.getBufferStrategy();
+        } catch (Exception e) {
+            this.stop();
+            return;
+        }
+
+        Graphics2D g;
+        try {
+            g = (Graphics2D) strategy.getDrawGraphics();
+            this.renderer.setGraphics(g);
+        } catch (Exception e) {
+            this.stop();
+            return;
+        }
 
         if (!this.app.init()) {
             Log.error("Application failed to initialize");

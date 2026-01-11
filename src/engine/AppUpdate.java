@@ -66,7 +66,7 @@ public final class AppUpdate {
         }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(this.remoteCheckSum.openStream()))) {
-            return reader.readLine();
+            return reader.readLine().trim().substring(0, 64);
         } catch (IOException e) {
             return null;
         }
@@ -75,13 +75,16 @@ public final class AppUpdate {
     private Path downloadUpdate() {
         Log.message("Application update downloading from: %s", this.remoteUpdate);
 
-        String jarDirPath = this.getJarFilePath().getParent().toString();
-        Path tempFilePath = Path.of(jarDirPath, "update.tmp");
+        Path jarDirPath = this.getJarFilePath().getParent();
+        if (jarDirPath == null) {
+            Log.error("Application update download failed: unable to determine jar directory.");
+            return null;
+        }
+
+        Path tempFilePath = Path.of(jarDirPath.toString(), "update.tmp");
         try (InputStream in = this.remoteUpdate.openStream();
                 FileOutputStream out = new FileOutputStream(tempFilePath.toFile())) {
             in.transferTo(out);
-            Log.message("Application downloaded to: %s", tempFilePath);
-
             return tempFilePath;
         } catch (IOException e) {
             Log.error("Application update download failed: %s", e.getMessage());
@@ -89,7 +92,7 @@ public final class AppUpdate {
         return null;
     }
 
-    private boolean executeUpdate(Path appJarPath, Path tmpUpdatePath) {
+    private void executeUpdate(Path appJarPath, Path tmpUpdatePath) {
         try {
             try (FileInputStream in = new FileInputStream(tmpUpdatePath.toFile());
                     FileOutputStream out = new FileOutputStream(appJarPath.toFile())) {
@@ -100,39 +103,37 @@ public final class AppUpdate {
 
             Log.message("Application update applied successfully.");
             Application.getContext().getApplication().stop();
-            return true;
         } catch (IOException e) {
             Log.error("Application update failed: %s", e.getMessage());
         }
-        return false;
     }
 
-    public boolean load() {
+    public void load() {
         Path appJarPath = this.getJarFilePath();
         if (!this.isJarApplication() || appJarPath == null) {
             Log.message("Application update check skipped: not a jar application.");
-            return true;
+            return;
         }
 
         String currentVersion = this.checkSum(appJarPath.toString());
         String remoteVersion = this.fetchRemoteChecksum();
         if (currentVersion == null || remoteVersion == null) {
             Log.error("Application update check failed: unable to compute checksums.");
-            return false;
+            return;
         }
 
         if (currentVersion.equals(remoteVersion)) {
             Log.message("Application is up to date.");
-            return true;
+            return;
         }
 
         Log.message("Application update available: %s -> %s", currentVersion, remoteVersion);
         Path tmpUpdatePath = this.downloadUpdate();
         if (tmpUpdatePath == null) {
-            return false;
+            return;
         }
 
-        return this.executeUpdate(appJarPath, tmpUpdatePath);
+        this.executeUpdate(appJarPath, tmpUpdatePath);
     }
 
 }
