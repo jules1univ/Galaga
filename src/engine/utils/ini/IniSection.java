@@ -27,7 +27,7 @@ public final class IniSection {
 
     public IniValue get(String key) {
         if (!this.values.containsKey(key.toLowerCase())) {
-            return null;
+            return IniValue.of(null);
         }
         return this.values.get(key.toLowerCase());
     }

@@ -120,7 +120,7 @@ public final class Ini {
         if(this.sections.containsKey(section)) {
             return this.sections.get(section).get(name);
         }
-        return IniValue.of("");
+        return IniValue.of(null);
     }
 
     public boolean hasSection(String name) {

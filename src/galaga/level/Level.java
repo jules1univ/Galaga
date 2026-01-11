@@ -134,13 +134,20 @@ public class Level {
 
             float y = Config.POSITION_LEVEL_START_Y;
             Pair<Integer, Integer> lrIndex = Pair.of(0, 0);
+            List<String> rawTypes = List.of(EnemyType.values()).stream().map(Enum::name).toList();
+
             for (int i = layers; i >= 0; i--) {
                 String section = "layer" + i;
                 if (!levelConfig.hasSection(section)) {
                     continue;
                 }
 
-                EnemyType type = EnemyType.valueOf(levelConfig.getVariable(section, "type").toString().toUpperCase());
+                String rawType = levelConfig.getVariable(section, "type").toString().toUpperCase();
+                if(!rawTypes.contains(rawType)) {
+                    Log.warning("Level layer %d skipped: invalid enemy type '%s' in section %s",i, rawType, section);
+                    continue;
+                }
+                EnemyType type = EnemyType.valueOf(rawType);
             
                 Sprite sprite = Galaga.getContext().getResource().get(type);
                 if (sprite == null) {

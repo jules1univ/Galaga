@@ -137,6 +137,7 @@ public class LevelEditor extends Page<GalagaPage> {
         IniSection levelSection = levelTemplate.addSection("level");
         levelSection.set("name", "Level ?");
         levelSection.set("formation_speed", "?");
+        levelSection.set("missile_cooldown", "?");
         levelSection.set("attack_cooldown", "?");
 
         IniSection formationSection = levelTemplate.addSection("formation");
