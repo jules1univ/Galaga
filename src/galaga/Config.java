@@ -14,8 +14,8 @@ public class Config {
         public static final int WINDOW_HEIGHT = 700;
         public static final String WINDOW_TITLE = "Galaga - @jules1univ";
 
-        public static final String REMOTE_CHECKSUM_URL = "";
-        public static final String REMOTE_UPDATE_URL = "";
+        public static final String REMOTE_CHECKSUM_URL = "https://github.com/jules1univ/Galaga/releases/latest/download/Galaga.sha256";
+        public static final String REMOTE_UPDATE_URL = "https://github.com/jules1univ/Galaga/releases/latest/download/Galaga.jar";
 
         public static final int PLAYER_INITIAL_LIFE = 3;
 
