@@ -103,11 +103,18 @@ public class Level {
         }
 
         if (!levelConfig.hasSection("level")) {
+            Log.error("Level loading failed: missing 'level' section");
             return null;
         }
 
         try {
+            if(!levelConfig.hasVariable("level","name"))
+            {
+                Log.error("Level loading failed: missing level name");
+                return null;
+            }
             String name = levelConfig.getVariable("level", "name").toString();
+
             float formationSpeed = levelConfig.getVariable("level", "formation_speed").asFloat()
                     .orElse(Config.SPEED_DEFAULT_FORMATION_SPEED);
             float attackCooldown = levelConfig.getVariable("level", "attack_cooldown").asFloat()
@@ -117,6 +124,7 @@ public class Level {
 
             Level level = new Level(name, formationSpeed, attackCooldown, missileCooldown);
             if (!levelConfig.hasSection("formation")) {
+                Log.warning("Level loaded without formation: missing 'formation' section");
                 return level;
             }
 
@@ -133,6 +141,7 @@ public class Level {
                 }
 
                 EnemyType type = EnemyType.valueOf(levelConfig.getVariable(section, "type").toString().toUpperCase());
+            
                 Sprite sprite = Galaga.getContext().getResource().get(type);
                 if (sprite == null) {
                     continue;

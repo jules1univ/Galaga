@@ -1,7 +1,6 @@
 package engine.utils.ini;
 
 import engine.utils.logger.Log;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -121,7 +120,7 @@ public final class Ini {
         if(this.sections.containsKey(section)) {
             return this.sections.get(section).get(name);
         }
-        return null;
+        return IniValue.of("");
     }
 
     public boolean hasSection(String name) {

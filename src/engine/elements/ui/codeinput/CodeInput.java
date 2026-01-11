@@ -6,7 +6,6 @@ import engine.graphics.Renderer;
 import engine.utils.Pair;
 import engine.utils.Position;
 import engine.utils.Size;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -216,7 +215,7 @@ public final class CodeInput extends UIElement {
 
     private void handleSelectionUpdate() {
         if (this.selectionActive) {
-            if (!Application.getContext().getInput().isKeyDown(KeyEvent.VK_SHIFT)) {
+            if (!Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
                 this.selectionActive = false;
                 this.selectStartLineIndex = -1;
                 this.selectStartColumnIndex = -1;
@@ -412,7 +411,6 @@ public final class CodeInput extends UIElement {
 
             this.isViewDirty = true;
         }
-        return;
     }
 
     private void handleHistory() {

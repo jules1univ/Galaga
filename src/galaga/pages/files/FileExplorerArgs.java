@@ -15,9 +15,8 @@ public class FileExplorerArgs {
         return new FileExplorerArgs(true, basePath,saveName, back, next, callback);
     }
 
-    public static FileExplorerArgs ofOpenMode(String basePath, GalagaPage back, GalagaPage next,
-            FileExplorerCallback callback) {
-        return new FileExplorerArgs(false, basePath,"", back, next, callback);
+    public static FileExplorerArgs ofOpenMode(String basePath, GalagaPage page) {
+        return new FileExplorerArgs(false, basePath,"", page, page, null);
     }
 
     public static FileExplorerArgs empty() {

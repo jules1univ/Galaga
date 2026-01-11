@@ -15,7 +15,6 @@ import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
 import galaga.GalagaSound;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -302,6 +301,13 @@ public class FileExplorer extends Page<GalagaPage> {
                     if (this.args.getCallback().run(filename, outputPath)) {
                         Galaga.getContext().getApplication().setCurrentPage(this.args.getNextPage());
                     }
+                } else {
+                    String outputFilename = this.files.get(this.index).getFirst();
+                    String outputPath = this.currentPath.resolve(outputFilename).toString();
+                    
+                    Galaga.getContext().getApplication().setCurrentPage(this.args.getNextPage(), FileExplorerResult.of(
+                            outputFilename,
+                            outputPath));
                 }
                 return;
             }
@@ -322,8 +328,10 @@ public class FileExplorer extends Page<GalagaPage> {
                 }
                 default -> {
                     String outputPath = this.currentPath.resolve(selectedFile.getFirst()).toString();
-                    if (!this.args.isSaveMode() && this.args.getCallback().run(selectedFile.getFirst(), outputPath)) {
-                        Galaga.getContext().getApplication().setCurrentPage(this.args.getNextPage());
+                    if (!this.args.isSaveMode()) {
+                        Galaga.getContext().getApplication().setCurrentPage(this.args.getNextPage(), FileExplorerResult.of(
+                                selectedFile.getFirst(),
+                                outputPath));
                     }
                 }
             }

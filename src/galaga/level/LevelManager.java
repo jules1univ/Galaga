@@ -1,10 +1,5 @@
 package galaga.level;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.util.ArrayList;
-import java.util.List;
-
 import engine.elements.ui.Alignment;
 import engine.elements.ui.text.Text;
 import engine.graphics.Renderer;
@@ -15,12 +10,16 @@ import galaga.Galaga;
 import galaga.GalagaSound;
 import galaga.entities.enemies.Enemy;
 import galaga.entities.player.Player;
+import java.awt.Color;
+import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LevelManager {
     private final List<Enemy> pendingEnemies = new ArrayList<>();
 
     private List<Enemy> enemies;
-    private Player player;
+    private final Player player;
 
     private int index = -1;
     private Level level;

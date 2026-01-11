@@ -17,6 +17,15 @@ public final class InputKeyListener implements KeyListener {
         return keysDown.contains(key);
     }
 
+    public boolean isKeyPressedNoConsume(int... keys) {
+        for (int key : keys) {
+            if (keysDown.contains(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isKeyPressed(int... keys) {
         for (int key : keys) {
             if (keysDown.contains(key)) {
