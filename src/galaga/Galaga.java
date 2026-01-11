@@ -1,6 +1,7 @@
 package galaga;
 
 import engine.AppContext;
+import engine.AppUpdate;
 import engine.Application;
 import engine.elements.page.Page;
 import engine.network.NetworkManager;
@@ -34,7 +35,7 @@ import java.lang.management.ManagementFactory;
 public class Galaga extends Application<GalagaPage> {
 
     static {
-        NetworkManager.register( NetPlayerData.class);
+        NetworkManager.register(NetPlayerData.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -68,7 +69,8 @@ public class Galaga extends Application<GalagaPage> {
     }
 
     public Galaga() {
-        super(Config.WINDOW_TITLE, Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT);
+        super(Config.WINDOW_TITLE, Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT,
+                AppUpdate.of(Config.REMOTE_CHECKSUM_URL, Config.REMOTE_UPDATE_URL));
         getContext().setState(new State());
     }
 

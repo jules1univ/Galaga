@@ -13,7 +13,6 @@ import engine.network.objects.primitives.NetString;
 import engine.utils.Position;
 import engine.utils.Size;
 import engine.utils.logger.Log;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +31,7 @@ public abstract class Application<PageId extends Enum<PageId>> {
     private Object[] pageArgs;
     private final Map<Enum<PageId>, Class<? extends Page<PageId>>> pages = new HashMap<>();
 
+    private final AppUpdate appUpdate;
     protected final int width;
     protected final int height;
     protected String title;
@@ -55,10 +55,11 @@ public abstract class Application<PageId extends Enum<PageId>> {
         return (AppContext<State, T>) context;
     }
 
-    public Application(String title, int width, int height) {
+    public Application(String title, int width, int height, AppUpdate appUpdate) {
         this.width = width;
         this.height = height;
         this.title = title;
+        this.appUpdate = appUpdate;
 
         context = new AppContext<>(this);
     }
@@ -85,6 +86,7 @@ public abstract class Application<PageId extends Enum<PageId>> {
     }
 
     public final void start() {
+        this.appUpdate.load();
         getContext().getFrame().start();
     }
 
