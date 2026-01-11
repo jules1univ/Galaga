@@ -3,6 +3,7 @@ package galaga.level;
 import engine.elements.ui.Alignment;
 import engine.elements.ui.text.Text;
 import engine.graphics.Renderer;
+import engine.resource.ResourceAlias;
 import engine.resource.sound.Sound;
 import engine.utils.Position;
 import galaga.Config;
@@ -21,8 +22,10 @@ public class LevelManager {
     private List<Enemy> enemies;
     private final Player player;
 
+    private final List<ResourceAlias> levels = new ArrayList<>();
     private int index = -1;
     private Level level;
+
 
     private Text title;
     private Text subtitle;
@@ -66,6 +69,11 @@ public class LevelManager {
                 titleFont.deriveFont(24f));
         this.subtitle.setCenter(Alignment.CENTER, Alignment.BEGIN);
 
+
+        this.levels.clear();
+        this.levels.addAll(Config.LEVELS);
+        this.levels.addAll(Config.LEVELS_CUSTOM);
+
         return true;
     }
 
@@ -91,13 +99,13 @@ public class LevelManager {
 
     public boolean next() {
         this.index++;
-        if (Config.LEVELS.size() <= this.index) {
+        if (this.levels.size() <= this.index) {
             // return this.generate();
             return false;
         }
 
         this.level = Galaga.getContext().getResource()
-                .get(Config.LEVELS.get(this.index));
+                .get(this.levels.get(this.index));
         this.player.setShooting(false);
         if (this.index > 0) {
             this.player.onFinishLevel();

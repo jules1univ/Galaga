@@ -26,7 +26,6 @@ import galaga.pages.multiplayer.lobby.MultiplayerLobby;
 import galaga.pages.multiplayer.menu.MultiplayerMenu;
 import galaga.pages.solo.GameSolo;
 import galaga.score.ScoreResource;
-
 import java.awt.event.KeyEvent;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -135,6 +134,7 @@ public class Galaga extends Application<GalagaPage> {
         rm.add(Config.SPRITES_ENEMY, SpriteResource.NAME);
 
         rm.add(Config.LEVELS, LevelResource.NAME);
+        rm.add(Config.LEVELS_CUSTOM, LevelResource.NAME);
         rm.add(Config.BEST_SCORE, ScoreResource.NAME);
 
         rm.add(Config.SOUNDS, SoundResource.NAME);

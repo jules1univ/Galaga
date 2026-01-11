@@ -125,6 +125,10 @@ public class GameSolo extends Page<GalagaPage> {
 
     @Override
     public void update(float dt) {
+        this.particles.update(dt);
+        this.ghd.update(dt);
+        this.gfd.update(dt);
+
         if (this.player.getScore() > this.bestScore && !this.bestScoreUpdated) {
             this.level.onPlayerBestScore();
             this.sky.setColor(Color.ORANGE);
@@ -250,9 +254,6 @@ public class GameSolo extends Page<GalagaPage> {
             }
         }
 
-        this.particles.update(dt);
-        this.ghd.update(dt);
-        this.gfd.update(dt);
     }
 
     @Override
@@ -261,12 +262,14 @@ public class GameSolo extends Page<GalagaPage> {
 
         this.particles.draw(renderer);
 
-        if (!this.playerDiedUpdated) {
+        if (!this.playerDiedUpdated && !this.playerWinUpdated) {
             this.bullets.draw(renderer);
             this.player.draw(renderer);
             for (Enemy enemy : this.level.getEnemies()) {
                 enemy.draw(renderer);
             }
+        }else if(this.playerWinUpdated) {
+            this.player.draw(renderer);
         }
 
         if (this.level.isTitleActive()) {
