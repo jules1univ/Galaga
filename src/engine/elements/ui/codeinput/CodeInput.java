@@ -6,6 +6,7 @@ import engine.graphics.Renderer;
 import engine.utils.Pair;
 import engine.utils.Position;
 import engine.utils.Size;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -16,8 +17,8 @@ public final class CodeInput extends UIElement {
 
     private static final float CURSOR_WIDTH = 3f;
     private static final float CURSOR_BLINK_INTERVAL = 0.5f;
-    private static final int LINE_SPACE_HEIGHT = 2;
-    private static final int LINE_SPACE_BEGIN = 10;
+    private static final float LINE_SPACE_HEIGHT = 0.f;
+    private static final float LINE_SPACE_BEGIN = 10.f;
 
     private final Font font;
 
@@ -77,9 +78,7 @@ public final class CodeInput extends UIElement {
             this.highlightedLines.add(this.highlighter.highlightLine(line, Color.WHITE));
         }
 
-        Size textLineSize = Application.getContext().getRenderer().getTextSize(Integer.toString(this.maxDisplayLines),
-                this.font);
-        this.lineBegin = LINE_SPACE_BEGIN + textLineSize.getWidth();
+        this.updateLineBegin();
     }
 
     public String getText() {
@@ -113,6 +112,13 @@ public final class CodeInput extends UIElement {
         }
     }
 
+    private void updateLineBegin() {
+        Size textLineSize = Application.getContext().getRenderer().getTextSize(
+                Integer.toString(Math.max(this.maxDisplayLines, this.lines.size())),
+                this.font);
+        this.lineBegin = LINE_SPACE_BEGIN + textLineSize.getWidth();
+    }
+
     private void rebuildLinesView() {
 
         this.viewRenderer.beginSub();
@@ -129,6 +135,8 @@ public final class CodeInput extends UIElement {
                 ? this.cursorColumnIndex
                 : this.lines.get(this.cursorLineIndex).length();
 
+        
+        float lineSingleNumWidth = this.lineBegin / (int) (Math.log10((double) this.lines.size()) + 1);
         for (int i = this.scrollLineIndex; i < lineEndIndex; i++) {
             List<Pair<String, Color>> line = this.highlightedLines.get(i);
             boolean selected = this.selectionActive && i >= selectStartLine && i <= selectEndLine;
@@ -136,8 +144,9 @@ public final class CodeInput extends UIElement {
             int visibleIndex = i - this.scrollLineIndex;
             float y = (visibleIndex + 1) * lineHeight;
 
+            float lineNumX = this.lineBegin - lineSingleNumWidth * ((int) Math.floor(Math.log10((double) (i + 1))) + 1);
             this.viewRenderer.drawText(Integer.toString(i + 1),
-                    Position.of(0, y),
+                    Position.of(lineNumX / 2.f, y),
                     Color.WHITE, this.font);
 
             int spacing = 0;
@@ -190,9 +199,7 @@ public final class CodeInput extends UIElement {
 
         this.viewRenderer = Renderer.ofSub(this.size);
 
-        Size textLineSize = Application.getContext().getRenderer().getTextSize(Integer.toString(this.maxDisplayLines),
-                this.font);
-        this.lineBegin = LINE_SPACE_BEGIN + textLineSize.getWidth();
+        this.updateLineBegin();
 
         this.cursorSize = Size.of(CURSOR_WIDTH, this.lineHeight - LINE_SPACE_HEIGHT);
         return true;
@@ -332,8 +339,8 @@ public final class CodeInput extends UIElement {
         if (!Application.getContext().getInput().isKeyPressed(KeyEvent.VK_BACK_SPACE, KeyEvent.VK_DELETE)) {
             return false;
         }
-        
-        if(this.selectionActive) {
+
+        if (this.selectionActive) {
             this.replaceSelection("");
             this.resetSelection();
 
@@ -475,6 +482,7 @@ public final class CodeInput extends UIElement {
     private void handleHistory() {
         String text = this.getText();
         if (this.history.isEmpty() || !this.history.get(this.history.size() - 1).equals(text)) {
+            this.updateLineBegin();
             this.history.add(text);
         }
     }
