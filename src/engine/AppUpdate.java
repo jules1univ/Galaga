@@ -102,7 +102,13 @@ public final class AppUpdate {
             tmpUpdatePath.toFile().delete();
 
             Log.message("Application update applied successfully.");
-            Application.getContext().getApplication().stop();
+
+            Application.getContext().getFrame().showMessage(
+                    "Application Update",
+                    "The application has been updated successfully and will now exit.",
+                    () -> {
+                        Application.getContext().getApplication().stop();
+                    });
         } catch (IOException e) {
             Log.error("Application update failed: %s", e.getMessage());
         }

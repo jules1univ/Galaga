@@ -7,7 +7,10 @@ import engine.utils.ClipboardManager;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public final class AppFrame extends JFrame {
     private final AppCanvas canvas;
@@ -56,6 +59,41 @@ public final class AppFrame extends JFrame {
 
     public ClipboardManager getClipboard() {
         return this.clipboard;
+    }
+
+    public void showMessage(String title, String message, Runnable onClose) {
+        JDialog dialog = new JDialog(this, title, true);
+        JOptionPane optionPane = new JOptionPane(
+                message,
+                JOptionPane.INFORMATION_MESSAGE,
+                JOptionPane.DEFAULT_OPTION);
+
+        dialog.setContentPane(optionPane);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                if (onClose != null) {
+                    onClose.run();
+                }
+            }
+        });
+
+        optionPane.addPropertyChangeListener(evt -> {
+            if (dialog.isVisible()
+                    && evt.getPropertyName().equals(JOptionPane.VALUE_PROPERTY)) {
+
+                dialog.dispose();
+                if (onClose != null) {
+                    onClose.run();
+                }
+            }
+        });
+
+        dialog.setVisible(true);
     }
 
     public void start() {
