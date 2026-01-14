@@ -1,7 +1,12 @@
 package galaga.gscript.ast;
 
-public record ASTNodeError(String message) implements ASTNode {
-    
+public class ASTNodeError implements ASTNode {
+    private final String message;
+
+    public ASTNodeError(String message) {
+        this.message = message;
+    }
+
     @Override
     public String format() {
         return "/* ERROR: " + message + " */";

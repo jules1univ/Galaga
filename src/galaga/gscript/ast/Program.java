@@ -2,10 +2,12 @@ package galaga.gscript.ast;
 
 import java.util.List;
 
+import galaga.gscript.ast.declaration.Declaration;
+
 public class Program implements ASTNode {
-    private final List<ASTNode> declarations;
+    private final List<Declaration> declarations;
     
-    public Program(List<ASTNode> declarations) {
+    public Program(List<Declaration> declarations) {
         this.declarations = declarations;
     }
 

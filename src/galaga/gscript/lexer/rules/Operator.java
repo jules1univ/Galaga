@@ -1,4 +1,4 @@
-package galaga.gscript.lexer;
+package galaga.gscript.lexer.rules;
 
 public enum Operator {
     PLUS("+"),

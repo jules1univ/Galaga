@@ -53,7 +53,8 @@ public class GScriptTest {
 
     public static void main(String[] args) {
         Lexer lexer = Lexer.of("""
-
+                module test;
+                
                 import std.io.{printf};
 
                 extern type Position;
@@ -75,45 +76,45 @@ public class GScriptTest {
 
                 type FunctionCallback = void created(int score);
 
-                Player create_player(String name, FunctionCallback callback) {
-                    Player p{
-                        .name = name,
-                        .score = 0,
-                        .pos = getMousePosition(),
-                        .state = PLayerState.ALIVE
-                    };
-                    callback(p.score);
-                    return p;
-                }
+                // Player create_player(String name, FunctionCallback callback) {
+                //     Player p{
+                //         .name = name,
+                //         .score = 0,
+                //         .pos = getMousePosition(),
+                //         .state = PLayerState.ALIVE
+                //     };
+                //     callback(p.score);
+                //     return p;
+                // }
 
-                void update_player() extends Player {
-                    this->score += 10;
-                }
+                // void update_player() extends Player {
+                //     this->score += 10;
+                // }
 
 
-                void modify_player(ref Player p) {
-                    p->score += 20;
-                }
+                // void modify_player(ref Player p) {
+                //     p->score += 20;
+                // }
 
-                void read_player(const Player p) {
-                    printf("Player %s has score %d\n", p.name, p.score);
-                }
+                // void read_player(const Player p) {
+                //     printf("Player %s has score %d\n", p.name, p.score);
+                // }
 
-                void copy_player(const Player p, Player p2) {
-                    Player p3 = p; // Copy
-                    p3->score += 30; // can modify p3
+                // void copy_player(const Player p, Player p2) {
+                //     Player p3 = p; // Copy
+                //     p3->score += 30; // can modify p3
 
-                    const Player p4 = p2; // Copy
-                    // p4->score += 40; // Error: cannot modify p4
+                //     const Player p4 = p2; // Copy
+                //     // p4->score += 40; // Error: cannot modify p4
 
-                    printf("Copied player %s with score %d\n", p2.name, p2.score);
-                }
+                //     printf("Copied player %s with score %d\n", p2.name, p2.score);
+                // }
                     """);
         
                 
         Parser parser = Parser.of(lexer);
         try {
-            // parser.parse();
+            System.out.println(parser.parse().format());
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }

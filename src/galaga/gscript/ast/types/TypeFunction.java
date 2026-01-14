@@ -1,10 +1,11 @@
 package galaga.gscript.ast.types;
 
 import java.util.Map;
+import java.util.Optional;
 
 import galaga.gscript.ast.ASTNode;
 
-public record TypeFunction(Type returnType, String name, Map<Type, String> parameters) implements ASTNode{
+public record TypeFunction(Type returnType, String name, Map<Type, String> parameters, Optional<String> extendsType) implements ASTNode{
 
     @Override
     public String format() {
@@ -24,6 +25,10 @@ public record TypeFunction(Type returnType, String name, Map<Type, String> param
             first = false;
         }
         sb.append(")");
+        if(extendsType.isPresent()){
+            sb.append(" extends ");
+            sb.append(extendsType.get());
+        }
         return sb.toString();
     }
     

@@ -2,6 +2,8 @@ package galaga.gscript.lexer;
 
 import java.util.Iterator;
 
+import galaga.gscript.lexer.rules.Keyword;
+import galaga.gscript.lexer.rules.Operator;
 import galaga.gscript.lexer.token.Token;
 import galaga.gscript.lexer.token.TokenPosition;
 import galaga.gscript.lexer.token.TokenType;
