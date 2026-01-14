@@ -47,7 +47,7 @@ public final class ParserContext {
     }
 
     public boolean isEnd() {
-        return this.index >= this.tokens.size();
+        return this.index >= this.tokens.size() || this.current.getType() == TokenType.EOF;
     }
 
     public void advance() {

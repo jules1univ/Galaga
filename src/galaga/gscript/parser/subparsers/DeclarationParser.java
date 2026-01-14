@@ -41,7 +41,7 @@ public final class DeclarationParser {
             return Optional.empty();
         }
 
-        if (!context.expect(Keyword.ENUM) && !context.expect(Operator.LEFT_BRACE)) {
+        if (!context.expect(Keyword.ENUM) || !context.expect(Operator.LEFT_BRACE)) {
             return Optional.empty();
         }
 

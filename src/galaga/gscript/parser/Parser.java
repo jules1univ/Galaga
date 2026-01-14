@@ -123,7 +123,6 @@ public final class Parser {
             this.parseTypeDeclarations();
             this.parseFunctionDeclaration();
 
-            System.out.println(this.context.build().format());
         }
 
         return this.context.build();
