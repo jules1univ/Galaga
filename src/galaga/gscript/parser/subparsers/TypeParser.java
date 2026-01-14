@@ -1,5 +1,6 @@
 package galaga.gscript.parser.subparsers;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -41,11 +42,11 @@ public final class TypeParser {
         }
 
         String functionName = context.getValue();
-        if (!context.expect(TokenType.IDENTIFIER) && !context.expect(Operator.LEFT_PAREN)) {
+        if (!context.expect(TokenType.IDENTIFIER) || !context.expect(Operator.LEFT_PAREN)) {
             return Optional.empty();
         }
 
-        Map<Type, String> parameters = Map.of();
+        Map<Type, String> parameters = new HashMap<>();
         while (!context.isEnd() && !context.is(Operator.RIGHT_PAREN)) {
             Optional<Type> paramType = TypeParser.parseType(context);
             if (paramType.isEmpty()) {

@@ -62,57 +62,68 @@ public final class Parser {
         if (!DeclarationParser.isTypeDeclaration(this.context)) {
             return;
         }
-        Optional<String> typeName = DeclarationParser.parseTypeDeclaration(this.context);
-        if (typeName.isEmpty()) {
+        Optional<String> typeNameOpt = DeclarationParser.parseTypeDeclaration(this.context);
+        if (typeNameOpt.isEmpty()) {
             return;
         }
-
+        String typeName = typeNameOpt.get();
         if (DeclarationParser.isEnumDeclaration(this.context)) {
-            Optional<EnumDeclaration> enumDecl = DeclarationParser.parseEnum(this.context, typeName.get());
+            Optional<EnumDeclaration> enumDecl = DeclarationParser.parseEnum(this.context, typeName);
             if (enumDecl.isPresent()) {
                 this.context.push(enumDecl.get());
                 return;
             }
-            this.context.pushError("Failed to parse enum declaration: " + typeName.get());
+            this.context.pushError("Failed to parse enum declaration: " + typeName);
         } else if (DeclarationParser.isStructDeclaration(this.context)) {
-            Optional<StructDeclaration> structDecl = DeclarationParser.parseStruct(this.context, typeName.get());
+            Optional<StructDeclaration> structDecl = DeclarationParser.parseStruct(this.context, typeName);
             if (structDecl.isPresent()) {
                 this.context.push(structDecl.get());
                 return;
             }
-            this.context.pushError("Failed to parse struct declaration: " + typeName.get());
-        } else if (DeclarationParser.isTypeAliasDeclaration(this.context)) {
+            this.context.pushError("Failed to parse struct declaration: " + typeName);
+        } else {
             Optional<TypeAliasDeclaration> typeAliasDecl = DeclarationParser.parseTypeAlias(this.context,
-                    typeName.get());
+                    typeName);
             if (typeAliasDecl.isPresent()) {
                 this.context.push(typeAliasDecl.get());
                 return;
             }
-            this.context.pushError("Failed to parse type alias declaration: " + typeName.get());
-        } else {
-            this.context.pushError("Unknown type declaration: " + typeName.get());
+            this.context.pushError("Failed to parse type alias declaration: " + typeName);
         }
+    }
 
+    private void parseFunctionDeclaration() {
+        if (!DeclarationParser.isFunctionDeclaration(this.context)) {
+            return;
+        }
+        Optional<TypeFunction> functionSignature = TypeParser.parseTypeFunction(this.context);
+        if (functionSignature.isPresent()) {
+            Optional<FunctionDeclaration> function = DeclarationParser.parseFunction(this.context,
+                    functionSignature.get());
+            if (function.isPresent()) {
+                this.context.push(function.get());
+                return;
+            }
+        } else {
+            this.context.pushError("Failed to parse function declaration.");
+        }
     }
 
     public Program parse() {
+        int lastIndex = -1;
         while (!this.context.isEnd()) {
+            if (this.context.getIndex() == lastIndex) {
+                this.context.pushError("Parser is stuck at token: %s", this.context.getCurrentToken());
+                this.context.advance();
+            } else {
+                lastIndex = this.context.getIndex();
+            }
+
             this.parseModuleDeclarations();
             this.parseTypeDeclarations();
+            this.parseFunctionDeclaration();
 
-            if (DeclarationParser.isFunctionDeclaration(this.context)) {
-                Optional<TypeFunction> functionSignature = TypeParser.parseTypeFunction(this.context);
-                if (functionSignature.isPresent()) {
-                    Optional<FunctionDeclaration> function = DeclarationParser.parseFunction(this.context,
-                            functionSignature.get());
-                    if (function.isPresent()) {
-                        this.context.push(function.get());
-                        continue;
-                    }
-                }else{
-                    this.context.pushError("Failed to parse function declaration.");
-                }
-            }
+            System.out.println(this.context.build().format());
         }
 
         return this.context.build();

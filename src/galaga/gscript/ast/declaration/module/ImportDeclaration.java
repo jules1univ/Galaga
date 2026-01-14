@@ -16,9 +16,9 @@ public record ImportDeclaration(LinkedList<String> importPaths, List<String> imp
         if (isWildCard) {
             sb.append(".*");
         } else if (!importFunctions.isEmpty()) {
-            sb.append(" { ");
+            sb.append(".{");
             sb.append(String.join(", ", importFunctions));
-            sb.append(" }");
+            sb.append("}");
         }
         sb.append(";");
         return sb.toString();

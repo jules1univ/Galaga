@@ -6,7 +6,7 @@ import galaga.gscript.ast.declaration.Declaration;
 
 public class Program implements ASTNode {
     private final List<Declaration> declarations;
-    
+
     public Program(List<Declaration> declarations) {
         this.declarations = declarations;
     }
@@ -14,13 +14,17 @@ public class Program implements ASTNode {
     @Override
     public String format() {
         StringBuilder sb = new StringBuilder();
-        for (ASTNode decl : declarations) {
+        Declaration lastDecl = null;
+        for (Declaration decl : declarations) {
+            if(lastDecl != null && lastDecl.getClass() != decl.getClass()) {
+                sb.append("\n");
+            }
             sb.append(decl.format());
-        
             sb.append("\n");
-            sb.append("\n");
+
+            lastDecl = decl;
         }
         return sb.toString();
     }
-    
+
 }

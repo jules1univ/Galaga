@@ -38,6 +38,14 @@ public final class ParserContext {
         this.current = this.tokens.get(0);
     }
 
+    public int getIndex() {
+        return this.index;
+    }
+
+    public Token getCurrentToken() {
+        return this.current;
+    }
+
     public boolean isEnd() {
         return this.index >= this.tokens.size();
     }
@@ -132,6 +140,14 @@ public final class ParserContext {
         return next.getType() == TokenType.OPERATOR && next.getValue().equals(operator.getText());
     }
 
+    public boolean nextIs(Keyword keyword) {
+        if (this.index + 1 >= this.tokens.size()) {
+            return false;
+        }
+        Token next = this.tokens.get(this.index + 1);
+        return next.getType() == TokenType.KEYWORD && next.getValue().equals(keyword.getText());
+    }
+
     public void advanceIfSemicolon() {
         if (this.is(Operator.SEMICOLON)) {
             this.advance();
@@ -175,26 +191,28 @@ public final class ParserContext {
         return Optional.empty();
     }
 
-
     public Optional<String> getValueExpect(TokenType type) {
+        String value = this.current.getValue();
         if (!this.expect(type)) {
             return Optional.empty();
         }
-        return Optional.of(this.tokens.get(this.index - 1).getValue());
+        return Optional.of(value);
     }
 
     public Optional<String> getValueExpect(Keyword keyword) {
+        String value = this.current.getValue();
         if (!this.expect(keyword)) {
             return Optional.empty();
         }
-        return Optional.of(this.tokens.get(this.index - 1).getValue());
+        return Optional.of(value);
     }
 
     public Optional<String> getValueExpect(Operator operator) {
+        String value = this.current.getValue();
         if (!this.expect(operator)) {
             return Optional.empty();
         }
-        return Optional.of(this.tokens.get(this.index - 1).getValue());
+        return Optional.of(value);
     }
 
     public void pushError(String message, Object... args) {

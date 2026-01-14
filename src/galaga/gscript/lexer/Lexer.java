@@ -180,14 +180,14 @@ public final class Lexer implements Iterable<Token> {
                     return Token.of(TokenType.EOF, TokenPosition.of(line, column), "");
                 }
 
-                if (Character.isLetter(current) || current == '_') {
+                if (current == '/' && (peek() == '/' || peek() == '*')) {
+                    return comment();
+                } else if (Character.isLetter(current) || current == '_') {
                     return identifier();
                 } else if (Character.isDigit(current)) {
                     return numberLiteral();
                 } else if (current == '"' || current == '\'') {
                     return stringLiteral();
-                } else if (current == '/' && (peek() == '/' || peek() == '*')) {
-                    return comment();
                 } else {
                     return operator();
                 }

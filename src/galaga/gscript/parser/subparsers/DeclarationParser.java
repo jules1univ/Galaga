@@ -1,6 +1,7 @@
 package galaga.gscript.parser.subparsers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,15 +32,20 @@ public final class DeclarationParser {
     }
 
     public static boolean isEnumDeclaration(ParserContext context) {
-        return context.is(Keyword.ENUM);
+        return context.is(Operator.ASSIGN) && context.nextIs(Keyword.ENUM);
     }
 
     public static Optional<EnumDeclaration> parseEnum(ParserContext context, String name) {
+        if(!context.expect(Operator.ASSIGN))
+        {
+            return Optional.empty();
+        }
+
         if (!context.expect(Keyword.ENUM) && !context.expect(Operator.LEFT_BRACE)) {
             return Optional.empty();
         }
 
-        Map<String, Optional<Integer>> values = Map.of();
+        Map<String, Optional<Integer>> values = new HashMap<>();
         while (!context.isEnd() && !context.is(Operator.RIGHT_BRACE)) {
             Optional<String> valueNameOpt = context.getValueExpect(TokenType.IDENTIFIER);
             if (valueNameOpt.isEmpty()) {
@@ -75,14 +81,19 @@ public final class DeclarationParser {
     }
 
     public static boolean isStructDeclaration(ParserContext context) {
-        return context.is(Keyword.STRUCT);
+        return context.is(Operator.ASSIGN) && context.nextIs(Keyword.STRUCT);
     }
 
     public static Optional<StructDeclaration> parseStruct(ParserContext context, String name) {
-        if (!context.expect(Keyword.STRUCT) && !context.expect(Operator.LEFT_BRACE)) {
+        if(!context.expect(Operator.ASSIGN))
+        {
             return Optional.empty();
         }
-        Map<Type, String> fields = Map.of();
+
+        if (!context.expect(Keyword.STRUCT) || !context.expect(Operator.LEFT_BRACE)) {
+            return Optional.empty();
+        }
+        Map<Type, String> fields = new HashMap<>();
         while (!context.isEnd() && !context.is(Operator.RIGHT_BRACE)) {
             Optional<Type> fieldType = TypeParser.parseType(context);
             if (fieldType.isEmpty()) {
@@ -109,13 +120,20 @@ public final class DeclarationParser {
         return Optional.of(new StructDeclaration(name, fields));
     }
 
-    public static boolean isTypeAliasDeclaration(ParserContext context) {
-        return context.is(Operator.ASSIGN);
-    }
-
     public static Optional<TypeAliasDeclaration> parseTypeAlias(ParserContext context, String name) {
         if (!context.expect(Operator.ASSIGN)) {
             return Optional.empty();
+        }
+
+        if(context.is(TokenType.IDENTIFIER) && context.nextIs(TokenType.IDENTIFIER))
+        {
+            Optional<TypeFunction> functionType = TypeParser.parseTypeFunction(context);
+            if(functionType.isEmpty()) {
+                context.advance();
+                return Optional.empty();
+            }
+            context.advanceIfSemicolon();
+            return Optional.of(new TypeAliasDeclaration(name, functionType, new ArrayList<>()));
         }
 
         List<Type> types = new ArrayList<>();
@@ -134,7 +152,7 @@ public final class DeclarationParser {
             types.add(type.get());
         }
         context.advanceIfSemicolon();
-        return Optional.of(new TypeAliasDeclaration(name, types));
+        return Optional.of(new TypeAliasDeclaration(name,Optional.empty(), types));
     }
 
     public static boolean isFunctionDeclaration(ParserContext context) {

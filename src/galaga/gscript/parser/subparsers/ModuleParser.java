@@ -30,10 +30,10 @@ public final class ModuleParser {
         boolean isWildcard = false;
 
         boolean functionMode = false;
-        while (!context.isEnd() && context.is(TokenType.IDENTIFIER)) {
-            paths.add(context.getValueAndAdvance());
-
-            if (context.isAndAdvance(Operator.DOT)) {
+        while (!context.isEnd()) {
+            if (context.is(TokenType.IDENTIFIER)) {
+                paths.add(context.getValueAndAdvance());
+            }else if (context.isAndAdvance(Operator.DOT)) {
                 continue;
             } else if (context.isAndAdvance(Operator.LEFT_BRACE)) {
                 functionMode = true;
@@ -103,8 +103,11 @@ public final class ModuleParser {
         Optional<String> moduleName = context.getValueExpect(TokenType.IDENTIFIER);
         if (moduleName.isEmpty()) {
             context.advance();
+            context.advanceIfSemicolon();
             return Optional.empty();
         }
+
+        context.advanceIfSemicolon();
         return Optional.of(new ModuleDeclaration(moduleName.get()));
     }
 }

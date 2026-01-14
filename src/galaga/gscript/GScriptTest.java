@@ -54,18 +54,19 @@ public class GScriptTest {
     public static void main(String[] args) {
         Lexer lexer = Lexer.of("""
                 module test;
-                
+
                 import std.io.{printf};
+                import math.utils.*;
 
                 extern type Position;
                 extern Position getMousePosition();
 
 
                 type Player = struct {
-                    String name;
-                    Int score;
+                    const String name;
+                    const ref Int score;
                     Position pos;
-                    PLayerState state;
+                    ref PLayerState[] state;
                 }
 
                 type PLayerState = enum {
@@ -97,7 +98,7 @@ public class GScriptTest {
                 // }
 
                 // void read_player(const Player p) {
-                //     printf("Player %s has score %d\n", p.name, p.score);
+                //     printf("Player %s has score %d\\n", p.name, p.score);
                 // }
 
                 // void copy_player(const Player p, Player p2) {
@@ -107,16 +108,15 @@ public class GScriptTest {
                 //     const Player p4 = p2; // Copy
                 //     // p4->score += 40; // Error: cannot modify p4
 
-                //     printf("Copied player %s with score %d\n", p2.name, p2.score);
+                //     printf("Copied player %s with score %d\\n", p2.name, p2.score);
                 // }
                     """);
-        
-                
+
         Parser parser = Parser.of(lexer);
         try {
             System.out.println(parser.parse().format());
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println(e);
         }
 
     }
