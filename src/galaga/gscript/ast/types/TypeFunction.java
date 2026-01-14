@@ -1,0 +1,30 @@
+package galaga.gscript.ast.types;
+
+import java.util.Map;
+
+import galaga.gscript.ast.ASTNode;
+
+public record TypeFunction(Type returnType, String name, Map<Type, String> parameters) implements ASTNode{
+
+    @Override
+    public String format() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(returnType.format());
+        sb.append(" ");
+        sb.append(name);
+        sb.append("(");
+        boolean first = true;
+        for (Map.Entry<Type, String> param : parameters.entrySet()) {
+            if (!first) {
+                sb.append(", ");
+            }
+            sb.append(param.getKey().format());
+            sb.append(" ");
+            sb.append(param.getValue());
+            first = false;
+        }
+        sb.append(")");
+        return sb.toString();
+    }
+    
+}

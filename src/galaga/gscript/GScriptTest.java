@@ -1,8 +1,53 @@
 package galaga.gscript;
 
 import galaga.gscript.lexer.Lexer;
-import galaga.gscript.lexer.LexerError;
 import galaga.gscript.parser.Parser;
+
+/*
+ * import -> import <import_patern>
+ * <import_patern> -> ID . <import_patern> | ID | { <import_list> }
+ * <import_list> -> <import_item> , <import_list> | <import_item>
+ * <import_item> -> ID | ID . <import_item>
+ * 
+ * extern -> extern type ID | extern <function_declaration>
+ * 
+ * <function_declaration> -> ID ID ( <parameter_list> ) { <function_body> }
+ * <parameter_list> -> <parameter> , <parameter_list> | <parameter>
+ * <parameter> -> [const] [ref] ID ID
+ * <function_body> -> <statements>
+ * 
+ * <statements> -> <statement>; <statements> | <statement>
+ * <statement> -> <return_statement> | <if_statement> | <while_statement> |
+ * <for_statement> | <break_statement> | <continue_statement> |
+ * <expression_statement>
+ * 
+ * <return_statement> -> return <expression>
+ * <if_statement> -> if ( <expression> ) { <statements> } [<else_statement>]
+ * <else_statement> -> else { <statements> } | else if ( <expression> ) {
+ * <statements> } [<else_statement>]
+ * 
+ * <while_statement> -> while ( <expression> ) { <statements> } | do {
+ * <statements> } while ( <expression> );
+ * <for_statement> -> for ( <expression_statement>; <expression_statement>;
+ * <expression> ) { <statements> }
+ * <break_statement> -> break
+ * <continue_statement> -> continue
+ * <expression_statement> -> <expression>
+ * 
+ * <expression> -> <variables> | <function_call> | <literals> |
+ * <binary_expression> | <unary_expression> | ( <expression> )
+ * <variables> -> <variable_declaration> | <variable_access>
+ * <variable_declaration> -> [const] [ref] ID ID [= <expression>]
+ * <variable_access> -> ID [-> ID] | ID [. ID]
+ * 
+ * <function_call> -> ID ( <argument_list> )
+ * <argument_list> -> <expression> , <argument_list> | <expression>
+ * 
+ * <literals> -> NUMBER | STRING | TRUE | FALSE
+ * <binary_expression> -> <expression> OPERATOR <expression>
+ * <unary_expression> -> OPERATOR <expression>
+ * 
+ */
 
 public class GScriptTest {
 
@@ -64,18 +109,12 @@ public class GScriptTest {
                     printf("Copied player %s with score %d\n", p2.name, p2.score);
                 }
                     """);
-        try {
-            lexer.execute();
-        } catch (LexerError e) {
-            System.err.println(e.getMessage());
-        }
+        
+                
         Parser parser = Parser.of(lexer);
-        try{
-            parser.execute();
-            for (var stmt : parser){
-                System.out.println(stmt.format());
-            }
-        } catch (Exception e){
+        try {
+            // parser.parse();
+        } catch (Exception e) {
             System.err.println(e.getMessage());
         }
 

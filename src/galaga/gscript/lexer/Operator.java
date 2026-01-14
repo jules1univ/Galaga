@@ -18,6 +18,7 @@ public enum Operator {
     AND("&&"),
     OR("||"),
     NOT("!"),
+    BITWISE_OR("|"),
 
     INCREMENT("++"),
     DECREMENT("--"),

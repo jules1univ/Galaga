@@ -1,6 +1,7 @@
 package galaga.gscript.lexer;
 
 public enum Keyword {
+    MODULE("module"),
     IMPORT("import"),
     EXTERN("extern"),
 

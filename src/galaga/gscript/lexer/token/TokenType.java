@@ -9,5 +9,7 @@ public enum TokenType {
     STRING,
 
     COMMENT,
-    EOF
+    EOF,
+
+    UNKNOWN
 }

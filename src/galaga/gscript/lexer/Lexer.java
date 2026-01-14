@@ -1,6 +1,5 @@
 package galaga.gscript.lexer;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import galaga.gscript.lexer.token.Token;
@@ -8,10 +7,10 @@ import galaga.gscript.lexer.token.TokenPosition;
 import galaga.gscript.lexer.token.TokenType;
 
 public final class Lexer implements Iterable<Token> {
+    private static final char EOF = '\0';
     private final String source;
-    private final ArrayList<Token> tokens = new ArrayList<>();
 
-    private char current = '\0';
+    private char current = EOF;
     private int index = 0;
     private int line = 1;
     private int column = 1;
@@ -55,7 +54,7 @@ public final class Lexer implements Iterable<Token> {
         }
     }
 
-    private void identifier() {
+    private Token identifier() {
         TokenPosition position = TokenPosition.of(this.line, this.column);
         String value = "";
         while (Character.isLetterOrDigit(current) || current == '_') {
@@ -64,23 +63,22 @@ public final class Lexer implements Iterable<Token> {
         }
 
         if (Keyword.isKeyword(value)) {
-            this.tokens.add(Token.of(TokenType.KEYWORD, position, value));
-            return;
+            return Token.of(TokenType.KEYWORD, position, value);
         }
-        this.tokens.add(Token.of(TokenType.IDENTIFIER, position, value));
+        return Token.of(TokenType.IDENTIFIER, position, value);
     }
 
-    private void numberLiteral() {
+    private Token numberLiteral() {
         TokenPosition position = TokenPosition.of(this.line, this.column);
         String value = "";
         while (Character.isDigit(current)) {
             value += current;
             advance();
         }
-        this.tokens.add(Token.of(TokenType.NUMBER, position, value));
+        return Token.of(TokenType.NUMBER, position, value);
     }
 
-    private void stringLiteral() {
+    private Token stringLiteral() {
         TokenPosition position = TokenPosition.of(this.line, this.column);
         String value = "";
 
@@ -104,10 +102,10 @@ public final class Lexer implements Iterable<Token> {
             this.advance();
         }
         this.advance();
-        this.tokens.add(Token.of(TokenType.STRING, position, value));
+        return Token.of(TokenType.STRING, position, value);
     }
 
-    private void operator() throws LexerError {
+    private Token operator() {
         TokenPosition position = TokenPosition.of(this.line, this.column);
         String value = "";
 
@@ -118,16 +116,16 @@ public final class Lexer implements Iterable<Token> {
         }
 
         if (Operator.isOperator(value)) {
-            this.tokens.add(Token.of(TokenType.OPERATOR, position, value));
-            return;
+            return Token.of(TokenType.OPERATOR, position, value);
         }
 
-        throw new LexerError(position, value, "Unknown operator");
+        return Token.of(TokenType.UNKNOWN, position, value);
     }
 
-    private void comment() {
+    private Token comment() {
         TokenPosition position = TokenPosition.of(this.line, this.column);
         String value = "";
+
         if (current == '/' && this.peek() == '/') {
             value += current;
             advance();
@@ -137,7 +135,7 @@ public final class Lexer implements Iterable<Token> {
                 value += current;
                 advance();
             }
-            this.tokens.add(Token.of(TokenType.COMMENT, position, value));
+            return Token.of(TokenType.COMMENT, position, value);
         } else if (current == '/' && this.peek() == '*') {
             value += current;
             advance();
@@ -151,38 +149,48 @@ public final class Lexer implements Iterable<Token> {
             advance();
             value += current;
             advance();
-            this.tokens.add(Token.of(TokenType.COMMENT, position, value));
-        }
-    }
 
-    public void execute() throws LexerError {
-        if (this.source.isEmpty()) {
-            return;
+            return Token.of(TokenType.COMMENT, position, value);
         }
-        this.tokens.clear();
 
-        this.advance();
-        while (!this.isEnd()) {
-            if (Character.isWhitespace(current)) {
-                this.whitespace();
-            } else if (Character.isLetter(current) || current == '_') {
-                this.identifier();
-            } else if (Character.isDigit(current)) {
-                this.numberLiteral();
-            } else if (current == '"' || current == '\'') {
-                this.stringLiteral();
-            } else if (current == '/' && (this.peek() == '/' || this.peek() == '*')) {
-                this.comment();
-            } else {
-                this.operator();
-            }
-        }
-        this.tokens.add(Token.of(TokenType.EOF, TokenPosition.of(this.line, this.column), ""));
+        return Token.of(TokenType.UNKNOWN, position, value);
     }
 
     @Override
     public Iterator<Token> iterator() {
-        return tokens.iterator();
+        this.advance();
+        return new Iterator<Token>() {
+            private boolean hasEOF = false;
+
+            @Override
+            public boolean hasNext() {
+                return !this.hasEOF;
+            }
+
+            @Override
+            public Token next() {
+                if (Character.isWhitespace(current)) {
+                    whitespace();
+                }
+
+                if (current == EOF) {
+                    this.hasEOF = true;
+                    return Token.of(TokenType.EOF, TokenPosition.of(line, column), "");
+                }
+
+                if (Character.isLetter(current) || current == '_') {
+                    return identifier();
+                } else if (Character.isDigit(current)) {
+                    return numberLiteral();
+                } else if (current == '"' || current == '\'') {
+                    return stringLiteral();
+                } else if (current == '/' && (peek() == '/' || peek() == '*')) {
+                    return comment();
+                } else {
+                    return operator();
+                }
+            }
+        };
     }
 
 }
