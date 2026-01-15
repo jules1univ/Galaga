@@ -10,6 +10,7 @@ import galaga.gscript.ast.statement.Block;
 import galaga.gscript.ast.statement.ExpressionStatement;
 import galaga.gscript.ast.statement.StatementBase;
 import galaga.gscript.ast.statement.StatementError;
+import galaga.gscript.ast.statement.StructInitStatement;
 import galaga.gscript.ast.statement.logic.BreakStatement;
 import galaga.gscript.ast.statement.logic.ContinueStatement;
 import galaga.gscript.ast.statement.logic.ForStatement;
@@ -17,8 +18,10 @@ import galaga.gscript.ast.statement.logic.IfStatement;
 import galaga.gscript.ast.statement.logic.ReturnStatement;
 import galaga.gscript.ast.statement.logic.SwitchStatement;
 import galaga.gscript.ast.statement.logic.WhileStatement;
+import galaga.gscript.ast.types.TypeBase;
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
+import galaga.gscript.lexer.token.TokenType;
 import galaga.gscript.parser.ParserContext;
 
 public final class StatementParser {
@@ -47,6 +50,15 @@ public final class StatementParser {
                 statements.add(parseBreakStatement(context));
             } else if (isContinueStatement(context)) {
                 statements.add(parseContinueStatement(context));
+            } else if (TypeParser.isType(context)) {
+                TypeBase typeName = TypeParser.parseType(context);
+                if (isStructInitStatement(context)) {
+                    statements.add(parseStructInitStatement(context, typeName));
+                } else if (isVariableInitStatement(context)) {
+                    statements.add(parseExpressionStatement(context));
+                } else {
+                    statements.add(new StatementError("Invalid statement after type declaration."));
+                }
             } else {
                 statements.add(parseExpressionStatement(context));
             }
@@ -250,6 +262,52 @@ public final class StatementParser {
         ExpressionBase returnValue = ExpressionParser.parseExpression(context);
         context.advanceIfSemicolon();
         return new ReturnStatement(Optional.of(returnValue));
+    }
+
+    public static boolean isStructInitStatement(ParserContext context) {
+        return context.nextIs(Operator.LEFT_BRACE);
+    }
+
+    public static StatementBase parseStructInitStatement(ParserContext context, TypeBase name) {
+        if (!context.expect(Operator.LEFT_BRACE)) {
+            return (StatementBase) context.getLastError();
+        }
+
+        Map<String, ExpressionBase> fields = new java.util.HashMap<>();
+
+        while (!context.isEnd() && !context.is(Operator.RIGHT_BRACE)) {
+            if (!context.expect(TokenType.IDENTIFIER)) {
+                return (StatementBase) context.getLastError();
+            }
+            String fieldName = context.getValueAndAdvance();
+            if (!context.expect(Operator.ASSIGN)) {
+                return (StatementBase) context.getLastError();
+            }
+            ExpressionBase fieldValue = ExpressionParser.parseExpression(context);
+            fields.put(fieldName, fieldValue);
+            if (!context.isAndAdvance(Operator.COMMA)) {
+                break;
+            }
+        }
+        if (!context.expect(Operator.RIGHT_BRACE)) {
+            return (StatementBase) context.getLastError();
+        }
+        context.advanceIfSemicolon();
+        return new StructInitStatement(name, fields);
+    }
+
+    public static boolean isVariableInitStatement(ParserContext context) {
+        return context.nextIs(Operator.ASSIGN);
+    }
+
+    public static StatementBase parseVariableInitStatement(ParserContext context, TypeBase type) {
+        if (!context.expect(Operator.ASSIGN)) {
+            return (StatementBase) context.getLastError();
+        }
+
+        ExpressionBase value = ExpressionParser.parseExpression(context);
+        context.advanceIfSemicolon();
+        return new ExpressionStatement(value);
     }
 
     public static StatementBase parseExpressionStatement(ParserContext context) {

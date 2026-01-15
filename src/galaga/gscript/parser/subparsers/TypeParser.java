@@ -17,6 +17,10 @@ import galaga.gscript.parser.ParserContext;
 
 public final class TypeParser {
 
+    public static boolean isType(ParserContext context) {
+        return context.is(Keyword.CONST) || context.is(Keyword.REF) || (context.is(TokenType.IDENTIFIER) && context.nextIs(TokenType.IDENTIFIER));
+    }
+
     public static TypeBase parseType(ParserContext context) {
         boolean isConst = context.getValueIf(Keyword.CONST).isPresent();
         boolean isRef = context.getValueIf(Keyword.REF).isPresent();

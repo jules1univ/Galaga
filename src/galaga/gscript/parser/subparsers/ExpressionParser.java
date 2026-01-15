@@ -1,13 +1,16 @@
 package galaga.gscript.parser.subparsers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import galaga.gscript.ast.expression.BinaryExpression;
 import galaga.gscript.ast.expression.ExpressionBase;
 import galaga.gscript.ast.expression.ExpressionError;
 import galaga.gscript.ast.expression.FunctionCallExpression;
 import galaga.gscript.ast.expression.UnaryExpression;
+import galaga.gscript.ast.expression.VariableExpression;
 import galaga.gscript.ast.expression.literals.LiteralBoolExpression;
 import galaga.gscript.ast.expression.literals.LiteralFloatExpression;
 import galaga.gscript.ast.expression.literals.LiteralStringExpression;
@@ -44,6 +47,45 @@ public final class ExpressionParser {
             return (ExpressionBase) context.getLastError();
         }
         return new FunctionCallExpression(name, args);
+    }
+
+    public static ExpressionBase parseVaribleExpression(ParserContext context) {
+        if (!context.expect(TokenType.IDENTIFIER)) {
+            return (ExpressionBase) context.getLastError();
+        }
+
+        String name = context.getValueAndAdvance();
+        return new VariableExpression(name);
+    }
+
+    public static ExpressionBase parseStructInitExpression(ParserContext context) {
+        if (!context.expect(Operator.LEFT_BRACE)) {
+            return (ExpressionBase) context.getLastError();
+        }
+
+        Map<String, ExpressionBase> fields = new HashMap<>();
+
+        while (!context.isEnd() && !context.is(Operator.RIGHT_BRACE)) {
+            if (!context.expect(TokenType.IDENTIFIER)) {
+                return (ExpressionBase) context.getLastError();
+            }
+            String fieldName = context.getValueAndAdvance();
+            if (!context.expect(Operator.ASSIGN)) {
+                return (ExpressionBase) context.getLastError();
+            }
+
+            ExpressionBase fieldValue = parseExpression(context);
+            if (!context.isAndAdvance(Operator.COMMA)) {
+                break;
+            }
+            fields.put(fieldName, fieldValue);
+        }
+
+        if (!context.expect(Operator.RIGHT_BRACE)) {
+            return (ExpressionBase) context.getLastError();
+        }
+
+        return new galaga.gscript.ast.expression.StructInitExpression(fields);
     }
 
     public static ExpressionBase parseBinaryExpression(ParserContext context, int priority) {
