@@ -2,9 +2,9 @@ package galaga.gscript.ast.declaration;
 
 import java.util.Map;
 
-import galaga.gscript.ast.types.TypeEnumData;
+import galaga.gscript.ast.types.TypeBase;
 
-public record EnumDeclaration(String name, Map<String, TypeEnumData> values) implements Declaration {
+public record EnumDeclaration(String name, Map<String, TypeBase> values) implements DeclarationBase {
 
     @Override
     public String format() {

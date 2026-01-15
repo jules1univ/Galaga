@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import galaga.gscript.ast.Program;
-import galaga.gscript.ast.declaration.Declaration;
-import galaga.gscript.ast.declaration.ErrorDeclaration;
+import galaga.gscript.ast.ASTNode;
+import galaga.gscript.ast.ASTNodeError;
+import galaga.gscript.ast.declaration.DeclarationError;
 import galaga.gscript.lexer.Lexer;
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
@@ -15,8 +15,8 @@ import galaga.gscript.lexer.token.Token;
 import galaga.gscript.lexer.token.TokenType;
 
 public final class ParserContext {
-    private final List<Declaration> declarations = new ArrayList<>();
     private final List<Token> tokens;
+    private ASTNodeError lastError = null;
 
     private int index = 0;
     private Token current = null;
@@ -59,7 +59,8 @@ public final class ParserContext {
 
     public boolean expect(TokenType type) {
         if (this.current.getType() != type) {
-            this.pushError("Unexpected token: expected %s but got %s", type, this.current.getType());
+            this.lastError = new DeclarationError(
+                    String.format("Unexpected token: expected %s but got %s", type, this.current.getType()));
             return false;
         }
         this.advance();
@@ -68,8 +69,9 @@ public final class ParserContext {
 
     public boolean expect(TokenType type, String value) {
         if (this.current.getType() != type || !this.current.getValue().equals(value)) {
-            this.pushError("Unexpected token: expected %s('%s') but got %s('%s')", type, value, this.current.getType(),
-                    this.current.getValue());
+            this.lastError = new DeclarationError(String.format("Unexpected token: expected %s('%s') but got %s('%s')",
+                    type, value, this.current.getType(),
+                    this.current.getValue()));
             return false;
         }
         this.advance();
@@ -164,6 +166,18 @@ public final class ParserContext {
         return value;
     }
 
+    public Operator getOperatorAndAdvance() {
+        String value = this.current.getValue();
+        this.advance();
+        return Operator.fromText(value);
+    }
+
+    public Keyword getKeywordAndAdvance() {
+        String value = this.current.getValue();
+        this.advance();
+        return Keyword.fromText(value);
+    }
+
     public Optional<String> getValueIf(TokenType type) {
         if (this.is(type)) {
             String value = this.current.getValue();
@@ -215,15 +229,8 @@ public final class ParserContext {
         return Optional.of(value);
     }
 
-    public void pushError(String message, Object... args) {
-        this.declarations.add(new ErrorDeclaration(String.format(message, args)));
+    public  ASTNode getLastError() {
+        return this.lastError;
     }
 
-    public void push(Declaration declaration) {
-        this.declarations.add(declaration);
-    }
-
-    public Program build() {
-        return new Program(this.declarations);
-    }
 }

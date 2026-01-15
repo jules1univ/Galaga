@@ -1,8 +1,6 @@
 package galaga.gscript.ast.types;
 
-import galaga.gscript.ast.ASTNode;
-
-public record Type(String name, boolean isConst, boolean isRef, boolean isArray) implements ASTNode{
+public record Type(String name, boolean isConst, boolean isRef, boolean isArray) implements TypeBase {
 
     @Override
     public String format() {
@@ -20,5 +18,5 @@ public record Type(String name, boolean isConst, boolean isRef, boolean isArray)
         }
         return sb.toString();
     }
-    
+
 }

@@ -1,17 +1,13 @@
 package galaga.gscript.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import galaga.gscript.ast.Program;
-import galaga.gscript.ast.declaration.EnumDeclaration;
-import galaga.gscript.ast.declaration.FunctionDeclaration;
-import galaga.gscript.ast.declaration.StructDeclaration;
-import galaga.gscript.ast.declaration.TypeAliasDeclaration;
-import galaga.gscript.ast.declaration.module.ExternDeclaration;
-import galaga.gscript.ast.declaration.module.ImportDeclaration;
-import galaga.gscript.ast.declaration.module.ModuleDeclaration;
-import galaga.gscript.ast.types.TypeFunction;
+import galaga.gscript.ast.declaration.DeclarationBase;
+import galaga.gscript.ast.declaration.DeclarationError;
+import galaga.gscript.ast.types.TypeBase;
 import galaga.gscript.lexer.Lexer;
 import galaga.gscript.lexer.token.Token;
 import galaga.gscript.parser.subparsers.DeclarationParser;
@@ -19,6 +15,7 @@ import galaga.gscript.parser.subparsers.ModuleParser;
 import galaga.gscript.parser.subparsers.TypeParser;
 
 public final class Parser {
+    private final List<DeclarationBase> declarations = new ArrayList<>();
     private final ParserContext context;
 
     public static Parser of(Lexer lexer) {
@@ -35,26 +32,14 @@ public final class Parser {
 
     private void parseModuleDeclarations() {
         if (ModuleParser.isModuleDeclaration(this.context)) {
-            Optional<ModuleDeclaration> moduleDecl = ModuleParser.parseModule(this.context);
-            if (moduleDecl.isPresent()) {
-                this.context.push(moduleDecl.get());
-                return;
-            }
-            this.context.pushError("Failed to parse module declaration.");
+            this.declarations.add(ModuleParser.parseModule(this.context));
+            return;
         } else if (ModuleParser.isImportDeclaration(this.context)) {
-            Optional<ImportDeclaration> importDecl = ModuleParser.parseImport(this.context);
-            if (importDecl.isPresent()) {
-                this.context.push(importDecl.get());
-                return;
-            }
-            this.context.pushError("Failed to parse import declaration.");
+            this.declarations.add(ModuleParser.parseImport(this.context));
+            return;
         } else if (ModuleParser.isExternDeclaration(this.context)) {
-            Optional<ExternDeclaration> externDecl = ModuleParser.parseExtern(this.context);
-            if (externDecl.isPresent()) {
-                this.context.push(externDecl.get());
-                return;
-            }
-            this.context.pushError("Failed to parse extern declaration.");
+            this.declarations.add(ModuleParser.parseExtern(this.context));
+            return;
         }
     }
 
@@ -68,27 +53,14 @@ public final class Parser {
         }
         String typeName = typeNameOpt.get();
         if (DeclarationParser.isEnumDeclaration(this.context)) {
-            Optional<EnumDeclaration> enumDecl = DeclarationParser.parseEnum(this.context, typeName);
-            if (enumDecl.isPresent()) {
-                this.context.push(enumDecl.get());
-                return;
-            }
-            this.context.pushError("Failed to parse enum declaration: " + typeName);
+            DeclarationBase enumDecl = DeclarationParser.parseEnum(this.context, typeName);
+            this.declarations.add(enumDecl);
         } else if (DeclarationParser.isStructDeclaration(this.context)) {
-            Optional<StructDeclaration> structDecl = DeclarationParser.parseStruct(this.context, typeName);
-            if (structDecl.isPresent()) {
-                this.context.push(structDecl.get());
-                return;
-            }
-            this.context.pushError("Failed to parse struct declaration: " + typeName);
+            DeclarationBase structDecl = DeclarationParser.parseStruct(this.context, typeName);
+            this.declarations.add(structDecl);
         } else {
-            Optional<TypeAliasDeclaration> typeAliasDecl = DeclarationParser.parseTypeAlias(this.context,
-                    typeName);
-            if (typeAliasDecl.isPresent()) {
-                this.context.push(typeAliasDecl.get());
-                return;
-            }
-            this.context.pushError("Failed to parse type alias declaration: " + typeName);
+            DeclarationBase typeAliasDecl = DeclarationParser.parseTypeAlias(this.context, typeName);
+            this.declarations.add(typeAliasDecl);
         }
     }
 
@@ -96,24 +68,16 @@ public final class Parser {
         if (!DeclarationParser.isFunctionDeclaration(this.context)) {
             return;
         }
-        Optional<TypeFunction> functionSignature = TypeParser.parseTypeFunction(this.context);
-        if (functionSignature.isPresent()) {
-            Optional<FunctionDeclaration> function = DeclarationParser.parseFunction(this.context,
-                    functionSignature.get());
-            if (function.isPresent()) {
-                this.context.push(function.get());
-                return;
-            }
-        } else {
-            this.context.pushError("Failed to parse function declaration.");
-        }
+        TypeBase functionSignature = TypeParser.parseTypeFunction(this.context);
+        this.declarations.add(DeclarationParser.parseFunction(this.context, functionSignature));
     }
 
     public Program parse() {
         int lastIndex = -1;
         while (!this.context.isEnd()) {
             if (this.context.getIndex() == lastIndex) {
-                this.context.pushError("Parser is stuck at token: %s", this.context.getCurrentToken());
+                this.declarations.add(new DeclarationError(
+                        String.format("Parser is stuck at token: %s", this.context.getCurrentToken())));
                 this.context.advance();
             } else {
                 lastIndex = this.context.getIndex();
@@ -125,6 +89,6 @@ public final class Parser {
 
         }
 
-        return this.context.build();
+        return new Program(this.declarations);
     }
 }

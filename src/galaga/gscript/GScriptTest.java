@@ -77,16 +77,16 @@ public class GScriptTest {
 
                 type FunctionCallback = void created(int score);
 
-                // Player create_player(String name, FunctionCallback callback) {
-                //     Player p{
-                //         .name = name,
-                //         .score = 0,
-                //         .pos = getMousePosition(),
-                //         .state = PLayerState.ALIVE
-                //     };
-                //     callback(p.score);
-                //     return p;
-                // }
+                Player create_player(String name, FunctionCallback callback) {
+                    // Player p{
+                    //     .name = name,
+                    //     .score = 0,
+                    //     .pos = getMousePosition(),
+                    //     .state = PLayerState.ALIVE
+                    // };
+                    callback(p.score);
+                    return p;
+                }
 
                 // void update_player() extends Player {
                 //     this->score += 10;

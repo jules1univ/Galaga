@@ -44,6 +44,15 @@ public enum Operator {
         return text;
     }
 
+    public static Operator fromText(String text) {
+        for (Operator operator : Operator.values()) {
+            if (operator.getText().equals(text)) {
+                return operator;
+            }
+        }
+        return null;
+    }
+
     public static boolean isOperator(String value) {
         for (Operator operator : Operator.values()) {
             if (operator.getText().equals(value)) {

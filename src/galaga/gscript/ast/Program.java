@@ -2,20 +2,20 @@ package galaga.gscript.ast;
 
 import java.util.List;
 
-import galaga.gscript.ast.declaration.Declaration;
+import galaga.gscript.ast.declaration.DeclarationBase;
 
 public class Program implements ASTNode {
-    private final List<Declaration> declarations;
+    private final List<DeclarationBase> declarations;
 
-    public Program(List<Declaration> declarations) {
+    public Program(List<DeclarationBase> declarations) {
         this.declarations = declarations;
     }
 
     @Override
     public String format() {
         StringBuilder sb = new StringBuilder();
-        Declaration lastDecl = null;
-        for (Declaration decl : declarations) {
+        DeclarationBase lastDecl = null;
+        for (DeclarationBase decl : declarations) {
             if(lastDecl != null && lastDecl.getClass() != decl.getClass()) {
                 sb.append("\n");
             }

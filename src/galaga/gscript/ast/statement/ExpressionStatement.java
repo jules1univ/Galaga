@@ -1,8 +1,8 @@
 package galaga.gscript.ast.statement;
 
-import galaga.gscript.ast.expression.Expression;
+import galaga.gscript.ast.expression.ExpressionBase;
 
-public record ExpressionStatement(Expression expression) implements Statement {
+public record ExpressionStatement(ExpressionBase expression) implements StatementBase {
 
     @Override
     public String format() {

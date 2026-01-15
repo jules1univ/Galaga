@@ -1,8 +1,8 @@
 package galaga.gscript.ast.declaration.module;
 
-import galaga.gscript.ast.declaration.Declaration;
+import galaga.gscript.ast.declaration.DeclarationBase;
 
-public record ModuleDeclaration(String name) implements Declaration {
+public record ModuleDeclaration(String name) implements DeclarationBase {
 
     @Override
     public String format() {

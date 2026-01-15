@@ -3,11 +3,10 @@ package galaga.gscript.ast.statement.logic;
 import java.util.Map;
 import java.util.Optional;
 
-import galaga.gscript.ast.expression.Expression;
-import galaga.gscript.ast.statement.Block;
-import galaga.gscript.ast.statement.Statement;
+import galaga.gscript.ast.expression.ExpressionBase;
+import galaga.gscript.ast.statement.StatementBase;
 
-public record IfStatement(Map<Expression, Block> conditions, Optional<Block> elseCondition) implements Statement {
+public record IfStatement(Map<ExpressionBase, StatementBase> conditions, Optional<StatementBase> elseCondition) implements StatementBase {
 
     @Override
     public String format() {

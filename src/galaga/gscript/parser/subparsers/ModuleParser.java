@@ -5,11 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import galaga.gscript.ast.declaration.DeclarationBase;
+import galaga.gscript.ast.declaration.DeclarationError;
 import galaga.gscript.ast.declaration.module.ExternDeclaration;
 import galaga.gscript.ast.declaration.module.ImportDeclaration;
 import galaga.gscript.ast.declaration.module.ModuleDeclaration;
-import galaga.gscript.ast.types.Type;
-import galaga.gscript.ast.types.TypeFunction;
+import galaga.gscript.ast.types.TypeBase;
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
 import galaga.gscript.lexer.token.TokenType;
@@ -20,9 +21,9 @@ public final class ModuleParser {
         return context.is(Keyword.IMPORT);
     }
 
-    public static Optional<ImportDeclaration> parseImport(ParserContext context) {
+    public static DeclarationBase parseImport(ParserContext context) {
         if (!context.expect(Keyword.IMPORT)) {
-            return Optional.empty();
+            return (DeclarationBase)context.getLastError();
         }
 
         LinkedList<String> paths = new LinkedList<>();
@@ -33,7 +34,7 @@ public final class ModuleParser {
         while (!context.isEnd()) {
             if (context.is(TokenType.IDENTIFIER)) {
                 paths.add(context.getValueAndAdvance());
-            }else if (context.isAndAdvance(Operator.DOT)) {
+            } else if (context.isAndAdvance(Operator.DOT)) {
                 continue;
             } else if (context.isAndAdvance(Operator.LEFT_BRACE)) {
                 functionMode = true;
@@ -42,7 +43,7 @@ public final class ModuleParser {
                 isWildcard = true;
                 break;
             } else {
-                return Optional.empty();
+                return new DeclarationError("Invalid import syntax.");
             }
         }
 
@@ -53,61 +54,51 @@ public final class ModuleParser {
             } else if (context.isAndAdvance(Operator.RIGHT_BRACE)) {
                 break;
             } else {
-                return Optional.empty();
+                return new DeclarationError("Invalid import function list syntax.");
             }
         }
 
         context.advanceIfSemicolon();
-        return Optional.of(new ImportDeclaration(paths, functions, isWildcard));
+        return new ImportDeclaration(paths, functions, isWildcard);
     }
 
     public static boolean isExternDeclaration(ParserContext context) {
         return context.is(Keyword.EXTERN);
     }
 
-    public static Optional<ExternDeclaration> parseExtern(ParserContext context) {
+    public static DeclarationBase parseExtern(ParserContext context) {
         if (!context.expect(Keyword.EXTERN)) {
-            return Optional.empty();
+            return (DeclarationBase)context.getLastError();
         }
 
         if (context.isAndAdvance(Keyword.TYPE)) {
-            Optional<Type> typeName = TypeParser.parseType(context);
-            if (typeName.isEmpty()) {
-                context.advance();
-                context.advanceIfSemicolon();
-                return Optional.empty();
-            }
+            TypeBase typeName = TypeParser.parseType(context);
             context.advanceIfSemicolon();
-            return Optional.of(new ExternDeclaration(typeName, Optional.empty()));
+            return new ExternDeclaration(typeName);
         }
 
-        Optional<TypeFunction> function = TypeParser.parseTypeFunction(context);
-        if (function.isEmpty()) {
-            context.advance();
-            context.advanceIfSemicolon();
-            return Optional.empty();
-        }
+        TypeBase function = TypeParser.parseTypeFunction(context);
         context.advanceIfSemicolon();
-        return Optional.of(new ExternDeclaration(Optional.empty(), function));
+        return new ExternDeclaration(function);
     }
 
     public static boolean isModuleDeclaration(ParserContext context) {
         return context.is(Keyword.MODULE);
     }
 
-    public static Optional<ModuleDeclaration> parseModule(ParserContext context) {
+    public static DeclarationBase parseModule(ParserContext context) {
         if (!context.expect(Keyword.MODULE)) {
-            return Optional.empty();
+            return (DeclarationBase)context.getLastError();
         }
 
         Optional<String> moduleName = context.getValueExpect(TokenType.IDENTIFIER);
         if (moduleName.isEmpty()) {
             context.advance();
             context.advanceIfSemicolon();
-            return Optional.empty();
+            return (DeclarationBase)context.getLastError();
         }
 
         context.advanceIfSemicolon();
-        return Optional.of(new ModuleDeclaration(moduleName.get()));
+        return new ModuleDeclaration(moduleName.get());
     }
 }

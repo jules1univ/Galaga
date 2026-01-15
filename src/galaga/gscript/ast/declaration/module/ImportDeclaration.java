@@ -3,10 +3,10 @@ package galaga.gscript.ast.declaration.module;
 import java.util.LinkedList;
 import java.util.List;
 
-import galaga.gscript.ast.declaration.Declaration;
+import galaga.gscript.ast.declaration.DeclarationBase;
 
 public record ImportDeclaration(LinkedList<String> importPaths, List<String> importFunctions, boolean isWildCard)
-        implements Declaration {
+        implements DeclarationBase {
 
     @Override
     public String format() {

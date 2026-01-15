@@ -1,11 +1,10 @@
 package galaga.gscript.ast.statement.logic;
 
 
-import galaga.gscript.ast.expression.Expression;
-import galaga.gscript.ast.statement.Block;
-import galaga.gscript.ast.statement.Statement;
+import galaga.gscript.ast.expression.ExpressionBase;
+import galaga.gscript.ast.statement.StatementBase;
 
-public record WhileStatement(Expression condition, Block body, boolean isDoWhile) implements Statement {
+public record WhileStatement(ExpressionBase condition, StatementBase body, boolean isDoWhile) implements StatementBase {
 
     @Override
     public String format() {

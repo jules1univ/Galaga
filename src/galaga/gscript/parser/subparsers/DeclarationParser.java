@@ -6,14 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import galaga.gscript.ast.declaration.DeclarationBase;
 import galaga.gscript.ast.declaration.EnumDeclaration;
 import galaga.gscript.ast.declaration.FunctionDeclaration;
 import galaga.gscript.ast.declaration.StructDeclaration;
 import galaga.gscript.ast.declaration.TypeAliasDeclaration;
-import galaga.gscript.ast.statement.Block;
-import galaga.gscript.ast.types.Type;
-import galaga.gscript.ast.types.TypeEnumData;
-import galaga.gscript.ast.types.TypeFunction;
+import galaga.gscript.ast.statement.StatementBase;
+import galaga.gscript.ast.types.TypeBase;
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
 import galaga.gscript.lexer.token.TokenType;
@@ -36,17 +35,16 @@ public final class DeclarationParser {
         return context.is(Operator.ASSIGN) && context.nextIs(Keyword.ENUM);
     }
 
-    public static Optional<EnumDeclaration> parseEnum(ParserContext context, String name) {
-        if(!context.expect(Operator.ASSIGN))
-        {
-            return Optional.empty();
+    public static DeclarationBase parseEnum(ParserContext context, String name) {
+        if (!context.expect(Operator.ASSIGN)) {
+            return (DeclarationBase) context.getLastError();
         }
 
         if (!context.expect(Keyword.ENUM) || !context.expect(Operator.LEFT_BRACE)) {
-            return Optional.empty();
+            return (DeclarationBase) context.getLastError();
         }
 
-        Map<String, TypeEnumData> values = new HashMap<>();
+        Map<String, TypeBase> values = new HashMap<>();
         while (!context.isEnd() && !context.is(Operator.RIGHT_BRACE)) {
             Optional<String> valueNameOpt = context.getValueExpect(TokenType.IDENTIFIER);
             if (valueNameOpt.isEmpty()) {
@@ -54,119 +52,90 @@ public final class DeclarationParser {
                 continue;
             }
 
-            Optional<TypeEnumData> valueDataOpt = TypeParser.parseTypeEnumData(context);
-            if (valueDataOpt.isEmpty()) {
-                context.advance();
-                continue;
-            }
-           
-            values.put(valueNameOpt.get(), valueDataOpt.get());
+            TypeBase valueDataOpt = TypeParser.parseTypeEnumData(context);
+            values.put(valueNameOpt.get(), valueDataOpt);
             context.isAndAdvance(Operator.COMMA);
         }
 
         if (!context.expect(Operator.RIGHT_BRACE)) {
             context.advance();
             context.advanceIfSemicolon();
-            return Optional.empty();
+            return (DeclarationBase) context.getLastError();
         }
         context.advanceIfSemicolon();
-        return Optional.of(new EnumDeclaration(name, values));
+        return new EnumDeclaration(name, values);
     }
 
     public static boolean isStructDeclaration(ParserContext context) {
         return context.is(Operator.ASSIGN) && context.nextIs(Keyword.STRUCT);
     }
 
-    public static Optional<StructDeclaration> parseStruct(ParserContext context, String name) {
-        if(!context.expect(Operator.ASSIGN))
-        {
-            return Optional.empty();
+    public static DeclarationBase parseStruct(ParserContext context, String name) {
+        if (!context.expect(Operator.ASSIGN)) {
+            return (DeclarationBase) context.getLastError();
         }
 
         if (!context.expect(Keyword.STRUCT) || !context.expect(Operator.LEFT_BRACE)) {
-            return Optional.empty();
+            return (DeclarationBase) context.getLastError();
         }
-        Map<Type, String> fields = new HashMap<>();
-        while (!context.isEnd() && !context.is(Operator.RIGHT_BRACE)) {
-            Optional<Type> fieldType = TypeParser.parseType(context);
-            if (fieldType.isEmpty()) {
-                context.advance();
-                continue;
-            }
 
+        Map<TypeBase, String> fields = new HashMap<>();
+        while (!context.isEnd() && !context.is(Operator.RIGHT_BRACE)) {
+            TypeBase fieldType = TypeParser.parseType(context);
             Optional<String> fieldName = context.getValueExpect(TokenType.IDENTIFIER);
             if (fieldName.isEmpty()) {
                 context.advance();
                 continue;
             }
 
-            fields.put(fieldType.get(), fieldName.get());
+            fields.put(fieldType, fieldName.get());
             context.isAndAdvance(Operator.SEMICOLON);
         }
 
         if (!context.expect(Operator.RIGHT_BRACE)) {
             context.advance();
             context.advanceIfSemicolon();
-            return Optional.empty();
+            return (DeclarationBase) context.getLastError();
         }
         context.advanceIfSemicolon();
-        return Optional.of(new StructDeclaration(name, fields));
+        return new StructDeclaration(name, fields);
     }
 
-    public static Optional<TypeAliasDeclaration> parseTypeAlias(ParserContext context, String name) {
+    public static DeclarationBase parseTypeAlias(ParserContext context, String name) {
         if (!context.expect(Operator.ASSIGN)) {
-            return Optional.empty();
+            return (DeclarationBase) context.getLastError();
         }
 
-        if(context.is(TokenType.IDENTIFIER) && context.nextIs(TokenType.IDENTIFIER))
-        {
-            Optional<TypeFunction> functionType = TypeParser.parseTypeFunction(context);
-            if(functionType.isEmpty()) {
-                context.advance();
-                return Optional.empty();
-            }
+        if (context.is(TokenType.IDENTIFIER) && context.nextIs(TokenType.IDENTIFIER)) {
+            TypeBase functionType = TypeParser.parseTypeFunction(context);
             context.advanceIfSemicolon();
-            return Optional.of(new TypeAliasDeclaration(name, functionType, new ArrayList<>()));
+            return new TypeAliasDeclaration(name, Optional.of(functionType), new ArrayList<>());
         }
 
-        List<Type> types = new ArrayList<>();
-        Optional<Type> type = TypeParser.parseType(context);
-        if (type.isEmpty()) {
-            context.advance();
-            return Optional.empty();
-        }
-        types.add(type.get());
+        List<TypeBase> types = new ArrayList<>();
+        types.add(TypeParser.parseType(context));
         while (!context.isEnd() && context.isAndAdvance(Operator.BITWISE_OR)) {
-            type = TypeParser.parseType(context);
-            if (type.isEmpty()) {
-                context.advance();
-                continue;
-            }
-            types.add(type.get());
+            types.add( TypeParser.parseType(context));
         }
         context.advanceIfSemicolon();
-        return Optional.of(new TypeAliasDeclaration(name,Optional.empty(), types));
+        return new TypeAliasDeclaration(name, Optional.empty(), types);
     }
 
     public static boolean isFunctionDeclaration(ParserContext context) {
         return context.is(Operator.LEFT_BRACE);
     }
 
-    public static Optional<FunctionDeclaration> parseFunction(ParserContext context, TypeFunction function) {
+    public static DeclarationBase parseFunction(ParserContext context, TypeBase function) {
         if (!context.expect(Operator.LEFT_BRACE)) {
-            return Optional.empty();
+            return (DeclarationBase) context.getLastError();
         }
 
-        Optional<Block> body = StatementParser.parseBlock(context);
-        if(body.isEmpty()) {
-            return Optional.empty();
-        }
-
-        if(context.expect(Operator.RIGHT_BRACE)) {
+        StatementBase body = StatementParser.parseBlock(context);
+        if (context.expect(Operator.RIGHT_BRACE)) {
             context.advance();
             context.advanceIfSemicolon();
-            return Optional.empty();
+            return (DeclarationBase) context.getLastError();
         }
-        return Optional.of(new FunctionDeclaration(function, body.get()));
+        return new FunctionDeclaration(function, body);
     }
 }

@@ -1,5 +1,11 @@
 package galaga.gscript.ast.expression;
 
-public class BinaryExpression {
-    
+import galaga.gscript.lexer.rules.Operator;
+
+public record BinaryExpression(ExpressionBase left, Operator operator, ExpressionBase right) implements ExpressionBase {
+
+    @Override
+    public String format() {
+        return left.format() + " " + operator.getText() + " " + right.format();
+    }
 }

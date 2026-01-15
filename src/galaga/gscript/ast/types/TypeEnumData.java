@@ -3,9 +3,9 @@ package galaga.gscript.ast.types;
 import java.util.Map;
 import java.util.Optional;
 
-import galaga.gscript.ast.ASTNode;
+import galaga.gscript.ast.expression.ExpressionBase;
 
-public record TypeEnumData(Map<Type, String> data, Optional<Integer> value) implements ASTNode {
+public record TypeEnumData(Map<TypeBase, String> data, Optional<ExpressionBase> value) implements TypeBase {
 
     @Override
     public String format() {

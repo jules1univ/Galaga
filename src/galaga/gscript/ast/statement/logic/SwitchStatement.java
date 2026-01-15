@@ -1,12 +1,12 @@
 package galaga.gscript.ast.statement.logic;
 
 import java.util.Map;
+import java.util.Optional;
 
-import galaga.gscript.ast.expression.Expression;
-import galaga.gscript.ast.statement.Block;
-import galaga.gscript.ast.statement.Statement;
+import galaga.gscript.ast.expression.ExpressionBase;
+import galaga.gscript.ast.statement.StatementBase;
 
-public record SwitchStatement(Map<Expression, Block> cases) implements Statement {
+public record SwitchStatement(Map<ExpressionBase, StatementBase> cases, Optional<StatementBase> defaultCase) implements StatementBase {
 
     @Override
     public String format() {
@@ -17,6 +17,11 @@ public record SwitchStatement(Map<Expression, Block> cases) implements Statement
             sb.append(entry.getKey().format());
             sb.append(" => ");
             sb.append(entry.getValue().format());
+            sb.append("\n");
+        }
+        if (defaultCase.isPresent()) {
+            sb.append("    default => ");
+            sb.append(defaultCase.get().format());
             sb.append("\n");
         }
         sb.append("}");

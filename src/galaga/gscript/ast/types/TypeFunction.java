@@ -3,9 +3,8 @@ package galaga.gscript.ast.types;
 import java.util.Map;
 import java.util.Optional;
 
-import galaga.gscript.ast.ASTNode;
-
-public record TypeFunction(Type returnType, String name, Map<Type, String> parameters, Optional<String> extendsType) implements ASTNode{
+public record TypeFunction(TypeBase returnType, String name, Map<TypeBase, String> parameters,
+        Optional<String> extendsType) implements TypeBase {
 
     @Override
     public String format() {
@@ -15,7 +14,7 @@ public record TypeFunction(Type returnType, String name, Map<Type, String> param
         sb.append(name);
         sb.append("(");
         boolean first = true;
-        for (Map.Entry<Type, String> param : parameters.entrySet()) {
+        for (Map.Entry<TypeBase, String> param : parameters.entrySet()) {
             if (!first) {
                 sb.append(", ");
             }
@@ -25,11 +24,11 @@ public record TypeFunction(Type returnType, String name, Map<Type, String> param
             first = false;
         }
         sb.append(")");
-        if(extendsType.isPresent()){
+        if (extendsType.isPresent()) {
             sb.append(" extends ");
             sb.append(extendsType.get());
         }
         return sb.toString();
     }
-    
+
 }

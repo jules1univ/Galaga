@@ -2,7 +2,7 @@ package galaga.gscript.ast.statement;
 
 import java.util.List;
 
-public record Block(List<Statement> statements) implements Statement {
+public record Block(List<StatementBase> statements) implements StatementBase {
 
     @Override
     public String format() {
