@@ -12,6 +12,7 @@ import galaga.gscript.ast.declaration.StructDeclaration;
 import galaga.gscript.ast.declaration.TypeAliasDeclaration;
 import galaga.gscript.ast.statement.Statement;
 import galaga.gscript.ast.types.Type;
+import galaga.gscript.ast.types.TypeEnumData;
 import galaga.gscript.ast.types.TypeFunction;
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
@@ -45,7 +46,7 @@ public final class DeclarationParser {
             return Optional.empty();
         }
 
-        Map<String, Optional<Integer>> values = new HashMap<>();
+        Map<String, TypeEnumData> values = new HashMap<>();
         while (!context.isEnd() && !context.is(Operator.RIGHT_BRACE)) {
             Optional<String> valueNameOpt = context.getValueExpect(TokenType.IDENTIFIER);
             if (valueNameOpt.isEmpty()) {
@@ -53,21 +54,13 @@ public final class DeclarationParser {
                 continue;
             }
 
-            Optional<Integer> valueNumber = Optional.empty();
-            if (context.isAndAdvance(Operator.ASSIGN)) {
-                Optional<String> numberStrOpt = context.getValueExpect(TokenType.NUMBER);
-                if (numberStrOpt.isEmpty()) {
-                    context.advance();
-                    continue;
-                }
-
-                try {
-                    valueNumber = Optional.of(Integer.parseInt(numberStrOpt.get()));
-                } catch (NumberFormatException e) {
-                    context.pushError("Invalid number format: %s", numberStrOpt.get());
-                }
+            Optional<TypeEnumData> valueDataOpt = TypeParser.parseTypeEnumData(context);
+            if (valueDataOpt.isEmpty()) {
+                context.advance();
+                continue;
             }
-            values.put(valueNameOpt.get(), valueNumber);
+           
+            values.put(valueNameOpt.get(), valueDataOpt.get());
             context.isAndAdvance(Operator.COMMA);
         }
 

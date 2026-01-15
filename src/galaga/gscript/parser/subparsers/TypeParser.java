@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import galaga.gscript.ast.types.Type;
+import galaga.gscript.ast.types.TypeEnumData;
 import galaga.gscript.ast.types.TypeFunction;
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
@@ -76,4 +77,49 @@ public final class TypeParser {
         return Optional.of(new TypeFunction(returnType.get(), functionName, parameters, type));
     }
 
+    public static Optional<TypeEnumData> parseTypeEnumData(ParserContext context) {
+        Map<Type, String> data = new HashMap<>();
+        if (context.isAndAdvance(Operator.LEFT_BRACE)) {
+            while (!context.isEnd() && !context.is(Operator.RIGHT_BRACE)) {
+                Optional<Type> dataType = TypeParser.parseType(context);
+                if (dataType.isEmpty()) {
+                    context.advance();
+                    continue;
+                }
+
+                Optional<String> dataName = context.getValueExpect(TokenType.IDENTIFIER);
+                if (dataName.isEmpty()) {
+                    context.advance();
+                    continue;
+                }
+
+                data.put(dataType.get(), dataName.get());
+                if (!context.isAndAdvance(Operator.SEMICOLON)) {
+                    break;
+                }
+            }
+
+            if (!context.expect(Operator.RIGHT_BRACE)) {
+                context.advance();
+                return Optional.empty();
+            }
+        }
+
+        Optional<Integer> value = Optional.empty();
+        if (context.isAndAdvance(Operator.ASSIGN)) {
+            Optional<String> valueStr = context.getValueExpect(TokenType.NUMBER);
+            if (valueStr.isEmpty()) {
+                context.advance();
+                return Optional.empty();
+            }
+            try {
+                value = Optional.of(Integer.parseInt(valueStr.get()));
+            } catch (NumberFormatException e) {
+                context.advance();
+                return Optional.empty();
+            }
+        }
+
+        return Optional.of(new TypeEnumData(data, value));
+    }
 }

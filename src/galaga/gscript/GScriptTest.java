@@ -70,8 +70,8 @@ public class GScriptTest {
                 }
 
                 type PLayerState = enum {
-                    ALIVE,
-                    DEAD,
+                    ALIVE { int life; },
+                    DEAD = 1,
                     INVINCIBLE
                 }
 

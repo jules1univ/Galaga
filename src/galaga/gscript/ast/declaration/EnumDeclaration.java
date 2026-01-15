@@ -1,9 +1,10 @@
 package galaga.gscript.ast.declaration;
 
 import java.util.Map;
-import java.util.Optional;
 
-public record EnumDeclaration(String name, Map<String, Optional<Integer>> values) implements Declaration {
+import galaga.gscript.ast.types.TypeEnumData;
+
+public record EnumDeclaration(String name, Map<String, TypeEnumData> values) implements Declaration {
 
     @Override
     public String format() {
@@ -15,14 +16,15 @@ public record EnumDeclaration(String name, Map<String, Optional<Integer>> values
         for (var entry : values.entrySet()) {
             sb.append("    ");
             sb.append(entry.getKey());
-            if (entry.getValue().isPresent()) {
-                sb.append(" = ");
-                sb.append(entry.getValue().get());
+            sb.append(entry.getValue().format());
+
+            if (entry != values.entrySet().toArray()[values.size() - 1]) {
+                sb.append(",");
             }
-            sb.append(",\n");
+            sb.append("\n");
         }
         sb.append("};");
         return sb.toString();
     }
-    
+
 }
