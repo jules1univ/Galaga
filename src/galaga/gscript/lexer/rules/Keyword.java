@@ -15,6 +15,8 @@ public enum Keyword {
 
     IF("if"),
     ELSE("else"),
+    SWITCH("switch"),
+    CASE("case"),
     DO("do"),
     WHILE("while"),
     FOR("for"),

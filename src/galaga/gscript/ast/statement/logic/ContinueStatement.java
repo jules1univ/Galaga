@@ -1,5 +1,12 @@
 package galaga.gscript.ast.statement.logic;
 
-public class ContinueStatement {
+import galaga.gscript.ast.statement.Statement;
+
+public record ContinueStatement() implements Statement {
+
+    @Override
+    public String format() {
+        return "continue;";
+    }
     
 }

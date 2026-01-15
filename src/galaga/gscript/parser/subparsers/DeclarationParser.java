@@ -10,7 +10,7 @@ import galaga.gscript.ast.declaration.EnumDeclaration;
 import galaga.gscript.ast.declaration.FunctionDeclaration;
 import galaga.gscript.ast.declaration.StructDeclaration;
 import galaga.gscript.ast.declaration.TypeAliasDeclaration;
-import galaga.gscript.ast.statement.Statement;
+import galaga.gscript.ast.statement.Block;
 import galaga.gscript.ast.types.Type;
 import galaga.gscript.ast.types.TypeEnumData;
 import galaga.gscript.ast.types.TypeFunction;
@@ -157,14 +157,16 @@ public final class DeclarationParser {
             return Optional.empty();
         }
 
-        List<Statement> body = new ArrayList<>();
-        // TODO
+        Optional<Block> body = StatementParser.parseBlock(context);
+        if(body.isEmpty()) {
+            return Optional.empty();
+        }
 
         if(context.expect(Operator.RIGHT_BRACE)) {
             context.advance();
             context.advanceIfSemicolon();
             return Optional.empty();
         }
-        return Optional.of(new FunctionDeclaration(function, body));
+        return Optional.of(new FunctionDeclaration(function, body.get()));
     }
 }
