@@ -13,6 +13,8 @@ import galaga.gscript.lexer.token.TokenType;
 
 public final class ParserContext {
     private final List<Token> tokens;
+    private final String[] lines
+
 
     private int index = 0;
     private Token current = null;
@@ -20,14 +22,15 @@ public final class ParserContext {
     public static ParserContext of(Lexer lexer) {
         List<Token> tokens = new ArrayList<>();
         lexer.iterator().forEachRemaining(tokens::add);
-        return new ParserContext(tokens);
+        return new ParserContext(lexer.getSource(), tokens);
     }
 
-    public static ParserContext of(List<Token> tokens) {
-        return new ParserContext(tokens);
+    public static ParserContext of(String source, List<Token> tokens) {
+        return new ParserContext(source, tokens);
     }
 
-    public ParserContext(List<Token> tokens) {
+    private ParserContext(String source, List<Token> tokens) {
+        this.lines = source.split("\n");
         this.tokens = tokens.stream()
                 .filter(token -> token.getType() != TokenType.COMMENT)
                 .collect(Collectors.toList());
@@ -56,7 +59,8 @@ public final class ParserContext {
     public void expect(TokenType type) throws ParserException {
         if (this.current.getType() != type) {
             throw new ParserException(
-                    String.format("Unexpected token: expected %s but got %s", type, this.current.getType()));
+                    this.displayContext(
+                            String.format("Unexpected token: expected %s but got %s", type, this.current.getType())));
         }
 
         this.advance();
@@ -65,8 +69,8 @@ public final class ParserContext {
     public void expect(TokenType type, String value) throws ParserException {
         if (this.current.getType() != type || !this.current.getValue().equals(value)) {
             throw new ParserException(
-                    String.format("Unexpected token: expected %s('%s') but got %s('%s')",
-                            type, value, this.current.getType(), this.current.getValue()));
+                    this.displayContext(String.format("Unexpected token: expected %s('%s') but got %s('%s')",
+                            type, value, this.current.getType(), this.current.getValue())));
         }
         this.advance();
     }
@@ -204,4 +208,28 @@ public final class ParserContext {
         return value;
     }
 
+    public String displayContext(String message) {
+        StringBuilder sb = new StringBuilder();
+        int startLine = this.current.getStart().getLine();
+
+        int contextStart = Math.max(0, startLine - 4);
+        int contextEnd = Math.min(this.lines.length, startLine + 4);
+
+        sb.append("\n\n");
+        for (int i = contextStart; i < contextEnd; i++) {
+            sb.append(String.format("%4d %s\n", i + 1, this.lines[i]));
+            if (i + 1 == startLine) {
+                for (int j = 0; j < this.current.getStart().getColumn() + 3; j++) {
+                    sb.append(" ");
+                }
+                for (int j = 0; j < this.current.getValue().length(); j++) {
+                    sb.append("^");
+                }
+                sb.append(String.format(" %s\n", message));
+            }
+        }
+        sb.append("\n\n");
+        return sb.toString();
+
+    }
 }

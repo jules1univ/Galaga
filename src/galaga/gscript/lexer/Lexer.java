@@ -25,6 +25,10 @@ public final class Lexer implements Iterable<Token> {
         this.source = source;
     }
 
+    public String getSource() {
+        return this.source;
+    }
+
     private boolean isEnd() {
         return this.index >= this.source.length();
     }

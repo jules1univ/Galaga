@@ -36,8 +36,8 @@ public final class Parser {
         return new Parser(ParserContext.of(lexer));
     }
 
-    public static Parser of(List<Token> tokens) {
-        return new Parser(ParserContext.of(tokens));
+    public static Parser of(String source, List<Token> tokens) {
+        return new Parser(ParserContext.of(source, tokens));
     }
 
     private Parser(ParserContext ctx) {
