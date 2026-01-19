@@ -2,10 +2,10 @@ package galaga.gscript.ast.declaration;
 
 import java.util.Map;
 
-import galaga.gscript.ast.types.TypeBase;
+import galaga.gscript.ast.types.Type;
 
 
-public record StructDeclaration(String name, Map<TypeBase, String> fields) implements DeclarationBase {
+public record StructDeclaration(String name, Map<Type, String> fields) implements DeclarationBase {
 
     @Override
     public String format() {
@@ -15,7 +15,7 @@ public record StructDeclaration(String name, Map<TypeBase, String> fields) imple
         sb.append(" = ");
         sb.append("struct ");
         sb.append(" {\n");
-        for (Map.Entry<TypeBase, String> field : fields.entrySet()) {
+        for (Map.Entry<Type, String> field : fields.entrySet()) {
             sb.append("    ");
             sb.append(field.getKey().format());
             sb.append(" ");

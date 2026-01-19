@@ -3,12 +3,12 @@ package galaga.gscript.ast.declaration.module;
 import galaga.gscript.ast.declaration.DeclarationBase;
 import galaga.gscript.ast.types.TypeBase;
 
-public record ExternDeclaration(TypeBase type) implements DeclarationBase {
+public record NativeDeclaration(TypeBase type) implements DeclarationBase {
 
     @Override
     public String format() {
         StringBuilder sb = new StringBuilder();
-        sb.append("extern type ");
+        sb.append("native type ");
         sb.append(type.format());
         sb.append(";");
         return sb.toString();

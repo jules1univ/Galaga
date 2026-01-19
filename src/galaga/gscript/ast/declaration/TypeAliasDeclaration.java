@@ -3,9 +3,10 @@ package galaga.gscript.ast.declaration;
 import java.util.List;
 import java.util.Optional;
 
-import galaga.gscript.ast.types.TypeBase;
+import galaga.gscript.ast.types.Type;
+import galaga.gscript.ast.types.TypeFunction;
 
-public record TypeAliasDeclaration(String name, Optional<TypeBase> function, List<TypeBase> types) implements DeclarationBase {
+public record TypeAliasDeclaration(String name, Optional<TypeFunction> function, List<Type> types) implements DeclarationBase {
     
     @Override
     public String format() {

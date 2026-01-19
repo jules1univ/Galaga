@@ -3,7 +3,7 @@ package galaga.gscript.lexer.rules;
 public enum Keyword {
     MODULE("module"),
     IMPORT("import"),
-    EXTERN("extern"),
+    NATIVE("native"),
 
     TYPE("type"),
     STRUCT("struct"),

@@ -9,8 +9,8 @@ import galaga.gscript.ast.expression.ExpressionBase;
 import galaga.gscript.ast.statement.Block;
 import galaga.gscript.ast.statement.ExpressionStatement;
 import galaga.gscript.ast.statement.StatementBase;
-import galaga.gscript.ast.statement.StatementError;
-import galaga.gscript.ast.statement.StructInitStatement;
+import galaga.gscript.ast.statement.StructStatement;
+import galaga.gscript.ast.statement.VariableStatement;
 import galaga.gscript.ast.statement.logic.BreakStatement;
 import galaga.gscript.ast.statement.logic.ContinueStatement;
 import galaga.gscript.ast.statement.logic.ForStatement;
@@ -23,16 +23,15 @@ import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
 import galaga.gscript.lexer.token.TokenType;
 import galaga.gscript.parser.ParserContext;
+import galaga.gscript.parser.ParserException;
 
 public final class StatementParser {
     public static boolean isBlock(ParserContext context) {
         return context.is(Operator.LEFT_BRACE);
     }
 
-    public static StatementBase parseBlock(ParserContext context) {
-        if (!context.expect(Operator.LEFT_BRACE)) {
-            return (StatementBase) context.getLastError();
-        }
+    public static Block parseBlock(ParserContext context) throws ParserException {
+        context.expect(Operator.LEFT_BRACE);
 
         List<StatementBase> statements = new ArrayList<>();
         while (context.isEnd() == false && !context.is(Operator.RIGHT_BRACE)) {
@@ -52,21 +51,18 @@ public final class StatementParser {
                 statements.add(parseContinueStatement(context));
             } else if (TypeParser.isType(context)) {
                 TypeBase typeName = TypeParser.parseType(context);
-                if (isStructInitStatement(context)) {
-                    statements.add(parseStructInitStatement(context, typeName));
-                } else if (isVariableInitStatement(context)) {
-                    statements.add(parseExpressionStatement(context));
+                if (isStructStatement(context)) {
+                    statements.add(parseStructStatement(context, typeName));
+                } else if (isVariableStatement(context)) {
+                    statements.add(parseVariableStatement(context, typeName));
                 } else {
-                    statements.add(new StatementError("Invalid statement after type declaration."));
+                    throw new ParserException("Unexpected token after type declaration.");
                 }
             } else {
                 statements.add(parseExpressionStatement(context));
             }
         }
-
-        if (!context.expect(Operator.RIGHT_BRACE)) {
-            return (StatementBase) context.getLastError();
-        }
+        context.expect(Operator.RIGHT_BRACE);
         return new Block(statements);
     }
 
@@ -74,41 +70,26 @@ public final class StatementParser {
         return context.is(Keyword.IF);
     }
 
-    public static StatementBase parseIfStatement(ParserContext context) {
-        if (!context.expect(Keyword.IF)) {
-            return (StatementBase) context.getLastError();
-        }
-
-        if (!context.expect(Operator.LEFT_PAREN)) {
-            return (StatementBase) context.getLastError();
-        }
+    public static IfStatement parseIfStatement(ParserContext context) throws ParserException {
+        context.expect(Keyword.IF);
+        context.expect(Operator.LEFT_PAREN);
 
         ExpressionBase condition = ExpressionParser.parseExpression(context);
-        if (!context.expect(Operator.RIGHT_PAREN)) {
-            return (StatementBase) context.getLastError();
-        }
+        context.expect(Operator.RIGHT_PAREN);
 
-        StatementBase block = parseBlock(context);
-        Map<ExpressionBase, StatementBase> conditions = Map.of(condition, block);
+        Block block = parseBlock(context);
+        Map<ExpressionBase, Block> conditions = Map.of(condition, block);
 
         while (context.isAndAdvance(Keyword.ELSE)) {
-            if (context.is(Keyword.IF)) {
-                context.advance();
+            if (context.isAndAdvance(Keyword.IF)) {
 
-                if (!context.expect(Operator.LEFT_PAREN)) {
-                    return (StatementBase) context.getLastError();
-                }
-
+                context.expect(Operator.LEFT_PAREN);
                 ExpressionBase elseIfCondition = ExpressionParser.parseExpression(context);
+                context.expect(Operator.RIGHT_PAREN);
 
-                if (!context.expect(Operator.RIGHT_PAREN)) {
-                    return (StatementBase) context.getLastError();
-                }
-
-                StatementBase elseIfBlock = parseBlock(context);
-                conditions.put(elseIfCondition, elseIfBlock);
+                conditions.put(elseIfCondition, parseBlock(context));
             } else {
-                StatementBase elseBlock = parseBlock(context);
+                Block elseBlock = parseBlock(context);
                 return new IfStatement(conditions, Optional.of(elseBlock));
             }
         }
@@ -120,7 +101,7 @@ public final class StatementParser {
         return context.is(Keyword.WHILE) || context.is(Keyword.DO);
     }
 
-    public static StatementBase parseWhileStatement(ParserContext context) {
+    public static WhileStatement parseWhileStatement(ParserContext context) throws ParserException {
         boolean isDoWhile = false;
         if (context.is(Keyword.DO)) {
             isDoWhile = true;
@@ -128,32 +109,22 @@ public final class StatementParser {
         } else if (context.is(Keyword.WHILE)) {
             context.advance();
         } else {
-            return new StatementError("Expected 'while' or 'do' keyword.");
+            throw new ParserException("Expected 'while' or 'do' keyword.");
         }
 
         if (isDoWhile == false) {
-            if (!context.expect(Operator.LEFT_PAREN)) {
-                return (StatementBase) context.getLastError();
-            }
+            context.expect(Operator.LEFT_PAREN);
         }
         ExpressionBase condition = ExpressionParser.parseExpression(context);
         if (isDoWhile == false) {
-            if (!context.expect(Operator.RIGHT_PAREN)) {
-                return (StatementBase) context.getLastError();
-            }
+            context.expect(Operator.RIGHT_PAREN);
         }
-        StatementBase body = parseBlock(context);
+        Block body = parseBlock(context);
         if (isDoWhile) {
-            if (!context.expect(Keyword.WHILE)) {
-                return (StatementBase) context.getLastError();
-            }
-            if (!context.expect(Operator.LEFT_PAREN)) {
-                return (StatementBase) context.getLastError();
-            }
+            context.expect(Keyword.WHILE);
+            context.expect(Operator.LEFT_PAREN);
             condition = ExpressionParser.parseExpression(context);
-            if (!context.expect(Operator.RIGHT_PAREN)) {
-                return (StatementBase) context.getLastError();
-            }
+            context.expect(Operator.RIGHT_PAREN);
             context.advanceIfSemicolon();
         }
 
@@ -164,20 +135,17 @@ public final class StatementParser {
         return context.is(Keyword.SWITCH);
     }
 
-    public static StatementBase parseSwitchStatement(ParserContext context) {
-        if (!context.expect(Keyword.SWITCH)) {
-            return (StatementBase) context.getLastError();
-        }
-        if (!context.expect(Operator.LEFT_PAREN)) {
-            return (StatementBase) context.getLastError();
-        }
+    public static SwitchStatement parseSwitchStatement(ParserContext context) throws ParserException {
+
+        context.expect(Keyword.SWITCH);
+        context.expect(Operator.LEFT_PAREN);
 
         Map<ExpressionBase, StatementBase> cases = Map.of();
         while (context.isAndAdvance(Keyword.CASE)) {
             ExpressionBase caseExpr = ExpressionParser.parseExpression(context);
-            if (!context.expect(Operator.ASSIGN) || !context.expect(Operator.GREATER_THAN)) {
-                return (StatementBase) context.getLastError();
-            }
+            context.expect(Operator.ASSIGN);
+            context.expect(Operator.GREATER_THAN);
+
             StatementBase caseBlock = parseBlock(context);
             context.advanceIfSemicolon();
             cases.put(caseExpr, caseBlock);
@@ -185,17 +153,13 @@ public final class StatementParser {
 
         Optional<StatementBase> defaultCase = Optional.empty();
         if (context.isAndAdvance(Keyword.DEFAULT)) {
-            if (!context.expect(Operator.ASSIGN) || !context.expect(Operator.GREATER_THAN)) {
-                return (StatementBase) context.getLastError();
-            }
+            context.expect(Operator.ASSIGN);
+            context.expect(Operator.GREATER_THAN);
             defaultCase = Optional.of(parseBlock(context));
             context.advanceIfSemicolon();
         }
 
-        if (!context.expect(Operator.RIGHT_PAREN)) {
-            return (StatementBase) context.getLastError();
-        }
-
+        context.expect(Operator.RIGHT_PAREN);
         return new SwitchStatement(cases, defaultCase);
     }
 
@@ -203,10 +167,9 @@ public final class StatementParser {
         return context.is(Keyword.FOR);
     }
 
-    public static StatementBase parseForStatement(ParserContext context) {
-        if (!context.expect(Keyword.FOR) || !context.expect(Operator.LEFT_PAREN)) {
-            return (StatementBase) context.getLastError();
-        }
+    public static ForStatement parseForStatement(ParserContext context) throws ParserException {
+        context.expect(Keyword.FOR);
+        context.expect(Operator.LEFT_PAREN);
 
         List<ExpressionBase> conditions = new ArrayList<>();
         while (!context.isEnd() && !context.is(Operator.RIGHT_PAREN)) {
@@ -216,9 +179,7 @@ public final class StatementParser {
             }
         }
 
-        if (!context.expect(Operator.RIGHT_PAREN)) {
-            return (StatementBase) context.getLastError();
-        }
+        context.expect(Operator.RIGHT_PAREN);
         return new ForStatement(conditions, parseBlock(context));
     }
 
@@ -226,10 +187,8 @@ public final class StatementParser {
         return context.is(Keyword.BREAK);
     }
 
-    public static StatementBase parseBreakStatement(ParserContext context) {
-        if (!context.expect(Keyword.BREAK)) {
-            return (StatementBase) context.getLastError();
-        }
+    public static BreakStatement parseBreakStatement(ParserContext context) throws ParserException {
+        context.expect(Keyword.BREAK);
         context.advanceIfSemicolon();
         return new BreakStatement();
     }
@@ -238,10 +197,8 @@ public final class StatementParser {
         return context.is(Keyword.CONTINUE);
     }
 
-    public static StatementBase parseContinueStatement(ParserContext context) {
-        if (!context.expect(Keyword.CONTINUE)) {
-            return (StatementBase) context.getLastError();
-        }
+    public static ContinueStatement parseContinueStatement(ParserContext context) throws ParserException {
+        context.expect(Keyword.CONTINUE);
         context.advanceIfSemicolon();
         return new ContinueStatement();
     }
@@ -250,10 +207,8 @@ public final class StatementParser {
         return context.is(Keyword.RETURN);
     }
 
-    public static StatementBase parseReturnStatement(ParserContext context) {
-        if (!context.expect(Keyword.RETURN)) {
-            return (StatementBase) context.getLastError();
-        }
+    public static ReturnStatement parseReturnStatement(ParserContext context) throws ParserException {
+        context.expect(Keyword.RETURN);
 
         if (context.isAndAdvance(Operator.SEMICOLON)) {
             return new ReturnStatement(Optional.empty());
@@ -264,53 +219,47 @@ public final class StatementParser {
         return new ReturnStatement(Optional.of(returnValue));
     }
 
-    public static boolean isStructInitStatement(ParserContext context) {
+    public static boolean isStructStatement(ParserContext context) {
         return context.nextIs(Operator.LEFT_BRACE);
     }
 
-    public static StatementBase parseStructInitStatement(ParserContext context, TypeBase name) {
-        if (!context.expect(Operator.LEFT_BRACE)) {
-            return (StatementBase) context.getLastError();
-        }
-
+    public static StructStatement parseStructStatement(ParserContext context, TypeBase name) throws ParserException {
+        context.expect(Operator.LEFT_BRACE);
         Map<String, ExpressionBase> fields = new java.util.HashMap<>();
 
         while (!context.isEnd() && !context.is(Operator.RIGHT_BRACE)) {
-            if (!context.expect(TokenType.IDENTIFIER)) {
-                return (StatementBase) context.getLastError();
-            }
+            context.expect(TokenType.IDENTIFIER);
             String fieldName = context.getValueAndAdvance();
-            if (!context.expect(Operator.ASSIGN)) {
-                return (StatementBase) context.getLastError();
-            }
+            context.expect(Operator.ASSIGN);
             ExpressionBase fieldValue = ExpressionParser.parseExpression(context);
             fields.put(fieldName, fieldValue);
             if (!context.isAndAdvance(Operator.COMMA)) {
                 break;
             }
         }
-        if (!context.expect(Operator.RIGHT_BRACE)) {
-            return (StatementBase) context.getLastError();
-        }
+        context.expect(Operator.RIGHT_BRACE);
         context.advanceIfSemicolon();
-        return new StructInitStatement(name, fields);
+        return new StructStatement(name, fields);
     }
 
-    public static boolean isVariableInitStatement(ParserContext context) {
-        return context.nextIs(Operator.ASSIGN);
+    public static boolean isVariableStatement(ParserContext context) {
+        return context.nextIs(Operator.ASSIGN) || context.nextIs(Operator.DOT);
     }
 
-    public static StatementBase parseVariableInitStatement(ParserContext context, TypeBase type) {
-        if (!context.expect(Operator.ASSIGN)) {
-            return (StatementBase) context.getLastError();
+    public static VariableStatement parseVariableStatement(ParserContext context, TypeBase type)
+            throws ParserException {
+        if (context.isAndAdvance(Operator.DOT)) {
+            VariableStatement inVar = parseVariableStatement(context, type);
+            return new VariableStatement(type, Optional.of(inVar), Optional.empty());
         }
 
+        context.expect(Operator.ASSIGN);
         ExpressionBase value = ExpressionParser.parseExpression(context);
         context.advanceIfSemicolon();
-        return new ExpressionStatement(value);
+        return new VariableStatement(type, Optional.empty(), Optional.of(value));
     }
 
-    public static StatementBase parseExpressionStatement(ParserContext context) {
+    public static ExpressionStatement parseExpressionStatement(ParserContext context) throws ParserException {
         ExpressionBase expr = ExpressionParser.parseExpression(context);
         context.advanceIfSemicolon();
         return new ExpressionStatement(expr);

@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import galaga.gscript.ast.ASTNode;
-import galaga.gscript.ast.ASTNodeError;
-import galaga.gscript.ast.declaration.DeclarationError;
 import galaga.gscript.lexer.Lexer;
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
@@ -16,7 +13,6 @@ import galaga.gscript.lexer.token.TokenType;
 
 public final class ParserContext {
     private final List<Token> tokens;
-    private ASTNodeError lastError = null;
 
     private int index = 0;
     private Token current = null;
@@ -57,33 +53,30 @@ public final class ParserContext {
         }
     }
 
-    public boolean expect(TokenType type) {
+    public void expect(TokenType type) throws ParserException {
         if (this.current.getType() != type) {
-            this.lastError = new DeclarationError(
+            throw new ParserException(
                     String.format("Unexpected token: expected %s but got %s", type, this.current.getType()));
-            return false;
         }
+
         this.advance();
-        return true;
     }
 
-    public boolean expect(TokenType type, String value) {
+    public void expect(TokenType type, String value) throws ParserException {
         if (this.current.getType() != type || !this.current.getValue().equals(value)) {
-            this.lastError = new DeclarationError(String.format("Unexpected token: expected %s('%s') but got %s('%s')",
-                    type, value, this.current.getType(),
-                    this.current.getValue()));
-            return false;
+            throw new ParserException(
+                    String.format("Unexpected token: expected %s('%s') but got %s('%s')",
+                            type, value, this.current.getType(), this.current.getValue()));
         }
         this.advance();
-        return true;
     }
 
-    public boolean expect(Keyword keyword) {
-        return this.expect(TokenType.KEYWORD, keyword.getText());
+    public void expect(Keyword keyword) throws ParserException {
+        this.expect(TokenType.KEYWORD, keyword.getText());
     }
 
-    public boolean expect(Operator operator) {
-        return this.expect(TokenType.OPERATOR, operator.getText());
+    public void expect(Operator operator) throws ParserException {
+        this.expect(TokenType.OPERATOR, operator.getText());
     }
 
     public boolean is(TokenType type, String value) {
@@ -205,32 +198,10 @@ public final class ParserContext {
         return Optional.empty();
     }
 
-    public Optional<String> getValueExpect(TokenType type) {
+    public String getValueExpect(TokenType type) throws ParserException {
         String value = this.current.getValue();
-        if (!this.expect(type)) {
-            return Optional.empty();
-        }
-        return Optional.of(value);
-    }
-
-    public Optional<String> getValueExpect(Keyword keyword) {
-        String value = this.current.getValue();
-        if (!this.expect(keyword)) {
-            return Optional.empty();
-        }
-        return Optional.of(value);
-    }
-
-    public Optional<String> getValueExpect(Operator operator) {
-        String value = this.current.getValue();
-        if (!this.expect(operator)) {
-            return Optional.empty();
-        }
-        return Optional.of(value);
-    }
-
-    public  ASTNode getLastError() {
-        return this.lastError;
+        this.expect(type);
+        return value;
     }
 
 }

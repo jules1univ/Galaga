@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import galaga.gscript.ast.expression.BinaryExpression;
 import galaga.gscript.ast.expression.ExpressionBase;
-import galaga.gscript.ast.expression.ExpressionError;
 import galaga.gscript.ast.expression.FunctionCallExpression;
 import galaga.gscript.ast.expression.UnaryExpression;
 import galaga.gscript.ast.expression.VariableExpression;
@@ -19,9 +19,10 @@ import galaga.gscript.lexer.rules.Operator;
 import galaga.gscript.lexer.rules.OperatorPriority;
 import galaga.gscript.lexer.token.TokenType;
 import galaga.gscript.parser.ParserContext;
+import galaga.gscript.parser.ParserException;
 
 public final class ExpressionParser {
-    public static ExpressionBase parseExpression(ParserContext context) {
+    public static ExpressionBase parseExpression(ParserContext context) throws ParserException {
         return parseBinaryExpression(context, OperatorPriority.MIN_PRIORITY);
     }
 
@@ -29,10 +30,9 @@ public final class ExpressionParser {
         return context.is(TokenType.IDENTIFIER) && context.nextIs(Operator.LEFT_PAREN);
     }
 
-    public static ExpressionBase parseFunctionCallExpression(ParserContext context) {
-        if (!context.expect(TokenType.IDENTIFIER) || !context.expect(Operator.LEFT_PAREN)) {
-            return (ExpressionBase) context.getLastError();
-        }
+    public static ExpressionBase parseFunctionCallExpression(ParserContext context) throws ParserException {
+        context.expect(TokenType.IDENTIFIER);
+        context.expect(Operator.LEFT_PAREN);
 
         String name = context.getValueAndAdvance();
         List<ExpressionBase> args = new ArrayList<>();
@@ -43,37 +43,19 @@ public final class ExpressionParser {
                 break;
             }
         }
-        if (!context.expect(Operator.RIGHT_PAREN)) {
-            return (ExpressionBase) context.getLastError();
-        }
+        context.expect(Operator.RIGHT_PAREN);
         return new FunctionCallExpression(name, args);
     }
 
-    public static ExpressionBase parseVaribleExpression(ParserContext context) {
-        if (!context.expect(TokenType.IDENTIFIER)) {
-            return (ExpressionBase) context.getLastError();
-        }
-
-        String name = context.getValueAndAdvance();
-        return new VariableExpression(name);
-    }
-
-    public static ExpressionBase parseStructInitExpression(ParserContext context) {
-        if (!context.expect(Operator.LEFT_BRACE)) {
-            return (ExpressionBase) context.getLastError();
-        }
+    public static ExpressionBase parseStructInitExpression(ParserContext context) throws ParserException {
+        context.expect(Operator.LEFT_BRACE);
 
         Map<String, ExpressionBase> fields = new HashMap<>();
 
         while (!context.isEnd() && !context.is(Operator.RIGHT_BRACE)) {
-            if (!context.expect(TokenType.IDENTIFIER)) {
-                return (ExpressionBase) context.getLastError();
-            }
+            context.expect(TokenType.IDENTIFIER);
             String fieldName = context.getValueAndAdvance();
-            if (!context.expect(Operator.ASSIGN)) {
-                return (ExpressionBase) context.getLastError();
-            }
-
+            context.expect(Operator.ASSIGN);
             ExpressionBase fieldValue = parseExpression(context);
             if (!context.isAndAdvance(Operator.COMMA)) {
                 break;
@@ -81,14 +63,11 @@ public final class ExpressionParser {
             fields.put(fieldName, fieldValue);
         }
 
-        if (!context.expect(Operator.RIGHT_BRACE)) {
-            return (ExpressionBase) context.getLastError();
-        }
-
+        context.expect(Operator.RIGHT_BRACE);
         return new galaga.gscript.ast.expression.StructInitExpression(fields);
     }
 
-    public static ExpressionBase parseBinaryExpression(ParserContext context, int priority) {
+    public static ExpressionBase parseBinaryExpression(ParserContext context, int priority) throws ParserException {
         if (priority > OperatorPriority.MAX_PRIORITY) {
             return parseUnaryExpression(context);
         }
@@ -117,11 +96,11 @@ public final class ExpressionParser {
                 isLiteralExpression(context);
     }
 
-    public static ExpressionBase parseUnaryExpression(ParserContext context) {
+    public static ExpressionBase parseUnaryExpression(ParserContext context) throws ParserException {
         if (context.is(Operator.MINUS) || context.is(Operator.PLUS) || context.is(Operator.NOT)) {
             Operator operator = context.getOperatorAndAdvance();
             if (operator == null) {
-                return new ExpressionError("Expected unary operator.");
+                throw new ParserException("Expected unary operator.");
             }
             return new UnaryExpression(operator, parseUnaryExpression(context));
         }
@@ -132,9 +111,7 @@ public final class ExpressionParser {
 
         if (context.isAndAdvance(Operator.LEFT_PAREN)) {
             ExpressionBase expr = parseExpression(context);
-            if (!context.expect(Operator.RIGHT_PAREN)) {
-                return (ExpressionBase) context.getLastError();
-            }
+            context.expect(Operator.RIGHT_PAREN);
             return expr;
         }
 
@@ -146,7 +123,7 @@ public final class ExpressionParser {
                 context.is(Keyword.TRUE) || context.is(Keyword.FALSE);
     }
 
-    public static ExpressionBase parseLiteralExpression(ParserContext context) {
+    public static ExpressionBase parseLiteralExpression(ParserContext context) throws ParserException {
         if (context.is(TokenType.STRING)) {
             String value = context.getValueAndAdvance();
             return new LiteralStringExpression(value);
@@ -165,7 +142,7 @@ public final class ExpressionParser {
                 float floatValue = Float.parseFloat(value);
                 return new LiteralFloatExpression(floatValue);
             } catch (NumberFormatException e) {
-                return new ExpressionError("Invalid integer literal: " + value);
+
             }
         }
 
@@ -175,6 +152,21 @@ public final class ExpressionParser {
             return new LiteralBoolExpression(boolValue);
         }
 
-        return new ExpressionError("Expected literal expression.");
+        if (context.is(TokenType.IDENTIFIER)) {
+            return parseVariableExpression(context);
+        }
+
+        throw new ParserException("Expected literal expression.");
     }
+
+    public static ExpressionBase parseVariableExpression(ParserContext context) throws ParserException {
+        context.expect(TokenType.IDENTIFIER);
+
+        String name = context.getValueAndAdvance();
+        if (context.isAndAdvance(Operator.DOT)) {
+            return new VariableExpression(name, Optional.of(parseVariableExpression(context)));
+        }
+        return new VariableExpression(name, Optional.empty());
+    }
+
 }

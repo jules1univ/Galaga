@@ -3,7 +3,7 @@ package galaga.gscript.ast.types;
 import java.util.Map;
 import java.util.Optional;
 
-public record TypeFunction(TypeBase returnType, String name, Map<TypeBase, String> parameters,
+public record TypeFunction(TypeBase returnType, String name, Map<Type, String> parameters,
         Optional<String> extendsType) implements TypeBase {
 
     @Override
@@ -14,7 +14,7 @@ public record TypeFunction(TypeBase returnType, String name, Map<TypeBase, Strin
         sb.append(name);
         sb.append("(");
         boolean first = true;
-        for (Map.Entry<TypeBase, String> param : parameters.entrySet()) {
+        for (Map.Entry<Type, String> param : parameters.entrySet()) {
             if (!first) {
                 sb.append(", ");
             }

@@ -6,101 +6,79 @@ import java.util.Optional;
 
 import galaga.gscript.ast.expression.ExpressionBase;
 import galaga.gscript.ast.types.Type;
-import galaga.gscript.ast.types.TypeBase;
 import galaga.gscript.ast.types.TypeEnumData;
-import galaga.gscript.ast.types.TypeError;
 import galaga.gscript.ast.types.TypeFunction;
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
 import galaga.gscript.lexer.token.TokenType;
 import galaga.gscript.parser.ParserContext;
+import galaga.gscript.parser.ParserException;
 
 public final class TypeParser {
 
     public static boolean isType(ParserContext context) {
-        return context.is(Keyword.CONST) || context.is(Keyword.REF) || (context.is(TokenType.IDENTIFIER) && context.nextIs(TokenType.IDENTIFIER));
+        return context.is(Keyword.CONST) || context.is(Keyword.REF)
+                || (context.is(TokenType.IDENTIFIER) && context.nextIs(TokenType.IDENTIFIER));
     }
 
-    public static TypeBase parseType(ParserContext context) {
+    public static Type parseType(ParserContext context) throws ParserException {
         boolean isConst = context.getValueIf(Keyword.CONST).isPresent();
         boolean isRef = context.getValueIf(Keyword.REF).isPresent();
-        Optional<String> typeName = context.getValueExpect(TokenType.IDENTIFIER);
-        if (typeName.isEmpty()) {
-            context.advance();
-            return new TypeError("Expected type name.");
-        }
+        String typeName = context.getValueExpect(TokenType.IDENTIFIER);
 
         boolean isArray = false;
         if (context.isAndAdvance(Operator.LEFT_BRACKET)) {
-            if (!context.expect(Operator.RIGHT_BRACKET)) {
-                context.advance();
-                return new TypeError("Expected closing ']' for array type.");
-            } else {
-                isArray = true;
-            }
+            context.expect(Operator.RIGHT_BRACKET);
+            isArray = true;
         }
 
-        return new Type(typeName.get(), isConst, isRef, isArray);
+        return new Type(typeName, isConst, isRef, isArray);
     }
 
-    public static TypeBase parseTypeFunction(ParserContext context) {
-        TypeBase returnType = TypeParser.parseType(context);
+    public static TypeFunction parseTypeFunction(ParserContext context) throws ParserException {
+        Type returnType = TypeParser.parseType(context);
         String functionName = context.getValue();
-        if (!context.expect(TokenType.IDENTIFIER) || !context.expect(Operator.LEFT_PAREN)) {
-            return new TypeError("Expected function name and parameter list.");
-        }
 
-        Map<TypeBase, String> parameters = new HashMap<>();
+        context.expect(TokenType.IDENTIFIER);
+        context.expect(Operator.LEFT_PAREN);
+
+        Map<Type, String> parameters = new HashMap<>();
         while (!context.isEnd() && !context.is(Operator.RIGHT_PAREN)) {
-            TypeBase paramType = TypeParser.parseType(context);
-            Optional<String> paramName = context.getValueExpect(TokenType.IDENTIFIER);
-            if (paramName.isEmpty()) {
-                context.advance();
-                continue;
-            }
-            parameters.put(paramType, paramName.get());
+            Type paramType = TypeParser.parseType(context);
+            String paramName = context.getValueExpect(TokenType.IDENTIFIER);
+            parameters.put(paramType, paramName);
             if (!context.isAndAdvance(Operator.COMMA)) {
                 break;
             }
         }
-        if (!context.expect(Operator.RIGHT_PAREN)) {
-            context.advance();
-            return new TypeError("Expected closing ')' for parameter list.");
-        }
+
+        context.expect(Operator.RIGHT_PAREN);
 
         Optional<String> type = Optional.empty();
         if (context.isAndAdvance(Keyword.EXTENDS)) {
-            type = context.getValueExpect(TokenType.IDENTIFIER);
+            type = Optional.of(context.getValueExpect(TokenType.IDENTIFIER));
         }
 
         return new TypeFunction(returnType, functionName, parameters, type);
     }
 
-    public static TypeBase parseTypeEnumData(ParserContext context) {
-        Map<TypeBase, String> data = new HashMap<>();
+    public static TypeEnumData parseTypeEnumData(ParserContext context) throws ParserException {
+        Map<Type, String> data = new HashMap<>();
         if (context.isAndAdvance(Operator.LEFT_BRACE)) {
             while (!context.isEnd() && !context.is(Operator.RIGHT_BRACE)) {
-                TypeBase dataType = TypeParser.parseType(context);
-                Optional<String> dataName = context.getValueExpect(TokenType.IDENTIFIER);
-                if (dataName.isEmpty()) {
-                    context.advance();
-                    continue;
-                }
-
-                data.put(dataType, dataName.get());
+                Type dataType = TypeParser.parseType(context);
+                String dataName = context.getValueExpect(TokenType.IDENTIFIER);
+                data.put(dataType, dataName);
                 if (!context.isAndAdvance(Operator.SEMICOLON)) {
                     break;
                 }
             }
 
-            if (!context.expect(Operator.RIGHT_BRACE)) {
-                return (TypeError)context.getLastError();
-            }
+            context.expect(Operator.RIGHT_BRACE);
         }
 
         Optional<ExpressionBase> value = Optional.empty();
-        if(ExpressionParser.isLiteralExpression(context))
-        {
+        if (ExpressionParser.isLiteralExpression(context)) {
             value = Optional.of(ExpressionParser.parseLiteralExpression(context));
         }
         return new TypeEnumData(data, value);

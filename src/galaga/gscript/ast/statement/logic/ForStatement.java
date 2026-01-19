@@ -3,9 +3,10 @@ package galaga.gscript.ast.statement.logic;
 import java.util.List;
 
 import galaga.gscript.ast.expression.ExpressionBase;
+import galaga.gscript.ast.statement.Block;
 import galaga.gscript.ast.statement.StatementBase;
 
-public record ForStatement(List<ExpressionBase> conditions, StatementBase body) implements StatementBase {
+public record ForStatement(List<ExpressionBase> conditions, Block body) implements StatementBase {
 
     @Override
     public String format() {

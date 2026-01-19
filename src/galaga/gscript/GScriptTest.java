@@ -2,6 +2,7 @@ package galaga.gscript;
 
 import galaga.gscript.lexer.Lexer;
 import galaga.gscript.parser.Parser;
+import galaga.gscript.parser.ParserException;
 
 /*
  * import -> import <import_patern>
@@ -9,7 +10,7 @@ import galaga.gscript.parser.Parser;
  * <import_list> -> <import_item> , <import_list> | <import_item>
  * <import_item> -> ID | ID . <import_item>
  * 
- * extern -> extern type ID | extern <function_declaration>
+ * native -> native type ID | native <function_declaration>
  * 
  * <function_declaration> -> ID ID ( <parameter_list> ) { <function_body> }
  * <parameter_list> -> <parameter> , <parameter_list> | <parameter>
@@ -58,8 +59,8 @@ public class GScriptTest {
                 import std.io.{printf};
                 import math.utils.*;
 
-                extern type Position;
-                extern Position getMousePosition();
+                native type Position;
+                native Position getMousePosition();
 
 
                 type Player = struct {
@@ -78,12 +79,12 @@ public class GScriptTest {
                 type FunctionCallback = void created(int score);
 
                 Player create_player(String name, FunctionCallback callback) {
-                    // Player p{
-                    //     .name = name,
-                    //     .score = 0,
-                    //     .pos = getMousePosition(),
-                    //     .state = PLayerState.ALIVE
-                    // };
+                    Player p{
+                        .name = name,
+                        .score = 0,
+                        .pos = getMousePosition(),
+                        .state = PLayerState.ALIVE
+                    };
                     callback(p.score);
                     return p;
                 }
@@ -115,8 +116,8 @@ public class GScriptTest {
         Parser parser = Parser.of(lexer);
         try {
             System.out.println(parser.parse().format());
-        } catch (Exception e) {
-            System.err.println(e);
+        } catch (ParserException e) {
+            e.printStackTrace();
         }
 
     }

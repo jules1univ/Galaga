@@ -1,9 +1,9 @@
 package galaga.gscript.ast.declaration;
 
-import galaga.gscript.ast.statement.StatementBase;
-import galaga.gscript.ast.types.TypeBase;
+import galaga.gscript.ast.statement.Block;
+import galaga.gscript.ast.types.TypeFunction;
 
-public record FunctionDeclaration(TypeBase function, StatementBase body) implements DeclarationBase {
+public record FunctionDeclaration(TypeFunction function, Block body) implements DeclarationBase {
 
     @Override
     public String format() {

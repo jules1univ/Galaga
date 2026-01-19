@@ -4,9 +4,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import galaga.gscript.ast.expression.ExpressionBase;
+import galaga.gscript.ast.statement.Block;
 import galaga.gscript.ast.statement.StatementBase;
 
-public record IfStatement(Map<ExpressionBase, StatementBase> conditions, Optional<StatementBase> elseCondition) implements StatementBase {
+public record IfStatement(Map<ExpressionBase, Block> conditions, Optional<Block> elseCondition) implements StatementBase {
 
     @Override
     public String format() {

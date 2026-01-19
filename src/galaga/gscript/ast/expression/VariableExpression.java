@@ -1,9 +1,15 @@
 package galaga.gscript.ast.expression;
 
-public record VariableExpression(String name) implements ExpressionBase {
+import java.util.Optional;
+
+public record VariableExpression(String name, Optional<ExpressionBase> accessField) implements ExpressionBase {
     @Override
     public String format() {
-        return name;
+        if (accessField.isPresent()) {
+            return name + "." + accessField.get().format();
+        } else {
+            return name;
+        }
     }
     
 }

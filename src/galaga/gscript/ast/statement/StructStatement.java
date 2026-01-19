@@ -5,7 +5,7 @@ import java.util.Map;
 import galaga.gscript.ast.expression.ExpressionBase;
 import galaga.gscript.ast.types.TypeBase;
 
-public record StructInitStatement(TypeBase name, Map<String, ExpressionBase> fields) implements StatementBase {
+public record StructStatement(TypeBase name, Map<String, ExpressionBase> fields) implements StatementBase {
  
     @Override
     public String format() {
