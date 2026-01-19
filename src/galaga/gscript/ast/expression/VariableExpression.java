@@ -1,15 +1,16 @@
 package galaga.gscript.ast.expression;
 
-import java.util.Optional;
+import java.util.List;
 
-public record VariableExpression(String name, Optional<ExpressionBase> invar) implements ExpressionBase {
+public record VariableExpression(String name, List<ExpressionBase> members) implements ExpressionBase {
     @Override
     public String format() {
-        if (invar.isPresent()) {
-            return name + "." + invar.get().format();
-        } else {
-            return name;
+        StringBuilder sb = new StringBuilder();
+        sb.append(name);
+        for (var member : members) {
+            sb.append(".").append(member.format());
         }
+        return sb.toString();
     }
     
 }

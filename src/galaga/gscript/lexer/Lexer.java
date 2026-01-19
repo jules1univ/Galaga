@@ -113,19 +113,27 @@ public final class Lexer implements Iterable<Token> {
 
     private Token operator() {
         TokenPosition position = TokenPosition.of(this.line, this.column);
-        String value = "";
 
-        while (!Character.isLetterOrDigit(current) && !Character.isWhitespace(current) && current != '\0') {
-            value += current;
+        char first = current;
+        char second = peek();
+
+        if (second != '\0') {
+            String two = "" + first + second;
+            if (Operator.isOperator(two)) {
+                advance();
+                advance();
+                return Token.of(TokenType.OPERATOR, position, two);
+            }
+        }
+
+        String one = String.valueOf(first);
+        if (Operator.isOperator(one)) {
             advance();
-            break;
+            return Token.of(TokenType.OPERATOR, position, one);
         }
 
-        if (Operator.isOperator(value)) {
-            return Token.of(TokenType.OPERATOR, position, value);
-        }
-
-        return Token.of(TokenType.UNKNOWN, position, value);
+        advance();
+        return Token.of(TokenType.UNKNOWN, position, one);
     }
 
     private Token comment() {

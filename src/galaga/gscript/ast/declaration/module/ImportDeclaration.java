@@ -5,7 +5,7 @@ import java.util.List;
 
 import galaga.gscript.ast.declaration.DeclarationBase;
 
-public record ImportDeclaration(LinkedList<String> importPaths, List<String> importFunctions, boolean isWildCard)
+public record ImportDeclaration(LinkedList<String> importPaths, List<String> importObjects, boolean isWildCard)
         implements DeclarationBase {
 
     @Override
@@ -15,9 +15,9 @@ public record ImportDeclaration(LinkedList<String> importPaths, List<String> imp
         sb.append(String.join(".", importPaths));
         if (isWildCard) {
             sb.append(".*");
-        } else if (!importFunctions.isEmpty()) {
+        } else if (!importObjects.isEmpty()) {
             sb.append(".{");
-            sb.append(String.join(", ", importFunctions));
+            sb.append(String.join(", ", importObjects));
             sb.append("}");
         }
         sb.append(";");

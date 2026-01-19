@@ -37,7 +37,7 @@ public final class TypeParser {
 
     public static TypeFunction parseTypeFunction(ParserContext context) throws ParserException {
         Type returnType = TypeParser.parseType(context);
-        String functionName = context.getValue();
+        String name = context.getValue();
 
         context.expect(TokenType.IDENTIFIER);
         context.expect(Operator.LEFT_PAREN);
@@ -54,12 +54,12 @@ public final class TypeParser {
 
         context.expect(Operator.RIGHT_PAREN);
 
-        Optional<String> type = Optional.empty();
+        Optional<Type> extendType = Optional.empty();
         if (context.isAndAdvance(Keyword.EXTENDS)) {
-            type = Optional.of(context.getValueExpect(TokenType.IDENTIFIER));
+            extendType = Optional.of(parseType(context));
         }
 
-        return new TypeFunction(returnType, functionName, parameters, type);
+        return new TypeFunction(returnType, name, parameters, extendType);
     }
 
     public static TypeEnumData parseTypeEnumData(ParserContext context) throws ParserException {

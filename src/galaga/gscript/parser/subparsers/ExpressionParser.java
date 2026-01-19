@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import galaga.gscript.ast.expression.BinaryExpression;
 import galaga.gscript.ast.expression.ExpressionBase;
@@ -95,7 +94,8 @@ public final class ExpressionParser {
 
     public static boolean isUnaryExpression(ParserContext context) {
         return context.is(Operator.MINUS) || context.is(Operator.PLUS) || context.is(Operator.NOT) ||
-                isLiteralExpression(context);
+                context.is(Operator.LEFT_PAREN) || context.is(Operator.LEFT_BRACE) ||
+                context.is(TokenType.IDENTIFIER) || isLiteralExpression(context);
     }
 
     public static ExpressionBase parseUnaryExpression(ParserContext context) throws ParserException {
@@ -143,7 +143,7 @@ public final class ExpressionParser {
                 float floatValue = Float.parseFloat(value);
                 return new LiteralFloatExpression(floatValue);
             } catch (NumberFormatException e) {
-
+                throw new ParserException(context, "Invalid number format: %s", value);
             }
         }
 
@@ -153,19 +153,28 @@ public final class ExpressionParser {
             return new LiteralBoolExpression(boolValue);
         }
 
+
         if (context.is(TokenType.IDENTIFIER)) {
+            if(context.nextIs(Operator.LEFT_PAREN))
+            {
+                return parseFunctionCallExpression(context);
+            }
             return parseVariableExpression(context);
         }
 
         throw new ParserException(context, "Expected literal expression.");
     }
 
-    public static ExpressionBase parseVariableExpression(ParserContext context) throws ParserException {
+    public static VariableExpression parseVariableExpression(ParserContext context) throws ParserException {
         String name = context.getValueExpect(TokenType.IDENTIFIER);
-        if (context.isAndAdvance(Operator.DOT)) {
-            return new VariableExpression(name, Optional.of(parseVariableExpression(context)));
+
+        List<ExpressionBase> members = new ArrayList<>();
+        while (context.isAndAdvance(Operator.DOT)) {
+            String memberName = context.getValueExpect(TokenType.IDENTIFIER);
+            members.add(new VariableExpression(memberName, new ArrayList<>()));
         }
-        return new VariableExpression(name, Optional.empty());
+
+        return new VariableExpression(name, members);
     }
 
 }

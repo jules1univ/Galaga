@@ -16,5 +16,5 @@ public record Block(List<StatementBase> statements) implements StatementBase {
         sb.append("}");
         return sb.toString();
     }
-    
+
 }

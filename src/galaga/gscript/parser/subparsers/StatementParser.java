@@ -19,7 +19,6 @@ import galaga.gscript.ast.statement.logic.ReturnStatement;
 import galaga.gscript.ast.statement.logic.SwitchStatement;
 import galaga.gscript.ast.statement.logic.WhileStatement;
 import galaga.gscript.ast.types.Type;
-import galaga.gscript.ast.types.TypeBase;
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
 import galaga.gscript.lexer.token.TokenType;
@@ -248,20 +247,17 @@ public final class StatementParser {
     }
 
     public static boolean isVariableStatement(ParserContext context) {
-        return context.nextIs(Operator.ASSIGN) || context.nextIs(Operator.DOT);
+        return context.nextIs(Operator.ASSIGN);
     }
 
-    public static VariableStatement parseVariableStatement(ParserContext context, TypeBase type)
+    public static VariableStatement parseVariableStatement(ParserContext context, Type type)
             throws ParserException {
-        if (context.isAndAdvance(Operator.DOT)) {
-            VariableStatement inVar = parseVariableStatement(context, type);
-            return new VariableStatement(type, Optional.of(inVar), Optional.empty());
-        }
 
+        String name = context.getValueExpect(TokenType.IDENTIFIER);
         context.expect(Operator.ASSIGN);
         ExpressionBase value = ExpressionParser.parseExpression(context);
         context.advanceIfSemicolon();
-        return new VariableStatement(type, Optional.empty(), Optional.of(value));
+        return new VariableStatement(type, name, value);
     }
 
     public static ExpressionStatement parseExpressionStatement(ParserContext context) throws ParserException {

@@ -18,10 +18,19 @@ public enum Operator {
     AND("&&"),
     OR("||"),
     NOT("!"),
+
+    BITWISE_AND("&"),
     BITWISE_OR("|"),
+    BITWISE_XOR("^"),
+    BITWISE_NOT("~"),
 
     INCREMENT("++"),
     DECREMENT("--"),
+    ASSIGN_PLUS("+="),
+    ASSIGN_MINUS("-="),
+    ASSIGN_MULTIPLY("*="),
+    ASSIGN_DIVIDE("/="),
+    ASSIGN_MODULO("%="),
 
     DOT("."),
     COMMA(","),

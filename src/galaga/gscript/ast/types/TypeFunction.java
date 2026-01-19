@@ -3,8 +3,11 @@ package galaga.gscript.ast.types;
 import java.util.Map;
 import java.util.Optional;
 
-public record TypeFunction(TypeBase returnType, String name, Map<Type, String> parameters,
-        Optional<String> extendsType) implements TypeBase {
+public record TypeFunction(
+        Type returnType,
+        String name,
+        Map<Type, String> parameters,
+        Optional<Type> extendsType) implements TypeBase {
 
     @Override
     public String format() {
@@ -26,7 +29,7 @@ public record TypeFunction(TypeBase returnType, String name, Map<Type, String> p
         sb.append(")");
         if (extendsType.isPresent()) {
             sb.append(" extends ");
-            sb.append(extendsType.get());
+            sb.append(extendsType.get().format());
         }
         return sb.toString();
     }

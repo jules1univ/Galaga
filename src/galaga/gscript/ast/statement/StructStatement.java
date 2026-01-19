@@ -6,7 +6,7 @@ import galaga.gscript.ast.expression.ExpressionBase;
 import galaga.gscript.ast.types.Type;
 
 public record StructStatement(Type type, String name, Map<String, ExpressionBase> fields) implements StatementBase {
- 
+
     @Override
     public String format() {
         StringBuilder sb = new StringBuilder();
