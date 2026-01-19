@@ -91,7 +91,7 @@ public final class Parser {
         int lastIndex = -1;
         while (!this.context.isEnd()) {
             if (this.context.getIndex() == lastIndex) {
-                throw new ParserException("Parser is stuck at index " + this.context.getIndex());
+                throw new ParserException(context, "Unexpected token: %s", this.context.getCurrentToken().getValue());
             } else {
                 lastIndex = this.context.getIndex();
             }

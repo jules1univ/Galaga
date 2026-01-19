@@ -89,9 +89,9 @@ public class GScriptTest {
                     return p;
                 }
 
-                // void update_player() extends Player {
-                //     this->score += 10;
-                // }
+                void update_player() extends Player {
+                    p.score += 10;
+                }
 
 
                 // void modify_player(ref Player p) {

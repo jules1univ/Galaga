@@ -57,7 +57,7 @@ public final class StatementParser {
                 } else if (isVariableStatement(context)) {
                     statements.add(parseVariableStatement(context, typeName));
                 } else {
-                    throw new ParserException("Unexpected token after type declaration.");
+                    throw new ParserException(context, "Unexpected token after type declaration.");
                 }
             } else {
                 statements.add(parseExpressionStatement(context));
@@ -110,7 +110,7 @@ public final class StatementParser {
         } else if (context.is(Keyword.WHILE)) {
             context.advance();
         } else {
-            throw new ParserException("Expected 'while' or 'do' keyword.");
+            throw new ParserException(context, "Expected 'while' or 'do' keyword.");
         }
 
         if (isDoWhile == false) {
@@ -237,8 +237,6 @@ public final class StatementParser {
             context.expect(Operator.ASSIGN);
 
             ExpressionBase fieldValue = ExpressionParser.parseExpression(context);
-            System.out.println("FIELD: "+fieldValue.format());
-
             fields.put(fieldName, fieldValue);
             if (!context.isAndAdvance(Operator.COMMA)) {
                 break;

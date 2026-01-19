@@ -157,7 +157,7 @@ public final class ExpressionParser {
             return parseVariableExpression(context);
         }
 
-        throw new ParserException("Expected literal expression.");
+        throw new ParserException(context, "Expected literal expression.");
     }
 
     public static ExpressionBase parseVariableExpression(ParserContext context) throws ParserException {

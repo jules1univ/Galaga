@@ -40,7 +40,7 @@ public final class ModuleParser {
                 isWildcard = true;
                 break;
             } else {
-                throw new ParserException("Invalid import path syntax.");
+                throw new ParserException(context, "Invalid import path syntax.");
             }
         }
 
@@ -51,7 +51,7 @@ public final class ModuleParser {
             } else if (context.isAndAdvance(Operator.RIGHT_BRACE)) {
                 break;
             } else {
-                throw new ParserException("Invalid import function list syntax.");
+                throw new ParserException(context, "Invalid import function list syntax.");
             }
         }
 

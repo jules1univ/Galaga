@@ -15,7 +15,6 @@ public final class ParserContext {
     private final List<Token> tokens;
     private final String[] lines;
 
-
     private int index = 0;
     private Token current = null;
 
@@ -58,9 +57,7 @@ public final class ParserContext {
 
     public void expect(TokenType type) throws ParserException {
         if (this.current.getType() != type) {
-            throw new ParserException(
-                    this.displayContext(
-                            String.format("Unexpected token: expected %s but got %s", type, this.current.getType())));
+            throw new ParserException(this, "Unexpected token: expected %s but got %s", type, this.current.getType());
         }
 
         this.advance();
@@ -68,9 +65,8 @@ public final class ParserContext {
 
     public void expect(TokenType type, String value) throws ParserException {
         if (this.current.getType() != type || !this.current.getValue().equals(value)) {
-            throw new ParserException(
-                    this.displayContext(String.format("Unexpected token: expected %s('%s') but got %s('%s')",
-                            type, value, this.current.getType(), this.current.getValue())));
+            throw new ParserException(this, "Unexpected token: expected %s('%s') but got %s('%s')", type, value,
+                    this.current.getType(), this.current.getValue());
         }
         this.advance();
     }
@@ -206,7 +202,7 @@ public final class ParserContext {
         return value;
     }
 
-    public String displayContext(String message) {
+    public String getErrorContext(String message) {
         StringBuilder sb = new StringBuilder();
         int startLine = this.current.getStart().getLine();
 
