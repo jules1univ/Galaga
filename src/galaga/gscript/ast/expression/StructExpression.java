@@ -2,7 +2,7 @@ package galaga.gscript.ast.expression;
 
 import java.util.Map;
 
-public record StructInitExpression(Map<String, ExpressionBase> fields) implements ExpressionBase {
+public record StructExpression(Map<String, ExpressionBase> fields) implements ExpressionBase {
     @Override
     public String format() {
         StringBuilder sb = new StringBuilder();

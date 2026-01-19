@@ -80,10 +80,10 @@ public class GScriptTest {
 
                 Player create_player(String name, FunctionCallback callback) {
                     Player p{
-                        .name = name,
-                        .score = 0,
-                        .pos = getMousePosition(),
-                        .state = PLayerState.ALIVE
+                        name = name,
+                        score = 0,
+                        pos = getMousePosition(),
+                        state = PlayerState.ALIVE
                     };
                     callback(p.score);
                     return p;

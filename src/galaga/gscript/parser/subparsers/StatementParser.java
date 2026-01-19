@@ -18,6 +18,7 @@ import galaga.gscript.ast.statement.logic.IfStatement;
 import galaga.gscript.ast.statement.logic.ReturnStatement;
 import galaga.gscript.ast.statement.logic.SwitchStatement;
 import galaga.gscript.ast.statement.logic.WhileStatement;
+import galaga.gscript.ast.types.Type;
 import galaga.gscript.ast.types.TypeBase;
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
@@ -50,7 +51,7 @@ public final class StatementParser {
             } else if (isContinueStatement(context)) {
                 statements.add(parseContinueStatement(context));
             } else if (TypeParser.isType(context)) {
-                TypeBase typeName = TypeParser.parseType(context);
+                Type typeName = TypeParser.parseType(context);
                 if (isStructStatement(context)) {
                     statements.add(parseStructStatement(context, typeName));
                 } else if (isVariableStatement(context)) {
@@ -223,15 +224,21 @@ public final class StatementParser {
         return context.nextIs(Operator.LEFT_BRACE);
     }
 
-    public static StructStatement parseStructStatement(ParserContext context, TypeBase name) throws ParserException {
+    public static StructStatement parseStructStatement(ParserContext context, Type type) throws ParserException {
+        String name = context.getValue();
+        context.expect(TokenType.IDENTIFIER);
         context.expect(Operator.LEFT_BRACE);
+
         Map<String, ExpressionBase> fields = new java.util.HashMap<>();
 
         while (!context.isEnd() && !context.is(Operator.RIGHT_BRACE)) {
+            String fieldName = context.getValue();
             context.expect(TokenType.IDENTIFIER);
-            String fieldName = context.getValueAndAdvance();
             context.expect(Operator.ASSIGN);
+
             ExpressionBase fieldValue = ExpressionParser.parseExpression(context);
+            System.out.println("FIELD: "+fieldValue.format());
+
             fields.put(fieldName, fieldValue);
             if (!context.isAndAdvance(Operator.COMMA)) {
                 break;
@@ -239,7 +246,7 @@ public final class StatementParser {
         }
         context.expect(Operator.RIGHT_BRACE);
         context.advanceIfSemicolon();
-        return new StructStatement(name, fields);
+        return new StructStatement(type, name, fields);
     }
 
     public static boolean isVariableStatement(ParserContext context) {

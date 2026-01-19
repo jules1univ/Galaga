@@ -13,7 +13,7 @@ import galaga.gscript.lexer.token.TokenType;
 
 public final class ParserContext {
     private final List<Token> tokens;
-    private final String[] lines
+    private final String[] lines;
 
 
     private int index = 0;
@@ -163,15 +163,13 @@ public final class ParserContext {
         return value;
     }
 
-    public Operator getOperatorAndAdvance() {
+    public Operator getOperator() {
         String value = this.current.getValue();
-        this.advance();
         return Operator.fromText(value);
     }
 
-    public Keyword getKeywordAndAdvance() {
+    public Keyword getKeyword() {
         String value = this.current.getValue();
-        this.advance();
         return Keyword.fromText(value);
     }
 

@@ -3,14 +3,16 @@ package galaga.gscript.ast.statement;
 import java.util.Map;
 
 import galaga.gscript.ast.expression.ExpressionBase;
-import galaga.gscript.ast.types.TypeBase;
+import galaga.gscript.ast.types.Type;
 
-public record StructStatement(TypeBase name, Map<String, ExpressionBase> fields) implements StatementBase {
+public record StructStatement(Type type, String name, Map<String, ExpressionBase> fields) implements StatementBase {
  
     @Override
     public String format() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name.format());
+        sb.append(type.format());
+        sb.append(" ");
+        sb.append(name);
         sb.append("{\n");
         for (var entry : fields.entrySet()) {
             sb.append(entry.getKey());

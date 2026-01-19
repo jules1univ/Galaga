@@ -78,9 +78,10 @@ public final class TypeParser {
         }
 
         Optional<ExpressionBase> value = Optional.empty();
-        if (ExpressionParser.isLiteralExpression(context)) {
+        if (context.isAndAdvance(Operator.ASSIGN) && ExpressionParser.isLiteralExpression(context)) {
             value = Optional.of(ExpressionParser.parseLiteralExpression(context));
         }
+
         return new TypeEnumData(data, value);
     }
 }

@@ -9,6 +9,7 @@ import java.util.Optional;
 import galaga.gscript.ast.expression.BinaryExpression;
 import galaga.gscript.ast.expression.ExpressionBase;
 import galaga.gscript.ast.expression.FunctionCallExpression;
+import galaga.gscript.ast.expression.StructExpression;
 import galaga.gscript.ast.expression.UnaryExpression;
 import galaga.gscript.ast.expression.VariableExpression;
 import galaga.gscript.ast.expression.literals.LiteralBoolExpression;
@@ -31,10 +32,9 @@ public final class ExpressionParser {
     }
 
     public static ExpressionBase parseFunctionCallExpression(ParserContext context) throws ParserException {
-        context.expect(TokenType.IDENTIFIER);
+        String name = context.getValueExpect(TokenType.IDENTIFIER);
         context.expect(Operator.LEFT_PAREN);
 
-        String name = context.getValueAndAdvance();
         List<ExpressionBase> args = new ArrayList<>();
         while (!context.isEnd() && !context.is(Operator.RIGHT_PAREN)) {
             ExpressionBase arg = parseExpression(context);
@@ -47,7 +47,7 @@ public final class ExpressionParser {
         return new FunctionCallExpression(name, args);
     }
 
-    public static ExpressionBase parseStructInitExpression(ParserContext context) throws ParserException {
+    public static ExpressionBase parseStructExpression(ParserContext context) throws ParserException {
         context.expect(Operator.LEFT_BRACE);
 
         Map<String, ExpressionBase> fields = new HashMap<>();
@@ -57,14 +57,15 @@ public final class ExpressionParser {
             String fieldName = context.getValueAndAdvance();
             context.expect(Operator.ASSIGN);
             ExpressionBase fieldValue = parseExpression(context);
+            fields.put(fieldName, fieldValue);
+
             if (!context.isAndAdvance(Operator.COMMA)) {
                 break;
             }
-            fields.put(fieldName, fieldValue);
         }
 
         context.expect(Operator.RIGHT_BRACE);
-        return new galaga.gscript.ast.expression.StructInitExpression(fields);
+        return new StructExpression(fields);
     }
 
     public static ExpressionBase parseBinaryExpression(ParserContext context, int priority) throws ParserException {
@@ -74,10 +75,11 @@ public final class ExpressionParser {
 
         ExpressionBase left = parseBinaryExpression(context, priority + 1);
         while (!context.isEnd()) {
-            Operator operator = context.getOperatorAndAdvance();
+            Operator operator = context.getOperator();
             if (operator == null || OperatorPriority.getPriority(operator) != priority) {
                 break;
             }
+            context.advance();
 
             ExpressionBase right;
             if (operator == Operator.ASSIGN) {
@@ -98,15 +100,17 @@ public final class ExpressionParser {
 
     public static ExpressionBase parseUnaryExpression(ParserContext context) throws ParserException {
         if (context.is(Operator.MINUS) || context.is(Operator.PLUS) || context.is(Operator.NOT)) {
-            Operator operator = context.getOperatorAndAdvance();
-            if (operator == null) {
-                throw new ParserException("Expected unary operator.");
-            }
+            Operator operator = context.getOperator();
+            context.advance();
             return new UnaryExpression(operator, parseUnaryExpression(context));
         }
 
         if (isFunctionCallExpression(context)) {
             return parseFunctionCallExpression(context);
+        }
+
+        if (context.is(Operator.LEFT_BRACE)) {
+            return parseStructExpression(context);
         }
 
         if (context.isAndAdvance(Operator.LEFT_PAREN)) {
@@ -131,11 +135,8 @@ public final class ExpressionParser {
 
         if (context.is(TokenType.NUMBER)) {
             String value = context.getValueAndAdvance();
-            if (context.isAndAdvance(Operator.DOT)) {
+            if (context.isAndAdvance(Operator.DOT) && context.is(TokenType.NUMBER)) {
                 value += "." + context.getValueAndAdvance();
-                if (context.is(TokenType.NUMBER)) {
-                    value += context.getValueAndAdvance();
-                }
             }
 
             try {
@@ -160,9 +161,7 @@ public final class ExpressionParser {
     }
 
     public static ExpressionBase parseVariableExpression(ParserContext context) throws ParserException {
-        context.expect(TokenType.IDENTIFIER);
-
-        String name = context.getValueAndAdvance();
+        String name = context.getValueExpect(TokenType.IDENTIFIER);
         if (context.isAndAdvance(Operator.DOT)) {
             return new VariableExpression(name, Optional.of(parseVariableExpression(context)));
         }
