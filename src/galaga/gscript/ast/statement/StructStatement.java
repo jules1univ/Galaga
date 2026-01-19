@@ -18,7 +18,10 @@ public record StructStatement(Type type, String name, Map<String, ExpressionBase
             sb.append(entry.getKey());
             sb.append(" = ");
             sb.append(entry.getValue().format());
-            sb.append(",\n");
+            if (!entry.equals(fields.entrySet().toArray()[fields.size() - 1])) {
+                sb.append(",");
+            }
+            sb.append("\n");
         }
         sb.append("}");
         return sb.toString();

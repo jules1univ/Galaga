@@ -23,7 +23,7 @@ public record TypeEnumData(Map<Type, String> data, Optional<ExpressionBase> valu
 
         if (value.isPresent()) {
             sb.append(" = ");
-            sb.append(value.get());
+            sb.append(value.get().format());
         }
         return sb.toString();
     }

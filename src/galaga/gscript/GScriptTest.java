@@ -1,5 +1,6 @@
 package galaga.gscript;
 
+import galaga.gscript.ast.Program;
 import galaga.gscript.lexer.Lexer;
 import galaga.gscript.parser.Parser;
 import galaga.gscript.parser.ParserException;
@@ -114,11 +115,16 @@ public class GScriptTest {
                     """);
 
         Parser parser = Parser.of(lexer);
+        Program program;
         try {
-            System.out.println(parser.parse().format());
+            program = parser.parse();
+            System.out.println(program.format());
         } catch (ParserException e) {
             e.printStackTrace();
         }
+
+
+        
 
     }
 }
