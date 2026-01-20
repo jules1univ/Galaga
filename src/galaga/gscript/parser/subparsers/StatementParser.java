@@ -171,16 +171,15 @@ public final class StatementParser {
         context.expect(Keyword.FOR);
         context.expect(Operator.LEFT_PAREN);
 
-        List<ExpressionBase> conditions = new ArrayList<>();
-        while (!context.isEnd() && !context.is(Operator.RIGHT_PAREN)) {
-            conditions.add(ExpressionParser.parseExpression(context));
-            if (!context.isAndAdvance(Operator.SEMICOLON)) {
-                break;
-            }
+        VariableStatement init = parseVariableStatement(context, TypeParser.parseType(context));
+        if (!context.backIs(Operator.SEMICOLON)) {
+            context.expect(Operator.SEMICOLON);
         }
-
+        ExpressionBase check = ExpressionParser.parseExpression(context);
+        context.expect(Operator.SEMICOLON);
+        ExpressionBase action = ExpressionParser.parseExpression(context);
         context.expect(Operator.RIGHT_PAREN);
-        return new ForStatement(conditions, parseBlock(context));
+        return new ForStatement(init, check, action, parseBlock(context));
     }
 
     public static boolean isBreakStatement(ParserContext context) {

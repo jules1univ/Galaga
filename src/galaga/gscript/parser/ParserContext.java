@@ -143,6 +143,14 @@ public final class ParserContext {
         return next.getType() == TokenType.KEYWORD && next.getValue().equals(keyword.getText());
     }
 
+    public boolean backIs(Operator operator) {
+        if (this.index - 1 < 0) {
+            return false;
+        }
+        Token back = this.tokens.get(this.index - 1);
+        return back.getType() == TokenType.OPERATOR && back.getValue().equals(operator.getText());
+    }
+
     public void advanceIfSemicolon() {
         if (this.is(Operator.SEMICOLON)) {
             this.advance();
@@ -209,7 +217,7 @@ public final class ParserContext {
         int contextStart = Math.max(0, startLine - 4);
         int contextEnd = Math.min(this.lines.length, startLine + 4);
 
-        sb.append("\n\n");
+        sb.append("\n");
         for (int i = contextStart; i < contextEnd; i++) {
             sb.append(String.format("%4d %s\n", i + 1, this.lines[i]));
             if (i + 1 == startLine) {
@@ -222,7 +230,7 @@ public final class ParserContext {
                 sb.append(String.format(" %s\n", message));
             }
         }
-        sb.append("\n\n");
+        sb.append("\n");
         return sb.toString();
 
     }

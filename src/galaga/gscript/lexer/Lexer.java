@@ -1,6 +1,8 @@
 package galaga.gscript.lexer;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
@@ -11,6 +13,7 @@ import galaga.gscript.lexer.token.TokenType;
 public final class Lexer implements Iterable<Token> {
     private static final char EOF = '\0';
     private final String source;
+    private final List<Token> tokens = new ArrayList<>();
 
     private char current = EOF;
     private int index = 0;
@@ -170,6 +173,10 @@ public final class Lexer implements Iterable<Token> {
         return Token.of(TokenType.UNKNOWN, position, value);
     }
 
+    public List<Token> getTokens() {
+        return this.tokens;
+    }
+
     @Override
     public Iterator<Token> iterator() {
         this.advance();
@@ -192,17 +199,21 @@ public final class Lexer implements Iterable<Token> {
                     return Token.of(TokenType.EOF, TokenPosition.of(line, column), "");
                 }
 
+                Token token;
                 if (current == '/' && (peek() == '/' || peek() == '*')) {
-                    return comment();
+                    token = comment();
                 } else if (Character.isLetter(current) || current == '_') {
-                    return identifier();
+                    token = identifier();
                 } else if (Character.isDigit(current)) {
-                    return numberLiteral();
+                    token = numberLiteral();
                 } else if (current == '"' || current == '\'') {
-                    return stringLiteral();
+                    token = stringLiteral();
                 } else {
-                    return operator();
+                    token = operator();
                 }
+
+                tokens.add(token);
+                return token;
             }
         };
     }

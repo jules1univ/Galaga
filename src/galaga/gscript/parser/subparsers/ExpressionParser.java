@@ -13,6 +13,7 @@ import galaga.gscript.ast.expression.UnaryExpression;
 import galaga.gscript.ast.expression.VariableExpression;
 import galaga.gscript.ast.expression.literals.LiteralBoolExpression;
 import galaga.gscript.ast.expression.literals.LiteralFloatExpression;
+import galaga.gscript.ast.expression.literals.LiteralIntExpression;
 import galaga.gscript.ast.expression.literals.LiteralStringExpression;
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
@@ -135,13 +136,21 @@ public final class ExpressionParser {
 
         if (context.is(TokenType.NUMBER)) {
             String value = context.getValueAndAdvance();
-            if (context.isAndAdvance(Operator.DOT) && context.is(TokenType.NUMBER)) {
-                value += "." + context.getValueAndAdvance();
+            if (context.isAndAdvance(Operator.DOT)) {
+                if(context.is(TokenType.NUMBER)) {
+                    value += "." + context.getValueAndAdvance();
+                }
+                try {
+                    float floatValue = Float.parseFloat(value);
+                    return new LiteralFloatExpression(floatValue);
+                } catch (NumberFormatException e) {
+                    throw new ParserException(context, "Invalid number format: %s", value);
+                }
             }
 
             try {
-                float floatValue = Float.parseFloat(value);
-                return new LiteralFloatExpression(floatValue);
+                int intValue = Integer.parseInt(value);
+                return new LiteralIntExpression(intValue);
             } catch (NumberFormatException e) {
                 throw new ParserException(context, "Invalid number format: %s", value);
             }
@@ -153,10 +162,8 @@ public final class ExpressionParser {
             return new LiteralBoolExpression(boolValue);
         }
 
-
         if (context.is(TokenType.IDENTIFIER)) {
-            if(context.nextIs(Operator.LEFT_PAREN))
-            {
+            if (context.nextIs(Operator.LEFT_PAREN)) {
                 return parseFunctionCallExpression(context);
             }
             return parseVariableExpression(context);

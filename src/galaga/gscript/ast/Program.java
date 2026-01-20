@@ -12,7 +12,7 @@ import galaga.gscript.ast.declaration.module.ModuleDeclaration;
 import galaga.gscript.ast.declaration.module.NativeDeclaration;
 
 public record Program(
-        List<ModuleDeclaration> modules,
+        ModuleDeclaration module,
         List<ImportDeclaration> imports,
         List<NativeDeclaration> natives,
         Map<String, FunctionDeclaration> functions,
@@ -25,11 +25,7 @@ public record Program(
     @Override
     public String format() {
         StringBuilder sb = new StringBuilder();
-
-        for (ModuleDeclaration module : modules) {
-            sb.append(module.format());
-            sb.append("\n");
-        }
+        sb.append(this.module.format());
         sb.append("\n");
 
         for (ImportDeclaration importDecl : imports) {

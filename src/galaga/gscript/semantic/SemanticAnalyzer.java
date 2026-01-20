@@ -1,12 +1,14 @@
 package galaga.gscript.semantic;
 
+import java.util.List;
+
 import galaga.gscript.ast.Program;
 
 public final class SemanticAnalyzer {
     private final AnalyzerContext context;
 
-    public static SemanticAnalyzer of(Program program) {
-        return new SemanticAnalyzer(AnalyzerContext.of(program));
+    public static SemanticAnalyzer of(List<Program> programs) {
+        return new SemanticAnalyzer(AnalyzerContext.of(programs));
     }
 
     private SemanticAnalyzer(AnalyzerContext context) {

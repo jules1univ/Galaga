@@ -21,7 +21,7 @@ import galaga.gscript.parser.subparsers.ModuleParser;
 import galaga.gscript.parser.subparsers.TypeParser;
 
 public final class Parser {
-    private final List<ModuleDeclaration> modules = new ArrayList<>();
+    private ModuleDeclaration module = null;
     private final List<ImportDeclaration> imports = new ArrayList<>();
     private final List<NativeDeclaration> natives = new ArrayList<>();
 
@@ -46,14 +46,14 @@ public final class Parser {
 
     private void parseModuleDeclarations() throws ParserException {
         if (ModuleParser.isModuleDeclaration(this.context)) {
-            this.modules.add(ModuleParser.parseModule(this.context));
-            return;
+            if(this.module != null) {
+                throw new ParserException(this.context, "Multiple module declarations found");
+            }
+            this.module = ModuleParser.parseModule(this.context);
         } else if (ModuleParser.isImportDeclaration(this.context)) {
             this.imports.add(ModuleParser.parseImport(this.context));
-            return;
         } else if (ModuleParser.isNativeDeclaration(this.context)) {
             this.natives.add(ModuleParser.parseNative(this.context));
-            return;
         }
     }
 
@@ -103,7 +103,7 @@ public final class Parser {
         }
 
         return new Program(
-                this.modules,
+                this.module,
                 this.imports,
                 this.natives,
                 this.functions,

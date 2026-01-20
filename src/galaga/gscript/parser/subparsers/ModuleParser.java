@@ -82,8 +82,18 @@ public final class ModuleParser {
 
     public static ModuleDeclaration parseModule(ParserContext context) throws ParserException {
         context.expect(Keyword.MODULE);
-        String moduleName = context.getValueExpect(TokenType.IDENTIFIER);
+
+        LinkedList<String> paths = new LinkedList<>();
+        while (!context.isEnd()) {
+            if (context.is(TokenType.IDENTIFIER)) {
+                paths.add(context.getValueExpect(TokenType.IDENTIFIER));
+            } else if (context.isAndAdvance(Operator.DOT)) {
+                continue;
+            } else {
+                break;
+            }
+        }
         context.advanceIfSemicolon();
-        return new ModuleDeclaration(moduleName);
+        return new ModuleDeclaration(paths);
     }
 }

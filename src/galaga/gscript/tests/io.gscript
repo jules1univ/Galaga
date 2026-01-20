@@ -1,0 +1,5 @@
+module std.io;
+
+import std.types.*;
+
+native void printf(string message);

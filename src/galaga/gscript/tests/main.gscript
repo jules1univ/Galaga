@@ -1,0 +1,49 @@
+module test;
+
+import std.io.{printf};
+import std.math.{sqrt};
+
+native type void;
+native type i32;
+native type f32;
+
+
+type Point = struct  {
+   i32 x;
+    i32 y;
+};
+
+
+f32 distance(const Point other) extends Point {
+    i32 dx = this.x - other.x;
+    i32 dy = this.y - other.y;
+    return sqrt(dx * dx + dy * dy);
+}
+
+
+
+void main() {
+    printf("Hello, World!\n");
+
+    const i32 COUNT_TO = 5;
+    for (i32 i = 0; i < COUNT_TO; i++) {
+        printf("Count: %d\n", i);
+    }
+
+    Point p1{ x = 3, y = 4 };
+    Point p2{ x = 0, y = 0 };
+
+    f32 dist = p1.distance(p2);
+    printf("Distance between p1 and p2: %f\n", dist);
+    
+    modify_point(ref p2, 6, 8);
+    return;
+}
+
+
+
+void modify_point(ref Point p, i32 new_x, i32 new_y) {
+    p.x = new_x;
+    p.y = new_y;
+    return;
+}
