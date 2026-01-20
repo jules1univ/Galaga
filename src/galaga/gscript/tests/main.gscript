@@ -1,24 +1,53 @@
-
 module test;
 
 import std.io.{printf};
 import std.math.{sqrt};
-
-native type void;
-native type i32;
-native type f32;
-
+import std.types.*;
 
 type Point = struct  {
-   i32 x;
+    i32 x;
     i32 y;
+    PointState state;
 };
 
+type PointState = enum {
+    IDLE,
+    MOVING,
+    ATTACKING
+};
 
 f32 distance(const Point other) extends Point {
     i32 dx = this.x - other.x;
     i32 dy = this.y - other.y;
     return sqrt(dx * dx + dy * dy);
+}
+
+bool is_moving() extends PointState {
+    return this == PointState.MOVING || this == PointState.ATTACKING;
+}
+
+Point zero() extends Point {
+    Point p{ x = 0, y = 0, state = PointState.IDLE };
+    return p;   
+}
+
+void update(bool shouldSwitch) extends PointState {
+    if(!this.is_moving() && shouldSwitch) {
+        this = PointState.MOVING;
+    }
+}
+
+void update() extends Point {
+    if (this.state.is_moving()) {
+        this.x += 1;
+        this.y += 1;
+    }
+    else {
+        bool shouldSwitch = this.distance(this.zero()) < 10;
+
+        if(true) {}
+    }
+    return;
 }
 
 

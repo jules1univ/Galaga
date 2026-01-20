@@ -10,7 +10,6 @@ import galaga.gscript.util.Message;
 public class AnalyzerContext {
     private final List<Message> messages = new ArrayList<>();
     private final Map<String, Program> programs;
-    private Program current;
 
     public static AnalyzerContext of(Map<String, Program> programs) {
         return new AnalyzerContext(programs);
@@ -22,6 +21,10 @@ public class AnalyzerContext {
 
     public List<Message> getMessages() {
         return messages;
+    }
+
+    public Map<String, Program> getPrograms() {
+        return programs;
     }
 
 }

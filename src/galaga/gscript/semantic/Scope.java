@@ -3,22 +3,22 @@ package galaga.gscript.semantic;
 import java.util.HashMap;
 import java.util.Map;
 
-import galaga.gscript.ast.statement.AssignStatement;
+import galaga.gscript.ast.statement.StatementBase;
 
 public final class Scope {
     private final Scope parent;
-    private final Map<String, AssignStatement> variables = new HashMap<>();
+    private final Map<String, StatementBase> variables = new HashMap<>();
 
     public Scope(Scope parent) {
         this.parent = parent;
     }
 
-    public void addVariable(AssignStatement variable) {
-        variables.put(variable.name(), variable);
+    public void addVariable(String name, StatementBase variable) {
+        variables.put(name, variable);
     }
 
-    public AssignStatement resolveVariable(String name) {
-        AssignStatement variable = variables.get(name);
+    public StatementBase resolveVariable(String name) {
+        StatementBase variable = variables.get(name);
         if (variable != null) {
             return variable;
         } else if (parent != null) {
@@ -26,5 +26,9 @@ public final class Scope {
         } else {
             return null;
         }
+    }
+
+    public boolean hasVariable(String name) {
+        return resolveVariable(name) != null;
     }
 }

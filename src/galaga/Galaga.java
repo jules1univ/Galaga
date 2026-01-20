@@ -16,6 +16,7 @@ import engine.utils.Args;
 import galaga.level.LevelResource;
 import galaga.net.server.GalagaServer;
 import galaga.net.shared.NetPlayerData;
+import galaga.pages.editor.enemy.EnemyEditor;
 import galaga.pages.editor.level.LevelEditor;
 import galaga.pages.editor.menu.EditorMenu;
 import galaga.pages.editor.settings.Settings;
@@ -92,6 +93,7 @@ public class Galaga extends Application<GalagaPage> {
         this.registerPage(GalagaPage.EDITOR_MENU, EditorMenu.class);
         this.registerPage(GalagaPage.EDITOR_LEVEL, LevelEditor.class);
         this.registerPage(GalagaPage.EDITOR_SPRITE, SpriteEditor.class);
+        this.registerPage(GalagaPage.EDITOR_ENEMY, EnemyEditor.class);
         this.registerPage(GalagaPage.EDITOR_SETTINGS, Settings.class);
 
         this.setCurrentPage(GalagaPage.MAIN_MENU);

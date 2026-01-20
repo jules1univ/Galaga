@@ -4,7 +4,7 @@ import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.elements.ui.Alignment;
 import engine.elements.ui.codeinput.CodeInput;
-import engine.elements.ui.codeinput.SyntaxHighlighter;
+import engine.elements.ui.codeinput.highlighter.defaults.RegexSyntaxHighlighter;
 import engine.elements.ui.text.Text;
 import engine.graphics.Renderer;
 import engine.resource.ResourceAlias;
@@ -35,6 +35,7 @@ public class LevelEditor extends Page<GalagaPage> {
     private Text open;
     private Text back;
     private Text save;
+    private Text test;
 
     private LevelEditorOption option;
 
@@ -50,6 +51,7 @@ public class LevelEditor extends Page<GalagaPage> {
                 this.levelCode.setFocused(false);
                 this.back.setColor(Color.WHITE);
                 this.save.setColor(Color.WHITE);
+                this.test.setColor(Color.WHITE);
             }
             case SAVE -> {
                 this.save.setColor(Color.ORANGE);
@@ -57,6 +59,7 @@ public class LevelEditor extends Page<GalagaPage> {
                 this.levelCode.setFocused(false);
                 this.open.setColor(Color.WHITE);
                 this.back.setColor(Color.WHITE);
+                this.test.setColor(Color.WHITE);
             }
             case BACK -> {
                 this.back.setColor(Color.ORANGE);
@@ -64,6 +67,15 @@ public class LevelEditor extends Page<GalagaPage> {
                 this.levelCode.setFocused(false);
                 this.open.setColor(Color.WHITE);
                 this.save.setColor(Color.WHITE);
+                this.test.setColor(Color.WHITE);
+            }
+            case TEST -> {
+                this.test.setColor(Color.ORANGE);
+
+                this.levelCode.setFocused(false);
+                this.open.setColor(Color.WHITE);
+                this.save.setColor(Color.WHITE);
+                this.back.setColor(Color.WHITE);
             }
             case EDIT -> {
                 this.levelCode.setFocused(true);
@@ -71,6 +83,7 @@ public class LevelEditor extends Page<GalagaPage> {
                 this.open.setColor(Color.WHITE);
                 this.back.setColor(Color.WHITE);
                 this.save.setColor(Color.WHITE);
+                this.test.setColor(Color.WHITE);
             }
         }
     }
@@ -116,7 +129,7 @@ public class LevelEditor extends Page<GalagaPage> {
             return false;
         }
 
-        SyntaxHighlighter iniHighlighter = new SyntaxHighlighter();
+        RegexSyntaxHighlighter iniHighlighter = new RegexSyntaxHighlighter();
 
         iniHighlighter.addPattern("[;#].*", new Color(120, 120, 120));
         iniHighlighter.addPattern("\\[[^\\]]+\\]", Color.LIGHT_GRAY);
@@ -165,7 +178,7 @@ public class LevelEditor extends Page<GalagaPage> {
 
         this.back = new Text("BACK",
                 Position.of(this.levelCode.getPosition().getX() + margin,
-                        this.open.getPosition().getY() + this.open.getSize().getHeight() + margin / 2.f),
+                        this.open.getPosition().getY() + this.open.getSize().getHeight() + margin/8.f),
                 Color.WHITE, this.titleFont);
         if (!this.back.init()) {
             return false;
@@ -180,6 +193,15 @@ public class LevelEditor extends Page<GalagaPage> {
             return false;
         }
         this.save.setCenter(Alignment.END, Alignment.BEGIN);
+
+        this.test = new Text("TEST",
+                Position.of(Config.WINDOW_WIDTH - margin,
+                        this.open.getPosition().getY() + this.open.getSize().getHeight() + margin/8.f),
+                Color.WHITE, this.titleFont);
+        if (!this.test.init()) {
+            return false;
+        }
+        this.test.setCenter(Alignment.END, Alignment.BEGIN);
 
         this.option = LevelEditorOption.EDIT;
 
@@ -217,7 +239,8 @@ public class LevelEditor extends Page<GalagaPage> {
             switch (this.option) {
                 case EDIT -> this.option = LevelEditorOption.OPEN;
                 case OPEN -> this.option = LevelEditorOption.SAVE;
-                case SAVE -> this.option = LevelEditorOption.BACK;
+                case SAVE -> this.option = LevelEditorOption.TEST;
+                case TEST -> this.option = LevelEditorOption.BACK;
                 case BACK -> this.option = LevelEditorOption.EDIT;
             }
             this.updateEditorMenu();
@@ -241,6 +264,9 @@ public class LevelEditor extends Page<GalagaPage> {
                                     GalagaPage.EDITOR_MENU, this::exportLevel),
                             this.levelCode.getText());
 
+                }
+                case TEST -> {
+                    // TODO: test level
                 }
                 case BACK -> {
                     Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_MENU);
@@ -270,7 +296,9 @@ public class LevelEditor extends Page<GalagaPage> {
 
         this.open.draw(renderer);
         this.back.draw(renderer);
+
         this.save.draw(renderer);
+        this.test.draw(renderer);
     }
 
 }

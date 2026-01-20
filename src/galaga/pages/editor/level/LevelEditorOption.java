@@ -1,9 +1,11 @@
 package galaga.pages.editor.level;
 
 public enum LevelEditorOption {
-    BACK,
     OPEN,
-    // TEST,
+    BACK,
+
     SAVE,  
+    TEST,
+    
     EDIT
 }

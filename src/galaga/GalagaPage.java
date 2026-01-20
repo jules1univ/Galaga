@@ -15,6 +15,7 @@ public enum GalagaPage {
     EDITOR_SETTINGS,
     EDITOR_LEVEL,
     EDITOR_SPRITE,
+    EDITOR_ENEMY,
     
     FILE_EXPLORER,
 }

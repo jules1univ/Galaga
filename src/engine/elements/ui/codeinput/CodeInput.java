@@ -2,8 +2,9 @@ package engine.elements.ui.codeinput;
 
 import engine.Application;
 import engine.elements.ui.UIElement;
+import engine.elements.ui.codeinput.highlighter.HighlightedToken;
+import engine.elements.ui.codeinput.highlighter.SyntaxHighlighter;
 import engine.graphics.Renderer;
-import engine.utils.Pair;
 import engine.utils.Position;
 import engine.utils.Size;
 
@@ -48,7 +49,7 @@ public final class CodeInput extends UIElement {
 
     private final SyntaxHighlighter highlighter;
     private final List<String> lines = new ArrayList<>();
-    private final List<List<Pair<String, Color>>> highlightedLines = new ArrayList<>();
+    private final List<List<HighlightedToken>> highlightedLines = new ArrayList<>();
     private final List<String> history = new ArrayList<>();
 
     public CodeInput(Position position, Size size, SyntaxHighlighter highlighter, Font font) {
@@ -75,7 +76,7 @@ public final class CodeInput extends UIElement {
         String[] splitLines = text.split("\n");
         for (String line : splitLines) {
             this.lines.add(line);
-            this.highlightedLines.add(this.highlighter.highlightLine(line, Color.WHITE));
+            this.highlightedLines.add(this.highlighter.line(line, Color.WHITE));
         }
 
         this.updateLineBegin();
@@ -138,7 +139,7 @@ public final class CodeInput extends UIElement {
         
         float lineSingleNumWidth = this.lineBegin / (int) (Math.log10((double) this.lines.size()) + 1);
         for (int i = this.scrollLineIndex; i < lineEndIndex; i++) {
-            List<Pair<String, Color>> line = this.highlightedLines.get(i);
+            List<HighlightedToken> line = this.highlightedLines.get(i);
             boolean selected = this.selectionActive && i >= selectStartLine && i <= selectEndLine;
 
             int visibleIndex = i - this.scrollLineIndex;
@@ -151,19 +152,19 @@ public final class CodeInput extends UIElement {
 
             int spacing = 0;
             int columnIndex = 0;
-            for (Pair<String, Color> word : line) {
+            for (HighlightedToken token : line) {
                 if (selected) {
-                    columnIndex += word.getFirst().length();
+                    columnIndex += token.text().length();
                     int selStart = (i == selectStartLine) ? selectStartColumn : 0;
                     int selEnd = (i == selectEndLine) ? selectEndColumn : this.lines.get(i).length();
 
-                    if (columnIndex > selStart && (columnIndex - word.getFirst().length()) < selEnd) {
-                        int startIndex = Math.max(selStart - (columnIndex - word.getFirst().length()), 0);
-                        int endIndex = Math.min(selEnd - (columnIndex - word.getFirst().length()),
-                                word.getFirst().length());
+                    if (columnIndex > selStart && (columnIndex - token.text().length()) < selEnd) {
+                        int startIndex = Math.max(selStart - (columnIndex - token.text().length()), 0);
+                        int endIndex = Math.min(selEnd - (columnIndex - token.text().length()),
+                                token.text().length());
 
-                        String preSelection = word.getFirst().substring(0, startIndex);
-                        String selection = word.getFirst().substring(startIndex, endIndex);
+                        String preSelection = token.text().substring(0, startIndex);
+                        String selection = token.text().substring(startIndex, endIndex);
 
                         float preSelectionWidth = preSelection.isBlank() ? 0
                                 : this.viewRenderer.getTextSize(preSelection, this.font).getWidth();
@@ -178,12 +179,12 @@ public final class CodeInput extends UIElement {
                     }
                 }
                 this.viewRenderer.drawText(
-                        word.getFirst(),
+                        token.text(),
                         Position.of(this.lineBegin + spacing, y),
-                        word.getSecond(),
+                        token.color(),
                         this.font);
 
-                spacing += this.viewRenderer.getTextSize(word.getFirst(), this.font).getIntWidth();
+                spacing += this.viewRenderer.getTextSize(token.text(), this.font).getIntWidth();
             }
         }
 
@@ -248,7 +249,7 @@ public final class CodeInput extends UIElement {
             line = line.substring(0, startColumn) + replacement + line.substring(endColumn);
             this.lines.set(startLine, line);
             this.highlightedLines.set(startLine,
-                    this.highlighter.highlightLine(line, Color.WHITE));
+                    this.highlighter.line(line, Color.WHITE));
         } else {
             String firstLine = this.lines.get(startLine);
             String lastLine = this.lines.get(endLine);
@@ -256,7 +257,7 @@ public final class CodeInput extends UIElement {
             firstLine = firstLine.substring(0, startColumn) + replacement + lastLine.substring(endColumn);
             this.lines.set(startLine, firstLine);
             this.highlightedLines.set(startLine,
-                    this.highlighter.highlightLine(firstLine, Color.WHITE));
+                    this.highlighter.line(firstLine, Color.WHITE));
 
             for (int i = endLine; i > startLine; i--) {
                 this.lines.remove(i);
@@ -328,7 +329,7 @@ public final class CodeInput extends UIElement {
 
         this.lines.set(this.cursorLineIndex, line);
         this.highlightedLines.set(this.cursorLineIndex,
-                this.highlighter.highlightLine(line, Color.WHITE));
+                this.highlighter.line(line, Color.WHITE));
 
         this.cursorColumnIndex++;
         this.isViewDirty = true;
@@ -363,7 +364,7 @@ public final class CodeInput extends UIElement {
 
             this.lines.set(this.cursorLineIndex - 1, previousLine);
             this.highlightedLines.set(this.cursorLineIndex - 1,
-                    this.highlighter.highlightLine(previousLine, Color.WHITE));
+                    this.highlighter.line(previousLine, Color.WHITE));
 
             this.lines.remove(this.cursorLineIndex);
             this.highlightedLines.remove(this.cursorLineIndex);
@@ -374,7 +375,7 @@ public final class CodeInput extends UIElement {
             line = line.substring(0, this.cursorColumnIndex - 1) + line.substring(this.cursorColumnIndex);
             this.lines.set(this.cursorLineIndex, line);
             this.highlightedLines.set(this.cursorLineIndex,
-                    this.highlighter.highlightLine(line, Color.WHITE));
+                    this.highlighter.line(line, Color.WHITE));
             this.cursorColumnIndex--;
 
         }
@@ -394,11 +395,11 @@ public final class CodeInput extends UIElement {
         line = line.substring(0, this.cursorColumnIndex);
         this.lines.set(this.cursorLineIndex, line);
         this.highlightedLines.set(this.cursorLineIndex,
-                this.highlighter.highlightLine(line, Color.WHITE));
+                this.highlighter.line(line, Color.WHITE));
 
         this.lines.add(this.cursorLineIndex + 1, newLine);
         this.highlightedLines.add(this.cursorLineIndex + 1,
-                this.highlighter.highlightLine(newLine, Color.WHITE));
+                this.highlighter.line(newLine, Color.WHITE));
 
         this.cursorLineIndex++;
         this.cursorColumnIndex = 0;
@@ -464,13 +465,13 @@ public final class CodeInput extends UIElement {
                             + line.substring(this.cursorColumnIndex);
                     this.lines.set(this.cursorLineIndex, line);
                     this.highlightedLines.set(this.cursorLineIndex,
-                            this.highlighter.highlightLine(line, Color.WHITE));
+                            this.highlighter.line(line, Color.WHITE));
                     this.cursorColumnIndex += pasteLine.length();
                 } else {
                     this.cursorLineIndex++;
                     this.lines.add(this.cursorLineIndex, pasteLine);
                     this.highlightedLines.add(this.cursorLineIndex,
-                            this.highlighter.highlightLine(pasteLine, Color.WHITE));
+                            this.highlighter.line(pasteLine, Color.WHITE));
                     this.cursorColumnIndex = pasteLine.length();
                 }
             }

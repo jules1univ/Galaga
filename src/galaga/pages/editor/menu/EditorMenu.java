@@ -184,6 +184,8 @@ public class EditorMenu extends Page<GalagaPage> {
                             Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_LEVEL);
                         case CREATE_SPRITE ->
                             Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_SPRITE);
+                        case CREATE_ENEMY ->
+                            Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_ENEMY);
                     }
                 }
                 case SETTINGS -> Galaga.getContext().getApplication().setCurrentPage(GalagaPage.EDITOR_SETTINGS);
