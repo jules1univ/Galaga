@@ -6,7 +6,8 @@ public record LiteralStringExpression(String value) implements ExpressionBase {
 
     @Override
     public String format() {
-        return "\"" + value + "\"";
+        String escapeValue = value.replace("\n","\\n").replace("\"","\\\"").replace("\t","\\t").replace("\r","\\r");
+        return "\"" + escapeValue + "\"";
     }
     
 }

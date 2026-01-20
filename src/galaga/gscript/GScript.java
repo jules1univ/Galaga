@@ -22,6 +22,9 @@ public class GScript {
         for (GScriptError error : errors) {
             System.out.println(error);
         }
+        for (Program program : gscript.getPrograms()) {
+            System.out.println(program.format());
+        }
     }
 
     private final List<File> files;

@@ -210,6 +210,12 @@ public final class ParserContext {
         return value;
     }
 
+    public Operator getOperatorExpect() throws ParserException {
+        String value = this.current.getValue();
+        this.expect(TokenType.OPERATOR);
+        return Operator.fromText(value);
+    }
+
     public String getErrorContext(String message) {
         StringBuilder sb = new StringBuilder();
         int startLine = this.current.getStart().getLine();

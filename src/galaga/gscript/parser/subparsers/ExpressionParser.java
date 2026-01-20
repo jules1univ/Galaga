@@ -95,32 +95,38 @@ public final class ExpressionParser {
 
     public static boolean isUnaryExpression(ParserContext context) {
         return context.is(Operator.MINUS) || context.is(Operator.PLUS) || context.is(Operator.NOT) ||
+                context.is(Operator.INCREMENT) || context.is(Operator.DECREMENT) ||
                 context.is(Operator.LEFT_PAREN) || context.is(Operator.LEFT_BRACE) ||
                 context.is(TokenType.IDENTIFIER) || isLiteralExpression(context);
     }
 
     public static ExpressionBase parseUnaryExpression(ParserContext context) throws ParserException {
-        if (context.is(Operator.MINUS) || context.is(Operator.PLUS) || context.is(Operator.NOT)) {
+        if (context.is(Operator.MINUS) || context.is(Operator.PLUS) || context.is(Operator.NOT)
+                || context.is(Operator.INCREMENT) || context.is(Operator.DECREMENT)) {
             Operator operator = context.getOperator();
             context.advance();
             return new UnaryExpression(operator, parseUnaryExpression(context));
         }
 
+        ExpressionBase expr;
         if (isFunctionCallExpression(context)) {
-            return parseFunctionCallExpression(context);
-        }
-
-        if (context.is(Operator.LEFT_BRACE)) {
-            return parseStructExpression(context);
-        }
-
-        if (context.isAndAdvance(Operator.LEFT_PAREN)) {
-            ExpressionBase expr = parseExpression(context);
+            expr = parseFunctionCallExpression(context);
+        } else if (context.is(Operator.LEFT_BRACE)) {
+            expr = parseStructExpression(context);
+        } else if (context.isAndAdvance(Operator.LEFT_PAREN)) {
+            expr = parseExpression(context);
             context.expect(Operator.RIGHT_PAREN);
-            return expr;
+        } else {
+            expr = parseLiteralExpression(context);
         }
 
-        return parseLiteralExpression(context);
+        while (context.is(Operator.INCREMENT) || context.is(Operator.DECREMENT)) {
+            Operator operator = context.getOperator();
+            context.advance();
+            expr = new UnaryExpression(operator, expr);
+        }
+
+        return expr;
     }
 
     public static boolean isLiteralExpression(ParserContext context) {
@@ -137,7 +143,7 @@ public final class ExpressionParser {
         if (context.is(TokenType.NUMBER)) {
             String value = context.getValueAndAdvance();
             if (context.isAndAdvance(Operator.DOT)) {
-                if(context.is(TokenType.NUMBER)) {
+                if (context.is(TokenType.NUMBER)) {
                     value += "." + context.getValueAndAdvance();
                 }
                 try {
@@ -169,7 +175,7 @@ public final class ExpressionParser {
             return parseVariableExpression(context);
         }
 
-        throw new ParserException(context, "Expected literal expression.");
+        throw new ParserException(context, "Expected literal expression. %s", context.getCurrentToken());
     }
 
     public static VariableExpression parseVariableExpression(ParserContext context) throws ParserException {
@@ -177,6 +183,10 @@ public final class ExpressionParser {
 
         List<ExpressionBase> members = new ArrayList<>();
         while (context.isAndAdvance(Operator.DOT)) {
+            if(context.is(TokenType.IDENTIFIER) && context.nextIs(Operator.LEFT_PAREN)) {
+                members.add(parseFunctionCallExpression(context));
+                continue;
+            }
             String memberName = context.getValueExpect(TokenType.IDENTIFIER);
             members.add(new VariableExpression(memberName, new ArrayList<>()));
         }

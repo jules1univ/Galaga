@@ -1,3 +1,4 @@
+
 module test;
 
 import std.io.{printf};
@@ -36,10 +37,9 @@ void main() {
     f32 dist = p1.distance(p2);
     printf("Distance between p1 and p2: %f\n", dist);
     
-    modify_point(ref p2, 6, 8);
+    modify_point(p2, 6, 8);
     return;
 }
-
 
 
 void modify_point(ref Point p, i32 new_x, i32 new_y) {
@@ -47,3 +47,7 @@ void modify_point(ref Point p, i32 new_x, i32 new_y) {
     p.y = new_y;
     return;
 }
+
+
+
+

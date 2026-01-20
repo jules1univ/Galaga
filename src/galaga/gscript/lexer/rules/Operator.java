@@ -7,7 +7,6 @@ public enum Operator {
     DIVIDE("/"),
     MODULO("%"),
 
-    ASSIGN("="),
     EQUALS("=="),
     NOT_EQUALS("!="),
     LESS_THAN("<"),
@@ -26,6 +25,8 @@ public enum Operator {
 
     INCREMENT("++"),
     DECREMENT("--"),
+
+    ASSIGN("="),
     ASSIGN_PLUS("+="),
     ASSIGN_MINUS("-="),
     ASSIGN_MULTIPLY("*="),

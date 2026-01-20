@@ -6,11 +6,13 @@ import java.util.Map;
 import java.util.Optional;
 
 import galaga.gscript.ast.expression.ExpressionBase;
+import galaga.gscript.ast.expression.VariableExpression;
 import galaga.gscript.ast.statement.Block;
 import galaga.gscript.ast.statement.ExpressionStatement;
 import galaga.gscript.ast.statement.StatementBase;
 import galaga.gscript.ast.statement.StructStatement;
 import galaga.gscript.ast.statement.VariableStatement;
+import galaga.gscript.ast.statement.AssignStatement;
 import galaga.gscript.ast.statement.logic.BreakStatement;
 import galaga.gscript.ast.statement.logic.ContinueStatement;
 import galaga.gscript.ast.statement.logic.ForStatement;
@@ -58,6 +60,9 @@ public final class StatementParser {
                 } else {
                     throw new ParserException(context, "Unexpected token after type declaration.");
                 }
+
+            } else if (isAssignStatement(context)) {
+                statements.add(parseAssignStatement(context));
             } else {
                 statements.add(parseExpressionStatement(context));
             }
@@ -246,7 +251,7 @@ public final class StatementParser {
     }
 
     public static boolean isVariableStatement(ParserContext context) {
-        return context.nextIs(Operator.ASSIGN);
+       return context.is(TokenType.IDENTIFIER) && context.nextIs(Operator.ASSIGN);
     }
 
     public static VariableStatement parseVariableStatement(ParserContext context, Type type)
@@ -257,6 +262,34 @@ public final class StatementParser {
         ExpressionBase value = ExpressionParser.parseExpression(context);
         context.advanceIfSemicolon();
         return new VariableStatement(type, name, value);
+    }
+
+    public static boolean isAssignStatement(ParserContext context) {
+        return context.is(TokenType.IDENTIFIER) && (context.nextIs(Operator.DOT) ||
+                context.nextIs(Operator.ASSIGN) ||
+                context.nextIs(Operator.ASSIGN_PLUS) ||
+                context.nextIs(Operator.ASSIGN_MINUS) ||
+                context.nextIs(Operator.ASSIGN_MULTIPLY) ||
+                context.nextIs(Operator.ASSIGN_DIVIDE) ||
+                context.nextIs(Operator.ASSIGN_MODULO));
+    }
+
+    public static AssignStatement parseAssignStatement(ParserContext context) throws ParserException {
+        String name = context.getValueExpect(TokenType.IDENTIFIER);
+        List<ExpressionBase> members = new ArrayList<>();
+        while (context.isAndAdvance(Operator.DOT)) {
+            if (context.is(TokenType.IDENTIFIER) && context.nextIs(Operator.LEFT_PAREN)) {
+                members.add(ExpressionParser.parseFunctionCallExpression(context));
+                continue;
+            }
+            String memberName = context.getValueExpect(TokenType.IDENTIFIER);
+            members.add(new VariableExpression(memberName, new ArrayList<>()));
+        }
+
+        Operator op = context.getOperatorExpect();
+        ExpressionBase value = ExpressionParser.parseExpression(context);
+        context.advanceIfSemicolon();
+        return new AssignStatement(name, members, op, value);
     }
 
     public static ExpressionStatement parseExpressionStatement(ParserContext context) throws ParserException {
