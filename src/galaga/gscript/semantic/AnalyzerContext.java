@@ -1,24 +1,27 @@
 package galaga.gscript.semantic;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import galaga.gscript.ast.Program;
+import galaga.gscript.util.Message;
 
 public class AnalyzerContext {
-    private final List<Program> programs;
-    private final Map<String, Program> programMap = new HashMap<>();
+    private final List<Message> messages = new ArrayList<>();
+    private final Map<String, Program> programs;
     private Program current;
 
-    public static AnalyzerContext of(List<Program> programs) {
+    public static AnalyzerContext of(Map<String, Program> programs) {
         return new AnalyzerContext(programs);
     }
 
-    private AnalyzerContext(List<Program> programs) {
+    private AnalyzerContext(Map<String, Program> programs) {
         this.programs = programs;
-        this.current = programs.get(0);
     }
 
- 
+    public List<Message> getMessages() {
+        return messages;
+    }
+
 }
