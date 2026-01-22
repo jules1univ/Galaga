@@ -8,36 +8,31 @@ import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
 import galaga.gscript.lexer.token.Token;
 import galaga.gscript.lexer.token.TokenPosition;
+import galaga.gscript.lexer.token.TokenStream;
 import galaga.gscript.lexer.token.TokenType;
 
 public final class Lexer implements Iterable<Token> {
-    private static final char EOF = '\0';
+    private static final char NO_CHAR = '\0';
+
     private final String source;
     private final List<Token> tokens = new ArrayList<>();
 
-    private char current = EOF;
+    private boolean reachedEnd = false;
+    private char current = NO_CHAR;
     private int index = 0;
     private int line = 1;
     private int column = 1;
 
-    public static Lexer of(String source) {
-        return new Lexer(source);
-    }
-
-    private Lexer(String source) {
+    public Lexer(String source) {
         this.source = source;
     }
 
-    public String getSource() {
-        return this.source;
-    }
-
-    private boolean isEnd() {
+    private boolean isAtEnd() {
         return this.index >= this.source.length();
     }
 
     private void advance() {
-        if (!this.isEnd()) {
+        if (!this.isAtEnd()) {
             this.current = this.source.charAt(this.index);
             this.index++;
             this.column++;
@@ -46,13 +41,13 @@ public final class Lexer implements Iterable<Token> {
                 this.column = 1;
             }
         } else {
-            this.current = '\0';
+            this.current = NO_CHAR;
         }
     }
 
     private char peek() {
         if (this.index >= this.source.length()) {
-            return '\0';
+            return NO_CHAR;
         }
         return this.source.charAt(this.index);
     }
@@ -77,7 +72,7 @@ public final class Lexer implements Iterable<Token> {
         return Token.of(TokenType.IDENTIFIER, position, value);
     }
 
-    private Token numberLiteral() {
+    private Token number() {
         TokenPosition position = TokenPosition.of(this.line, this.column);
         String value = "";
         while (Character.isDigit(current)) {
@@ -87,13 +82,13 @@ public final class Lexer implements Iterable<Token> {
         return Token.of(TokenType.NUMBER, position, value);
     }
 
-    private Token stringLiteral() {
+    private Token string() {
         TokenPosition position = TokenPosition.of(this.line, this.column);
         String value = "";
 
         char quoteType = current;
         this.advance();
-        while (current != quoteType && !isEnd()) {
+        while (current != quoteType && !isAtEnd()) {
             if (current == '\\') {
                 this.advance();
                 switch (current) {
@@ -120,7 +115,7 @@ public final class Lexer implements Iterable<Token> {
         char first = current;
         char second = peek();
 
-        if (second != '\0') {
+        if (second != NO_CHAR) {
             String two = "" + first + second;
             if (Operator.isOperator(two)) {
                 advance();
@@ -148,7 +143,7 @@ public final class Lexer implements Iterable<Token> {
             advance();
             value += current;
             advance();
-            while (current != '\n' && !this.isEnd()) {
+            while (current != '\n' && !this.isAtEnd()) {
                 value += current;
                 advance();
             }
@@ -158,7 +153,7 @@ public final class Lexer implements Iterable<Token> {
             advance();
             value += current;
             advance();
-            while (!(current == '*' && this.peek() == '/') && !this.isEnd()) {
+            while (!(current == '*' && this.peek() == '/') && !this.isAtEnd()) {
                 value += current;
                 advance();
             }
@@ -173,19 +168,28 @@ public final class Lexer implements Iterable<Token> {
         return Token.of(TokenType.UNKNOWN, position, value);
     }
 
-    public List<Token> getTokens() {
-        return this.tokens;
+    public String getSource() {
+        return this.source;
+    }
+
+    public TokenStream lex() {
+        if (!this.reachedEnd) {
+            Iterator<Token> iterator = this.iterator();
+            while (iterator.hasNext()) {
+                iterator.next();
+            }
+        }
+        return new TokenStream(this.tokens);
     }
 
     @Override
     public Iterator<Token> iterator() {
         this.advance();
         return new Iterator<Token>() {
-            private boolean hasEOF = false;
 
             @Override
             public boolean hasNext() {
-                return !this.hasEOF;
+                return !reachedEnd;
             }
 
             @Override
@@ -194,9 +198,9 @@ public final class Lexer implements Iterable<Token> {
                     whitespace();
                 }
 
-                if (current == EOF) {
-                    this.hasEOF = true;
-                    return Token.of(TokenType.EOF, TokenPosition.of(line, column), "");
+                if (current == NO_CHAR) {
+                    reachedEnd = true;
+                    return Token.of(TokenType.EOF, TokenPosition.of(line, column), String.valueOf(NO_CHAR));
                 }
 
                 Token token;
@@ -205,9 +209,9 @@ public final class Lexer implements Iterable<Token> {
                 } else if (Character.isLetter(current) || current == '_') {
                     token = identifier();
                 } else if (Character.isDigit(current)) {
-                    token = numberLiteral();
+                    token = number();
                 } else if (current == '"' || current == '\'') {
-                    token = stringLiteral();
+                    token = string();
                 } else {
                     token = operator();
                 }

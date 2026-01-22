@@ -1,37 +1,28 @@
 package galaga.gscript.lexer.rules;
 
 public enum Keyword {
-    MODULE("module"),
-    IMPORT("import"),
     NATIVE("native"),
 
-    TYPE("type"),
-    STRUCT("struct"),
-    ENUM("enum"),
-
-    EXTENDS("extends"),
     RETURN("return"),
 
+    FN("fn"),
     IF("if"),
     ELSE("else"),
-    SWITCH("switch"),
-    DEFAULT("default"),
-    CASE("case"),
     DO("do"),
     WHILE("while"),
     FOR("for"),
     BREAK("break"),
     CONTINUE("continue"),
 
+    LET("let"),
     CONST("const"),
-    REF("ref"),
 
     TRUE("true"),
     FALSE("false");
 
     private final String text;
 
-    Keyword(String text) {
+    private Keyword(String text) {
         this.text = text;
     }
 

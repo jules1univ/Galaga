@@ -1,5 +1,0 @@
-module std.math;
-
-import std.types.*;
-
-native f32 sqrt(f32 value);

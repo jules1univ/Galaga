@@ -1,82 +1,15 @@
-module test;
-
-import std.io.{printf};
-import std.math.{sqrt};
-import std.types.*;
-
-type Point = struct  {
-    i32 x;
-    i32 y;
-    PointState state;
-};
-
-type PointState = enum {
-    IDLE,
-    MOVING,
-    ATTACKING
-};
-
-f32 distance(const Point other) extends Point {
-    i32 dx = this.x - other.x;
-    i32 dy = this.y - other.y;
-    return sqrt(dx * dx + dy * dy);
-}
-
-bool is_moving() extends PointState {
-    return this == PointState.MOVING || this == PointState.ATTACKING;
-}
-
-Point zero() extends Point {
-    Point p{ x = 0, y = 0, state = PointState.IDLE };
-    return p;   
-}
-
-void update(bool shouldSwitch) extends PointState {
-    if(!this.is_moving() && shouldSwitch) {
-        this = PointState.MOVING;
-    }
-}
-
-void update() extends Point {
-    if (this.state.is_moving()) {
-        this.x += 1;
-        this.y += 1;
-    }
-    else {
-        bool shouldSwitch = this.distance(this.zero()) < 10;
-
-        if(true) {}
-    }
-    return;
-}
 
 
 
-void main() {
-    printf("Hello, World!\n");
+let globalVar = 10;
 
-    const i32 COUNT_TO = 5;
-    for (i32 i = 0; i < COUNT_TO; i++) {
-        printf("Count: %d\n", i);
-    }
+native print(value);
+native len(list);
 
-    Point p1{ x = 3, y = 4 };
-    Point p2{ x = 0, y = 0 };
+fn main() {
+    let localVar = globalVar + 5;
+    print(localVar);
 
-    f32 dist = p1.distance(p2);
-    printf("Distance between p1 and p2: %f\n", dist);
-    
-    modify_point(p2, 6, 8);
-    return;
-}
+    let myList = [1, 2, 3, 4, 5];
 
-
-void modify_point(ref Point p, i32 new_x, i32 new_y) {
-    p.x = new_x;
-    p.y = new_y;
-    return;
-}
-
-
-
-
+}   

@@ -19,19 +19,19 @@ public final class Token {
     }
 
     public TokenPosition getStart() {
-        return start;
+        return this.start;
     }
 
     public TokenPosition getEnd() {
-        return end;
+        return this.end;
     }
 
     public TokenType getType() {
-        return type;
+        return this.type;
     }
 
     public String getValue() {
-        return value;
+        return this.value;
     }
 
     @Override

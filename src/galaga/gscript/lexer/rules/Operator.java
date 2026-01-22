@@ -46,7 +46,7 @@ public enum Operator {
 
     private final String text;
 
-    Operator(String text) {
+    private Operator(String text) {
         this.text = text;
     }
 
