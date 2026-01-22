@@ -30,14 +30,7 @@ public final class OperatorPriority {
 
             Map.entry(Operator.AND, 5),
 
-            Map.entry(Operator.OR, 4),
-
-            Map.entry(Operator.ASSIGN, 2),
-            Map.entry(Operator.ASSIGN_PLUS, 2),
-            Map.entry(Operator.ASSIGN_MINUS, 2),
-            Map.entry(Operator.ASSIGN_MULTIPLY, 2),
-            Map.entry(Operator.ASSIGN_DIVIDE, 2),
-            Map.entry(Operator.ASSIGN_MODULO, 2));
+            Map.entry(Operator.OR, 4));
 
     public static int getPriority(Operator operator) {
         return OPERATOR_PRIORITY_MAP.getOrDefault(operator, -1);
@@ -54,5 +47,14 @@ public final class OperatorPriority {
 
     public static boolean isBinaryOperator(Operator operator) {
         return OPERATOR_PRIORITY_MAP.containsKey(operator);
+    }
+
+    public static boolean isAssignmentOperator(Operator operator) {
+        return operator == Operator.ASSIGN
+                || operator == Operator.ASSIGN_PLUS
+                || operator == Operator.ASSIGN_MINUS
+                || operator == Operator.ASSIGN_MULTIPLY
+                || operator == Operator.ASSIGN_DIVIDE
+                || operator == Operator.ASSIGN_MODULO;
     }
 }

@@ -1,14 +1,14 @@
 package galaga.gscript.formatter;
 
-import java.util.function.Supplier;
+import java.util.Map;
 
-import galaga.gscript.ast.ASTNode;
-import galaga.gscript.ast.ASTVisitor;
+import galaga.gscript.ast.ASTDepthVisitor;
 import galaga.gscript.ast.Program;
 import galaga.gscript.ast.declaration.Declaration;
 import galaga.gscript.ast.declaration.FunctionDeclaration;
 import galaga.gscript.ast.declaration.NativeFunctionDeclaration;
 import galaga.gscript.ast.declaration.VariableDeclaration;
+import galaga.gscript.ast.expression.Expression;
 import galaga.gscript.ast.expression.IdentifierExpression;
 import galaga.gscript.ast.expression.LiteralExpression;
 import galaga.gscript.ast.expression.collection.IndexExpression;
@@ -17,12 +17,13 @@ import galaga.gscript.ast.expression.collection.MapExpression;
 import galaga.gscript.ast.expression.collection.RangeExpression;
 import galaga.gscript.ast.expression.function.CallExpression;
 import galaga.gscript.ast.expression.function.FunctionExpression;
-import galaga.gscript.ast.expression.operator.AssignmentExpression;
 import galaga.gscript.ast.expression.operator.BinaryExpression;
 import galaga.gscript.ast.expression.operator.UnaryExpression;
+import galaga.gscript.ast.statement.AssignmentStatement;
 import galaga.gscript.ast.statement.BlockStatement;
 import galaga.gscript.ast.statement.ExpressionStatement;
 import galaga.gscript.ast.statement.ReturnStatement;
+import galaga.gscript.ast.statement.Statement;
 import galaga.gscript.ast.statement.logic.IfStatement;
 import galaga.gscript.ast.statement.logic.loop.BreakStatement;
 import galaga.gscript.ast.statement.logic.loop.ContinueStatement;
@@ -30,17 +31,19 @@ import galaga.gscript.ast.statement.logic.loop.DoWhileStatement;
 import galaga.gscript.ast.statement.logic.loop.ForStatement;
 import galaga.gscript.ast.statement.logic.loop.WhileStatement;
 
-public final class Formatter implements ASTVisitor<String> {
-    private int indentLevel = 0;
+public final class Formatter extends ASTDepthVisitor<String> {
 
-    private String indent() {
-        return "  ".repeat(indentLevel);
+    public Formatter() {
+        super();
     }
 
-    private void indent(Supplier<Void> action) {
-        indentLevel++;
-        action.get();
-        indentLevel--;
+    public String format(Program program) {
+        return program.accept(this);
+    }
+
+    @Override
+    protected String getDepth() {
+        return "    ".repeat(this.depth);
     }
 
     @Override
@@ -48,13 +51,14 @@ public final class Formatter implements ASTVisitor<String> {
         StringBuilder sb = new StringBuilder();
         Declaration lastDeclaration = null;
         for (Declaration declaration : node.declarations()) {
-            sb.append(declaration.accept(this));
-
-            if (lastDeclaration != null && !lastDeclaration.getClass().equals(declaration.getClass())) {
+            if (lastDeclaration == null || !lastDeclaration.getClass().equals(declaration.getClass())) {
                 sb.append("\n");
             }
+
+            sb.append(declaration.accept(this));
             lastDeclaration = declaration;
         }
+        sb.append("\n");
         return sb.toString();
     }
 
@@ -64,11 +68,10 @@ public final class Formatter implements ASTVisitor<String> {
         sb.append("fn ").append(node.name()).append("(");
         sb.append(String.join(", ", node.parameters()));
         sb.append(") {\n");
-        indent(() -> {
+        depth(() -> {
             sb.append(node.body().accept(this));
-            return null;
         });
-        sb.append(indent()).append("}\n");
+        sb.append(getDepth()).append("}\n");
         return sb.toString();
     }
 
@@ -93,8 +96,13 @@ public final class Formatter implements ASTVisitor<String> {
     @Override
     public String visitBlockStatement(BlockStatement node) {
         StringBuilder sb = new StringBuilder();
-        for (ASTNode statement : node.statements()) {
-            sb.append(indent()).append(statement.accept(this));
+        Statement lastStatement = null;
+        for (Statement statement : node.statements()) {
+            if (lastStatement != null && !lastStatement.getClass().equals(statement.getClass())) {
+                sb.append("\n");
+            }
+            sb.append(getDepth()).append(statement.accept(this));
+            lastStatement = statement;
         }
         return sb.toString();
     }
@@ -103,18 +111,16 @@ public final class Formatter implements ASTVisitor<String> {
     public String visitIfStatement(IfStatement node) {
         StringBuilder sb = new StringBuilder();
         sb.append("if (").append(node.condition().accept(this)).append(") {\n");
-        indent(() -> {
+        depth(() -> {
             sb.append(node.thenBranch().accept(this));
-            return null;
         });
-        sb.append(indent()).append("}");
+        sb.append(this.getDepth()).append("}");
         if (node.elseBranch().isPresent()) {
             sb.append(" else {\n");
-            indent(() -> {
+            depth(() -> {
                 sb.append(node.elseBranch().get().accept(this));
-                return null;
             });
-            sb.append(indent()).append("}");
+            sb.append(getDepth()).append("}");
         }
         sb.append("\n");
         return sb.toString();
@@ -124,11 +130,10 @@ public final class Formatter implements ASTVisitor<String> {
     public String visitWhileStatement(WhileStatement node) {
         StringBuilder sb = new StringBuilder();
         sb.append("while (").append(node.condition().accept(this)).append(") {\n");
-        indent(() -> {
+        depth(() -> {
             sb.append(node.body().accept(this));
-            return null;
         });
-        sb.append(indent()).append("}\n");
+        sb.append(getDepth()).append("}\n");
         return sb.toString();
     }
 
@@ -136,11 +141,10 @@ public final class Formatter implements ASTVisitor<String> {
     public String visitDoWhileStatement(DoWhileStatement node) {
         StringBuilder sb = new StringBuilder();
         sb.append("do {\n");
-        indent(() -> {
+        depth(() -> {
             sb.append(node.body().accept(this));
-            return null;
         });
-        sb.append(indent()).append("} while (").append(node.condition().accept(this)).append(");\n");
+        sb.append(getDepth()).append("} while (").append(node.condition().accept(this)).append(");\n");
         return sb.toString();
     }
 
@@ -149,11 +153,10 @@ public final class Formatter implements ASTVisitor<String> {
         StringBuilder sb = new StringBuilder();
         sb.append("for (");
         sb.append(node.variable()).append(" in ").append(node.iterable().accept(this)).append(") {\n");
-        indent(() -> {
+        depth(() -> {
             sb.append(node.body().accept(this));
-            return null;
         });
-        sb.append(indent()).append("}\n");
+        sb.append(getDepth()).append("}\n");
         return sb.toString();
     }
 
@@ -179,13 +182,21 @@ public final class Formatter implements ASTVisitor<String> {
     }
 
     @Override
+    public String visitAssignmentStatement(AssignmentStatement node) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(node.name()).append(" ").append(node.operator().getText()).append(" ");
+        sb.append(node.value().accept(this)).append(";\n");
+        return sb.toString();
+    }
+
+    @Override
     public String visitExpressionStatement(ExpressionStatement node) {
         return node.expression().accept(this) + ";\n";
     }
 
     @Override
     public String visitBinaryExpression(BinaryExpression node) {
-        return node.left().accept(this) + " " + node.operator() + " " + node.right().accept(this);
+        return node.left().accept(this) + " " + node.operator().getText() + " " + node.right().accept(this);
     }
 
     @Override
@@ -198,14 +209,9 @@ public final class Formatter implements ASTVisitor<String> {
     }
 
     @Override
-    public String visitAssignmentExpression(AssignmentExpression node) {
-        return node.target().accept(this) + " = " + node.value().accept(this);
-    }
-
-    @Override
     public String visitCallExpression(CallExpression node) {
         StringBuilder sb = new StringBuilder();
-        sb.append(node.callee().accept(this)).append("(");
+        sb.append(node.invoker().accept(this)).append("(");
         sb.append(String.join(", ", node.arguments().stream().map(arg -> arg.accept(this)).toList()));
         sb.append(")");
         return sb.toString();
@@ -239,7 +245,9 @@ public final class Formatter implements ASTVisitor<String> {
     public String visitMapExpression(MapExpression node) {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
-        sb.append(node.key().accept(this)).append(": ").append(node.value().accept(this));
+        for (Map.Entry<Expression, Expression> entry : node.entries().entrySet()) {
+            sb.append(entry.getKey().accept(this)).append(": ").append(entry.getValue().accept(this)).append(", ");
+        }
         sb.append("}");
         return sb.toString();
     }
@@ -250,11 +258,10 @@ public final class Formatter implements ASTVisitor<String> {
         sb.append("(");
         sb.append(String.join(", ", node.parameters()));
         sb.append(") => {\n");
-        indent(() -> {
+        depth(() -> {
             sb.append(node.body().accept(this));
-            return null;
         });
-        sb.append(indent()).append("}");
+        sb.append(getDepth()).append("}");
         return sb.toString();
     }
 
@@ -262,4 +269,5 @@ public final class Formatter implements ASTVisitor<String> {
     public String visitRangeExpression(RangeExpression node) {
         return node.start().accept(this) + ".." + node.end().accept(this);
     }
+
 }

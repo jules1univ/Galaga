@@ -11,6 +11,10 @@ public final class Parser {
     }
 
     public Program parse() throws ParseException {
+        if(this.tokens.isAtEnd()) {
+            return new Program();
+        }
+        
         return null;
     }
 }

@@ -11,9 +11,9 @@ import galaga.gscript.ast.expression.collection.MapExpression;
 import galaga.gscript.ast.expression.collection.RangeExpression;
 import galaga.gscript.ast.expression.function.CallExpression;
 import galaga.gscript.ast.expression.function.FunctionExpression;
-import galaga.gscript.ast.expression.operator.AssignmentExpression;
 import galaga.gscript.ast.expression.operator.BinaryExpression;
 import galaga.gscript.ast.expression.operator.UnaryExpression;
+import galaga.gscript.ast.statement.AssignmentStatement;
 import galaga.gscript.ast.statement.BlockStatement;
 import galaga.gscript.ast.statement.ExpressionStatement;
 import galaga.gscript.ast.statement.ReturnStatement;
@@ -33,7 +33,6 @@ public interface ASTVisitor<T> {
 
     T visitNativeFunctionDeclaration(NativeFunctionDeclaration node);
 
-    // Statements
     T visitBlockStatement(BlockStatement node);
 
     T visitIfStatement(IfStatement node);
@@ -50,14 +49,13 @@ public interface ASTVisitor<T> {
 
     T visitContinueStatement(ContinueStatement node);
 
+    T visitAssignmentStatement(AssignmentStatement node);
+
     T visitExpressionStatement(ExpressionStatement node);
 
-    // Expressions
     T visitBinaryExpression(BinaryExpression node);
 
     T visitUnaryExpression(UnaryExpression node);
-
-    T visitAssignmentExpression(AssignmentExpression node);
 
     T visitCallExpression(CallExpression node);
 
