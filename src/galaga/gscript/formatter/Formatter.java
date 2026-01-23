@@ -2,7 +2,7 @@ package galaga.gscript.formatter;
 
 import java.util.Map;
 
-import galaga.gscript.ast.ASTDepthVisitor;
+import galaga.gscript.ast.ASTVisitor;
 import galaga.gscript.ast.Program;
 import galaga.gscript.ast.declaration.Declaration;
 import galaga.gscript.ast.declaration.FunctionDeclaration;
@@ -31,19 +31,27 @@ import galaga.gscript.ast.statement.logic.loop.DoWhileStatement;
 import galaga.gscript.ast.statement.logic.loop.ForStatement;
 import galaga.gscript.ast.statement.logic.loop.WhileStatement;
 
-public final class Formatter extends ASTDepthVisitor<String> {
+public final class Formatter implements ASTVisitor<String> {
 
-    public Formatter() {
+    public static String format(Program program) {
+        Formatter formatter = new Formatter();
+        return  program.accept(formatter);
+    }
+
+    private Formatter() {
         super();
     }
 
-    public String format(Program program) {
-        return program.accept(this);
+    private int indentDepth = 0;
+
+    private void indent(Runnable runnable) {
+        this.indentDepth++;
+        runnable.run();
+        this.indentDepth--;
     }
 
-    @Override
-    protected String getDepth() {
-        return "    ".repeat(this.depth);
+    private String getIndent() {
+        return "    ".repeat(this.indentDepth);
     }
 
     @Override
@@ -68,10 +76,10 @@ public final class Formatter extends ASTDepthVisitor<String> {
         sb.append("fn ").append(node.name()).append("(");
         sb.append(String.join(", ", node.parameters()));
         sb.append(") {\n");
-        depth(() -> {
+        indent(() -> {
             sb.append(node.body().accept(this));
         });
-        sb.append(getDepth()).append("}\n");
+        sb.append(getIndent()).append("}\n");
         return sb.toString();
     }
 
@@ -101,7 +109,7 @@ public final class Formatter extends ASTDepthVisitor<String> {
             if (lastStatement != null && !lastStatement.getClass().equals(statement.getClass())) {
                 sb.append("\n");
             }
-            sb.append(getDepth()).append(statement.accept(this));
+            sb.append(getIndent()).append(statement.accept(this));
             lastStatement = statement;
         }
         return sb.toString();
@@ -111,16 +119,16 @@ public final class Formatter extends ASTDepthVisitor<String> {
     public String visitIfStatement(IfStatement node) {
         StringBuilder sb = new StringBuilder();
         sb.append("if (").append(node.condition().accept(this)).append(") {\n");
-        depth(() -> {
+        indent(() -> {
             sb.append(node.thenBranch().accept(this));
         });
-        sb.append(this.getDepth()).append("}");
+        sb.append(this.getIndent()).append("}");
         if (node.elseBranch().isPresent()) {
             sb.append(" else {\n");
-            depth(() -> {
+            indent(() -> {
                 sb.append(node.elseBranch().get().accept(this));
             });
-            sb.append(getDepth()).append("}");
+            sb.append(getIndent()).append("}");
         }
         sb.append("\n");
         return sb.toString();
@@ -130,10 +138,10 @@ public final class Formatter extends ASTDepthVisitor<String> {
     public String visitWhileStatement(WhileStatement node) {
         StringBuilder sb = new StringBuilder();
         sb.append("while (").append(node.condition().accept(this)).append(") {\n");
-        depth(() -> {
+        indent(() -> {
             sb.append(node.body().accept(this));
         });
-        sb.append(getDepth()).append("}\n");
+        sb.append(getIndent()).append("}\n");
         return sb.toString();
     }
 
@@ -141,10 +149,10 @@ public final class Formatter extends ASTDepthVisitor<String> {
     public String visitDoWhileStatement(DoWhileStatement node) {
         StringBuilder sb = new StringBuilder();
         sb.append("do {\n");
-        depth(() -> {
+        indent(() -> {
             sb.append(node.body().accept(this));
         });
-        sb.append(getDepth()).append("} while (").append(node.condition().accept(this)).append(");\n");
+        sb.append(getIndent()).append("} while (").append(node.condition().accept(this)).append(");\n");
         return sb.toString();
     }
 
@@ -153,10 +161,10 @@ public final class Formatter extends ASTDepthVisitor<String> {
         StringBuilder sb = new StringBuilder();
         sb.append("for (");
         sb.append(node.variable()).append(" in ").append(node.iterable().accept(this)).append(") {\n");
-        depth(() -> {
+        indent(() -> {
             sb.append(node.body().accept(this));
         });
-        sb.append(getDepth()).append("}\n");
+        sb.append(getIndent()).append("}\n");
         return sb.toString();
     }
 
@@ -258,10 +266,10 @@ public final class Formatter extends ASTDepthVisitor<String> {
         sb.append("(");
         sb.append(String.join(", ", node.parameters()));
         sb.append(") => {\n");
-        depth(() -> {
+        indent(() -> {
             sb.append(node.body().accept(this));
         });
-        sb.append(getDepth()).append("}");
+        sb.append(getIndent()).append("}");
         return sb.toString();
     }
 

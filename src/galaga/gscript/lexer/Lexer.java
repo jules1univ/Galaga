@@ -172,7 +172,7 @@ public final class Lexer implements Iterable<Token> {
         return this.source;
     }
 
-    public TokenStream lex() {
+    public TokenStream tokenize() {
         if (!this.reachedEnd) {
             Iterator<Token> iterator = this.iterator();
             while (iterator.hasNext()) {

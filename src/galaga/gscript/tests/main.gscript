@@ -11,5 +11,5 @@ fn main() {
     print(localVar);
 
     let myList = [1, 2, 3, 4, 5];
-
+    print(len(myList));
 }   

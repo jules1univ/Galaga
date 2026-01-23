@@ -1,10 +1,15 @@
 package galaga.gscript.parser;
 
 import galaga.gscript.ast.Program;
+import galaga.gscript.lexer.Lexer;
 import galaga.gscript.lexer.token.TokenStream;
 
 public final class Parser {
     private final TokenStream tokens;
+
+    public Parser(Lexer lexer) {
+        this.tokens = lexer.tokenize();
+    }
 
     public Parser(TokenStream tokens) {
         this.tokens = tokens;
