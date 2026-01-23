@@ -106,7 +106,7 @@ public final class Interpreter implements ASTVisitor<Value> {
             throw new RuntimeException("Function '" + node.name() + "' is already defined in this scope.");
         }
 
-        FunctionValue functionValue = new FunctionValue(node.parameters(), node.body(), this.context.getScope());
+        FunctionValue functionValue = new FunctionValue(Optional.of(node.name()), node.parameters(), node.body(), this.context.getScope(), false);
         this.context.getScope().setVariable(node.name(), functionValue);
         return null;
     }
@@ -134,7 +134,7 @@ public final class Interpreter implements ASTVisitor<Value> {
             throw new RuntimeException("Native function '" + node.name() + "' is not defined.");
         }
 
-        FunctionValue functionValue = new FunctionValue(node.parameters(), null, null);
+        FunctionValue functionValue = new FunctionValue(Optional.of(node.name()), node.parameters(), null, null, true);
         this.context.getScope().setVariable(node.name(), functionValue);
         return null;
     }

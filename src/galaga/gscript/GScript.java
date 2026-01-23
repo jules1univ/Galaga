@@ -21,6 +21,7 @@ import galaga.gscript.ast.expression.operator.BinaryExpression;
 import galaga.gscript.ast.statement.AssignmentStatement;
 import galaga.gscript.ast.statement.BlockStatement;
 import galaga.gscript.ast.statement.ExpressionStatement;
+import galaga.gscript.ast.statement.ReturnStatement;
 import galaga.gscript.ast.statement.logic.IfStatement;
 import galaga.gscript.formatter.Formatter;
 import galaga.gscript.interpreter.Interpreter;
@@ -47,17 +48,20 @@ public class GScript {
                                         new IdentifierExpression("print"),
                                         new LiteralExpression(new IntegerValue(2)),
                                         new LiteralExpression(new IntegerValue(3)))),
-                                false)))),
+                                false),
+                        new ReturnStatement(Optional.of(new IdentifierExpression("my_list")))
+
+                ))),
                 new FunctionDeclaration("main", List.of(), new BlockStatement(List.of(
-                        new AssignmentStatement("list", Operator.ASSIGN, new CallExpression(
-                                new IdentifierExpression("create_list"), List.of()), false),
                         new ExpressionStatement(
                                 new CallExpression(
-                                        new IndexExpression(new IdentifierExpression("list"),
+                                        new IndexExpression(
+                                                new CallExpression(
+                                                        new IdentifierExpression("create_list"),
+                                                        List.of()),
                                                 new LiteralExpression(new IntegerValue(0))),
                                         List.of(
-                                            new LiteralExpression(new StringValue("Hello World !"))
-                                        ))),
+                                                new LiteralExpression(new StringValue("Hello World !"))))),
                         new IfStatement(
                                 new BinaryExpression(
                                         new IdentifierExpression("HELLO"),
@@ -74,7 +78,7 @@ public class GScript {
         Interpreter interpreter = new Interpreter();
         interpreter.getContext().defineNative("print", (Map<String, Value> funcArgs) -> {
             for (Value val : funcArgs.values()) {
-                System.out.println(val);
+                System.out.println(val.getValue().toString());
             }
             return null;
         });

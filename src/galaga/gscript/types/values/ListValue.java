@@ -3,6 +3,12 @@ package galaga.gscript.types.values;
 import java.util.List;
 
 public record ListValue(List<Value> value) implements Value {
+
+    @Override
+    public List<Value> getValue() {
+        return this.value;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

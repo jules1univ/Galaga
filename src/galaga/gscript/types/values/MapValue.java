@@ -3,6 +3,13 @@ package galaga.gscript.types.values;
 import java.util.Map;
 
 public record MapValue(Map<Value, Value> value) implements Value {
+
+    
+    @Override
+    public Map<Value, Value> getValue() {
+        return this.value;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

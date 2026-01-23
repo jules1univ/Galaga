@@ -336,62 +336,73 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
 
     @Override
     public Value visitCallExpression(CallExpression node) {
-        if (node.invoker() instanceof IdentifierExpression func) {
-            String functionName = func.name();
-            Optional<Value> functionOpt = this.context.getScope().getVariable(functionName);
-            if (functionOpt.isEmpty() || !(functionOpt.get() instanceof FunctionValue function)) {
-                throw new RuntimeException("Function '" + functionName + "' is not defined.");
+
+        Optional<FunctionValue> functionOpt = Optional.empty();
+        if (node.invoker() instanceof IdentifierExpression identExpr) {
+
+            if (!this.context.getScope().hasVariable(identExpr.name())) {
+                throw new RuntimeException("Function '" + identExpr.name() + "' is not defined.");
             }
 
-            if (function.parameters().size() != node.arguments().size()) {
-                throw new RuntimeException("Function '" + functionName + "' expects " + function.parameters().size()
-                        + " arguments, but got " + node.arguments().size() + ".");
+            Value rawValue = this.context.getScope().getVariable(identExpr.name()).get();
+            if (!(rawValue instanceof FunctionValue funcVal)) {
+                throw new RuntimeException("Object '" + identExpr.name() + "' is not a function.");
             }
 
-            boolean isNative = function.body() == null && function.parent() == null;
-            return this.context.scope(
-                    isNative ? this.context.getScope() : function.parent(),
-                    (Void v) -> {
-                        Map<String, Value> argsMap = new HashMap<>();
-                        for (int i = 0; i < function.parameters().size(); i++) {
-                            String paramName = function.parameters().get(i);
-                            Value argValue = node.arguments().get(i).accept(this.context.getInterpreter());
-                            this.context.getScope().setVariable(paramName, argValue);
-                            argsMap.put(paramName, argValue);
-                        }
-                        if (isNative) {
-                            if (!this.context.isNativeDefined(functionName)) {
-                                throw new RuntimeException("Native function '" + functionName + "' is not defined.");
-                            }
-                            return this.context.getNative(functionName).apply(argsMap);
-                        } else {
-                            return this.context.function((Void vv) -> {
-                                return function.body().accept(this.context.getInterpreter());
-                            });
-                        }
-                    });
-
+            functionOpt = Optional.of(funcVal);
         } else if (node.invoker() instanceof FunctionExpression funcExpr) {
-            FunctionValue function = new FunctionValue(funcExpr.parameters(), funcExpr.body(), this.context.getScope());
-
-            if (function.parameters().size() != node.arguments().size()) {
-                throw new RuntimeException("Function expects " + function.parameters().size()
-                        + " arguments, but got " + node.arguments().size() + ".");
+            functionOpt = Optional
+                    .of(new FunctionValue(Optional.empty(), funcExpr.parameters(), funcExpr.body(),
+                            this.context.getScope(), false));
+        } else if (node.invoker() instanceof IndexExpression indexExpr) {
+            Value rawFunction = this.visitIndexExpression(indexExpr);
+            if (!(rawFunction instanceof FunctionValue funcVal)) {
+                throw new RuntimeException("The indexed value is not a function.");
             }
-
-            return this.context.scope(function.parent(), (Void v) -> {
-                for (int i = 0; i < function.parameters().size(); i++) {
-                    String paramName = function.parameters().get(i);
-                    Value argValue = node.arguments().get(i).accept(this.context.getInterpreter());
-                    this.context.getScope().setVariable(paramName, argValue);
-                }
-                return this.context.function((Void vv) -> {
-                    return function.body().accept(this.context.getInterpreter());
-                });
-            });
+            functionOpt = Optional.of(funcVal);
         }
 
-        throw new RuntimeException("Invalid function call.");
+        if (functionOpt.isEmpty()) {
+            throw new RuntimeException("Invalid function call.");
+        }
+
+        FunctionValue function = functionOpt.get();
+        if (function.parameters().size() != node.arguments().size()) {
+            throw new RuntimeException(
+                    "Function '" + function.name().orElse("<anonymous>") + "' expects " + function.parameters().size()
+                            + " arguments, but got " + node.arguments().size() + ".");
+        }
+
+        if (function.isNative()) {
+            if (function.name().isEmpty()) {
+                throw new RuntimeException("Native function must have a name.");
+            }
+
+            if (!this.context.isNativeDefined(function.name().get())) {
+                throw new RuntimeException("Native function '" + function.name().get() + "' is not defined.");
+            }
+        }
+
+        return this.context.scope(
+                function.isNative() ? this.context.getScope() : function.parent(),
+                (Void v) -> {
+                    Map<String, Value> argsMap = new HashMap<>();
+                    for (int i = 0; i < function.parameters().size(); i++) {
+                        String paramName = function.parameters().get(i);
+                        Value argValue = node.arguments().get(i).accept(this.context.getInterpreter());
+
+                        this.context.getScope().setVariable(paramName, argValue);
+                        argsMap.put(paramName, argValue);
+                    }
+
+                    if (function.isNative()) {
+                        return this.context.getNative(function.name().get()).apply(argsMap);
+                    } else {
+                        return this.context.function((Void vv) -> {
+                            return function.body().accept(this.context.getInterpreter());
+                        });
+                    }
+                });
     }
 
     @Override
@@ -461,7 +472,12 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
 
     @Override
     public Value visitFunctionExpression(FunctionExpression node) {
-        return new FunctionValue(node.parameters(), node.body(), this.context.getScope());
+        return new FunctionValue(
+                Optional.empty(),
+                node.parameters(),
+                node.body(),
+                this.context.getScope(),
+                false);
     }
 
     @Override
