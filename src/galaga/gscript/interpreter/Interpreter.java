@@ -28,6 +28,9 @@ import galaga.gscript.ast.statement.logic.loop.ContinueStatement;
 import galaga.gscript.ast.statement.logic.loop.DoWhileStatement;
 import galaga.gscript.ast.statement.logic.loop.ForStatement;
 import galaga.gscript.ast.statement.logic.loop.WhileStatement;
+import galaga.gscript.interpreter.subinterpreter.DeclarationInterpreter;
+import galaga.gscript.interpreter.subinterpreter.ExpressionInterpreter;
+import galaga.gscript.interpreter.subinterpreter.StatementInterpreter;
 import galaga.gscript.types.values.FunctionValue;
 import galaga.gscript.types.values.Value;
 
@@ -35,12 +38,14 @@ public final class Interpreter implements ASTVisitor<Value> {
     private final InterpreterContext context;
     private final ExpressionInterpreter expr;
     private final StatementInterpreter stmt;
+    private final DeclarationInterpreter decl;
 
     public Interpreter() {
         super();
         this.context = new InterpreterContext(this);
-        this.expr = new ExpressionInterpreter(this.context);
+        this.decl = new DeclarationInterpreter(this.context);
         this.stmt = new StatementInterpreter(this.context);
+        this.expr = new ExpressionInterpreter(this.context);
     }
 
     public void run(Program program) {
@@ -102,41 +107,17 @@ public final class Interpreter implements ASTVisitor<Value> {
 
     @Override
     public Value visitFunctionDeclaration(FunctionDeclaration node) {
-        if (this.context.getScope().hasVariable(node.name())) {
-            throw new RuntimeException("Function '" + node.name() + "' is already defined in this scope.");
-        }
-
-        FunctionValue functionValue = new FunctionValue(Optional.of(node.name()), node.parameters(), node.body(), this.context.getScope(), false);
-        this.context.getScope().setVariable(node.name(), functionValue);
-        return null;
+        return this.decl.visitFunctionDeclaration(node);
     }
 
     @Override
     public Value visitVariableDeclaration(VariableDeclaration node) {
-        if (this.context.getScope().hasVariable(node.name()) || this.context.getScope().hasConstant(node.name())) {
-            throw new RuntimeException("Object '" + node.name() + "' is already defined in this scope.");
-        }
-        if (node.isConstant()) {
-            this.context.getScope().defineConstant(node.name(), node.value().accept(this));
-        } else {
-            this.context.getScope().setVariable(node.name(), node.value().accept(this));
-        }
-        return null;
+        return this.decl.visitVariableDeclaration(node);
     }
 
     @Override
     public Value visitNativeFunctionDeclaration(NativeFunctionDeclaration node) {
-        if (this.context.getScope().hasVariable(node.name())) {
-            throw new RuntimeException("Function '" + node.name() + "' is already defined in this scope.");
-        }
-
-        if (!this.context.isNativeDefined(node.name())) {
-            throw new RuntimeException("Native function '" + node.name() + "' is not defined.");
-        }
-
-        FunctionValue functionValue = new FunctionValue(Optional.of(node.name()), node.parameters(), null, null, true);
-        this.context.getScope().setVariable(node.name(), functionValue);
-        return null;
+        return this.decl.visitNativeFunctionDeclaration(node);
     }
 
     @Override

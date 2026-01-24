@@ -1,4 +1,4 @@
-package galaga.gscript.interpreter;
+package galaga.gscript.interpreter.subinterpreter;
 
 import galaga.gscript.ast.expression.IdentifierExpression;
 import galaga.gscript.ast.expression.operator.BinaryExpression;
@@ -14,6 +14,7 @@ import galaga.gscript.ast.statement.logic.loop.ContinueStatement;
 import galaga.gscript.ast.statement.logic.loop.DoWhileStatement;
 import galaga.gscript.ast.statement.logic.loop.ForStatement;
 import galaga.gscript.ast.statement.logic.loop.WhileStatement;
+import galaga.gscript.interpreter.InterpreterContext;
 import galaga.gscript.lexer.rules.Operator;
 import galaga.gscript.lexer.rules.OperatorPriority;
 import galaga.gscript.types.values.BooleanValue;

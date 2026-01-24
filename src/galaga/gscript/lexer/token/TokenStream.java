@@ -13,6 +13,14 @@ public final class TokenStream {
         this.tokens = tokens;
     }
 
+    public int begin() {
+        return index;
+    }
+
+    public List<Token> end(int begin) {
+        return tokens.subList(begin, index);
+    }
+
     public Token peek() {
         return peek(0);
     }
@@ -40,55 +48,55 @@ public final class TokenStream {
         return this.previous();
     }
 
-    public void consume(TokenType type, String message) throws TokenException {
-        if (this.check(type)) {
+    public Token consume(TokenType type, String message) throws TokenException {
+        if (this.check(type, 0)) {
             this.advance();
-            return;
+            return this.previous();
         }
         throw new TokenException(this.peek(), message);
     }
 
-    public void consume(Keyword keyword, String message) throws TokenException {
-        if (this.check(keyword)) {
+    public Token consume(Keyword keyword, String message) throws TokenException {
+        if (this.check(keyword, 0)) {
             this.advance();
-            return;
+            return this.previous();
         }
         throw new TokenException(this.peek(), message);
     }
 
-    public void consume(Operator operator, String message) throws TokenException {
-        if (this.check(operator)) {
+    public Token consume(Operator operator, String message) throws TokenException {
+        if (this.check(operator, 0)) {
             this.advance();
-            return;
+            return this.previous();
         }
         throw new TokenException(this.peek(), message);
     }
 
-    public boolean check(TokenType type) {
-        if (this.isAtEnd()) {
+    public boolean check(TokenType type, int index) {
+        if (this.isAtEnd() || index >= tokens.size()) {
             return false;
         }
-        return peek().getType() == type;
+        return peek(index).getType() == type;
     }
 
-    public boolean check(Keyword keyword) {
-        if (this.isAtEnd()) {
+    public boolean check(Keyword keyword, int index) {
+        if (this.isAtEnd() || index >= tokens.size()) {
             return false;
         }
-        Token token = peek();
+        Token token = peek(index);
         return token.getType() == TokenType.KEYWORD && token.getValue().equals(keyword.getText());
     }
 
-    public boolean check(Operator operator) {
-        if (this.isAtEnd()) {
+    public boolean check(Operator operator, int index) {
+        if (this.isAtEnd() || index >= tokens.size()) {
             return false;
         }
-        Token token = peek();
+        Token token = peek(index);
         return token.getType() == TokenType.OPERATOR && token.getValue().equals(operator.getText());
     }
 
     public boolean match(TokenType type) {
-        if (this.check(type)) {
+        if (this.check(type, 0)) {
             this.advance();
             return true;
         }
@@ -96,7 +104,7 @@ public final class TokenStream {
     }
 
     public boolean match(Keyword keyword) {
-        if (this.check(keyword)) {
+        if (this.check(keyword, 0)) {
             this.advance();
             return true;
         }
@@ -104,7 +112,7 @@ public final class TokenStream {
     }
 
     public boolean match(Operator operator) {
-        if (this.check(operator)) {
+        if (this.check(operator, 0)) {
             this.advance();
             return true;
         }

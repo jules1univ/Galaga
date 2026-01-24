@@ -1,5 +1,10 @@
 package galaga.gscript.lexer.token;
 
+import java.security.Key;
+
+import galaga.gscript.lexer.rules.Keyword;
+import galaga.gscript.lexer.rules.Operator;
+
 public final class Token {
     private final TokenPosition start;
     private final TokenPosition end;
@@ -32,6 +37,20 @@ public final class Token {
 
     public String getValue() {
         return this.value;
+    }
+
+    public Operator getOperator() throws TokenException {
+        if (this.type != TokenType.OPERATOR) {
+            throw new TokenException(this, "Token is not an operator");
+        }
+        return Operator.fromText(this.value);
+    }
+
+    public Keyword getKeyword() throws TokenException {
+        if (this.type != TokenType.KEYWORD) {
+            throw new TokenException(this, "Token is not a keyword");
+        }
+        return Keyword.fromText(this.value);
     }
 
     @Override
