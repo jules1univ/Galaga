@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import galaga.gscript.ast.expression.Expression;
+import galaga.gscript.ast.statement.AssignmentStatement;
 import galaga.gscript.ast.statement.BlockStatement;
 import galaga.gscript.ast.statement.ExpressionStatement;
 import galaga.gscript.ast.statement.ReturnStatement;
@@ -17,6 +18,7 @@ import galaga.gscript.ast.statement.logic.loop.ForStatement;
 import galaga.gscript.ast.statement.logic.loop.WhileStatement;
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
+import galaga.gscript.lexer.rules.OperatorPriority;
 import galaga.gscript.lexer.token.Token;
 import galaga.gscript.lexer.token.TokenException;
 import galaga.gscript.lexer.token.TokenStream;
@@ -72,6 +74,8 @@ public class StatementParser extends SubParser {
             return this.parseBreakStatement();
         } else if (this.isContinueStatement()) {
             return this.parseContinueStatement();
+        } else if (this.isAssignmentStatement()) {
+            return this.parseAssignmentStatement();
         }
         return this.parseExpressionStatement();
     }
@@ -102,6 +106,22 @@ public class StatementParser extends SubParser {
 
     private boolean isContinueStatement() {
         return this.tokens.check(Keyword.CONTINUE, 0);
+    }
+
+    private boolean isAssignmentStatement() throws TokenException {
+        if (!this.tokens.check(TokenType.KEYWORD, 0)) {
+            return false;
+        }
+
+        if (!this.tokens.check(TokenType.IDENTIFIER, 1)) {
+            return false;
+        }
+
+        Token opToken = this.tokens.peek(2);
+        if (!opToken.is(TokenType.OPERATOR)) {
+            return false;
+        }
+        return OperatorPriority.isAssignmentOperator(opToken.getOperator());
     }
 
     private IfStatement parseIfStatement() throws TokenException {
@@ -261,6 +281,31 @@ public class StatementParser extends SubParser {
 
         List<Token> consumedTokens = this.tokens.end(index);
         return new galaga.gscript.ast.statement.logic.loop.ContinueStatement();
+    }
+
+    private AssignmentStatement parseAssignmentStatement() throws TokenException {
+        int index = this.tokens.begin();
+
+        Keyword vardecl = this.tokens.consume(TokenType.KEYWORD, "Expected 'const' or 'let' keyword").getKeyword();
+        if (vardecl != Keyword.LET && vardecl != Keyword.CONST) {
+            this.parser.reportError(tokens.current(), "Expected 'const' or 'let' keyword");
+        }
+        boolean isConstant = (vardecl == Keyword.CONST);
+        String name = this.tokens.consume(TokenType.IDENTIFIER, "Expected variable name").getValue();
+        Operator operator = this.tokens.consume(TokenType.OPERATOR, "Expected assignment operator").getOperator();
+
+        Expression value = null;
+        try {
+            value = this.parser.getExpressionParser().parseExpression();
+        } catch (TokenException e) {
+            this.parser.reportError(tokens.current(), e.getMessage());
+            this.tokens.advanceUntil(Operator.SEMICOLON);
+            return null;
+        }
+        this.tokens.match(Operator.SEMICOLON);
+
+        List<Token> consumedTokens = this.tokens.end(index);
+        return new AssignmentStatement(name, operator, value, isConstant);
     }
 
     private ExpressionStatement parseExpressionStatement() throws TokenException {

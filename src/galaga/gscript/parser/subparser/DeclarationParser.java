@@ -41,16 +41,16 @@ public class DeclarationParser extends SubParser {
 
     public FunctionDeclaration parseFunctionDeclaration() throws TokenException {
         int index = this.tokens.begin();
-        
+
         this.tokens.consume(Keyword.FN, "Expected 'fn' keyword");
         String name = this.tokens.consume(TokenType.IDENTIFIER, "Expected function name").getValue();
 
-        if(!this.tokens.match(Operator.LEFT_PAREN)) {
+        if (!this.tokens.match(Operator.LEFT_PAREN)) {
             this.parser.reportError(tokens.current(), "Expected '(' after function name");
         }
-        
+
         List<String> parameters = parseParameterList();
-        
+
         if (!this.tokens.match(Operator.RIGHT_PAREN)) {
             this.parser.reportError(tokens.current(), "Expected ')' after parameters");
         }
@@ -67,7 +67,7 @@ public class DeclarationParser extends SubParser {
         this.tokens.consume(Keyword.NATIVE, "Expected 'native' keyword");
         String name = this.tokens.consume(TokenType.IDENTIFIER, "Expected native function name").getValue();
 
-        if(!this.tokens.match(Operator.LEFT_PAREN)) {
+        if (!this.tokens.match(Operator.LEFT_PAREN)) {
             this.parser.reportError(tokens.current(), "Expected '(' after native function name");
         }
 
@@ -84,18 +84,19 @@ public class DeclarationParser extends SubParser {
     public VariableDeclaration parseVariableDeclaration() throws TokenException {
         int index = this.tokens.begin();
 
-        this.tokens.consume(TokenType.KEYWORD, "Expected 'const' or 'let' keyword");
-
-        boolean isConstant = this.tokens.previous().is(Keyword.CONST);
+        Keyword vardecl = this.tokens.consume(TokenType.KEYWORD, "Expected 'const' or 'let' keyword").getKeyword();
+        if (vardecl != Keyword.LET && vardecl != Keyword.CONST) {
+            this.parser.reportError(tokens.current(), "Expected 'const' or 'let' keyword");
+        }
+        boolean isConstant = (vardecl == Keyword.CONST);
         String name = this.tokens.consume(TokenType.IDENTIFIER, "Expected variable name").getValue();
 
-        if(!this.tokens.match(Operator.ASSIGN))
-        {
+        if (!this.tokens.match(Operator.ASSIGN)) {
             this.parser.reportError(tokens.current(), "Expected '=' after variable name");
         }
 
         Expression value = null;
-        try{
+        try {
             value = this.parser.getExpressionParser().parseExpression();
         } catch (TokenException e) {
             this.parser.reportError(tokens.current(), e.getMessage());
