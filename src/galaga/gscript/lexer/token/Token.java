@@ -1,7 +1,5 @@
 package galaga.gscript.lexer.token;
 
-import java.security.Key;
-
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
 
@@ -53,13 +51,20 @@ public final class Token {
         return Keyword.fromText(this.value);
     }
 
+    public boolean is(TokenType type) {
+        return this.type == type;
+    }
+
+    public boolean is(Keyword keyword) {
+        return Keyword.isKeyword(this.value) && this.value.equals(keyword.getText());
+    }
+
+    public boolean is(Operator operator) {
+        return Operator.isOperator(this.value) && this.value.equals(operator.getText());
+    }
+
     @Override
     public String toString() {
-        return "Token{" +
-                "start=" + start +
-                ", end=" + end +
-                ", type=" + type +
-                ", value='" + value + '\'' +
-                '}';
+        return type + "('" + value + "')";
     }
 }

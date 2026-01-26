@@ -120,7 +120,7 @@ public final class Formatter implements ASTVisitor<String> {
         StringBuilder sb = new StringBuilder();
         sb.append("if (").append(node.condition().accept(this)).append(") {\n");
         indent(() -> {
-            sb.append(node.thenBranch().accept(this));
+            sb.append(node.body().accept(this));
         });
         sb.append(this.getIndent()).append("}");
         if (node.elseBranch().isPresent()) {

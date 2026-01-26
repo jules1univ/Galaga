@@ -1,18 +1,18 @@
 package galaga.gscript.parser.subparser;
 
 import galaga.gscript.ast.expression.Expression;
+import galaga.gscript.lexer.token.TokenException;
 import galaga.gscript.lexer.token.TokenStream;
+import galaga.gscript.parser.Parser;
 
-public class ExpressionParser  {
+public class ExpressionParser extends SubParser {
 
-    private final TokenStream tokens;
 
-    public ExpressionParser(TokenStream tokens) {
-        super();
-        this.tokens = tokens;
+    public ExpressionParser(Parser parser, TokenStream tokens) {
+        super(parser, tokens);
     }
 
-    public Expression parseExpression() {
+    public Expression parseExpression() throws TokenException {
         return null;
     }
 }

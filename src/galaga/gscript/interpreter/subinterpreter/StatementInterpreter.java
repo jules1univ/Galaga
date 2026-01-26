@@ -54,7 +54,7 @@ public class StatementInterpreter implements StatementVisitor<Value> {
         if (node.condition().accept(this.context.getInterpreter()) instanceof BooleanValue boolVal) {
             if (boolVal.value()) {
                 this.context.scope(() -> {
-                    node.thenBranch().accept(this.context.getInterpreter());
+                    node.body().accept(this.context.getInterpreter());
                 });
             } else if (node.elseBranch().isPresent()) {
                 this.context.scope(() -> {
