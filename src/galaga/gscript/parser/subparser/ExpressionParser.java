@@ -87,7 +87,18 @@ public class ExpressionParser extends SubParser {
         } else if (this.tokens.check(Operator.LEFT_BRACE)) {
             return this.parseMapExpression();
         } else if (this.tokens.check(Operator.LEFT_PAREN)) {
-            return this.parseFunctionExpression();
+            int func = this.tokens.checkUntil(Operator.ASSIGN);
+            if(func != -1 && this.tokens.check(Operator.GREATER_THAN, func+1)) {
+                return this.parseFunctionExpression();
+            }
+            else{
+                this.tokens.consume(Operator.LEFT_PAREN, "Expected '('");
+                Expression expr = this.parseExpression();
+                if (!this.tokens.match(Operator.RIGHT_PAREN)) {
+                    this.parser.report(this.tokens.current(), "Expected ')' after expression");
+                }
+                return expr;
+            }
         } else {
             Expression expr = this.parseLiteralExpression();
 

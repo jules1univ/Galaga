@@ -216,8 +216,8 @@ public final class Formatter implements ASTVisitor<String> {
 
     @Override
     public String visitBinaryExpression(BinaryExpression node) {
-        return node.left().accept(this) + " " + node.operator().getOperator().getText() + " "
-                + node.right().accept(this);
+        return "("+node.left().accept(this) + " " + node.operator().getOperator().getText() + " "
+                + node.right().accept(this)+")";
     }
 
     @Override

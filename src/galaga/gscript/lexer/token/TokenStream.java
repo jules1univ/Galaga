@@ -114,6 +114,17 @@ public final class TokenStream implements Iterable<Token> {
         return check(operator, 0);
     }
 
+    public int checkUntil(Operator... operators) {
+        for (int offset = 0; offset < this.tokens.size(); offset++) {
+            for (Operator operator : operators) {
+                if (check(operator, offset)) {
+                    return offset;
+                }
+            }
+        }
+        return -1;
+    }
+
     public boolean check(TokenType... types) {
         for (int i = 0; i < types.length; i++) {
             if (!check(types[i], i)) {

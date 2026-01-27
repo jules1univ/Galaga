@@ -1,6 +1,4 @@
 
-
-
 let globalVar = 10;
 const HELLO = "test passed";
 
