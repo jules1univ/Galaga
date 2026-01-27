@@ -1,7 +1,9 @@
 package galaga.gscript.parser.subparser;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import galaga.gscript.ast.expression.Expression;
@@ -21,6 +23,7 @@ import galaga.gscript.lexer.rules.Operator;
 import galaga.gscript.lexer.rules.OperatorPriority;
 import galaga.gscript.lexer.token.Token;
 import galaga.gscript.lexer.token.TokenException;
+import galaga.gscript.lexer.token.TokenRange;
 import galaga.gscript.lexer.token.TokenStream;
 import galaga.gscript.lexer.token.TokenType;
 import galaga.gscript.parser.Parser;
@@ -32,9 +35,11 @@ public class StatementParser extends SubParser {
     }
 
     public BlockStatement parseBlockStatement() {
+        Token start = this.tokens.current();
+
         List<Statement> statements = new ArrayList<>();
         if (!this.tokens.match(Operator.LEFT_BRACE)) {
-            this.parser.reportError(this.tokens.current(), "Expected '{' to begin block statement");
+            this.parser.report(this.tokens.current(), "Expected '{' to begin block statement");
         }
 
         while (!this.tokens.check(Operator.RIGHT_BRACE, 0) && !this.tokens.isAtEnd()) {
@@ -43,7 +48,7 @@ public class StatementParser extends SubParser {
             try {
                 stmt = this.parseStatement();
             } catch (TokenException e) {
-                this.parser.reportError(tokens.current(), e.getMessage());
+                this.parser.report(tokens.current(), e.getMessage());
                 this.tokens.advanceUntil(Operator.SEMICOLON, Operator.RIGHT_BRACE);
             }
 
@@ -53,10 +58,12 @@ public class StatementParser extends SubParser {
         }
 
         if (!this.tokens.match(Operator.RIGHT_BRACE)) {
-            this.parser.reportError(this.tokens.current(), "Expected '{' to begin block statement");
+            this.parser.report(this.tokens.current(), "Expected '{' to begin block statement");
         }
         this.tokens.match(Operator.SEMICOLON);
-        return new BlockStatement(statements);
+
+        Token end = this.tokens.previous();
+        return new BlockStatement(statements, TokenRange.of(start, end));
     }
 
     private Statement parseStatement() throws TokenException {
@@ -125,125 +132,134 @@ public class StatementParser extends SubParser {
     }
 
     private IfStatement parseIfStatement() throws TokenException {
-        int index = this.tokens.begin();
+        Token start = this.tokens.current();
+        Map<Expression, BlockStatement> ifElseBranch = new LinkedHashMap<>();
+        while (this.tokens.match(Keyword.IF) && !this.tokens.isAtEnd()) {
+            if (ifElseBranch.size() > 0) {
+                if (!this.tokens.match(Keyword.ELSE)) {
+                    this.parser.report(this.tokens.current(), "Expected 'else' after 'if' branch");
+                }
+            }
 
-        this.tokens.consume(Keyword.IF, "Expected 'if' keyword");
+            if (!this.tokens.match(Operator.LEFT_PAREN)) {
+                this.parser.report(tokens.current(), "Expected '(' after 'if' or 'else if'");
+            }
 
-        if (!this.tokens.match(Operator.LEFT_PAREN)) {
-            this.parser.reportError(tokens.current(), "Expected '(' after 'if'");
+            Expression condition = null;
+            try {
+                condition = this.parser.getExpressionParser().parseExpression();
+            } catch (TokenException e) {
+                this.parser.report(tokens.current(), e.getMessage());
+                this.tokens.advanceUntil(Operator.RIGHT_PAREN);
+                return null;
+            }
+
+            if (!this.tokens.match(Operator.RIGHT_PAREN)) {
+                this.parser.report(tokens.current(), "Expected ')' after if/else if condition");
+            }
+
+            BlockStatement body = this.parseBlockStatement();
+            ifElseBranch.put(condition, body);
         }
-
-        Expression condition = null;
-        try {
-            condition = this.parser.getExpressionParser().parseExpression();
-        } catch (TokenException e) {
-            this.parser.reportError(tokens.current(), e.getMessage());
-            this.tokens.advanceUntil(Operator.RIGHT_PAREN);
-            return null;
-        }
-
-        if (!this.tokens.match(Operator.RIGHT_PAREN)) {
-            this.parser.reportError(tokens.current(), "Expected ')' after if condition");
-        }
-
-        BlockStatement body = this.parseBlockStatement();
 
         Optional<BlockStatement> elseBranch = Optional.empty();
         if (this.tokens.match(Keyword.ELSE)) {
             elseBranch = Optional.of(this.parseBlockStatement());
         }
 
-        List<Token> consumedTokens = this.tokens.end(index);
-        return new IfStatement(condition, body, elseBranch);
+        Token end = this.tokens.previous();
+        return new IfStatement(ifElseBranch, elseBranch, TokenRange.of(start, end));
     }
 
     private WhileStatement parseWhileStatement() throws TokenException {
-        int index = this.tokens.begin();
+        Token start = this.tokens.current();
 
         this.tokens.consume(Keyword.WHILE, "Expected 'while' keyword");
 
         if (!this.tokens.match(Operator.LEFT_PAREN)) {
-            this.parser.reportError(tokens.current(), "Expected '(' after 'while'");
+            this.parser.report(tokens.current(), "Expected '(' after 'while'");
         }
 
         Expression condition = null;
         try {
             condition = this.parser.getExpressionParser().parseExpression();
         } catch (TokenException e) {
-            this.parser.reportError(tokens.current(), e.getMessage());
+            this.parser.report(tokens.current(), e.getMessage());
             this.tokens.advanceUntil(Operator.RIGHT_PAREN);
             return null;
         }
 
         if (!this.tokens.match(Operator.RIGHT_PAREN)) {
-            this.parser.reportError(tokens.current(), "Expected ')' after while condition");
+            this.parser.report(tokens.current(), "Expected ')' after while condition");
         }
 
         BlockStatement body = this.parseBlockStatement();
 
-        List<Token> consumedTokens = this.tokens.end(index);
-        return new WhileStatement(condition, body);
+        Token end = this.tokens.previous();
+        return new WhileStatement(condition, body, TokenRange.of(start, end));
     }
 
     private DoWhileStatement parseDoWhileStatement() throws TokenException {
-        int index = this.tokens.begin();
+        Token start = this.tokens.current();
 
         this.tokens.consume(Keyword.DO, "Expected 'do' keyword");
 
         BlockStatement body = this.parseBlockStatement();
 
         if (!this.tokens.match(Keyword.WHILE)) {
-            this.parser.reportError(tokens.current(), "Expected 'while' after 'do' block");
+            this.parser.report(tokens.current(), "Expected 'while' after 'do' block");
         }
 
         if (!this.tokens.match(Operator.LEFT_PAREN)) {
-            this.parser.reportError(tokens.current(), "Expected '(' after 'while'");
+            this.parser.report(tokens.current(), "Expected '(' after 'while'");
         }
 
         Expression condition = null;
         try {
             condition = this.parser.getExpressionParser().parseExpression();
         } catch (TokenException e) {
-            this.parser.reportError(tokens.current(), e.getMessage());
+            this.parser.report(tokens.current(), e.getMessage());
             this.tokens.advanceUntil(Operator.RIGHT_PAREN);
             return null;
         }
 
         if (!this.tokens.match(Operator.RIGHT_PAREN)) {
-            this.parser.reportError(tokens.current(), "Expected ')' after do-while condition");
+            this.parser.report(tokens.current(), "Expected ')' after do-while condition");
         }
         this.tokens.match(Operator.SEMICOLON);
 
-        List<Token> consumedTokens = this.tokens.end(index);
-        return new DoWhileStatement(condition, body);
+        Token end = this.tokens.previous();
+        return new DoWhileStatement(condition, body, TokenRange.of(start, end));
     }
 
     private ForStatement parseForStatement() throws TokenException {
-        int index = this.tokens.begin();
+        Token start = this.tokens.current();
 
         this.tokens.consume(Keyword.FOR, "Expected 'for' keyword");
 
         if (!this.tokens.match(Operator.LEFT_PAREN)) {
-            this.parser.reportError(tokens.current(), "Expected '(' after 'for'");
+            this.parser.report(tokens.current(), "Expected '(' after 'for'");
         }
-        String variable = this.tokens.consume(TokenType.IDENTIFIER, "Expected loop variable name").getValue();
+        Token variable = this.tokens.consume(TokenType.IDENTIFIER, "Expected loop variable name");
         Expression iterable = null;
         try {
             iterable = this.parser.getExpressionParser().parseExpression();
         } catch (TokenException e) {
-            this.parser.reportError(tokens.current(), e.getMessage());
+            this.parser.report(tokens.current(), e.getMessage());
             this.tokens.advanceUntil(Operator.RIGHT_PAREN);
             return null;
         }
         if (!this.tokens.match(Operator.RIGHT_PAREN)) {
-            this.parser.reportError(tokens.current(), "Expected ')' after for loop iterable");
+            this.parser.report(tokens.current(), "Expected ')' after for loop iterable");
         }
         BlockStatement body = this.parseBlockStatement();
-        return new ForStatement(variable, iterable, body);
+
+        Token end = this.tokens.previous();
+        return new ForStatement(variable, iterable, body, TokenRange.of(start, end));
     }
 
     private ReturnStatement parseReturnStatement() throws TokenException {
-        int index = this.tokens.begin();
+        Token start = this.tokens.current();
 
         this.tokens.consume(Keyword.RETURN, "Expected 'return' keyword");
 
@@ -252,76 +268,76 @@ public class StatementParser extends SubParser {
             try {
                 value = Optional.of(this.parser.getExpressionParser().parseExpression());
             } catch (TokenException e) {
-                this.parser.reportError(tokens.current(), e.getMessage());
+                this.parser.report(tokens.current(), e.getMessage());
                 this.tokens.advanceUntil(Operator.SEMICOLON);
                 return null;
             }
         }
         this.tokens.match(Operator.SEMICOLON);
 
-        List<Token> consumedTokens = this.tokens.end(index);
-        return new ReturnStatement(value);
+        Token end = this.tokens.previous();
+        return new ReturnStatement(value, TokenRange.of(start, end));
     }
 
     private BreakStatement parseBreakStatement() throws TokenException {
-        int index = this.tokens.begin();
+        Token start = this.tokens.current();
 
         this.tokens.consume(Keyword.BREAK, "Expected 'break' keyword");
         this.tokens.match(Operator.SEMICOLON);
 
-        List<Token> consumedTokens = this.tokens.end(index);
-        return new BreakStatement();
+        Token end = this.tokens.previous();
+        return new BreakStatement(TokenRange.of(start, end));
     }
 
     private ContinueStatement parseContinueStatement() throws TokenException {
-        int index = this.tokens.begin();
+        Token start = this.tokens.current();
 
         this.tokens.consume(Keyword.CONTINUE, "Expected 'continue' keyword");
         this.tokens.match(Operator.SEMICOLON);
 
-        List<Token> consumedTokens = this.tokens.end(index);
-        return new galaga.gscript.ast.statement.logic.loop.ContinueStatement();
+        Token end = this.tokens.previous();
+        return new ContinueStatement(TokenRange.of(start, end));
     }
 
     private AssignmentStatement parseAssignmentStatement() throws TokenException {
-        int index = this.tokens.begin();
+        Token start = this.tokens.current();
 
         Keyword vardecl = this.tokens.consume(TokenType.KEYWORD, "Expected 'const' or 'let' keyword").getKeyword();
         if (vardecl != Keyword.LET && vardecl != Keyword.CONST) {
-            this.parser.reportError(tokens.current(), "Expected 'const' or 'let' keyword");
+            this.parser.report(tokens.current(), "Expected 'const' or 'let' keyword");
         }
         boolean isConstant = (vardecl == Keyword.CONST);
-        String name = this.tokens.consume(TokenType.IDENTIFIER, "Expected variable name").getValue();
-        Operator operator = this.tokens.consume(TokenType.OPERATOR, "Expected assignment operator").getOperator();
+        Token name = this.tokens.consume(TokenType.IDENTIFIER, "Expected variable name");
+        Token operator = this.tokens.consume(TokenType.OPERATOR, "Expected assignment operator");
 
         Expression value = null;
         try {
             value = this.parser.getExpressionParser().parseExpression();
         } catch (TokenException e) {
-            this.parser.reportError(tokens.current(), e.getMessage());
+            this.parser.report(tokens.current(), e.getMessage());
             this.tokens.advanceUntil(Operator.SEMICOLON);
             return null;
         }
         this.tokens.match(Operator.SEMICOLON);
 
-        List<Token> consumedTokens = this.tokens.end(index);
-        return new AssignmentStatement(name, operator, value, isConstant);
+        Token end = this.tokens.previous();
+        return new AssignmentStatement(name, operator, value, isConstant, TokenRange.of(start, end));
     }
 
     private ExpressionStatement parseExpressionStatement() throws TokenException {
-        int index = this.tokens.begin();
+        Token start = this.tokens.current();
 
         Expression expression = null;
         try {
             expression = this.parser.getExpressionParser().parseExpression();
         } catch (TokenException e) {
-            this.parser.reportError(tokens.current(), e.getMessage());
+            this.parser.report(tokens.current(), e.getMessage());
             this.tokens.advanceUntil(Operator.SEMICOLON);
             return null;
         }
         this.tokens.match(Operator.SEMICOLON);
 
-        List<Token> consumedTokens = this.tokens.end(index);
-        return new ExpressionStatement(expression);
+        Token end = this.tokens.previous();
+        return new ExpressionStatement(expression, TokenRange.of(start, end));
     }
 }

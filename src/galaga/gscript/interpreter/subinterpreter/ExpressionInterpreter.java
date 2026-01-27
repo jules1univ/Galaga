@@ -22,6 +22,7 @@ import galaga.gscript.ast.expression.operator.BinaryExpression;
 import galaga.gscript.ast.expression.operator.UnaryExpression;
 import galaga.gscript.interpreter.InterpreterContext;
 import galaga.gscript.lexer.rules.OperatorPriority;
+import galaga.gscript.lexer.token.Token;
 import galaga.gscript.types.values.BooleanValue;
 import galaga.gscript.types.values.FloatValue;
 import galaga.gscript.types.values.FunctionValue;
@@ -40,14 +41,14 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
 
     @Override
     public Value visitBinaryExpression(BinaryExpression node) {
-        if (!OperatorPriority.isBinaryOperator(node.operator())) {
+        if (!OperatorPriority.isBinaryOperator(node.operator().getOperator())) {
             throw new RuntimeException("Operator " + node.operator() + " is not a binary operator.");
         }
 
         Value left = node.left().accept(this.context.getInterpreter());
         Value right = node.right().accept(this.context.getInterpreter());
 
-        switch (node.operator()) {
+        switch (node.operator().getOperator()) {
             case PLUS -> {
                 if (left instanceof IntegerValue leftInt && right instanceof IntegerValue rightInt) {
                     return new IntegerValue(leftInt.value() + rightInt.value());
@@ -273,12 +274,12 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
 
     @Override
     public Value visitUnaryExpression(UnaryExpression node) {
-        if (!OperatorPriority.isUnaryOperator(node.operator())) {
+        if (!OperatorPriority.isUnaryOperator(node.operator().getOperator())) {
             throw new RuntimeException("Operator " + node.operator() + " is not a unary operator.");
         }
 
         Value operand = node.operand().accept(this.context.getInterpreter());
-        switch (node.operator()) {
+        switch (node.operator().getOperator()) {
             case NOT -> {
                 if (operand instanceof BooleanValue boolVal) {
                     return new BooleanValue(!boolVal.value());
@@ -341,11 +342,11 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
         Optional<FunctionValue> functionOpt = Optional.empty();
         if (node.invoker() instanceof IdentifierExpression identExpr) {
 
-            if (!this.context.getScope().hasVariable(identExpr.name())) {
+            if (!this.context.getScope().hasVariable(identExpr.name().getValue())) {
                 throw new RuntimeException("Function '" + identExpr.name() + "' is not defined.");
             }
 
-            Value rawValue = this.context.getScope().getVariable(identExpr.name()).get();
+            Value rawValue = this.context.getScope().getVariable(identExpr.name().getValue()).get();
             if (!(rawValue instanceof FunctionValue funcVal)) {
                 throw new RuntimeException("Object '" + identExpr.name() + "' is not a function.");
             }
@@ -353,7 +354,7 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
             functionOpt = Optional.of(funcVal);
         } else if (node.invoker() instanceof FunctionExpression funcExpr) {
             functionOpt = Optional
-                    .of(new FunctionValue(Optional.empty(), funcExpr.parameters(), funcExpr.body(),
+                    .of(new FunctionValue(Optional.empty(), funcExpr.parameters().stream().map(Token::getValue).toList(), funcExpr.body(),
                             this.context.getScope(), false));
         } else if (node.invoker() instanceof IndexExpression indexExpr) {
             Value rawFunction = this.visitIndexExpression(indexExpr);
@@ -436,14 +437,14 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
 
     @Override
     public Value visitIdentifierExpression(IdentifierExpression node) {
-        if (!this.context.getScope().hasVariable(node.name()) && !this.context.getScope().hasConstant(node.name())) {
+        if (!this.context.getScope().hasVariable(node.name().getValue()) && !this.context.getScope().hasConstant(node.name().getValue())) {
             throw new RuntimeException("Object '" + node.name() + "' is not defined.");
         }
 
-        if (this.context.getScope().hasConstant(node.name())) {
-            return this.context.getScope().getConstant(node.name()).get();
+        if (this.context.getScope().hasConstant(node.name().getValue())) {
+            return this.context.getScope().getConstant(node.name().getValue()).get();
         }
-        return this.context.getScope().getVariable(node.name()).get();
+        return this.context.getScope().getVariable(node.name().getValue()).get();
     }
 
     @Override
@@ -475,7 +476,7 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
     public Value visitFunctionExpression(FunctionExpression node) {
         return new FunctionValue(
                 Optional.empty(),
-                node.parameters(),
+                node.parameters().stream().map(Token::getValue).toList(),
                 node.body(),
                 this.context.getScope(),
                 false);

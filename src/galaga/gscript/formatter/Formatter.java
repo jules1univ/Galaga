@@ -30,12 +30,13 @@ import galaga.gscript.ast.statement.logic.loop.ContinueStatement;
 import galaga.gscript.ast.statement.logic.loop.DoWhileStatement;
 import galaga.gscript.ast.statement.logic.loop.ForStatement;
 import galaga.gscript.ast.statement.logic.loop.WhileStatement;
+import galaga.gscript.lexer.token.Token;
 
 public final class Formatter implements ASTVisitor<String> {
 
     public static String format(Program program) {
         Formatter formatter = new Formatter();
-        return  program.accept(formatter);
+        return program.accept(formatter);
     }
 
     private Formatter() {
@@ -74,7 +75,7 @@ public final class Formatter implements ASTVisitor<String> {
     public String visitFunctionDeclaration(FunctionDeclaration node) {
         StringBuilder sb = new StringBuilder();
         sb.append("fn ").append(node.name()).append("(");
-        sb.append(String.join(", ", node.parameters()));
+        sb.append(String.join(", ", node.parameters().stream().map(Token::getValue).toList()));
         sb.append(") {\n");
         indent(() -> {
             sb.append(node.body().accept(this));
@@ -96,7 +97,7 @@ public final class Formatter implements ASTVisitor<String> {
     public String visitNativeFunctionDeclaration(NativeFunctionDeclaration node) {
         StringBuilder sb = new StringBuilder();
         sb.append("native ").append(node.name()).append("(");
-        sb.append(String.join(", ", node.parameters()));
+        sb.append(String.join(", ", node.parameters().stream().map(Token::getValue).toList()));
         sb.append(");\n");
         return sb.toString();
     }
@@ -118,11 +119,21 @@ public final class Formatter implements ASTVisitor<String> {
     @Override
     public String visitIfStatement(IfStatement node) {
         StringBuilder sb = new StringBuilder();
-        sb.append("if (").append(node.condition().accept(this)).append(") {\n");
-        indent(() -> {
-            sb.append(node.body().accept(this));
-        });
-        sb.append(this.getIndent()).append("}");
+
+        for (Map.Entry<Expression, BlockStatement> entry : node.ifElseBranch().entrySet()) {
+            Expression condition = entry.getKey();
+            BlockStatement body = entry.getValue();
+            if (condition == null) {
+                sb.append("else {\n");
+            } else {
+                sb.append("if (").append(condition.accept(this)).append(") {\n");
+            }
+            indent(() -> {
+                sb.append(body.accept(this));
+            });
+            sb.append(getIndent()).append("} ");
+        }
+
         if (node.elseBranch().isPresent()) {
             sb.append(" else {\n");
             indent(() -> {
@@ -192,7 +203,7 @@ public final class Formatter implements ASTVisitor<String> {
     @Override
     public String visitAssignmentStatement(AssignmentStatement node) {
         StringBuilder sb = new StringBuilder();
-        sb.append(node.name()).append(" ").append(node.operator().getText()).append(" ");
+        sb.append(node.name()).append(" ").append(node.operator().getOperator().getText()).append(" ");
         sb.append(node.value().accept(this)).append(";\n");
         return sb.toString();
     }
@@ -204,16 +215,13 @@ public final class Formatter implements ASTVisitor<String> {
 
     @Override
     public String visitBinaryExpression(BinaryExpression node) {
-        return node.left().accept(this) + " " + node.operator().getText() + " " + node.right().accept(this);
+        return node.left().accept(this) + " " + node.operator().getOperator().getText() + " "
+                + node.right().accept(this);
     }
 
     @Override
     public String visitUnaryExpression(UnaryExpression node) {
-        if (node.isPrefix()) {
-            return node.operator().getText() + node.operand().accept(this);
-        } else {
-            return node.operand().accept(this) + node.operator().getText();
-        }
+        return node.operator().getOperator().getText() + node.operand().accept(this);
     }
 
     @Override
@@ -232,7 +240,7 @@ public final class Formatter implements ASTVisitor<String> {
 
     @Override
     public String visitIdentifierExpression(IdentifierExpression node) {
-        return node.name();
+        return node.name().getValue();
     }
 
     @Override
@@ -264,7 +272,7 @@ public final class Formatter implements ASTVisitor<String> {
     public String visitFunctionExpression(FunctionExpression node) {
         StringBuilder sb = new StringBuilder();
         sb.append("(");
-        sb.append(String.join(", ", node.parameters()));
+        sb.append(String.join(", ", node.parameters().stream().map(Token::getValue).toList()));
         sb.append(") => {\n");
         indent(() -> {
             sb.append(node.body().accept(this));

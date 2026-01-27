@@ -14,12 +14,12 @@ public final class TokenStream {
         this.tokens = tokens;
     }
 
-    public int begin() {
-        return index;
+    public Token getFirst() {
+        return tokens.get(0);
     }
 
-    public List<Token> end(int begin) {
-        return tokens.subList(begin, index);
+    public Token getLast() {
+        return tokens.get(tokens.size() - 1);
     }
 
     public Token current() {

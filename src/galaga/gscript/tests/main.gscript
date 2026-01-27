@@ -2,6 +2,7 @@
 
 
 let globalVar = 10;
+const HELLO = "test passed";
 
 native print(value);
 native len(list);
@@ -10,6 +11,19 @@ fn main() {
     let localVar = globalVar + 5;
     print(localVar);
 
-    let myList = [1, 2, 3, 4, 5];
+    let myList = [1, print, 3, 4, 5];
+
+    let calc = 5 * (2 + 3)/2;
+
+
     print(len(myList));
+
+    let newPrint = myList[1];
+
+    if(calc == 12) {
+        newPrint(HELLO);
+    } else {
+        newPrint("Wrong");
+    }
+
 }   

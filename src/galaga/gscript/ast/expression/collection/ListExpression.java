@@ -4,11 +4,18 @@ import java.util.List;
 
 import galaga.gscript.ast.ASTVisitor;
 import galaga.gscript.ast.expression.Expression;
+import galaga.gscript.lexer.token.TokenRange;
 
-public record ListExpression(List<Expression> elements) implements Expression {
+public record ListExpression(List<Expression> elements, TokenRange range) implements Expression {
 
     @Override
     public <T> T accept(ASTVisitor<T> visitor) {
         return visitor.visitListExpression(this);
+    }
+
+    
+    @Override
+    public TokenRange getRange() {
+        return range;
     }
 }

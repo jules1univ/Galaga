@@ -14,6 +14,14 @@ public final class Token {
         return new Token(type, start, TokenPosition.of(start.getLine(), start.getColumn() + value.length()), value);
     }
 
+    public static Token of(Operator operator) {
+        return new Token(TokenType.OPERATOR, null, null, operator.getText());
+    }
+
+    public static Token of(Keyword keyword) {
+        return new Token(TokenType.KEYWORD, null, null, keyword.getText());
+    }
+
     private Token(TokenType type, TokenPosition start, TokenPosition end, String value) {
         this.type = type;
         this.start = start;
@@ -37,17 +45,11 @@ public final class Token {
         return this.value;
     }
 
-    public Operator getOperator() throws TokenException {
-        if (this.type != TokenType.OPERATOR) {
-            throw new TokenException(this, "Token is not an operator");
-        }
+    public Operator getOperator() {
         return Operator.fromText(this.value);
     }
 
-    public Keyword getKeyword() throws TokenException {
-        if (this.type != TokenType.KEYWORD) {
-            throw new TokenException(this, "Token is not a keyword");
-        }
+    public Keyword getKeyword() {
         return Keyword.fromText(this.value);
     }
 

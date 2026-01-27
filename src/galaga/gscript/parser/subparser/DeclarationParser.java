@@ -12,6 +12,7 @@ import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
 import galaga.gscript.lexer.token.Token;
 import galaga.gscript.lexer.token.TokenException;
+import galaga.gscript.lexer.token.TokenRange;
 import galaga.gscript.lexer.token.TokenStream;
 import galaga.gscript.lexer.token.TokenType;
 import galaga.gscript.parser.Parser;
@@ -40,86 +41,85 @@ public class DeclarationParser extends SubParser {
     }
 
     public FunctionDeclaration parseFunctionDeclaration() throws TokenException {
-        int index = this.tokens.begin();
-
+        Token start = this.tokens.current();
+        
         this.tokens.consume(Keyword.FN, "Expected 'fn' keyword");
-        String name = this.tokens.consume(TokenType.IDENTIFIER, "Expected function name").getValue();
+        Token name = this.tokens.consume(TokenType.IDENTIFIER, "Expected function name");
 
         if (!this.tokens.match(Operator.LEFT_PAREN)) {
-            this.parser.reportError(tokens.current(), "Expected '(' after function name");
+            this.parser.report(tokens.current(), "Expected '(' after function name");
         }
 
-        List<String> parameters = parseParameterList();
+        List<Token> parameters = parseParameterList();
 
         if (!this.tokens.match(Operator.RIGHT_PAREN)) {
-            this.parser.reportError(tokens.current(), "Expected ')' after parameters");
+            this.parser.report(tokens.current(), "Expected ')' after parameters");
         }
 
         BlockStatement body = this.parser.getStatementParser().parseBlockStatement();
 
-        List<Token> consumedTokens = this.tokens.end(index);
-        return new FunctionDeclaration(name, parameters, body);
+        Token end = this.tokens.previous();
+        return new FunctionDeclaration(name, parameters, body, TokenRange.of(start, end));
     }
 
     public NativeFunctionDeclaration parseNativeFunctionDeclaration() throws TokenException {
-        int index = this.tokens.begin();
+        Token start = this.tokens.current();
 
         this.tokens.consume(Keyword.NATIVE, "Expected 'native' keyword");
-        String name = this.tokens.consume(TokenType.IDENTIFIER, "Expected native function name").getValue();
+        Token name = this.tokens.consume(TokenType.IDENTIFIER, "Expected native function name");
 
         if (!this.tokens.match(Operator.LEFT_PAREN)) {
-            this.parser.reportError(tokens.current(), "Expected '(' after native function name");
+            this.parser.report(tokens.current(), "Expected '(' after native function name");
         }
 
-        List<String> parameters = parseParameterList();
+        List<Token> parameters = parseParameterList();
 
         if (!this.tokens.match(Operator.RIGHT_PAREN)) {
-            this.parser.reportError(tokens.current(), "Expected ')' after parameters");
+            this.parser.report(tokens.current(), "Expected ')' after parameters");
         }
 
-        List<Token> consumedTokens = this.tokens.end(index);
-        return new NativeFunctionDeclaration(name, parameters);
+        Token end = this.tokens.previous();
+        return new NativeFunctionDeclaration(name, parameters, TokenRange.of(start, end));
     }
 
     public VariableDeclaration parseVariableDeclaration() throws TokenException {
-        int index = this.tokens.begin();
-
+        Token start = this.tokens.current();
         Keyword vardecl = this.tokens.consume(TokenType.KEYWORD, "Expected 'const' or 'let' keyword").getKeyword();
         if (vardecl != Keyword.LET && vardecl != Keyword.CONST) {
-            this.parser.reportError(tokens.current(), "Expected 'const' or 'let' keyword");
+            this.parser.report(tokens.current(), "Expected 'const' or 'let' keyword");
         }
         boolean isConstant = (vardecl == Keyword.CONST);
-        String name = this.tokens.consume(TokenType.IDENTIFIER, "Expected variable name").getValue();
+        Token name = this.tokens.consume(TokenType.IDENTIFIER, "Expected variable name");
 
         if (!this.tokens.match(Operator.ASSIGN)) {
-            this.parser.reportError(tokens.current(), "Expected '=' after variable name");
+            this.parser.report(tokens.current(), "Expected '=' after variable name");
         }
 
         Expression value = null;
         try {
             value = this.parser.getExpressionParser().parseExpression();
         } catch (TokenException e) {
-            this.parser.reportError(tokens.current(), e.getMessage());
+            this.parser.report(tokens.current(), e.getMessage());
             this.tokens.advanceUntil(this.getDeclarationStarters());
             return null;
         }
 
-        List<Token> consumedTokens = this.tokens.end(index);
-        return new VariableDeclaration(name, value, isConstant);
+        Token end = this.tokens.previous();
+        return new VariableDeclaration(name, value, isConstant, TokenRange.of(start, end));
     }
 
-    private List<String> parseParameterList() throws TokenException {
-        List<String> parameters = new ArrayList<>();
+    private List<Token> parseParameterList() throws TokenException {
+        List<Token> parameters = new ArrayList<>();
 
         while (this.tokens.check(TokenType.IDENTIFIER, 0)) {
-            String param = this.tokens.consume(TokenType.IDENTIFIER, "Expected parameter name").getValue();
+            Token param = this.tokens.consume(TokenType.IDENTIFIER, "Expected parameter name");
             parameters.add(param);
 
             if (this.tokens.check(Operator.COMMA, 0)) {
                 this.tokens.consume(Operator.COMMA, "");
 
                 if (!this.tokens.match(TokenType.IDENTIFIER)) {
-                    this.parser.reportError(tokens.current(), "Expected parameter name after ','");
+                    this.parser.report(tokens.current(), "Expected parameter name after ','");
                     break;
                 }
             } else {
