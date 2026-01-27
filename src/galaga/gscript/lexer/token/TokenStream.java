@@ -1,12 +1,13 @@
 package galaga.gscript.lexer.token;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
 import galaga.gscript.lexer.rules.Keyword;
 import galaga.gscript.lexer.rules.Operator;
 
-public final class TokenStream {
+public final class TokenStream implements Iterable<Token> {
     private final List<Token> tokens;
     private int index = 0;
 
@@ -297,5 +298,10 @@ public final class TokenStream {
         }
 
         return sb.toString();
+    }
+
+    @Override
+    public Iterator<Token> iterator() {
+        return tokens.iterator();
     }
 }

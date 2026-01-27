@@ -198,13 +198,13 @@ public final class Lexer implements Iterable<Token> {
                     whitespace();
                 }
 
+                Token token;
+
                 if (current == NO_CHAR) {
                     reachedEnd = true;
-                    return Token.of(TokenType.EOF, TokenPosition.of(line, column), String.valueOf(NO_CHAR));
+                    token = Token.of(TokenType.EOF, TokenPosition.of(line, column), String.valueOf(NO_CHAR));
                 }
-
-                Token token;
-                if (current == '/' && (peek() == '/' || peek() == '*')) {
+                else if (current == '/' && (peek() == '/' || peek() == '*')) {
                     token = comment();
                 } else if (Character.isLetter(current) || current == '_') {
                     token = identifier();

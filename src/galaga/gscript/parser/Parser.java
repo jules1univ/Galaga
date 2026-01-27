@@ -83,10 +83,10 @@ public final class Parser {
             return decl.parseFunctionDeclaration();
         } else if (decl.isNativeDeclaration()) {
             return decl.parseNativeFunctionDeclaration();
-        } else if (decl.isAtVariableDeclaration()) {
+        } else if (decl.isVariableDeclaration()) {
             return decl.parseVariableDeclaration();
         } else {
-            report(tokens.current(),
+            this.report(tokens.current(),
                     "Expected declaration, found: " + tokens.current());
             this.tokens.advanceUntil(decl.getDeclarationStarters());
             return null;

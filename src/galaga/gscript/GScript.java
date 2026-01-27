@@ -28,8 +28,8 @@ public class GScript {
         // interpreter.run(program);
         // interpreter.callFunction("main");
 
-        GScript script = GScript.of(".\\tests\\main.gscript");
-        System.out.println("Formatted Source:\n" + script.format());
+        GScript script = GScript.of(new File("./src/galaga/gscript/tests/main.gscript"));
+        System.out.println(script.format());
 
         // script.run();
         // script.callFunction("main");

@@ -27,7 +27,7 @@ public class DeclarationParser extends SubParser {
         return new Keyword[] { Keyword.CONST, Keyword.LET, Keyword.FN, Keyword.NATIVE };
     }
 
-    public boolean isAtVariableDeclaration() {
+    public boolean isVariableDeclaration() {
         return this.tokens.check(TokenType.KEYWORD, 0) && this.tokens.check(TokenType.IDENTIFIER, 1)
                 && this.tokens.check(TokenType.OPERATOR, 2);
     }

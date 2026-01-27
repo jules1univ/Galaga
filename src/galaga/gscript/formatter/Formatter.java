@@ -74,7 +74,7 @@ public final class Formatter implements ASTVisitor<String> {
     @Override
     public String visitFunctionDeclaration(FunctionDeclaration node) {
         StringBuilder sb = new StringBuilder();
-        sb.append("fn ").append(node.name()).append("(");
+        sb.append("fn ").append(node.name().getValue()).append("(");
         sb.append(String.join(", ", node.parameters().stream().map(Token::getValue).toList()));
         sb.append(") {\n");
         indent(() -> {
@@ -88,7 +88,7 @@ public final class Formatter implements ASTVisitor<String> {
     public String visitVariableDeclaration(VariableDeclaration node) {
         StringBuilder sb = new StringBuilder();
         sb.append(node.isConstant() ? "const " : "let ");
-        sb.append(node.name()).append(" = ");
+        sb.append(node.name().getValue()).append(" = ");
         sb.append(node.value().accept(this)).append(";\n");
         return sb.toString();
     }
@@ -96,7 +96,7 @@ public final class Formatter implements ASTVisitor<String> {
     @Override
     public String visitNativeFunctionDeclaration(NativeFunctionDeclaration node) {
         StringBuilder sb = new StringBuilder();
-        sb.append("native ").append(node.name()).append("(");
+        sb.append("native ").append(node.name().getValue()).append("(");
         sb.append(String.join(", ", node.parameters().stream().map(Token::getValue).toList()));
         sb.append(");\n");
         return sb.toString();
@@ -203,7 +203,8 @@ public final class Formatter implements ASTVisitor<String> {
     @Override
     public String visitAssignmentStatement(AssignmentStatement node) {
         StringBuilder sb = new StringBuilder();
-        sb.append(node.name()).append(" ").append(node.operator().getOperator().getText()).append(" ");
+        sb.append(node.isConstant() ? "const" : "let").append(" ");
+        sb.append(node.name().getValue()).append(" ").append(node.operator().getOperator().getText()).append(" ");
         sb.append(node.value().accept(this)).append(";\n");
         return sb.toString();
     }
