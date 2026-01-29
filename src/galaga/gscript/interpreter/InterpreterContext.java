@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import galaga.gscript.types.values.Value;
+import galaga.gscript.runtime.values.Value;
 
 public final class InterpreterContext {
     private final Interpreter interpreter;

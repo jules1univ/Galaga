@@ -1,4 +1,4 @@
-package galaga.gscript.types.values;
+package galaga.gscript.runtime.values;
 
 public record FloatValue(float value) implements Value {
 

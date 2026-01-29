@@ -31,8 +31,8 @@ import galaga.gscript.ast.statement.logic.loop.WhileStatement;
 import galaga.gscript.interpreter.subinterpreter.DeclarationInterpreter;
 import galaga.gscript.interpreter.subinterpreter.ExpressionInterpreter;
 import galaga.gscript.interpreter.subinterpreter.StatementInterpreter;
-import galaga.gscript.types.values.FunctionValue;
-import galaga.gscript.types.values.Value;
+import galaga.gscript.runtime.values.FunctionValue;
+import galaga.gscript.runtime.values.Value;
 
 public final class Interpreter implements ASTVisitor<Value> {
     private final InterpreterContext context;

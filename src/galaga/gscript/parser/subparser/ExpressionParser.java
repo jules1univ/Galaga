@@ -26,12 +26,12 @@ import galaga.gscript.lexer.token.TokenRange;
 import galaga.gscript.lexer.token.TokenStream;
 import galaga.gscript.lexer.token.TokenType;
 import galaga.gscript.parser.Parser;
-import galaga.gscript.types.values.BooleanValue;
-import galaga.gscript.types.values.FloatValue;
-import galaga.gscript.types.values.IntegerValue;
-import galaga.gscript.types.values.NullValue;
-import galaga.gscript.types.values.StringValue;
-import galaga.gscript.types.values.Value;
+import galaga.gscript.runtime.values.BooleanValue;
+import galaga.gscript.runtime.values.FloatValue;
+import galaga.gscript.runtime.values.IntegerValue;
+import galaga.gscript.runtime.values.NullValue;
+import galaga.gscript.runtime.values.StringValue;
+import galaga.gscript.runtime.values.Value;
 
 public class ExpressionParser extends SubParser {
 

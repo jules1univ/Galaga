@@ -23,14 +23,14 @@ import galaga.gscript.ast.expression.operator.UnaryExpression;
 import galaga.gscript.interpreter.InterpreterContext;
 import galaga.gscript.lexer.rules.OperatorPriority;
 import galaga.gscript.lexer.token.Token;
-import galaga.gscript.types.values.BooleanValue;
-import galaga.gscript.types.values.FloatValue;
-import galaga.gscript.types.values.FunctionValue;
-import galaga.gscript.types.values.IntegerValue;
-import galaga.gscript.types.values.ListValue;
-import galaga.gscript.types.values.MapValue;
-import galaga.gscript.types.values.StringValue;
-import galaga.gscript.types.values.Value;
+import galaga.gscript.runtime.values.BooleanValue;
+import galaga.gscript.runtime.values.FloatValue;
+import galaga.gscript.runtime.values.FunctionValue;
+import galaga.gscript.runtime.values.IntegerValue;
+import galaga.gscript.runtime.values.ListValue;
+import galaga.gscript.runtime.values.MapValue;
+import galaga.gscript.runtime.values.StringValue;
+import galaga.gscript.runtime.values.Value;
 
 public class ExpressionInterpreter implements ExpressionVisitor<Value> {
     private final InterpreterContext context;

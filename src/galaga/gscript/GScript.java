@@ -14,11 +14,11 @@ import galaga.gscript.lexer.Lexer;
 import galaga.gscript.lexer.token.Token;
 import galaga.gscript.parser.ParseError;
 import galaga.gscript.parser.Parser;
-import galaga.gscript.types.values.IntegerValue;
-import galaga.gscript.types.values.ListValue;
-import galaga.gscript.types.values.MapValue;
-import galaga.gscript.types.values.StringValue;
-import galaga.gscript.types.values.Value;
+import galaga.gscript.runtime.values.IntegerValue;
+import galaga.gscript.runtime.values.ListValue;
+import galaga.gscript.runtime.values.MapValue;
+import galaga.gscript.runtime.values.StringValue;
+import galaga.gscript.runtime.values.Value;
 
 public class GScript {
 

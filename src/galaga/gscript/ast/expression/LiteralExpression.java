@@ -2,7 +2,7 @@ package galaga.gscript.ast.expression;
 
 import galaga.gscript.ast.ASTVisitor;
 import galaga.gscript.lexer.token.TokenRange;
-import galaga.gscript.types.values.Value;
+import galaga.gscript.runtime.values.Value;
 
 public record LiteralExpression(Value value, TokenRange range) implements Expression {
 

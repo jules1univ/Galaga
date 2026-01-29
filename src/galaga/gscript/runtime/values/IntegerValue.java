@@ -1,4 +1,4 @@
-package galaga.gscript.types.values;
+package galaga.gscript.runtime.values;
 
 public record IntegerValue(int value) implements Value {
 

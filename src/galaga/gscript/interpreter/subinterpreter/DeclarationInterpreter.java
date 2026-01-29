@@ -8,8 +8,8 @@ import galaga.gscript.ast.declaration.NativeFunctionDeclaration;
 import galaga.gscript.ast.declaration.VariableDeclaration;
 import galaga.gscript.interpreter.InterpreterContext;
 import galaga.gscript.lexer.token.Token;
-import galaga.gscript.types.values.FunctionValue;
-import galaga.gscript.types.values.Value;
+import galaga.gscript.runtime.values.FunctionValue;
+import galaga.gscript.runtime.values.Value;
 
 public class DeclarationInterpreter implements DeclarationVisitor<Value> {
     private final InterpreterContext context;

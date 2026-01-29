@@ -22,10 +22,10 @@ import galaga.gscript.lexer.rules.Operator;
 import galaga.gscript.lexer.rules.OperatorPriority;
 import galaga.gscript.lexer.token.Token;
 import galaga.gscript.lexer.token.TokenRange;
-import galaga.gscript.types.values.BooleanValue;
-import galaga.gscript.types.values.ListValue;
-import galaga.gscript.types.values.NullValue;
-import galaga.gscript.types.values.Value;
+import galaga.gscript.runtime.values.BooleanValue;
+import galaga.gscript.runtime.values.ListValue;
+import galaga.gscript.runtime.values.NullValue;
+import galaga.gscript.runtime.values.Value;
 
 public class StatementInterpreter implements StatementVisitor<Value> {
     private final InterpreterContext context;

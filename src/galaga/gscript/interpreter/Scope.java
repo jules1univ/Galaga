@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import galaga.gscript.types.values.Value;
+import galaga.gscript.runtime.values.Value;
 
 public final class Scope {
     private final Scope parent;
