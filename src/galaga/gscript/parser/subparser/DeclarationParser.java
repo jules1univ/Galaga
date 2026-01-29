@@ -77,7 +77,7 @@ public class DeclarationParser extends SubParser {
         if (!this.tokens.match(Operator.RIGHT_PAREN)) {
             this.parser.report(tokens.current(), "Expected ')' after parameters");
         }
-
+        this.tokens.match(Operator.SEMICOLON);
         Token end = this.tokens.previous();
         return new NativeFunctionDeclaration(name, parameters, TokenRange.of(start, end));
     }
@@ -103,7 +103,7 @@ public class DeclarationParser extends SubParser {
             this.tokens.advanceUntil(this.getDeclarationStarters());
             return null;
         }
-
+        this.tokens.match(Operator.SEMICOLON);
         Token end = this.tokens.previous();
         return new VariableDeclaration(name, value, isConstant, TokenRange.of(start, end));
     }

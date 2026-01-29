@@ -22,7 +22,7 @@ public class DeclarationInterpreter implements DeclarationVisitor<Value> {
     @Override
     public Value visitFunctionDeclaration(FunctionDeclaration node) {
         if (this.context.getScope().hasVariable(node.name().getValue())) {
-            throw new RuntimeException("Function '" + node.name() + "' is already defined in this scope.");
+            throw new RuntimeException("Function '" + node.name().getValue() + "' is already defined in this scope.");
         }
 
         FunctionValue functionValue = new FunctionValue(Optional.of(node.name().getValue()),
@@ -35,7 +35,7 @@ public class DeclarationInterpreter implements DeclarationVisitor<Value> {
     public Value visitVariableDeclaration(VariableDeclaration node) {
         if (this.context.getScope().hasVariable(node.name().getValue())
                 || this.context.getScope().hasConstant(node.name().getValue())) {
-            throw new RuntimeException("Object '" + node.name() + "' is already defined in this scope.");
+            throw new RuntimeException("Object '" + node.name().getValue() + "' is already defined in this scope.");
         }
         if (node.isConstant()) {
             this.context.getScope().defineConstant(node.name().getValue(),
@@ -54,7 +54,7 @@ public class DeclarationInterpreter implements DeclarationVisitor<Value> {
         }
 
         if (!this.context.isNativeDefined(node.name().getValue())) {
-            throw new RuntimeException("Native function '" + node.name() + "' is not defined.");
+            throw new RuntimeException("Native function '" + node.name().getValue() + "' is not defined.");
         }
 
         FunctionValue functionValue = new FunctionValue(Optional.of(node.name().getValue()),

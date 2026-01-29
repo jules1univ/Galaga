@@ -4,13 +4,20 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Optional;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import galaga.gscript.ast.Program;
 import galaga.gscript.formatter.Formatter;
 import galaga.gscript.interpreter.Interpreter;
 import galaga.gscript.lexer.Lexer;
+import galaga.gscript.lexer.token.Token;
+import galaga.gscript.parser.ParseError;
 import galaga.gscript.parser.Parser;
+import galaga.gscript.types.values.IntegerValue;
+import galaga.gscript.types.values.ListValue;
+import galaga.gscript.types.values.MapValue;
+import galaga.gscript.types.values.StringValue;
 import galaga.gscript.types.values.Value;
 
 public class GScript {
@@ -28,60 +35,98 @@ public class GScript {
         // interpreter.run(program);
         // interpreter.callFunction("main");
 
-        GScript script = GScript.of(new File("./src/galaga/gscript/tests/main.gscript"));
-        System.out.println(script.format());
+        GScript gscript = new GScript();
+        gscript.load("test", new File("./src/galaga/gscript/tests/main.gscript"));
 
-        // script.run();
-        // script.callFunction("main");
+        List<ParseError> parseErrors = gscript.parse("test");
+        System.out.println("Parse Errors: " + parseErrors.size());
+        for (ParseError error : parseErrors) {
+            System.out.println(error.displayContext(gscript.getSource("test")));
+        }
+
+        Interpreter interpreter = new Interpreter();
+        interpreter.getContext().defineNative("print", (Map<String, Value> funcArgs) -> {
+            for (Value val : funcArgs.values()) {
+                System.out.println(val.getValue().toString());
+            }
+            return null;
+        });
+        interpreter.getContext().defineNative("len", (Map<String, Value> funcArgs) -> {
+            if (funcArgs.values().size() != 1) {
+                throw new RuntimeException("len() takes exactly one argument.");
+            }
+
+            Value val = funcArgs.values().iterator().next();
+            
+            if (val instanceof ListValue listVal) {
+                return new IntegerValue(listVal.getValue().size());
+            }
+
+            if (val instanceof MapValue mapVal) {
+                return new IntegerValue(mapVal.getValue().size());
+            }
+
+            if (val instanceof StringValue strVal) {
+                return new IntegerValue(strVal.getValue().length());
+            }
+
+            throw new RuntimeException("len() argument must be a list, string, or map.");
+        });
+        interpreter.run(gscript.getProgram("test"));
+        interpreter.callFunction("main");
     }
 
-    private final Lexer lexer;
-    private final Program program;
-    private final Interpreter interpreter = new Interpreter();
+    private final Map<String, String> files = new HashMap<>();
+    private final Map<String, Program> programs = new HashMap<>();
 
-    public static GScript of(String source) {
-        return new GScript(source);
+    public GScript() {
     }
 
-    public static GScript of(File file) {
+    public boolean load(String name, File file) {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line).append("\n");
             }
-            return new GScript(sb.toString());
+            this.files.put(name, sb.toString());
+            return true;
         } catch (IOException e) {
+            return false;
+        }
+    }
+
+    public List<ParseError> parse(String name) {
+        if (!this.files.containsKey(name)) {
             return null;
         }
-    }
 
-    private GScript(String source) {
-        this.lexer = new Lexer(source);
-        this.program =  new Parser(lexer).parse();
-    }
-
-    public void run() {
         try {
-            this.interpreter.run(program);
+            Lexer lexer = new Lexer(this.files.get(name));
+            Parser parser = new Parser(lexer);
+
+            Program program = parser.parse();
+
+            this.programs.put(name, program);
+            return parser.getErrors();
         } catch (Exception e) {
-            e.printStackTrace();
+            return List.of(new ParseError(Token.EOF, e.getMessage()));
         }
     }
 
-    public String format() {
-        return Formatter.format(this.program);
+    public String getSource(String name) {
+        return this.files.get(name);
     }
 
-    public Optional<Value> getVariable(String name) {
-        return this.interpreter.getVariable(name);
+    public Program getProgram(String name) {
+        return this.programs.get(name);
     }
 
-    public Optional<Value> callFunction(String name) {
-        return this.callFunction(name, new Value[] {});
-    }
+    public String getFormattedProgram(String name) {
+        if (!this.files.containsKey(name)) {
+            return null;
+        }
 
-    public Optional<Value> callFunction(String name, Value... args) {
-        return this.interpreter.callFunction(name, args);
+        return Formatter.format(this.programs.get(name));
     }
 }

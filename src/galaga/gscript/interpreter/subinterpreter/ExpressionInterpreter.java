@@ -42,7 +42,7 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
     @Override
     public Value visitBinaryExpression(BinaryExpression node) {
         if (!OperatorPriority.isBinaryOperator(node.operator().getOperator())) {
-            throw new RuntimeException("Operator " + node.operator() + " is not a binary operator.");
+            throw new RuntimeException("Operator " + node.operator().getValue() + " is not a binary operator.");
         }
 
         Value left = node.left().accept(this.context.getInterpreter());
@@ -154,6 +154,10 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
                     return new BooleanValue(leftInt.value() == rightInt.value());
                 } else if (left instanceof FloatValue leftFloat && right instanceof FloatValue rightFloat) {
                     return new BooleanValue(leftFloat.value() == rightFloat.value());
+                } else if (left instanceof IntegerValue leftInt && right instanceof FloatValue rightFloat) {
+                    return new BooleanValue(leftInt.value() == rightFloat.value());
+                } else if (left instanceof FloatValue leftFloat && right instanceof IntegerValue rightInt) {
+                    return new BooleanValue(leftFloat.value() == rightInt.value());
                 } else if (left instanceof BooleanValue leftBool && right instanceof BooleanValue rightBool) {
                     return new BooleanValue(leftBool.value() == rightBool.value());
                 } else if (left instanceof StringValue leftStr && right instanceof StringValue rightStr) {
@@ -163,7 +167,8 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
                 } else if (left instanceof MapValue leftMap && right instanceof MapValue rightMap) {
                     return new BooleanValue(leftMap.value().equals(rightMap.value()));
                 } else {
-                    throw new RuntimeException("Operands of EQUALS operator must be of the same type.");
+                    throw new RuntimeException(
+                            "Operands of EQUALS operator must be of the same type." + left + " and " + right);
                 }
             }
             case NOT_EQUALS -> {
@@ -268,14 +273,14 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
                     throw new RuntimeException("Operands of BITWISE_XOR operator must be integers.");
                 }
             }
-            default -> throw new RuntimeException("Unknown binary operator: " + node.operator());
+            default -> throw new RuntimeException("Unknown binary operator: " + node.operator().getValue());
         }
     }
 
     @Override
     public Value visitUnaryExpression(UnaryExpression node) {
         if (!OperatorPriority.isUnaryOperator(node.operator().getOperator())) {
-            throw new RuntimeException("Operator " + node.operator() + " is not a unary operator.");
+            throw new RuntimeException("Operator " + node.operator().getValue() + " is not a unary operator.");
         }
 
         Value operand = node.operand().accept(this.context.getInterpreter());
@@ -332,7 +337,7 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
                     throw new RuntimeException("Operand of MINUS operator must be an integer or float.");
                 }
             }
-            default -> throw new RuntimeException("Unknown unary operator: " + node.operator());
+            default -> throw new RuntimeException("Unknown unary operator: " + node.operator().getValue());
         }
     }
 
@@ -343,18 +348,19 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
         if (node.invoker() instanceof IdentifierExpression identExpr) {
 
             if (!this.context.getScope().hasVariable(identExpr.name().getValue())) {
-                throw new RuntimeException("Function '" + identExpr.name() + "' is not defined.");
+                throw new RuntimeException("Function '" + identExpr.name().getValue() + "' is not defined.");
             }
 
             Value rawValue = this.context.getScope().getVariable(identExpr.name().getValue()).get();
             if (!(rawValue instanceof FunctionValue funcVal)) {
-                throw new RuntimeException("Object '" + identExpr.name() + "' is not a function.");
+                throw new RuntimeException("Object '" + identExpr.name().getValue() + "' is not a function.");
             }
 
             functionOpt = Optional.of(funcVal);
         } else if (node.invoker() instanceof FunctionExpression funcExpr) {
             functionOpt = Optional
-                    .of(new FunctionValue(Optional.empty(), funcExpr.parameters().stream().map(Token::getValue).toList(), funcExpr.body(),
+                    .of(new FunctionValue(Optional.empty(),
+                            funcExpr.parameters().stream().map(Token::getValue).toList(), funcExpr.body(),
                             this.context.getScope(), false));
         } else if (node.invoker() instanceof IndexExpression indexExpr) {
             Value rawFunction = this.visitIndexExpression(indexExpr);
@@ -437,8 +443,9 @@ public class ExpressionInterpreter implements ExpressionVisitor<Value> {
 
     @Override
     public Value visitIdentifierExpression(IdentifierExpression node) {
-        if (!this.context.getScope().hasVariable(node.name().getValue()) && !this.context.getScope().hasConstant(node.name().getValue())) {
-            throw new RuntimeException("Object '" + node.name() + "' is not defined.");
+        if (!this.context.getScope().hasVariable(node.name().getValue())
+                && !this.context.getScope().hasConstant(node.name().getValue())) {
+            throw new RuntimeException("Object '" + node.name().getValue() + "' is not defined.");
         }
 
         if (this.context.getScope().hasConstant(node.name().getValue())) {

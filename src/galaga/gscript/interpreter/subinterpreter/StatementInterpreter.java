@@ -202,14 +202,15 @@ public class StatementInterpreter implements StatementVisitor<Value> {
     @Override
     public Value visitAssignmentStatement(AssignmentStatement node) {
         if (!OperatorPriority.isAssignmentOperator(node.operator().getOperator())) {
-            throw new RuntimeException("Operator " + node.operator() + " is not an assignment operator.");
+            throw new RuntimeException("Operator " + node.operator().getValue() + " is not an assignment operator.");
         }
 
         switch (node.operator().getOperator()) {
             case ASSIGN: {
                 if (node.isConstant()) {
                     if (this.context.getScope().hasConstant(node.name().getValue())) {
-                        throw new RuntimeException("Constant '" + node.name() + "' is already defined in this scope.");
+                        throw new RuntimeException(
+                                "Constant '" + node.name().getValue() + "' is already defined in this scope.");
                     }
                     this.context.getScope().defineConstant(node.name().getValue(),
                             node.value().accept(this.context.getInterpreter()));
@@ -225,10 +226,10 @@ public class StatementInterpreter implements StatementVisitor<Value> {
             case ASSIGN_DIVIDE:
             case ASSIGN_MODULO: {
                 if (node.isConstant() || this.context.getScope().hasConstant(node.name().getValue())) {
-                    throw new RuntimeException("Cannot add to constant '" + node.name() + "'.");
+                    throw new RuntimeException("Cannot add to constant '" + node.name().getValue() + "'.");
                 }
                 if (!this.context.getScope().hasVariable(node.name().getValue())) {
-                    throw new RuntimeException("Variable '" + node.name() + "' is not defined.");
+                    throw new RuntimeException("Variable '" + node.name().getValue() + "' is not defined.");
                 }
 
                 Operator baseOperator;
@@ -252,14 +253,15 @@ public class StatementInterpreter implements StatementVisitor<Value> {
                         throw new RuntimeException("Unknown assignment operator: " + node.operator());
                 }
 
-                
-                BinaryExpression binExpr =new BinaryExpression(new IdentifierExpression(node.name(), TokenRange.of(null)), Token.of(baseOperator), node.value(), TokenRange.empty());
+                BinaryExpression binExpr = new BinaryExpression(
+                        new IdentifierExpression(node.name(), TokenRange.of(null)), Token.of(baseOperator),
+                        node.value(), TokenRange.empty());
                 Value newValue = this.context.getInterpreter().visitBinaryExpression(binExpr);
                 this.context.getScope().setVariable(node.name().getValue(), newValue);
             }
                 break;
             default:
-                throw new RuntimeException("Unknown assignment operator: " + node.operator());
+                throw new RuntimeException("Unknown assignment operator: " + node.operator().getValue());
         }
 
         return null;

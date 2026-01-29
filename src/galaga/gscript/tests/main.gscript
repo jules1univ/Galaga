@@ -15,10 +15,11 @@ fn main() {
 
 
     print(len(myList));
+    print(calc);
 
     let newPrint = myList[1];
 
-    if(calc == 12) {
+    if(calc == 12.0) {
         newPrint(HELLO);
     } else {
         newPrint("Wrong");

@@ -10,6 +10,8 @@ public final class Token {
     private final TokenType type;
     private final String value;
 
+    public static final Token EOF = new Token(TokenType.EOF, null, null, "");
+
     public static Token of(TokenType type, TokenPosition start, String value) {
         return new Token(type, start, TokenPosition.of(start.getLine(), start.getColumn() + value.length()), value);
     }
