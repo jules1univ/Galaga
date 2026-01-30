@@ -3,17 +3,18 @@ package engine.elements.ui.code.selection;
 import java.util.List;
 
 import engine.elements.ui.code.CodeContext;
-import engine.elements.ui.code.CodeEditor;
 import engine.elements.ui.code.cursor.TextPosition;
 
 public final class SelectionManager {
 
     private boolean active = false;
     private TextPosition starTextPosition = TextPosition.empty();
-    private final CodeContext context;
+    private  CodeContext context;
 
-    public SelectionManager(CodeEditor codeInput) {
-        this.context = codeInput.getContext();
+    public SelectionManager(){}
+
+    public void init(CodeContext context) {
+        this.context = context;
     }
 
     public void reset() {

@@ -11,8 +11,7 @@ import java.awt.Font;
 import java.util.List;
 
 public class CodeViewRenderer {
-    private final CodeContext context;
-
+    private CodeContext context;
     private Renderer renderer;
     private Font font;
 
@@ -20,14 +19,16 @@ public class CodeViewRenderer {
     private float lineBegin;
     private float lineHeight;
 
-    public CodeViewRenderer(CodeEditor codeInput) {
-        this.context = codeInput.getContext();
+    public CodeViewRenderer(){
+
     }
 
-    public void init(Size size, Font font, float lineHeight) {
-        this.renderer = Renderer.ofSub(size);
+    public void init(CodeContext context, Size size, Font font, float lineHeight) {
+        this.context = context;
         this.font = font;
         this.lineHeight = lineHeight;
+
+        this.renderer = Renderer.ofSub(size);
     }
 
     public void setLineBegin(float lineBegin) {
@@ -44,7 +45,6 @@ public class CodeViewRenderer {
 
     public void rebuild() {
         this.renderer.beginSub();
-
 
         SelectRange range = this.context.selection().range();
         float lineSingleNumWidth = this.lineBegin / (int) (Math.log10((double) this.context.lines().size()) + 1);

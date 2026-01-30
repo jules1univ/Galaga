@@ -6,10 +6,13 @@ import engine.elements.ui.code.cursor.TextPosition;
 
 public final class TextManager {
 
-    private final CodeContext context;
+    private CodeContext context;
 
-    public TextManager(CodeEditor codeInput) {
-        this.context = codeInput.getContext();
+    public TextManager() {
+    }
+
+    public void init(CodeContext context) {
+        this.context = context;
     }
 
     public String get(int lineIndex) {

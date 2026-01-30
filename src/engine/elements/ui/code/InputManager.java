@@ -9,10 +9,13 @@ import java.util.Optional;
 
 public class InputManager {
 
-    private final CodeContext context;
+    private CodeContext context;
 
-    public InputManager(CodeEditor codeInput) {
-        this.context = codeInput.getContext();
+    public InputManager() {
+    }
+
+    public void init(CodeContext context) {
+        this.context = context;        
     }
 
     public void update() {

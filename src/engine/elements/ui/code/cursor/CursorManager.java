@@ -14,15 +14,14 @@ public final class CursorManager {
     public static final float CURSOR_WIDTH = 3f;
     public static final float CURSOR_BLINK_INTERVAL = 0.5f;
 
-    private final CodeContext context;
     private final Font font;
+    private final Position basePosition;
+    private Position displayPosition = Position.zero();
+    private Size size = Size.zero();
 
     private float blinkTime = 0.f;
     private boolean blink = true;
 
-    private Size size = Size.zero();
-    private Position displayPosition = Position.zero();
-    private final Position basePosition;
 
     private TextPosition textPosition = TextPosition.start();
     private int textScrollLine = 0;
@@ -31,13 +30,15 @@ public final class CursorManager {
     private float lineBegin;
     private float lineHeight;
 
-    public CursorManager(CodeEditor codeInput, Font font, Position basePosition) {
-        this.context = codeInput.getContext();
+    private CodeContext context;
+
+    public CursorManager(Font font, Position basePosition) {
         this.font = font;
         this.basePosition = basePosition;
     }
 
-    public void init(int maxDisplayLines, float lineBegin, float lineHeight) {
+    public void init(CodeContext context, int maxDisplayLines, float lineBegin, float lineHeight) {
+        this.context = context;
         this.size = Size.of(CURSOR_WIDTH, lineHeight - CodeEditor.LINE_SPACE_HEIGHT);
         this.maxDisplayLines = maxDisplayLines;
         this.lineBegin = lineBegin;

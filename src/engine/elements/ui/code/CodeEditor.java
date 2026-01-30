@@ -34,18 +34,14 @@ public final class CodeEditor extends UIElement {
         this.font = font;
 
         this.context = new CodeContext(
-                new CursorManager(this, font, position),
-                new TextManager(this),
+                new CursorManager(font, position),
+                new TextManager(),
                 new HistoryManager(),
-                new SelectionManager(this),
-                new InputManager(this),
-                new CodeViewRenderer(this),
+                new SelectionManager(),
+                new InputManager(),
+                new CodeViewRenderer(),
                 highlighter,
                 new ArrayList<>());
-    }
-
-    public CodeContext getContext() {
-        return this.context;
     }
 
     public void setText(String text) {
@@ -100,8 +96,12 @@ public final class CodeEditor extends UIElement {
                 + LINE_SPACE_HEIGHT;
         this.maxDisplayLines = Math.floorDiv((int) this.size.getHeight(), (int) this.lineHeight) - 1;
 
-        this.context.view().init(this.size, this.font, this.lineHeight);
-        this.context.cursor().init(this.maxDisplayLines, this.lineBegin, this.lineHeight);
+        this.context.view().init(this.context, this.size, this.font, this.lineHeight);
+        this.context.cursor().init(this.context, this.maxDisplayLines, this.lineBegin, this.lineHeight);
+
+        this.context.text().init(this.context);
+        this.context.input().init(this.context);
+        this.context.selection().init(this.context);
 
         this.updateLineBegin();
         return true;
