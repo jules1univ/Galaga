@@ -3,8 +3,8 @@ package galaga.pages.editor.level;
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.elements.ui.Alignment;
-import engine.elements.ui.codeinput.CodeInput;
-import engine.elements.ui.codeinput.highlighter.defaults.RegexSyntaxHighlighter;
+import engine.elements.ui.code.CodeEditor;
+import engine.elements.ui.code.highlighter.defaults.RegexSyntaxHighlighter;
 import engine.elements.ui.text.Text;
 import engine.graphics.Renderer;
 import engine.resource.ResourceAlias;
@@ -28,7 +28,7 @@ import java.util.Optional;
 
 public class LevelEditor extends Page<GalagaPage> {
 
-    private CodeInput levelCode;
+    private CodeEditor levelCode;
     private Font textFont;
     private Font titleFont;
 
@@ -129,7 +129,7 @@ public class LevelEditor extends Page<GalagaPage> {
             return false;
         }
 
-        RegexSyntaxHighlighter iniHighlighter = new RegexSyntaxHighlighter();
+        RegexSyntaxHighlighter iniHighlighter = new RegexSyntaxHighlighter(Color.WHITE);
 
         iniHighlighter.addPattern("[;#].*", new Color(120, 120, 120));
         iniHighlighter.addPattern("\\[[^\\]]+\\]", Color.LIGHT_GRAY);
@@ -139,7 +139,7 @@ public class LevelEditor extends Page<GalagaPage> {
         iniHighlighter.addPattern("\\b\\d+\\b", Color.MAGENTA);
         iniHighlighter.addPattern("(?<=\\=).*", new Color(200, 200, 200));
 
-        this.levelCode = new CodeInput(Position.zero(), Size.of(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT * 0.8f),
+        this.levelCode = new CodeEditor(Position.zero(), Size.of(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT * 0.8f),
                 iniHighlighter, this.textFont);
         if (!this.levelCode.init()) {
             return false;

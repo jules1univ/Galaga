@@ -3,8 +3,8 @@ package galaga.pages.editor.enemy;
 import engine.elements.page.Page;
 import engine.elements.page.PageState;
 import engine.elements.ui.Alignment;
-import engine.elements.ui.codeinput.CodeInput;
-import engine.elements.ui.codeinput.highlighter.defaults.RegexSyntaxHighlighter;
+import engine.elements.ui.code.CodeEditor;
+import engine.elements.ui.code.highlighter.defaults.RegexSyntaxHighlighter;
 import engine.elements.ui.text.Text;
 import engine.graphics.Renderer;
 import engine.utils.Position;
@@ -12,15 +12,17 @@ import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
+import galaga.gscript.lexer.rules.Keyword;
 import galaga.pages.files.FileExplorerResult;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class EnemyEditor extends Page<GalagaPage> {
 
-    private CodeInput script;
+    private CodeEditor script;
     private Font textFont;
     private Font titleFont;
 
@@ -93,15 +95,43 @@ public class EnemyEditor extends Page<GalagaPage> {
             return false;
         }
 
-        // TODO: syntax highlighter from gscript AST
-        RegexSyntaxHighlighter gscriptHighlighter = new RegexSyntaxHighlighter();
+        RegexSyntaxHighlighter gscriptHighlighter = new RegexSyntaxHighlighter(Color.WHITE);
+        gscriptHighlighter.addPattern("\\b(" + String.join("|",
+                Arrays.stream(Keyword.values()).map(Enum::name).toArray(String[]::new)).toLowerCase() + ")\\b",
+                Color.RED);
+        gscriptHighlighter.addPattern(
+                "==|!=|<=|>=|\\+|-|\\*|/|=|<|>",
+                Color.PINK);
+        gscriptHighlighter.addPattern(
+                "\\bfn\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\b",
+                Color.BLUE);
+        gscriptHighlighter.addPattern(
+                "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\(",
+                Color.MAGENTA);
+        gscriptHighlighter.addPattern(
+                "\"([^\"\\\\]|\\\\.)*\"",
+                Color.YELLOW);
+        gscriptHighlighter.addPattern(
+                "\\b\\d+\\.\\d+\\b",
+                Color.CYAN);
+        gscriptHighlighter.addPattern(
+                "[(){}\\[\\],;]",
+                Color.LIGHT_GRAY);
 
-        this.script = new CodeInput(Position.zero(), Size.of(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT * 0.8f),
+        gscriptHighlighter.addPattern(
+                "//.*",
+                Color.GREEN);
+        gscriptHighlighter.addPattern(
+                "/\\*[\\s\\S]*?\\*/",
+                Color.GREEN);
+
+        this.script = new CodeEditor(Position.zero(), Size.of(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT * 0.8f),
                 gscriptHighlighter, this.textFont);
         if (!this.script.init()) {
             return false;
         }
         this.script.setFocused(true);
+        this.script.setText("// Write your enemy script here...\n");
 
         int margin = 50;
         this.open = new Text("OPEN",
@@ -115,7 +145,7 @@ public class EnemyEditor extends Page<GalagaPage> {
 
         this.back = new Text("BACK",
                 Position.of(this.script.getPosition().getX() + margin,
-                        this.open.getPosition().getY() + this.open.getSize().getHeight() + margin/8.f),
+                        this.open.getPosition().getY() + this.open.getSize().getHeight() + margin / 8.f),
                 Color.WHITE, this.titleFont);
         if (!this.back.init()) {
             return false;
@@ -133,7 +163,7 @@ public class EnemyEditor extends Page<GalagaPage> {
 
         this.test = new Text("TEST",
                 Position.of(Config.WINDOW_WIDTH - margin,
-                        this.open.getPosition().getY() + this.open.getSize().getHeight() + margin/8.f),
+                        this.open.getPosition().getY() + this.open.getSize().getHeight() + margin / 8.f),
                 Color.WHITE, this.titleFont);
         if (!this.test.init()) {
             return false;
@@ -141,6 +171,7 @@ public class EnemyEditor extends Page<GalagaPage> {
         this.test.setCenter(Alignment.END, Alignment.BEGIN);
 
         this.option = EnemyEditorOption.EDIT;
+        this.updateEditorMenu();
 
         this.state = PageState.ACTIVE;
         return true;

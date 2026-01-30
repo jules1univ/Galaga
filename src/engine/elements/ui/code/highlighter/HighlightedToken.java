@@ -1,4 +1,4 @@
-package engine.elements.ui.codeinput.highlighter;
+package engine.elements.ui.code.highlighter;
 
 import java.awt.Color;
 

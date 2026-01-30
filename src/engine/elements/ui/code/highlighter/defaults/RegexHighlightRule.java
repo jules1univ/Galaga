@@ -1,4 +1,4 @@
-package engine.elements.ui.codeinput.highlighter.defaults;
+package engine.elements.ui.code.highlighter.defaults;
 
 import java.awt.Color;
 import java.util.regex.Pattern;
