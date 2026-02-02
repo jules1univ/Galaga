@@ -65,14 +65,26 @@ public class Galaga extends Application<GalagaPage> {
             return;
         }
 
-        Galaga game = new Galaga();
+        Galaga game = new Galaga(args);
         game.start();
     }
 
-    public Galaga() {
-        super(Config.WINDOW_TITLE, Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT,
-                AppUpdate.of(Config.REMOTE_CHECKSUM_URL, Config.REMOTE_UPDATE_URL));
+    private final GalagaPage startPage;
+
+    public Galaga(Args args) {
+        super(Config.WINDOW_TITLE, Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT, AppUpdate.of(Config.REMOTE_CHECKSUM_URL, Config.REMOTE_UPDATE_URL));
+
         getContext().setState(new State());
+
+        String rawStartPage = args.get("page", "MAIN_MENU").toUpperCase();
+        GalagaPage tmpPage;
+
+        try {
+            tmpPage = GalagaPage.valueOf(rawStartPage);
+        } catch (IllegalArgumentException e) {
+            tmpPage = GalagaPage.MAIN_MENU;
+        }
+        this.startPage = tmpPage;
     }
 
     private boolean load() {
@@ -96,8 +108,7 @@ public class Galaga extends Application<GalagaPage> {
         this.registerPage(GalagaPage.EDITOR_ENEMY, EnemyEditor.class);
         this.registerPage(GalagaPage.EDITOR_SETTINGS, Settings.class);
 
-        this.setCurrentPage(GalagaPage.EDITOR_LEVEL);
-
+        this.setCurrentPage(this.startPage);
         return true;
     }
 
