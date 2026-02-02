@@ -12,7 +12,7 @@ public class CodeState {
     public static final float CURSOR_BLINK_INTERVAL = 0.5f;
 
     public static final float LINE_SPACING = 2.f;
-    public static final float LINE_NUMBER_PADDING = 10;
+    public static final float LINE_NUMBER_PADDING = 0;
 
     public static final float TEXT_TAB_SIZE = 4.f;
     public static float TEXT_SPACE_SIZE = 2.f;

@@ -38,8 +38,23 @@ public class CodeText {
     }
 
     public String getContent() {
-        System.out.println("Getting content: " + this.content);
         return this.content;
+    }
+
+    public String getLineContent(int line) {
+        if (line < 0 || line >= this.lines.size()) {
+            return "";
+        }
+
+        TextPosition linePos = this.lines.get(line);
+        int lineStartIndex = linePos.index();
+
+        int lineEndIndex = this.content.length();
+        if (line + 1 < this.lines.size()) {
+            lineEndIndex = this.lines.get(line + 1).index();
+        }
+
+        return this.content.substring(lineStartIndex, lineEndIndex);
     }
 
     public void insert(String newText, TextPosition start, TextPosition end) {
