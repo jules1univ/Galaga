@@ -1,132 +1,55 @@
 package engine.elements.ui.code;
 
-import engine.Application;
+import java.awt.Font;
+
 import engine.elements.ui.UIElement;
-import engine.elements.ui.code.cursor.CursorManager;
 import engine.elements.ui.code.highlighter.SyntaxHighlighter;
-import engine.elements.ui.code.selection.SelectionManager;
 import engine.graphics.Renderer;
 import engine.utils.Position;
 import engine.utils.Size;
 
-import java.awt.Font;
-import java.util.ArrayList;
-import java.util.List;
-
-public final class CodeEditor extends UIElement {
-
-    public static final float LINE_SPACE_HEIGHT = 0.f;
-    public static final float LINE_SPACE_BEGIN = 10.f;
-
-    private final Font font;
-
-    private boolean focused = false;
-    private int maxDisplayLines;
-    private float lineBegin;
-    private float lineHeight;
-
-    private final CodeContext context;
+public class CodeEditor extends UIElement {
+    private final CodeState state;
+    private boolean focused;
 
     public CodeEditor(Position position, Size size, SyntaxHighlighter highlighter, Font font) {
-        super();
-        this.position = position.copy();
-        this.size = size.copy();
-        this.font = font;
+        this.position = position;
+        this.size = size;
 
-        this.context = new CodeContext(
-                new CursorManager(font, position),
-                new TextManager(),
-                new HistoryManager(),
-                new SelectionManager(),
-                new InputManager(),
-                new CodeViewRenderer(),
-                highlighter,
-                new ArrayList<>());
+        this.state = new CodeState(this, highlighter, font);
     }
 
-    public void setText(String text) {
-        this.context.cursor().resetScroll();
-        this.context.cursor().resetPosition();
-        this.context.selection().reset();
-        this.context.view().markDirty();
-
-        this.context.history().clear();
-        this.context.lines().clear();
-
-        this.context.lines().addAll(List.of(text.split("\n", -1)));
-
-        this.updateLineBegin();
+    public void setContent(String content) {
+        this.state.getText().setContent(content);
     }
 
-    public String getText() {
-        return String.join("\n", this.context.lines());
-    }
-
-    public List<String> getLines() {
-        return this.context.lines();
-    }
-
-    public String getSelectedText() {
-        return this.context.selection().text();
-    }
-
-    public List<String> getSelectedLines() {
-        return this.context.selection().lines();
+    public String getContent() {
+        return this.state.getText().getContent();
     }
 
     public void setFocused(boolean focused) {
         this.focused = focused;
-        if (focused) {
-            this.context.cursor().resetBlink();
-        }
-    }
-
-    private void updateLineBegin() {
-        int lineCount = Math.max(this.maxDisplayLines, this.context.lines().size());
-        Size textLineSize = Application.getContext().getRenderer().getTextSize(Integer.toString(lineCount), this.font);
-        this.lineBegin = LINE_SPACE_BEGIN + textLineSize.getWidth();
-
-        this.context.view().setLineBegin(this.lineBegin);
-        this.context.cursor().setLineBegin(this.lineBegin);
     }
 
     @Override
     public boolean init() {
-        this.lineHeight = Application.getContext().getRenderer().getMaxCharSize(this.font).getHeight()
-                + LINE_SPACE_HEIGHT;
-        this.maxDisplayLines = Math.floorDiv((int) this.size.getHeight(), (int) this.lineHeight) - 1;
-
-        this.context.view().init(this.context, this.size, this.font, this.lineHeight);
-        this.context.cursor().init(this.context, this.maxDisplayLines, this.lineBegin, this.lineHeight);
-
-        this.context.text().init(this.context);
-        this.context.input().init(this.context);
-        this.context.selection().init(this.context);
-
-        this.updateLineBegin();
-        return true;
+        return this.state.getCursor().init() &&
+                this.state.getView().init() &&
+                this.state.getInput().init();
     }
 
     @Override
     public void update(float dt) {
-        if (this.context.view().isDirty()) {
-            this.updateLineBegin();
-            this.context.view().rebuild();
+        if (this.focused) {
+            this.state.getInput().update(dt);
         }
-
-        if (!this.focused) {
-            return;
-        }
-
-        this.context.input().update();
-        this.context.cursor().update(dt);
+        this.state.getCursor().update(dt);
+        this.state.getView().update(dt);
     }
 
     @Override
     public void draw(Renderer renderer) {
-        this.context.view().draw(renderer, this.position);
-        if (this.focused && this.context.cursor().shouldDrawCursor()) {
-            this.context.cursor().draw(renderer);
-        }
+        this.state.getView().draw(renderer);
+        this.state.getCursor().draw(renderer);
     }
 }

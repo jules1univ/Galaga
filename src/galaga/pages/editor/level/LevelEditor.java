@@ -89,7 +89,7 @@ public class LevelEditor extends Page<GalagaPage> {
     }
 
     private boolean exportLevel(String filename, String path) {
-        String content = this.levelCode.getText();
+        String content = this.levelCode.getContent();
         try (FileOutputStream fos = new FileOutputStream(path)) {
             fos.write(content.getBytes());
             fos.flush();
@@ -163,7 +163,7 @@ public class LevelEditor extends Page<GalagaPage> {
         layerSection.set("score", "?");
         layerSection.set("count", "?");
 
-        this.levelCode.setText(levelTemplate.toString());
+        this.levelCode.setContent(levelTemplate.toString());
         this.levelCode.setFocused(true);
 
         int margin = 50;
@@ -230,7 +230,7 @@ public class LevelEditor extends Page<GalagaPage> {
         if (contentOpt.isEmpty()) {
             return;
         }
-        this.levelCode.setText(contentOpt.get());
+        this.levelCode.setContent(contentOpt.get());
     }
 
     @Override
@@ -262,7 +262,7 @@ public class LevelEditor extends Page<GalagaPage> {
                     Galaga.getContext().getApplication().setCurrentPage(GalagaPage.FILE_EXPLORER,
                             FileExplorerArgs.ofSaveMode(Config.PATH_CUSTOM_LEVELS, filename + ".lvl", this.id,
                                     GalagaPage.EDITOR_MENU, this::exportLevel),
-                            this.levelCode.getText());
+                            this.levelCode.getContent());
 
                 }
                 case TEST -> {

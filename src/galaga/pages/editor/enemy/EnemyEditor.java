@@ -131,7 +131,7 @@ public class EnemyEditor extends Page<GalagaPage> {
             return false;
         }
         this.script.setFocused(true);
-        this.script.setText("// Write your enemy script here...\n");
+        this.script.setContent("// Write your enemy script here...\n");
 
         int margin = 50;
         this.open = new Text("OPEN",
@@ -198,7 +198,7 @@ public class EnemyEditor extends Page<GalagaPage> {
         if (contentOpt.isEmpty()) {
             return;
         }
-        this.script.setText(contentOpt.get());
+        this.script.setContent(contentOpt.get());
     }
 
     @Override

@@ -96,7 +96,7 @@ public class Galaga extends Application<GalagaPage> {
         this.registerPage(GalagaPage.EDITOR_ENEMY, EnemyEditor.class);
         this.registerPage(GalagaPage.EDITOR_SETTINGS, Settings.class);
 
-        this.setCurrentPage(GalagaPage.MAIN_MENU);
+        this.setCurrentPage(GalagaPage.EDITOR_LEVEL);
 
         return true;
     }

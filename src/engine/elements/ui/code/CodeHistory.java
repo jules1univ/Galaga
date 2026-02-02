@@ -4,43 +4,50 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public final class HistoryManager {
-
+public class CodeHistory {
+    private final CodeState state;
     private final List<String> history = new ArrayList<>();
     private int index = -1;
 
-    public HistoryManager() {
+    public CodeHistory(CodeState state) {
+        this.state = state;
     }
 
-    public void add(String state) {
-        if (state == null) {
+    public void add(String content) {
+        if (content == null) {
             return;
         }
 
-        if (index >= 0 && history.get(index).equals(state)) {
+        if (index != -1 && content.equals(history.get(index))) {
             return;
         }
 
-        history.subList(index + 1, history.size()).clear();
-
-        history.add(state);
+        history.add(content);
         index++;
+
+        if (this.history.size() > CodeState.HISTORY_MAX_SIZE) {
+            for (int i = 0; i < CodeState.HISTORY_RANGE; i++) {
+                history.remove(0);
+                index--;
+            }
+        }
     }
 
-    public Optional<String> undo() {
+    public void undo() {
         if (!canUndo()) {
-            return Optional.empty();
+            return;
         }
+
         index--;
-        return Optional.of(history.get(index));
+        this.state.getText().setContent(history.get(index));
     }
 
-    public Optional<String> redo() {
+    public void redo() {
         if (!canRedo()) {
-            return Optional.empty();
+            return;
         }
         index++;
-        return Optional.of(history.get(index));
+        this.state.getText().setContent(history.get(index));
     }
 
     public boolean canUndo() {
