@@ -5,6 +5,7 @@ import engine.utils.Time;
 import engine.utils.logger.Log;
 import java.awt.Canvas;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
@@ -29,6 +30,10 @@ public final class AppCanvas extends Canvas implements Runnable {
 
         this.requestFocus();
         this.requestFocusInWindow();
+
+        EventQueue.invokeLater(() -> {
+            this.requestFocusInWindow();
+        });
     }
 
     public Renderer getRenderer() {
@@ -107,7 +112,7 @@ public final class AppCanvas extends Canvas implements Runnable {
                         this.app.draw(this.renderer);
                         this.renderer.end();
                     } catch (Exception e) {
-                        if(Application.DEBUG_MODE) {
+                        if (Application.DEBUG_MODE) {
                             e.printStackTrace();
                         }
                         Log.error("Application encountered an error during cycle: %s", e.getMessage());
