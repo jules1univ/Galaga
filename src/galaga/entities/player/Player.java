@@ -185,14 +185,14 @@ public final class Player extends SpriteEntity implements BulletShooter {
 
         boolean moving = false;
         if (Galaga.getContext().getInput().isKeyDown(
-            Galaga.getContext().getState().keyboard.getKey("game_left").orElse(KeyEvent.VK_LEFT)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_GAME_MOVE_LEFT).orElse(KeyEvent.VK_LEFT)
         )) {
             this.velocityX -= Config.SPEED_ACCELERATION_PLAYER * dt;
             moving = true;
         }
 
         if (Galaga.getContext().getInput().isKeyDown(
-            Galaga.getContext().getState().keyboard.getKey("game_right").orElse(KeyEvent.VK_RIGHT)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_GAME_MOVE_RIGHT).orElse(KeyEvent.VK_RIGHT)
         )) {
             this.velocityX += Config.SPEED_ACCELERATION_PLAYER * dt;
             moving = true;
@@ -215,7 +215,7 @@ public final class Player extends SpriteEntity implements BulletShooter {
 
         this.cooldownTimer += dt;
         if (Galaga.getContext().getInput().isKeyDown(
-            Galaga.getContext().getState().keyboard.getKey("game_shoot").orElse(KeyEvent.VK_SPACE)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_GAME_SHOOT).orElse(KeyEvent.VK_SPACE)
         ) && this.shootActive) {
             if (this.cooldownTimer >= Config.DELAY_SHOOT_PLAYER) {
                 Galaga.getContext().getState().bullets.shoot(this);

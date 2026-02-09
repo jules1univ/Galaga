@@ -237,7 +237,7 @@ public class LevelEditor extends Page<GalagaPage> {
     @Override
     public void update(float dt) {
         if (Galaga.getContext().getInput().isKeyPressed(
-            Galaga.getContext().getState().keyboard.getKey("menu_navigate").orElse(KeyEvent.VK_TAB)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_NAVIGATE).orElse(KeyEvent.VK_TAB)
         )) {
             switch (this.option) {
                 case EDIT -> this.option = LevelEditorOption.OPEN;
@@ -250,7 +250,7 @@ public class LevelEditor extends Page<GalagaPage> {
         }
 
         if (Galaga.getContext().getInput().isKeyPressedNoConsume(
-            Galaga.getContext().getState().keyboard.getKey("menu_confirm").orElse(KeyEvent.VK_ENTER)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_CONFIRM).orElse(KeyEvent.VK_ENTER)
         )) {
             switch (this.option) {
                 case OPEN -> {

@@ -209,7 +209,7 @@ public class MultiplayerMenu extends Page<GalagaPage> {
         }
 
         if (Galaga.getContext().getInput().isKeyPressed(
-            Galaga.getContext().getState().keyboard.getKey("menu_navigate_up").orElse(KeyEvent.VK_UP)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_NAVIGATE_UP).orElse(KeyEvent.VK_UP)
 
         )) {
             this.selectSound.play(2.f);
@@ -221,7 +221,7 @@ public class MultiplayerMenu extends Page<GalagaPage> {
             }
             this.updateMenuSelect();
         } else if (Galaga.getContext().getInput().isKeyPressed(
-            Galaga.getContext().getState().keyboard.getKeys("menu_navigate_down", "menu_navigate").orElse(List.of(KeyEvent.VK_DOWN, KeyEvent.VK_TAB))
+            Galaga.getContext().getState().keyboard.getKeys(Config.KEYBOARD_MENU_NAVIGATE_DOWN, Config.KEYBOARD_MENU_NAVIGATE).orElse(List.of(KeyEvent.VK_DOWN, KeyEvent.VK_TAB))
         )) {
             this.selectSound.play(2.f);
             switch (this.option) {
@@ -238,7 +238,7 @@ public class MultiplayerMenu extends Page<GalagaPage> {
         this.sky.update(dt);
 
         if (Galaga.getContext().getInput().isKeyPressed(
-            Galaga.getContext().getState().keyboard.getKey("menu_confirm").orElse(KeyEvent.VK_ENTER)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_CONFIRM).orElse(KeyEvent.VK_ENTER)
 
         )) {
             this.selectSound.play(2.f);

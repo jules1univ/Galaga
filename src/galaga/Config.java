@@ -114,6 +114,19 @@ public class Config {
         public static int NET_SERVER_PORT = 5555;
         public static int NET_SERVER_MAX_PLAYERS = 4;
 
+        public static final String KEYBOARD_APP_QUIT = "app_quit";
+        public static final String KEYBOARD_MENU_CONFIRM = "menu_confirm";
+        public static final String KEYBOARD_MENU_CONFIRM2 = "menu_confirm2";
+        public static final String KEYBOARD_MENU_NAVIGATE = "menu_navigate";
+        public static final String KEYBOARD_MENU_NAVIGATE_LEFT = "menu_navigate_left";
+        public static final String KEYBOARD_MENU_NAVIGATE_RIGHT = "menu_navigate_right";
+        public static final String KEYBOARD_MENU_NAVIGATE_UP = "menu_navigate_up";
+        public static final String KEYBOARD_MENU_NAVIGATE_DOWN = "menu_navigate_down";
+
+        public static final String KEYBOARD_GAME_SHOOT = "game_shoot";
+        public static final String KEYBOARD_GAME_MOVE_LEFT = "game_move_left";
+        public static final String KEYBOARD_GAME_MOVE_RIGHT = "game_move_right";
+
         public static final String VARIANT_FONT_TEXT = "text";
         public static final String VARIANT_FONT_LARGE = "large";
         public static final String VARIANT_FONT_XLARGE = "xlarge";
@@ -161,13 +174,12 @@ public class Config {
                         "resources/highscore/highscore.sc",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/highscore/highscore.sc");
 
-
         public static final List<ResourceAlias> SOUNDS = ResourceAlias.folder(
                         GalagaSound.class,
                         "resources/sounds/%s.wav",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sounds/%s.wav");
 
-        public static final List<ResourceAlias> SETTING = ResourceAlias.folder(GalagaSetting.class, 
-                "resources/settings/%s.ini",
-                "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/settings/%s.ini");
+        public static final List<ResourceAlias> SETTING = ResourceAlias.folder(GalagaSetting.class,
+                        "resources/settings/%s.ini",
+                        "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/settings/%s.ini");
 }

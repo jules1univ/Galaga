@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import engine.utils.logger.Log;
 public class Setting {
 
     private final Map<String, IniValue> values;
+    private final Map<String, List<Integer>> keyCache = new HashMap<>();
 
     public static Setting load(InputStream in) {
         Ini config = Ini.load(in);
@@ -22,31 +24,39 @@ public class Setting {
             return null;
         }
 
-        if (!config.hasSection("root")) {
-            Log.warning("Setting loading failed no section \"[root]\"");
-            return null;
-        }
-
-        return new Setting(config.getSection("root").getValues());
+        Map<String, IniValue> values = new HashMap<>();
+        config.getSections().forEach(section -> {
+            values.putAll(section.getVariables());
+        });
+        return new Setting(values);
     }
 
     private Setting(Map<String, IniValue> values) {
         this.values = values;
     }
 
-    public Optional<List<Integer>> getKeys(String... varnames)
-    {
+    public Optional<List<Integer>> getKeys(String... varnames) {
+        if (this.keyCache.containsKey(String.join(",", varnames))) {
+            return Optional.of(this.keyCache.get(String.join(",", varnames)));
+        }
+
         List<Integer> keys = new ArrayList<>();
         for (String varname : varnames) {
             Optional<List<Integer>> varkeys = getKeys(varname);
             varkeys.ifPresent(keys::addAll);
-        }   
+        }
 
+        this.keyCache.put(String.join(",", varnames), keys);
         return keys.isEmpty() ? Optional.empty() : Optional.of(keys);
     }
+
     public Optional<List<Integer>> getKeys(String varname) {
         if (!this.values.containsKey(varname)) {
             return Optional.empty();
+        }
+
+        if (this.keyCache.containsKey(varname)) {
+            return Optional.of(this.keyCache.get(varname));
         }
 
         String[] rawKeys = this.values.get(varname).toString().split(",");
@@ -70,12 +80,23 @@ public class Setting {
             }
         }
 
+        this.keyCache.put(varname, keys);
         return keys.isEmpty() ? Optional.empty() : Optional.of(keys);
     }
 
     public Optional<Integer> getKey(String varname) {
+        if(!this.values.containsKey(varname)) {
+            return Optional.empty();
+        }
+
+        if (this.keyCache.containsKey(varname)) {
+            List<Integer> cachedKeys = this.keyCache.get(varname);
+            return cachedKeys.isEmpty() ? Optional.empty() : Optional.of(cachedKeys.get(0));
+        }
+
         Optional<List<Integer>> keys = getKeys(varname);
-        if(keys.isEmpty()){
+        this.keyCache.put(varname, keys.orElse(new ArrayList<>()));
+        if (keys.isEmpty()) {
             return Optional.empty();
         }
         return keys.get().isEmpty() ? Optional.empty() : Optional.of(keys.get().get(0));

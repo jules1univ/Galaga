@@ -248,7 +248,7 @@ public class FileExplorer extends Page<GalagaPage> {
         }
 
         if (Galaga.getContext().getInput().isKeyPressed(
-                Galaga.getContext().getState().keyboard.getKey("menu_navigate").orElse(KeyEvent.VK_TAB))) {
+                Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_NAVIGATE).orElse(KeyEvent.VK_TAB))) {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case FILE_SAVE -> {
@@ -277,18 +277,18 @@ public class FileExplorer extends Page<GalagaPage> {
 
         if (this.option == FileExplorerOption.VIEW) {
             if (Galaga.getContext().getInput().isKeyPressed(
-                    Galaga.getContext().getState().keyboard.getKey("menu_navigate_up").orElse(KeyEvent.VK_UP))) {
+                    Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_NAVIGATE_UP).orElse(KeyEvent.VK_UP))) {
                 this.index--;
                 this.rebuildDisplayFiles();
             } else if (Galaga.getContext().getInput().isKeyPressed(
-                    Galaga.getContext().getState().keyboard.getKey("menu_navigate_down").orElse(KeyEvent.VK_DOWN))) {
+                    Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_NAVIGATE_DOWN).orElse(KeyEvent.VK_DOWN))) {
                 this.index++;
                 this.rebuildDisplayFiles();
             }
         }
 
         if (Galaga.getContext().getInput().isKeyPressed(
-            Galaga.getContext().getState().keyboard.getKey("menu_confirm").orElse(KeyEvent.VK_ENTER)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_CONFIRM).orElse(KeyEvent.VK_ENTER)
         )) {
             this.selectSound.play(2.f);
             if (this.option == FileExplorerOption.BACK) {

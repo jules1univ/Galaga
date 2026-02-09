@@ -174,7 +174,7 @@ public class Galaga extends Application<GalagaPage> {
     protected void update(float dt) {
         if (getContext().getInput().isKeyDown(
             getContext().getState().keyboard == null ? KeyEvent.VK_ESCAPE :
-            getContext().getState().keyboard.getKey("app_quit").orElse(KeyEvent.VK_ESCAPE)
+            getContext().getState().keyboard.getKey(Config.KEYBOARD_APP_QUIT).orElse(KeyEvent.VK_ESCAPE)
         )) {
             this.stop();
         }

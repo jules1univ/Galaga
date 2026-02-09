@@ -126,6 +126,10 @@ public final class Ini {
         return this.sections.get(name.toLowerCase());
     }
 
+    public List<IniSection> getSections() {
+        return new ArrayList<>(this.sections.values());
+    }
+
     public IniValue getVariable(String section, String name) {
         if (this.sections.containsKey(section)) {
             return this.sections.get(section).get(name);

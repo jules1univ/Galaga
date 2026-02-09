@@ -206,25 +206,25 @@ public class SpriteEditor extends Page<GalagaPage> {
         float move = CELL; // hack fix to make cursor move properly on different framerates
 
         if (Galaga.getContext().getInput().isKeyPressed(
-            Galaga.getContext().getState().keyboard.getKey("menu_navigate_up").orElse(KeyEvent.VK_UP)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_NAVIGATE_UP).orElse(KeyEvent.VK_UP)
         )) {
             this.cursor.addY(-move);
 
         }
         if (Galaga.getContext().getInput().isKeyPressed(
-            Galaga.getContext().getState().keyboard.getKey("menu_navigate_down").orElse(KeyEvent.VK_DOWN)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_NAVIGATE_DOWN).orElse(KeyEvent.VK_DOWN)
         ) {
             this.cursor.addY(move);
 
         }
         if (Galaga.getContext().getInput().isKeyPressed(
-            Galaga.getContext().getState().keyboard.getKey("menu_navigate_left").orElse(KeyEvent.VK_LEFT)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_NAVIGATE_LEFT).orElse(KeyEvent.VK_LEFT)
         )) {
             this.cursor.addX(-move);
 
         }
         if (Galaga.getContext().getInput().isKeyPressed(
-            Galaga.getContext().getState().keyboard.getKey("menu_navigate_right").orElse(KeyEvent.VK_RIGHT)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_NAVIGATE_RIGHT).orElse(KeyEvent.VK_RIGHT)
         )) {
             this.cursor.addX(move);
         }
@@ -239,13 +239,13 @@ public class SpriteEditor extends Page<GalagaPage> {
         this.updateCursor();
 
         if (Galaga.getContext().getInput().isKeyDown(
-            Galaga.getContext().getState().keyboard.getKey("menu_confirm_2").orElse(KeyEvent.VK_SPACE)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_CONFIRM2).orElse(KeyEvent.VK_SPACE)
         )) {
             this.setPixel(this.cursorIndex, this.selectedColor);
         }
 
         if (Galaga.getContext().getInput().isKeyPressed(
-            Galaga.getContext().getState().keyboard.getKey("menu_navigate").orElse(KeyEvent.VK_TAB)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_NAVIGATE).orElse(KeyEvent.VK_TAB)
         )) {
             this.selectSound.play(2.f);
             switch (this.option) {
@@ -268,7 +268,7 @@ public class SpriteEditor extends Page<GalagaPage> {
         }
 
         if (Galaga.getContext().getInput().isKeyPressed(
-            Galaga.getContext().getState().keyboard.getKey("menu_confirm").orElse(KeyEvent.VK_ENTER)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_CONFIRM).orElse(KeyEvent.VK_ENTER)
         )) {
             this.selectSound.play(2.f);
             switch (this.option) {
