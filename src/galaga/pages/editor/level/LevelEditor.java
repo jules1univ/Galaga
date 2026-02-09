@@ -16,9 +16,10 @@ import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
-import galaga.level.LevelResource;
 import galaga.pages.files.FileExplorerArgs;
 import galaga.pages.files.FileExplorerResult;
+import galaga.resources.level.LevelResource;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -235,7 +236,9 @@ public class LevelEditor extends Page<GalagaPage> {
 
     @Override
     public void update(float dt) {
-        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_TAB)) {
+        if (Galaga.getContext().getInput().isKeyPressed(
+            Galaga.getContext().getState().keyboard.getKey("menu_navigate").orElse(KeyEvent.VK_TAB)
+        )) {
             switch (this.option) {
                 case EDIT -> this.option = LevelEditorOption.OPEN;
                 case OPEN -> this.option = LevelEditorOption.SAVE;
@@ -246,7 +249,9 @@ public class LevelEditor extends Page<GalagaPage> {
             this.updateEditorMenu();
         }
 
-        if (Galaga.getContext().getInput().isKeyPressedNoConsume(KeyEvent.VK_ENTER)) {
+        if (Galaga.getContext().getInput().isKeyPressedNoConsume(
+            Galaga.getContext().getState().keyboard.getKey("menu_confirm").orElse(KeyEvent.VK_ENTER)
+        )) {
             switch (this.option) {
                 case OPEN -> {
                     Galaga.getContext().getApplication().setCurrentPage(GalagaPage.FILE_EXPLORER,

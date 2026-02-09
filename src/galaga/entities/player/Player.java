@@ -9,10 +9,10 @@ import engine.utils.Position;
 import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
-import galaga.GalagaSound;
 import galaga.entities.bullet.Bullet;
 import galaga.entities.bullet.BulletShooter;
 import galaga.entities.enemies.Enemy;
+import galaga.resources.sound.GalagaSound;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -184,12 +184,16 @@ public final class Player extends SpriteEntity implements BulletShooter {
         }
 
         boolean moving = false;
-        if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_LEFT)) {
+        if (Galaga.getContext().getInput().isKeyDown(
+            Galaga.getContext().getState().keyboard.getKey("game_left").orElse(KeyEvent.VK_LEFT)
+        )) {
             this.velocityX -= Config.SPEED_ACCELERATION_PLAYER * dt;
             moving = true;
         }
 
-        if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_RIGHT)) {
+        if (Galaga.getContext().getInput().isKeyDown(
+            Galaga.getContext().getState().keyboard.getKey("game_right").orElse(KeyEvent.VK_RIGHT)
+        )) {
             this.velocityX += Config.SPEED_ACCELERATION_PLAYER * dt;
             moving = true;
         }
@@ -210,7 +214,9 @@ public final class Player extends SpriteEntity implements BulletShooter {
                 Galaga.getContext().getFrame().getWidth() - this.size.getWidth());
 
         this.cooldownTimer += dt;
-        if (Galaga.getContext().getInput().isKeyDown(KeyEvent.VK_SPACE) && this.shootActive) {
+        if (Galaga.getContext().getInput().isKeyDown(
+            Galaga.getContext().getState().keyboard.getKey("game_shoot").orElse(KeyEvent.VK_SPACE)
+        ) && this.shootActive) {
             if (this.cooldownTimer >= Config.DELAY_SHOOT_PLAYER) {
                 Galaga.getContext().getState().bullets.shoot(this);
                 this.cooldownTimer = 0.f;

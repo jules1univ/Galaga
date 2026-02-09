@@ -9,7 +9,8 @@ import engine.utils.Size;
 import engine.utils.Time;
 import galaga.Config;
 import galaga.Galaga;
-import galaga.score.Score;
+import galaga.resources.score.Score;
+
 import java.awt.Color;
 import java.awt.Font;
 

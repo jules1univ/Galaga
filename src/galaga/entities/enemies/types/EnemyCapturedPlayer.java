@@ -3,12 +3,12 @@ package galaga.entities.enemies.types;
 import engine.utils.Position;
 import galaga.Config;
 import galaga.Galaga;
-import galaga.GalagaSound;
 import galaga.entities.bullet.BulletShooter;
 import galaga.entities.enemies.Enemy;
 import galaga.entities.enemies.EnemyConfig;
 import galaga.entities.enemies.EnemyState;
 import galaga.entities.enemies.EnemyType;
+import galaga.resources.sound.GalagaSound;
 
 public class EnemyCapturedPlayer extends Enemy {
     private float timer;

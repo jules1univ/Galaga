@@ -13,7 +13,6 @@ import engine.resource.sound.Sound;
 import engine.resource.sound.SoundResource;
 import engine.resource.sprite.SpriteResource;
 import engine.utils.Args;
-import galaga.level.LevelResource;
 import galaga.net.server.GalagaServer;
 import galaga.net.shared.NetPlayerData;
 import galaga.pages.editor.enemy.EnemyEditor;
@@ -27,7 +26,11 @@ import galaga.pages.menu.MainMenu;
 import galaga.pages.multiplayer.lobby.MultiplayerLobby;
 import galaga.pages.multiplayer.menu.MultiplayerMenu;
 import galaga.pages.solo.GameSolo;
-import galaga.score.ScoreResource;
+import galaga.resources.level.LevelResource;
+import galaga.resources.score.ScoreResource;
+import galaga.resources.settings.SettingResource;
+import galaga.resources.sound.GalagaSound;
+
 import java.awt.event.KeyEvent;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -126,6 +129,7 @@ public class Galaga extends Application<GalagaPage> {
         this.setCurrentPage(GalagaPage.LOADING);
 
         ResourceManager rm = getContext().getResource();
+        rm.register(SettingResource.NAME, SettingResource.class);
         rm.register(LevelResource.NAME, LevelResource.class);
         rm.register(ScoreResource.NAME, ScoreResource.class);
 
@@ -153,6 +157,10 @@ public class Galaga extends Application<GalagaPage> {
         rm.add(Config.BEST_SCORE, ScoreResource.NAME);
 
         rm.add(Config.SOUNDS, SoundResource.NAME);
+        rm.add(Config.SETTING, SettingResource.NAME, (ResourceVariant variant, Resource<?> rawRes) -> {
+            SettingResource setting =(SettingResource)rawRes;
+            getContext().getState().keyboard = setting.getData();
+        });
 
         rm.load(() -> {
             if (!this.load()) {
@@ -164,7 +172,10 @@ public class Galaga extends Application<GalagaPage> {
 
     @Override
     protected void update(float dt) {
-        if (getContext().getInput().isKeyDown(KeyEvent.VK_ESCAPE)) {
+        if (getContext().getInput().isKeyDown(
+            getContext().getState().keyboard == null ? KeyEvent.VK_ESCAPE :
+            getContext().getState().keyboard.getKey("app_quit").orElse(KeyEvent.VK_ESCAPE)
+        )) {
             this.stop();
         }
 

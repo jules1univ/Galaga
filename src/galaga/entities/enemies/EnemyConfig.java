@@ -6,7 +6,8 @@ import engine.utils.Position;
 import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
-import galaga.level.Level;
+import galaga.resources.level.Level;
+
 import java.util.ArrayList;
 import java.util.List;
 

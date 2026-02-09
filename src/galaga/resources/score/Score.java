@@ -1,4 +1,4 @@
-package galaga.score;
+package galaga.resources.score;
 
 import engine.utils.logger.Log;
 import java.io.BufferedReader;
@@ -8,10 +8,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-public class Score implements Comparable<Score> {
+public final class Score implements Comparable<Score> {
     private final int value;
     
-    public static Score loadScore(InputStream in)
+    public static Score load(InputStream in)
     {
         ArrayList<String> lines = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {

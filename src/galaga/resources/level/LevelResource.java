@@ -1,4 +1,4 @@
-package galaga.level;
+package galaga.resources.level;
 
 import engine.graphics.sprite.Sprite;
 import engine.resource.Resource;

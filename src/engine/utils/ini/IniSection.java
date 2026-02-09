@@ -2,7 +2,6 @@ package engine.utils.ini;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 public final class IniSection {
 
@@ -40,8 +39,8 @@ public final class IniSection {
         this.values.remove(key.toLowerCase());
     }
 
-    public Set<Map.Entry<String, IniValue>> entries() {
-        return this.values.entrySet();
+    public Map<String, IniValue> getValues() {
+        return this.values;
     }
 
     @Override

@@ -15,11 +15,13 @@ import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
-import galaga.GalagaSound;
 import galaga.entities.sky.Sky;
+import galaga.resources.sound.GalagaSound;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 public class MainMenu extends Page<GalagaPage> {
 
@@ -174,7 +176,9 @@ public class MainMenu extends Page<GalagaPage> {
     public void update(float dt) {
         this.sky.update(dt);
 
-        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_LEFT)) {
+        if (Galaga.getContext().getInput().isKeyPressed(
+            Galaga.getContext().getState().keyboard.getKey("menu_navigate_left").orElse(KeyEvent.VK_LEFT)
+        )) {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case GAMEMODE -> this.gameMode.prev();
@@ -183,7 +187,9 @@ public class MainMenu extends Page<GalagaPage> {
                 }
             }
             this.selectSound.play(2.f);
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
+        } else if (Galaga.getContext().getInput().isKeyPressed(
+            Galaga.getContext().getState().keyboard.getKey("menu_navigate_right").orElse(KeyEvent.VK_RIGHT)
+        )) {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case GAMEMODE -> this.gameMode.next();
@@ -191,7 +197,9 @@ public class MainMenu extends Page<GalagaPage> {
                 default -> {
                 }
             }
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
+        } else if (Galaga.getContext().getInput().isKeyPressed(
+            Galaga.getContext().getState().keyboard.getKey("menu_navigate_up").orElse(KeyEvent.VK_UP)
+        )) {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case GAMEMODE -> {
@@ -207,7 +215,9 @@ public class MainMenu extends Page<GalagaPage> {
                     this.updateMenuSelect();
                 }
             }
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN, KeyEvent.VK_TAB)) {
+        } else if (Galaga.getContext().getInput().isKeyPressed(
+            Galaga.getContext().getState().keyboard.getKeys("menu_navigate_down", "menu_navigate").orElse(List.of(KeyEvent.VK_DOWN, KeyEvent.VK_TAB))
+        )) {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case GAMEMODE -> {
@@ -225,7 +235,9 @@ public class MainMenu extends Page<GalagaPage> {
                     this.updateMenuSelect();
                 }
             }
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+        } else if (Galaga.getContext().getInput().isKeyPressed(
+            Galaga.getContext().getState().keyboard.getKey("menu_confirm").orElse(KeyEvent.VK_ENTER)
+        )) {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case QUIT -> Galaga.getContext().getApplication().stop();

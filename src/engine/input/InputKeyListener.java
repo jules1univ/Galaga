@@ -3,6 +3,7 @@ package engine.input;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashSet;
+import java.util.List;
 
 public final class InputKeyListener implements KeyListener {
     public static final char NO_CHAR = '\0';
@@ -17,6 +18,12 @@ public final class InputKeyListener implements KeyListener {
         return keysDown.contains(key);
     }
 
+     public boolean isKeyPressedNoConsume(List<Integer> lkeys) {
+        return this.isKeyPressedNoConsume(lkeys.stream()
+                  .mapToInt(Integer::intValue)
+                  .toArray());
+    }
+
     public boolean isKeyPressedNoConsume(int... keys) {
         for (int key : keys) {
             if (keysDown.contains(key)) {
@@ -24,6 +31,12 @@ public final class InputKeyListener implements KeyListener {
             }
         }
         return false;
+    }
+
+    public boolean isKeyPressed(List<Integer> lkeys) {
+        return this.isKeyPressed(lkeys.stream()
+                  .mapToInt(Integer::intValue)
+                  .toArray());
     }
 
     public boolean isKeyPressed(int... keys) {

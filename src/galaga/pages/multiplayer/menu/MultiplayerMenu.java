@@ -3,6 +3,7 @@ package galaga.pages.multiplayer.menu;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 import engine.elements.page.Page;
 import engine.elements.ui.Alignment;
@@ -16,8 +17,8 @@ import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
-import galaga.GalagaSound;
 import galaga.entities.sky.Sky;
+import galaga.resources.sound.GalagaSound;
 
 public class MultiplayerMenu extends Page<GalagaPage> {
 
@@ -207,7 +208,10 @@ public class MultiplayerMenu extends Page<GalagaPage> {
             }
         }
 
-        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
+        if (Galaga.getContext().getInput().isKeyPressed(
+            Galaga.getContext().getState().keyboard.getKey("menu_navigate_up").orElse(KeyEvent.VK_UP)
+
+        )) {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case IP -> this.option = MultiplayerMenuOption.USERNAME;
@@ -216,7 +220,9 @@ public class MultiplayerMenu extends Page<GalagaPage> {
                 case USERNAME -> this.option = MultiplayerMenuOption.BACK;
             }
             this.updateMenuSelect();
-        } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN, KeyEvent.VK_TAB)) {
+        } else if (Galaga.getContext().getInput().isKeyPressed(
+            Galaga.getContext().getState().keyboard.getKeys("menu_navigate_down", "menu_navigate").orElse(List.of(KeyEvent.VK_DOWN, KeyEvent.VK_TAB))
+        )) {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case USERNAME -> this.option = MultiplayerMenuOption.IP;
@@ -231,7 +237,10 @@ public class MultiplayerMenu extends Page<GalagaPage> {
         this.username.update(dt);
         this.sky.update(dt);
 
-        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+        if (Galaga.getContext().getInput().isKeyPressed(
+            Galaga.getContext().getState().keyboard.getKey("menu_confirm").orElse(KeyEvent.VK_ENTER)
+
+        )) {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case NEXT -> {

@@ -14,7 +14,8 @@ import engine.utils.logger.Log;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
-import galaga.GalagaSound;
+import galaga.resources.sound.GalagaSound;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
@@ -243,10 +244,11 @@ public class FileExplorer extends Page<GalagaPage> {
     @Override
     public void update(float dt) {
         if (this.option == FileExplorerOption.FILE_SAVE && Galaga.getContext().getInput().isTyping()) {
-           this.keyboardSound.play(.5f);
+            this.keyboardSound.play(.5f);
         }
 
-        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_TAB)) {
+        if (Galaga.getContext().getInput().isKeyPressed(
+                Galaga.getContext().getState().keyboard.getKey("menu_navigate").orElse(KeyEvent.VK_TAB))) {
             this.selectSound.play(2.f);
             switch (this.option) {
                 case FILE_SAVE -> {
@@ -274,16 +276,20 @@ public class FileExplorer extends Page<GalagaPage> {
         }
 
         if (this.option == FileExplorerOption.VIEW) {
-            if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
+            if (Galaga.getContext().getInput().isKeyPressed(
+                    Galaga.getContext().getState().keyboard.getKey("menu_navigate_up").orElse(KeyEvent.VK_UP))) {
                 this.index--;
                 this.rebuildDisplayFiles();
-            } else if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
+            } else if (Galaga.getContext().getInput().isKeyPressed(
+                    Galaga.getContext().getState().keyboard.getKey("menu_navigate_down").orElse(KeyEvent.VK_DOWN))) {
                 this.index++;
                 this.rebuildDisplayFiles();
             }
         }
 
-        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
+        if (Galaga.getContext().getInput().isKeyPressed(
+            Galaga.getContext().getState().keyboard.getKey("menu_confirm").orElse(KeyEvent.VK_ENTER)
+        )) {
             this.selectSound.play(2.f);
             if (this.option == FileExplorerOption.BACK) {
                 Galaga.getContext().getApplication().setCurrentPage(this.args.getBackPage(), this.lastState);
@@ -304,7 +310,7 @@ public class FileExplorer extends Page<GalagaPage> {
                 } else {
                     String outputFilename = this.files.get(this.index).getFirst();
                     String outputPath = this.currentPath.resolve(outputFilename).toString();
-                    
+
                     Galaga.getContext().getApplication().setCurrentPage(this.args.getNextPage(), FileExplorerResult.of(
                             outputFilename,
                             outputPath));
@@ -329,9 +335,10 @@ public class FileExplorer extends Page<GalagaPage> {
                 default -> {
                     String outputPath = this.currentPath.resolve(selectedFile.getFirst()).toString();
                     if (!this.args.isSaveMode()) {
-                        Galaga.getContext().getApplication().setCurrentPage(this.args.getNextPage(), FileExplorerResult.of(
-                                selectedFile.getFirst(),
-                                outputPath));
+                        Galaga.getContext().getApplication().setCurrentPage(this.args.getNextPage(),
+                                FileExplorerResult.of(
+                                        selectedFile.getFirst(),
+                                        outputPath));
                     }
                 }
             }

@@ -9,9 +9,9 @@ import engine.utils.Position;
 import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
-import galaga.GalagaSound;
 import galaga.entities.bullet.Bullet;
 import galaga.entities.bullet.BulletShooter;
+import galaga.resources.sound.GalagaSound;
 
 import java.awt.Color;
 import java.awt.Font;

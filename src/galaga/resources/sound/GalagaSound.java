@@ -1,4 +1,4 @@
-package galaga;
+package galaga.resources.sound;
 
 public enum GalagaSound {
     enemy_small_die,

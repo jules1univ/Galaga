@@ -1,4 +1,4 @@
-package galaga.level;
+package galaga.resources.level;
 
 import engine.elements.ui.Alignment;
 import engine.elements.ui.text.Text;
@@ -8,9 +8,10 @@ import engine.resource.sound.Sound;
 import engine.utils.Position;
 import galaga.Config;
 import galaga.Galaga;
-import galaga.GalagaSound;
 import galaga.entities.enemies.Enemy;
 import galaga.entities.player.Player;
+import galaga.resources.sound.GalagaSound;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;

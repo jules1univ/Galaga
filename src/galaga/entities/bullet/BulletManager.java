@@ -5,7 +5,7 @@ import engine.graphics.Renderer;
 import engine.resource.sound.Sound;
 import galaga.Config;
 import galaga.Galaga;
-import galaga.GalagaSound;
+import galaga.resources.sound.GalagaSound;
 
 import java.util.ArrayList;
 import java.util.Iterator;

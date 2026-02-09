@@ -4,11 +4,11 @@ import engine.utils.Position;
 import engine.utils.Size;
 import galaga.Config;
 import galaga.Galaga;
-import galaga.GalagaSound;
 import galaga.entities.enemies.Enemy;
 import galaga.entities.enemies.EnemyConfig;
 import galaga.entities.enemies.EnemyState;
 import galaga.entities.enemies.EnemyType;
+import galaga.resources.sound.GalagaSound;
 
 public class EnemyBosconian extends Enemy {
 

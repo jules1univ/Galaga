@@ -203,7 +203,9 @@ public class EnemyEditor extends Page<GalagaPage> {
 
     @Override
     public void update(float dt) {
-        if (Galaga.getContext().getInput().isKeyPressed(KeyEvent.VK_TAB)) {
+        if (Galaga.getContext().getInput().isKeyPressed(
+            Galaga.getContext().getState().keyboard.getKey("menu_navigate").orElse(KeyEvent.VK_TAB)
+        )) {
             switch (this.option) {
                 case EDIT -> this.option = EnemyEditorOption.OPEN;
                 case OPEN -> this.option = EnemyEditorOption.SAVE;
@@ -214,7 +216,9 @@ public class EnemyEditor extends Page<GalagaPage> {
             this.updateEditorMenu();
         }
 
-        if (Galaga.getContext().getInput().isKeyPressedNoConsume(KeyEvent.VK_ENTER)) {
+        if (Galaga.getContext().getInput().isKeyPressedNoConsume(
+            Galaga.getContext().getState().keyboard.getKey("menu_confirm").orElse(KeyEvent.VK_ENTER)
+        )) {
             switch (this.option) {
                 case OPEN -> {
                     // Open file explorer

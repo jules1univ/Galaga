@@ -3,7 +3,9 @@ package engine.utils.ini;
 import engine.utils.logger.Log;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -22,11 +24,11 @@ public final class Ini {
         return new Ini();
     }
 
-    public static Ini load(String path) {
+    public static Ini load(InputStream in) {
         List<String> lines = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))) {
+                new InputStreamReader(in, StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty()) {
@@ -37,6 +39,14 @@ public final class Ini {
             return load(lines);
         } catch (IOException e) {
             Log.error("Ini loading failed: %s", e.getMessage());
+            return null;
+        }
+    }
+
+    public static Ini load(String path) {
+        try {
+            return load(new FileInputStream(path));
+        } catch (FileNotFoundException e) {
             return null;
         }
     }
@@ -117,7 +127,7 @@ public final class Ini {
     }
 
     public IniValue getVariable(String section, String name) {
-        if(this.sections.containsKey(section)) {
+        if (this.sections.containsKey(section)) {
             return this.sections.get(section).get(name);
         }
         return IniValue.of(null);
@@ -128,7 +138,7 @@ public final class Ini {
     }
 
     public boolean hasVariable(String section, String name) {
-        if(this.sections.containsKey(section)) {
+        if (this.sections.containsKey(section)) {
             return this.sections.get(section).has(name);
         }
         return false;

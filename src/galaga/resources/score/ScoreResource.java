@@ -1,4 +1,4 @@
-package galaga.score;
+package galaga.resources.score;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -7,7 +7,7 @@ import engine.resource.Resource;
 import engine.resource.ResourceAlias;
 import engine.resource.ResourceCallback;
 
-public class ScoreResource extends Resource<Score> {
+public final class ScoreResource extends Resource<Score> {
    public static final String NAME = "score";
     
     public ScoreResource(ResourceAlias alias, ResourceCallback callback) {
@@ -20,7 +20,7 @@ public class ScoreResource extends Resource<Score> {
         if(in == null) {
             return false;
         }
-        Score score = Score.loadScore(in);
+        Score score = Score.load(in);
         if(score == null) {
             return false;
         }

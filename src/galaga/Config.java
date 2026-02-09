@@ -5,6 +5,9 @@ import engine.resource.ResourceVariant;
 import engine.utils.Position;
 import engine.utils.Size;
 import galaga.entities.enemies.EnemyType;
+import galaga.resources.settings.GalagaSetting;
+import galaga.resources.sound.GalagaSound;
+
 import java.awt.Color;
 import java.util.List;
 
@@ -141,15 +144,10 @@ public class Config {
         public static final List<ResourceAlias> FONTS = ResourceAlias.file(
                         "font",
                         "resources/fonts/default.ttf",
-                        "https://st.1001fonts.net/download/font/bytebounce.medium.ttf")
+                        "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/fonts/default.ttf")
                         .variant(ResourceVariant.of(Config.VARIANT_FONT_TEXT, Config.SIZE_FONT_TEXT),
                                         ResourceVariant.of(Config.VARIANT_FONT_LARGE, Config.SIZE_FONT_LARGE),
                                         ResourceVariant.of(Config.VARIANT_FONT_XLARGE, Config.SIZE_FONT_XLARGE));
-
-        public static final List<ResourceAlias> SOUNDS = ResourceAlias.folder(
-                        GalagaSound.class,
-                        "resources/sounds/%s.wav",
-                        "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sounds/%s.wav");
 
         public static final List<ResourceAlias> LEVELS = ResourceAlias.folder(
                         "level%d", 1, 3,
@@ -162,4 +160,14 @@ public class Config {
                         "best_score",
                         "resources/highscore/highscore.sc",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/highscore/highscore.sc");
+
+
+        public static final List<ResourceAlias> SOUNDS = ResourceAlias.folder(
+                        GalagaSound.class,
+                        "resources/sounds/%s.wav",
+                        "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/sounds/%s.wav");
+
+        public static final List<ResourceAlias> SETTING = ResourceAlias.folder(GalagaSetting.class, 
+                "resources/settings/%s.ini",
+                "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/settings/%s.ini");
 }

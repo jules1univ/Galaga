@@ -3,13 +3,13 @@ package galaga.entities.enemies.types;
 import engine.resource.sound.Sound;
 import engine.utils.Position;
 import galaga.Galaga;
-import galaga.GalagaSound;
 import galaga.entities.enemies.Enemy;
 import galaga.entities.enemies.EnemyFactory;
 import galaga.entities.enemies.EnemyConfig;
 import galaga.entities.enemies.EnemyState;
 import galaga.entities.enemies.EnemyType;
 import galaga.entities.player.Player;
+import galaga.resources.sound.GalagaSound;
 
 public class EnemyMoth extends Enemy {
 

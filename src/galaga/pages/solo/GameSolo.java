@@ -7,7 +7,6 @@ import engine.resource.sound.Sound;
 import galaga.Config;
 import galaga.Galaga;
 import galaga.GalagaPage;
-import galaga.GalagaSound;
 import galaga.entities.bullet.Bullet;
 import galaga.entities.bullet.BulletManager;
 import galaga.entities.enemies.Enemy;
@@ -17,8 +16,10 @@ import galaga.entities.enemies.types.EnemyMoth;
 import galaga.entities.particles.ParticlesManager;
 import galaga.entities.player.Player;
 import galaga.entities.sky.Sky;
-import galaga.level.LevelManager;
-import galaga.score.Score;
+import galaga.resources.level.LevelManager;
+import galaga.resources.score.Score;
+import galaga.resources.sound.GalagaSound;
+
 import java.awt.Color;
 import java.util.Iterator;
 
