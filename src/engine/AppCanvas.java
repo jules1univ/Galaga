@@ -70,6 +70,7 @@ public final class AppCanvas extends Canvas implements Runnable {
         try {
             strategy = this.getBufferStrategy();
         } catch (Exception e) {
+            Log.report(e);
             this.stop();
             return;
         }
@@ -79,6 +80,7 @@ public final class AppCanvas extends Canvas implements Runnable {
             g = (Graphics2D) strategy.getDrawGraphics();
             this.renderer.setGraphics(g);
         } catch (Exception e) {
+            Log.report(e);
             this.stop();
             return;
         }
@@ -112,10 +114,8 @@ public final class AppCanvas extends Canvas implements Runnable {
                         this.app.draw(this.renderer);
                         this.renderer.end();
                     } catch (Exception e) {
-                        if (Application.DEBUG_MODE) {
-                            e.printStackTrace();
-                        }
-                        Log.error("Application encountered an error during cycle: %s", e.getMessage());
+                        Log.error("Application encountered an error during cycle");
+                        Log.report(e);
 
                         this.renderer.end();
                         this.stop();

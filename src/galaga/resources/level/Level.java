@@ -108,8 +108,7 @@ public class Level {
         }
 
         try {
-            if(!levelConfig.hasVariable("level","name"))
-            {
+            if (!levelConfig.hasVariable("level", "name")) {
                 Log.error("Level loading failed: missing level name");
                 return null;
             }
@@ -118,10 +117,9 @@ public class Level {
             float formationSpeed = levelConfig.getVariable("level", "formation_speed").asFloat()
                     .orElse(Config.SPEED_DEFAULT_FORMATION_SPEED);
             float attackCooldown = levelConfig.getVariable("level", "attack_cooldown").asFloat()
-                    .orElse(Config.DELAY_DEFAULT_ATTACK_COOLDOWN);
+                    .orElse(Config.DELAY_DEFAULT_ATTACK_COOLDOWN) * Config.DELAY_ENEMY_COOLDOWN_FACTOR_ATTACK;
             float missileCooldown = levelConfig.getVariable("level", "missile_cooldown").asFloat()
-                    .orElse(Config.DELAY_DEFAULT_MISSILE_COOLDOWN);
-
+                    .orElse(Config.DELAY_DEFAULT_MISSILE_COOLDOWN) * Config.DELAY_ENEMY_COOLDOWN_FACTOR_MISSILE;
             Level level = new Level(name, formationSpeed, attackCooldown, missileCooldown);
             if (!levelConfig.hasSection("formation")) {
                 Log.warning("Level loaded without formation: missing 'formation' section");
@@ -143,12 +141,12 @@ public class Level {
                 }
 
                 String rawType = levelConfig.getVariable(section, "type").toString().toUpperCase();
-                if(!rawTypes.contains(rawType)) {
-                    Log.warning("Level layer %d skipped: invalid enemy type '%s' in section %s",i, rawType, section);
+                if (!rawTypes.contains(rawType)) {
+                    Log.warning("Level layer %d skipped: invalid enemy type '%s' in section %s", i, rawType, section);
                     continue;
                 }
                 EnemyType type = EnemyType.valueOf(rawType);
-            
+
                 Sprite sprite = Galaga.getContext().getResource().get(type);
                 if (sprite == null) {
                     continue;
@@ -160,9 +158,10 @@ public class Level {
                         .orElse(Config.SPEED_DEFAULT_ENEMY_SPEED);
                 int score = levelConfig.getVariable(section, "score").asInt().orElse(Config.SIZE_DEFAULT_ENEMY_SCORE);
 
-                Pair<List<EnemyConfig>, Pair<Integer, Integer>> result = EnemyConfig.create(type, score, speed, count, y, level, lrIndex);
+                Pair<List<EnemyConfig>, Pair<Integer, Integer>> result = EnemyConfig.create(type, score, speed, count,
+                        y, level, lrIndex);
                 lrIndex = result.getSecond();
-                
+
                 level.enemiesConfig.addAll(result.getFirst());
 
                 y += sprite.getSize().getHeight() * Config.SPRITE_SCALE_DEFAULT + Config.POSITION_LEVEL_STEP_Y;

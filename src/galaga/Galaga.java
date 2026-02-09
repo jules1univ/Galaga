@@ -13,6 +13,7 @@ import engine.resource.sound.Sound;
 import engine.resource.sound.SoundResource;
 import engine.resource.sprite.SpriteResource;
 import engine.utils.Args;
+import engine.utils.logger.Log;
 import galaga.net.server.GalagaServer;
 import galaga.net.shared.NetPlayerData;
 import galaga.pages.editor.enemy.EnemyEditor;
@@ -40,6 +41,7 @@ public class Galaga extends Application<GalagaPage> {
 
     static {
         NetworkManager.register(NetPlayerData.class);
+        Log.setReportFolder(Config.LOG_FOLDER);
     }
 
     @SuppressWarnings("unchecked")
