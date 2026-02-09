@@ -212,7 +212,7 @@ public class SpriteEditor extends Page<GalagaPage> {
 
         }
         if (Galaga.getContext().getInput().isKeyPressed(
-            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_NAVIGATE_DOWN).orElse(KeyEvent.VK_DOWN)
+            Galaga.getContext().getState().keyboard.getKey(Config.KEYBOARD_MENU_NAVIGATE_DOWN).orElse(KeyEvent.VK_DOWN))
         ) {
             this.cursor.addY(move);
 
