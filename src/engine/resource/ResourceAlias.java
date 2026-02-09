@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 public final class ResourceAlias {
 
@@ -16,6 +17,7 @@ public final class ResourceAlias {
     private final File path;
     private final URI url;
     private ResourceVariant variant = null;
+    private Function<ResourceVariant, Object> fallback = null;
 
     public static boolean exists(String name) {
         return aliases.contains(name);
@@ -103,6 +105,11 @@ public final class ResourceAlias {
         return aliasFinal;
     }
 
+    public ResourceAlias fallback(Function<ResourceVariant, Object> fallback) {
+        this.fallback = fallback;
+        return this;
+    }
+
     public List<ResourceAlias> variant(ResourceVariant... variants) {
         List<ResourceAlias> alias = new ArrayList<>();
         for (ResourceVariant vrt : variants) {
@@ -113,12 +120,7 @@ public final class ResourceAlias {
 
     private ResourceAlias(String name, String rawPath, String rawUrl) {
         this.name = name;
-        // try {
-        // ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        // this.path = new File(classLoader.getResource(path).toURI());
-        // } catch (Exception e) {
-        // }
-        
+
         File localPath = new File(rawPath);
         if(localPath.isAbsolute()) {
             this.path = localPath;
@@ -132,6 +134,8 @@ public final class ResourceAlias {
         this.name = base.name;
         this.path = base.path;
         this.url = base.url;
+        this.fallback = base.fallback;
+
         this.variant = variant;
     }
 
@@ -156,5 +160,9 @@ public final class ResourceAlias {
 
     public ResourceVariant getVariant() {
         return this.variant;
+    }
+
+    public  Function<ResourceVariant, Object> getFallback() {
+       return this.fallback;
     }
 }

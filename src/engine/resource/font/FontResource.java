@@ -18,31 +18,24 @@ public final class FontResource extends Resource<Font> {
     }
 
     @Override
-    public boolean load() {
-        InputStream in = this.getResourceInput();
-        if (in == null) {
-            return false;
-        }
-
+    public Font read(InputStream in) {
         try {
             Font font = Font.createFont(Font.TRUETYPE_FONT, in);
-
             ResourceVariant variant = this.alias.getVariant();
+
             if (variant != null) {
                 float size = variant.getValue();
                 font = font.deriveFont(size);
             }
-            this.onLoadComplete(font);
+            return font;
         } catch (FontFormatException | IOException e) {
             Log.error("Font loading failed: %s", e.getMessage());
-            return false;
+            return null;
         }
-        return true;
     }
 
     @Override
     public boolean write(Font data) {
         throw new UnsupportedOperationException("Font.write should not be called");
     }
-
 }

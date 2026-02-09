@@ -15,22 +15,14 @@ public final class SettingResource extends Resource<Setting> {
     }
 
     @Override
-    public boolean load() {
-        InputStream in = this.getResourceInput();
-        if (in == null) {
-            return false;
-        }
-        Setting setting = Setting.load(in);
-        if (setting == null) {
-            return false;
-        }
-        this.onLoadComplete(setting);
-        return true;
+    public Setting read(InputStream in) {
+        return Setting.load(in);
     }
 
     @Override
     public boolean write(Setting data) {
         return false;
     }
+
 
 }

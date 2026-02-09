@@ -128,7 +128,11 @@ public final class Renderer {
     }
 
     public Renderer drawText(String text, Position position, Color color, Font font) {
-        if (font == null || text == null) {
+        if(font == null) {
+            // Log.warning("Attempted to draw text with null font.");
+            return this;
+        }
+        if (text == null) {
             Log.warning("Attempted to draw null text.");
             return this;
         }

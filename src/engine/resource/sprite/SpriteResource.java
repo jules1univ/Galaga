@@ -15,17 +15,8 @@ public final class SpriteResource extends Resource<Sprite> {
     }
 
     @Override
-    public boolean load() {
-        InputStream in = this.getResourceInput();
-        if(in == null) {
-            return false;
-        }
-        Sprite sprite = Sprite.createSprite(in);
-        if(sprite == null) {
-            return false;
-        }
-        this.onLoadComplete(sprite);
-        return true;
+    public Sprite read(InputStream in) {
+        return Sprite.createSprite(in);
     }
 
     @Override

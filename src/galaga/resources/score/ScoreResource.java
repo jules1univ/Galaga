@@ -8,31 +8,21 @@ import engine.resource.ResourceAlias;
 import engine.resource.ResourceCallback;
 
 public final class ScoreResource extends Resource<Score> {
-   public static final String NAME = "score";
-    
+    public static final String NAME = "score";
+
     public ScoreResource(ResourceAlias alias, ResourceCallback callback) {
         super(alias, callback);
     }
 
     @Override
-    public boolean load() {
-        InputStream in = this.getResourceInput();
-        if(in == null) {
-            return false;
-        }
-        Score score = Score.load(in);
-        if(score == null) {
-            return false;
-        }
-        this.onLoadComplete(score);
-        return true;
+    public Score read(InputStream in) {
+        return Score.load(in);
     }
 
-    
     @Override
     public boolean write(Score data) {
         OutputStream out = this.getResourceOutput();
-        if(out == null) {
+        if (out == null) {
             return false;
         }
         return Score.saveScore(data, out);

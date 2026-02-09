@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.function.Function;
 
 public abstract class Resource<ResourceData> {
     protected final ResourceAlias alias;
@@ -24,7 +25,7 @@ public abstract class Resource<ResourceData> {
         this.callback = callback;
     }
 
-    protected final void onLoadComplete(ResourceData d) {
+    private void onLoadComplete(ResourceData d) {
         this.loaded = true;
         this.data = d;
         if (this.callback != null) {
@@ -32,7 +33,27 @@ public abstract class Resource<ResourceData> {
         }
     }
 
-    protected final InputStream getResourceInput() {
+    private boolean onLoadFallback() {
+        Function<ResourceVariant, Object> fallback = this.alias.getFallback();
+        if (fallback != null) {
+            Object fallbackData = fallback.apply(this.alias.getVariant());
+            if (fallbackData != null) {
+                try {
+                    ResourceData data = (ResourceData) fallbackData;
+                    Log.warning("Resource '%s' loaded fallback data.", this.alias.getFullName());
+
+                    this.onLoadComplete(data);
+                    return true;
+                } catch (ClassCastException e) {
+                    Log.error("Resource '%s' fallback data type mismatch: %s",
+                            this.alias.getFullName(), e.getMessage());
+                }
+            }
+        }
+        return false;
+    }
+
+    private InputStream getResourceInput() {
         File file = this.alias.getPath();
         if (file.exists()) {
             try {
@@ -65,7 +86,7 @@ public abstract class Resource<ResourceData> {
         return null;
     }
 
-    protected final OutputStream getResourceOutput() {
+    protected OutputStream getResourceOutput() {
         File file = this.alias.getPath();
         try {
             if (!file.exists()) {
@@ -81,17 +102,31 @@ public abstract class Resource<ResourceData> {
 
     public abstract boolean write(ResourceData data);
 
-    public abstract boolean load();
+    public abstract ResourceData read(InputStream in);
 
-    public boolean isLoaded() {
+    public final boolean load() {
+        InputStream in = this.getResourceInput();
+        if (in == null) {
+            return this.onLoadFallback();
+        }
+
+        ResourceData data = this.read(in);
+        if (data == null) {
+            return this.onLoadFallback();
+        }
+        this.onLoadComplete(data);
+        return true;
+    }
+
+    public final boolean isLoaded() {
         return this.loaded;
     }
 
-    public ResourceAlias getAlias() {
+    public final ResourceAlias getAlias() {
         return this.alias;
     }
 
-    public ResourceData getData() {
+    public final ResourceData getData() {
         return this.data;
     }
 }

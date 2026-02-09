@@ -9,6 +9,9 @@ import galaga.resources.settings.GalagaSetting;
 import galaga.resources.sound.GalagaSound;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+import java.util.Arrays;
 import java.util.List;
 
 public class Config {
@@ -109,7 +112,7 @@ public class Config {
 
         public static final String PATH_CUSTOM_SHIPS = "./resources/sprites/ships/custom/";
         public static final String PATH_CUSTOM_LEVELS = "./resources/levels/custom/";
-        public static final String LOG_FOLDER =  "./resources/logs/";
+        public static final String LOG_FOLDER = "./resources/logs/";
 
         public static final float NET_TICKRATE = 30.f;
         public static int NET_SERVER_PORT = 5555;
@@ -159,6 +162,17 @@ public class Config {
                         "font",
                         "resources/fonts/default.ttf",
                         "https://raw.githubusercontent.com/jules1univ/Galaga/refs/heads/master/resources/fonts/default.ttf")
+                        .fallback((ResourceVariant variant) -> {
+                                List<Font> defaultFonts = Arrays.asList(
+                                                GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts());
+                                if (defaultFonts.isEmpty()) {
+                                        return null;
+                                }
+
+                                float size = variant.getValue();
+                                Font defaultFont = defaultFonts.get(0).deriveFont(size);
+                                return defaultFont;
+                        })
                         .variant(ResourceVariant.of(Config.VARIANT_FONT_TEXT, Config.SIZE_FONT_TEXT),
                                         ResourceVariant.of(Config.VARIANT_FONT_LARGE, Config.SIZE_FONT_LARGE),
                                         ResourceVariant.of(Config.VARIANT_FONT_XLARGE, Config.SIZE_FONT_XLARGE));

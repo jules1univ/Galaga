@@ -21,17 +21,8 @@ public class LevelResource extends Resource<Level> {
     }
 
     @Override
-    public boolean load() {
-        InputStream in = this.getResourceInput();
-        if (in == null) {
-            return false;
-        }
-        Level level = Level.create(in);
-        if (level == null) {
-            return false;
-        }
-        this.onLoadComplete(level);
-        return true;
+    public Level read(InputStream in) {
+        return Level.create(in);
     }
 
     @Override
@@ -56,7 +47,7 @@ public class LevelResource extends Resource<Level> {
                 out.flush();
                 return true;
             }
-            float width = enemySprite.getSize().getWidth()/Config.WINDOW_WIDTH;
+            float width = enemySprite.getSize().getWidth() / Config.WINDOW_WIDTH;
 
             for (EnemyConfig enemy : data.getEnemiesConfig()) {
                 out.write(enemy.getType().name().getBytes());

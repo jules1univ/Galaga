@@ -12,19 +12,9 @@ public final class SoundResource extends Resource<Sound> {
         super(alias, callback);
     }
 
-    @Override
-    public boolean load() {
-        InputStream in = this.getResourceInput();
-        if (in == null) {
-            return false;
-        }
-
-        Sound sound = Sound.createSound(in);
-        if (sound == null) {
-            return false;
-        }
-        this.onLoadComplete(sound);
-        return true;
+   @Override
+    public Sound read(InputStream in) {
+        return Sound.createSound(in);
     }
 
     @Override
