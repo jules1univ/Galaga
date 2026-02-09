@@ -22,7 +22,12 @@ public class BulletManager extends Entity implements  Iterable<Bullet> {
 
     public void shoot(BulletShooter shooter) {
         if(this.bullets.size() >= Config.SIZE_BULLET_CAPACITY) {
-            return;
+            for(Bullet bullet : this.bullets) {
+                if(bullet.isOutOfBounds()) {
+                    this.bullets.remove(bullet);
+                    break;
+                }
+            }
         }
         this.shootSound.play();
         this.bullets.add(new Bullet(shooter));

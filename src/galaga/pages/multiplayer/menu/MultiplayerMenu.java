@@ -2,6 +2,7 @@ package galaga.pages.multiplayer.menu;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.RenderingHints.Key;
 import java.awt.event.KeyEvent;
 
 import engine.elements.page.Page;
