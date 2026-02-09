@@ -76,7 +76,7 @@ public class Setting {
 
                 keys.add(keyCode);
             } catch (Exception e) {
-                Log.warning("Setting has invalid keyvent for \"" + varname + "\": ", e.toString());
+                Log.warning("Setting has invalid keyvent for \"" + varname + "\": %s", e.toString());
             }
         }
 
@@ -110,7 +110,7 @@ public class Setting {
         try {
             return Optional.of(Integer.parseInt(this.values.get(varname).toString().trim()));
         } catch (NumberFormatException e) {
-            Log.warning("Settings has invalid integer value for \"" + varname + "\": ", e.toString());
+            Log.warning("Settings has invalid integer value for \"" + varname + "\": %s", e.toString());
             return Optional.empty();
         }
     }

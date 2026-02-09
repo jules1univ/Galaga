@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
@@ -94,23 +95,50 @@ public final class AppUpdate {
 
     private void executeUpdate(Path appJarPath, Path tmpUpdatePath) {
         try {
-            try (FileInputStream in = new FileInputStream(tmpUpdatePath.toFile());
-                    FileOutputStream out = new FileOutputStream(appJarPath.toFile())) {
-                in.transferTo(out);
-            }
-
-            tmpUpdatePath.toFile().delete();
-
-            Log.message("Application update applied successfully.");
-
             Application.getContext().getFrame().showMessage(
                     "Application Update",
-                    "The application has been updated successfully and will now exit.",
-                    () -> {
-                        Application.getContext().getApplication().stop();
-                    });
-        } catch (IOException e) {
+                    "Update downloaded. The application will now restart.",
+                    () -> restartApplication(appJarPath, tmpUpdatePath));
+        } catch (Exception e) {
             Log.error("Application update failed: %s", e.getMessage());
+        }
+    }
+
+    private void restartApplication(Path appJarPath, Path tmpUpdatePath) {
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            ProcessBuilder pb;
+
+            if (os.contains("win")) {
+                Path scriptPath = tmpUpdatePath.getParent().resolve("update.bat");
+                String script = String.format(
+                        "@echo off\n" +
+                                "timeout /t 2 /nobreak > nul\n" +
+                                "move /y \"%s\" \"%s\"\n" +
+                                "start \"\" \"%s\"\n" +
+                                "del \"%%~f0\"\n",
+                        tmpUpdatePath, appJarPath, appJarPath);
+
+                Files.writeString(scriptPath, script);
+                pb = new ProcessBuilder("cmd", "/c", scriptPath.toString());
+            } else {
+                Path scriptPath = tmpUpdatePath.getParent().resolve("update.sh");
+                String script = String.format(
+                        "#!/bin/bash\n" +
+                                "sleep 2\n" +
+                                "mv \"%s\" \"%s\"\n" +
+                                "java -jar \"%s\" &\n" +
+                                "rm \"$0\"\n",
+                        tmpUpdatePath, appJarPath, appJarPath);
+
+               Files.writeString(scriptPath, script);
+                scriptPath.toFile().setExecutable(true);
+                pb = new ProcessBuilder("sh", scriptPath.toString());
+            }
+            pb.start();
+            System.exit(0);
+        } catch (IOException e) {
+            Log.error("Application update failed to restart: %s", e.getMessage());
         }
     }
 
