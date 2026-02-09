@@ -11,7 +11,6 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
@@ -76,13 +75,18 @@ public final class AppUpdate {
     private Path downloadUpdate() {
         Log.message("Application update downloading from: %s", this.remoteUpdate);
 
-        Path jarDirPath = this.getJarFilePath().getParent();
-        if (jarDirPath == null) {
-            Log.error("Application update download failed: unable to determine jar directory.");
+        Path jarFilePath = this.getJarFilePath();
+        if (jarFilePath == null) {
+            Log.error("Application update download failed: unable to determine jar file path.");
             return null;
         }
 
-        Path tempFilePath = Path.of(jarDirPath.toString(), "update.tmp");
+        Path jarDirPath = jarFilePath.getParent();
+        if (jarDirPath == null) {
+            jarDirPath = Path.of(".");
+        }
+
+        Path tempFilePath = Path.of(jarDirPath.toString(), "new-Galaga.jar");
         try (InputStream in = this.remoteUpdate.openStream();
                 FileOutputStream out = new FileOutputStream(tempFilePath.toFile())) {
             in.transferTo(out);
@@ -95,50 +99,15 @@ public final class AppUpdate {
 
     private void executeUpdate(Path appJarPath, Path tmpUpdatePath) {
         try {
-            Application.getContext().getFrame().showMessage(
-                    "Application Update",
-                    "Update downloaded. The application will now restart.",
-                    () -> restartApplication(appJarPath, tmpUpdatePath));
-        } catch (Exception e) {
-            Log.error("Application update failed: %s", e.getMessage());
-        }
-    }
-
-    private void restartApplication(Path appJarPath, Path tmpUpdatePath) {
-        try {
-            String os = System.getProperty("os.name").toLowerCase();
-            ProcessBuilder pb;
-
-            if (os.contains("win")) {
-                Path scriptPath = tmpUpdatePath.getParent().resolve("update.bat");
-                String script = String.format(
-                        "@echo off\n" +
-                                "timeout /t 2 /nobreak > nul\n" +
-                                "move /y \"%s\" \"%s\"\n" +
-                                "start \"\" \"%s\"\n" +
-                                "del \"%%~f0\"\n",
-                        tmpUpdatePath, appJarPath, appJarPath);
-
-                Files.writeString(scriptPath, script);
-                pb = new ProcessBuilder("cmd", "/c", scriptPath.toString());
-            } else {
-                Path scriptPath = tmpUpdatePath.getParent().resolve("update.sh");
-                String script = String.format(
-                        "#!/bin/bash\n" +
-                                "sleep 2\n" +
-                                "mv \"%s\" \"%s\"\n" +
-                                "java -jar \"%s\" &\n" +
-                                "rm \"$0\"\n",
-                        tmpUpdatePath, appJarPath, appJarPath);
-
-               Files.writeString(scriptPath, script);
-                scriptPath.toFile().setExecutable(true);
-                pb = new ProcessBuilder("sh", scriptPath.toString());
+            try (FileInputStream in = new FileInputStream(tmpUpdatePath.toFile());
+                    FileOutputStream out = new FileOutputStream(appJarPath.toFile())) {
+                in.transferTo(out);
             }
-            pb.start();
+            tmpUpdatePath.toFile().delete();
+            Log.message("Application update applied successfully.");
             System.exit(0);
         } catch (IOException e) {
-            Log.error("Application update failed to restart: %s", e.getMessage());
+            Log.error("Application update failed: %s", e.getMessage());
         }
     }
 
