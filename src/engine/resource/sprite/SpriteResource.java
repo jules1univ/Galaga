@@ -9,7 +9,7 @@ import java.io.OutputStream;
 
 public final class SpriteResource extends Resource<Sprite> {
     public static final String NAME = "sprite";
-    
+
     public SpriteResource(ResourceAlias alias, ResourceCallback callback) {
         super(alias, callback);
     }
@@ -20,11 +20,7 @@ public final class SpriteResource extends Resource<Sprite> {
     }
 
     @Override
-    public boolean write(Sprite data) {
-        OutputStream out = this.getResourceOutput();
-        if(out == null) {
-            return false;
-        }
+    protected boolean write(Sprite data, OutputStream out) {
         return Sprite.saveSprite(data, out);
     }
 }

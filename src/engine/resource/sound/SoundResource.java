@@ -4,6 +4,7 @@ import engine.resource.Resource;
 import engine.resource.ResourceAlias;
 import engine.resource.ResourceCallback;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public final class SoundResource extends Resource<Sound> {
     public static final String NAME = "sound";
@@ -18,8 +19,8 @@ public final class SoundResource extends Resource<Sound> {
     }
 
     @Override
-    public boolean write(Sound data) {
-        throw new UnsupportedOperationException("Sound.write should not be called.");
+    protected boolean write(Sound data, OutputStream out) {
+        return false;
     }
 
 }

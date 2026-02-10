@@ -86,7 +86,7 @@ public abstract class Resource<ResourceData> {
         return null;
     }
 
-    protected OutputStream getResourceOutput() {
+    private OutputStream getResourceOutput() {
         File file = this.alias.getPath();
         try {
             if (!file.exists()) {
@@ -100,9 +100,9 @@ public abstract class Resource<ResourceData> {
         }
     }
 
-    public abstract boolean write(ResourceData data);
+    protected abstract boolean write(ResourceData data, OutputStream out);
 
-    public abstract ResourceData read(InputStream in);
+    protected abstract ResourceData read(InputStream in);
 
     public final boolean load() {
         InputStream in = this.getResourceInput();
@@ -116,6 +116,14 @@ public abstract class Resource<ResourceData> {
         }
         this.onLoadComplete(data);
         return true;
+    }
+
+    public final boolean export(ResourceData data) {
+        OutputStream out = this.getResourceOutput();
+        if (out == null) {
+            return false;
+        }
+        return this.write(data, out);
     }
 
     public final boolean isLoaded() {

@@ -1,6 +1,7 @@
 package galaga.resources.settings;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import engine.resource.Resource;
 import engine.resource.ResourceAlias;
@@ -16,12 +17,12 @@ public final class SettingResource extends Resource<Setting> {
 
     @Override
     public Setting read(InputStream in) {
-        return Setting.load(in);
+        return Setting.createSetting(in);
     }
 
     @Override
-    public boolean write(Setting data) {
-        return false;
+    public boolean write(Setting data, OutputStream out) {
+        return Setting.saveSetting(data, out);
     }
 
 

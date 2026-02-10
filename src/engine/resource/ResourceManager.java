@@ -82,17 +82,17 @@ public final class ResourceManager {
         return this.get(enumConst.name().toLowerCase() + variant);
     }
 
-    public <T> boolean write(String name, T data) {
+    public <T> boolean export(String name, T data) {
         @SuppressWarnings("unchecked")
         Resource<T> res = (Resource<T>)this.resources.get(name);
         if (res != null && res.isLoaded()) {
-            return res.write(data);
+            return res.export(data);
         }
         return false;
     }
 
-    public <T> boolean write(ResourceAlias alias, T data) {
-        return this.write(alias.getName(), data);
+    public <T> boolean export(ResourceAlias alias, T data) {
+        return this.export(alias.getName(), data);
     }
 
     public void load(ResourceAlias alias) {

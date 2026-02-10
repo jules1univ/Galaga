@@ -20,11 +20,7 @@ public final class ScoreResource extends Resource<Score> {
     }
 
     @Override
-    public boolean write(Score data) {
-        OutputStream out = this.getResourceOutput();
-        if (out == null) {
-            return false;
-        }
+    public boolean write(Score data, OutputStream out) {
         return Score.saveScore(data, out);
     }
 }

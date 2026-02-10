@@ -94,20 +94,20 @@ public final class Ini {
             current.set(key, IniValue.of(value));
         }
 
-        Log.message("Ini loaded successfully.");
         return ini;
     }
 
     private Ini() {
     }
 
-    public void write(OutputStream out) {
+    public boolean write(OutputStream out) {
         try (Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
             writer.write(this.toString());
             writer.flush();
-            Log.message("Ini saved successfully.");
+            return true;
         } catch (IOException e) {
-            Log.error("Ini failed to save: %s", e.getMessage());
+            Log.error("Ini writing failed: %s", e.getMessage());
+            return false;
         }
     }
 

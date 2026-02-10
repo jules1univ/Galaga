@@ -26,12 +26,7 @@ public class LevelResource extends Resource<Level> {
     }
 
     @Override
-    public boolean write(Level data) {
-        OutputStream out = this.getResourceOutput();
-        if (out == null) {
-            return false;
-        }
-
+    public boolean write(Level data, OutputStream out) {
         try {
             out.write(data.getName().getBytes());
             out.write(' ');

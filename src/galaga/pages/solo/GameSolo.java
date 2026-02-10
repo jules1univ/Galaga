@@ -113,7 +113,7 @@ public class GameSolo extends Page<GalagaPage> {
         Score score = new Score(this.player.getScore());
         Score bestScoreVal = Galaga.getContext().getResource().get(Config.BEST_SCORE);
         if (score.compareTo(bestScoreVal) > 0) {
-            Galaga.getContext().getResource().write(Config.BEST_SCORE, score);
+            Galaga.getContext().getResource().export(Config.BEST_SCORE, score);
         }
 
         this.state = PageState.INACTIVE;

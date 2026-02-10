@@ -39,6 +39,10 @@ public final class IniSection {
         this.values.remove(key.toLowerCase());
     }
 
+    public void addVariable(String key, String value) {
+        this.set(key, value);
+    }
+
     public Map<String, IniValue> getVariables() {
         return this.values;
     }

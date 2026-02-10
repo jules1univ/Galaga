@@ -2,6 +2,7 @@ package galaga.resources.settings;
 
 import java.awt.event.KeyEvent;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import engine.utils.ini.Ini;
+import engine.utils.ini.IniSection;
 import engine.utils.ini.IniValue;
 import engine.utils.logger.Log;
 
@@ -18,7 +20,7 @@ public class Setting {
     private final Map<String, IniValue> values;
     private final Map<String, List<Integer>> keyCache = new HashMap<>();
 
-    public static Setting load(InputStream in) {
+    public static Setting createSetting(InputStream in) {
         Ini config = Ini.load(in);
         if (config == null) {
             return null;
@@ -29,6 +31,17 @@ public class Setting {
             values.putAll(section.getVariables());
         });
         return new Setting(values);
+    }
+
+    public static boolean saveSetting(Setting setting, OutputStream out) {
+        Ini ini = Ini.empty();
+
+        IniSection section = ini.addSection("settings");
+        setting.values.forEach((key, value) -> {
+            section.addVariable(key, value.toString());
+        });
+
+        return ini.write(out);
     }
 
     private Setting(Map<String, IniValue> values) {
@@ -85,7 +98,7 @@ public class Setting {
     }
 
     public Optional<Integer> getKey(String varname) {
-        if(!this.values.containsKey(varname)) {
+        if (!this.values.containsKey(varname)) {
             return Optional.empty();
         }
 

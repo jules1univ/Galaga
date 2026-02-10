@@ -9,6 +9,7 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public final class FontResource extends Resource<Font> {
     public static final String NAME = "font";
@@ -33,9 +34,9 @@ public final class FontResource extends Resource<Font> {
             return null;
         }
     }
-
+    
     @Override
-    public boolean write(Font data) {
-        throw new UnsupportedOperationException("Font.write should not be called");
+    protected boolean write(Font data, OutputStream out) {
+        return false;
     }
 }
