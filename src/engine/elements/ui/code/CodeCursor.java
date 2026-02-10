@@ -51,7 +51,7 @@ public class CodeCursor extends UIElement {
             this.updatePosition();
 
             return;
-        } else if (this.textPosition.line() + offset >= this.state.getText().getLines().size()) {
+        } else if (this.textPosition.line() + offset >= this.state.getText().getLineCount()) {
             this.textPosition = this.state.getText().getTextPosition(
                     Integer.MAX_VALUE,
                     this.textPosition.column());
@@ -118,9 +118,19 @@ public class CodeCursor extends UIElement {
                 this.textPosition.column());
         float lineWidth = 0.f;
         if (!cuttedLine.isEmpty()) {
-            lineWidth = Application.getContext().getRenderer()
-                    .getTextSize(cuttedLine, this.font)
-                    .getWidth();
+            cuttedLine = cuttedLine.replace("\t", " ".repeat(2));
+            String[] parts = cuttedLine.split(" ", -1);
+            for (int i = 0; i < parts.length; i++) {
+                String part = parts[i];
+                if (!part.isEmpty()) {
+                    lineWidth += Application.getContext().getRenderer()
+                            .getTextSize(part, this.font)
+                            .getWidth();
+                }
+                if (i < parts.length - 1) {
+                    lineWidth += CodeState.TEXT_SPACE_SIZE;
+                }
+            }
         }
 
         float x = this.state.getEditor().getPosition().getX()
@@ -128,15 +138,15 @@ public class CodeCursor extends UIElement {
                 + lineWidth;
 
         float y = this.state.getEditor().getPosition().getY()
-                + (this.charSize.getHeight() + CodeState.LINE_SPACING) * this.textPosition.line();
-
+                + (this.charSize.getHeight() + CodeState.LINE_SPACING) * this.textPosition.line()
+                + this.charSize.getHeight()/2.f;
         this.position = Position.of(x, y);
-        this.size.setHeight(this.charSize.getHeight());
     }
 
     @Override
     public boolean init() {
         this.charSize = Application.getContext().getRenderer().getMaxCharSize(this.font);
+        this.size.setHeight(this.charSize.getHeight());
         this.updatePosition();
         return true;
     }
@@ -156,6 +166,10 @@ public class CodeCursor extends UIElement {
         if (this.blink) {
             renderer.drawRect(this.position, this.size, Color.WHITE);
         }
+        renderer.drawRect(Position.of(
+            this.state.getEditor().getPosition().getX(),
+            this.position.getY()
+        ), Size.of(this.state.getEditor().getSize().getWidth(), this.size.getHeight()), new Color(255, 255, 255, 25));
     }
 
 }

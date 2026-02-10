@@ -82,7 +82,7 @@ public class CodeView extends UIElement {
         List<HighlightedToken> tokens = this.state.getHighlighter().highlight(this.tokenize());
 
         float lineX = 0.f;
-        float lineY = CodeState.LINE_SPACING;
+        float lineY = CodeState.LINE_SPACING + this.lineHeight;
 
         this.view.beginSub();
         for (HighlightedToken token : tokens) {
@@ -93,7 +93,7 @@ public class CodeView extends UIElement {
             }
 
             if(token.text().equals("\t")) {
-                lineX += CodeState.TEXT_TAB_SIZE;
+                lineX += CodeState.TEXT_SPACE_SIZE * 2;
                 continue;
             }
             if(token.text().equals(" ")) {

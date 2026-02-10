@@ -5,34 +5,20 @@ import java.util.List;
 
 public class CodeText {
     private final CodeState state;
-
-    private String content;
-    private List<TextPosition> lines = new ArrayList<>();
+    private List<String> lines = new ArrayList<>();
+    private String content = "";
 
     public CodeText(CodeState state) {
         this.state = state;
-
-        this.content = "";
     }
 
     public void setContent(String content) {
-        this.content = content;
-
         this.lines.clear();
 
-        int line = 0;
-        int column = 0;
-        for (int i = 0; i < content.length(); i++) {
+        this.content = content;
+        this.lines.addAll(List.of(content.split("\n", -1)));
 
-            if (content.charAt(i) == '\n') {
-                this.lines.add(TextPosition.of(line, column, i));
-                line++;
-                column = 0;
-            }
-            column++;
-        }
-
-        this.state.getHistory().add(this.content);
+        this.state.getHistory().add(content);
         this.state.getCursor().resetBlink();
         this.state.getView().markDirty();
     }
@@ -46,15 +32,7 @@ public class CodeText {
             return "";
         }
 
-        TextPosition linePos = this.lines.get(line);
-        int lineStartIndex = linePos.index();
-
-        int lineEndIndex = this.content.length();
-        if (line + 1 < this.lines.size()) {
-            lineEndIndex = this.lines.get(line + 1).index();
-        }
-
-        return this.content.substring(lineStartIndex, lineEndIndex);
+        return this.lines.get(line);
     }
 
     public void insert(String newText, TextPosition start, TextPosition end) {
@@ -70,16 +48,12 @@ public class CodeText {
                 this.state.getCursor().getTextPosition(),
                 this.state.getCursor().getTextPosition());
     }
-    
+
     public void delete() {
         if (this.state.getCursor().getTextPosition().index() == 0) {
             return;
         }
 
-        char ch = this.content.charAt(this.state.getCursor().getTextPosition().index() - 1);
-        if (ch == '\n') {
-            this.lines.remove(this.state.getCursor().getTextPosition().line());
-        }
         String before = this.content.substring(0, this.state.getCursor().getTextPosition().index() - 1);
         String after = this.content.substring(this.state.getCursor().getTextPosition().index());
         this.setContent(before + after);
@@ -93,58 +67,65 @@ public class CodeText {
             return 0;
         }
 
-        TextPosition linePos = this.lines.get(line);
-        int lineStartIndex = linePos.index();
-
-        int lineEndIndex = this.content.length();
-        if (line + 1 < this.lines.size()) {
-            lineEndIndex = this.lines.get(line + 1).index();
-        }
-
-        return lineEndIndex - lineStartIndex;
+        return this.lines.get(line).length();
     }
 
     public TextPosition getTextPosition(int line, int column) {
-        line = Math.clamp(line, 0, this.lines.size() - 1);
+        // line = Math.clamp(line, 0, this.lines.size() - 1);
 
-        TextPosition linePos = this.lines.get(line);
-        int lineStartIndex = linePos.index();
+        // TextPosition linePos = this.lines.get(line);
+        // int lineStartIndex = linePos.index();
 
-        int lineEndIndex = this.content.length();
-        if (line + 1 < this.lines.size()) {
-            lineEndIndex = this.lines.get(line + 1).index();
-        }
-        int lineLength = lineEndIndex - lineStartIndex;
+        // int lineEndIndex = this.content.length();
+        // if (line + 1 < this.lines.size()) {
+        //     lineEndIndex = this.lines.get(line + 1).index();
+        // }
+        // int lineLength = lineEndIndex - lineStartIndex;
 
-        column = Math.clamp(column, 0, lineLength);
-        return TextPosition.of(line, column, lineStartIndex + column);
-    }
-
-    public TextPosition getTextPositionFromIndex(int index) {
-        index = Math.clamp(index, 0, this.content.length());
-
-        int low = 0;
-        int high = this.lines.size() - 1;
-        int line = 0;
-        int column = 0;
-
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            TextPosition midPos = this.lines.get(mid);
-
-            if (midPos.index() <= index) {
-                line = midPos.line();
-                column = index - midPos.index();
-                low = mid + 1;
-            } else {
-                high = mid - 1;
-            }
+        // column = Math.clamp(column, 0, lineLength);
+        // return TextPosition.of(line, column, lineStartIndex + column);
+        if(line < 0) {
+            line = 0;
+        } else if(line >= this.lines.size()) {
+            line = this.lines.size() - 1;
         }
 
+        if(column < 0) {
+            column = 0;
+        } else if(column > this.lines.get(line).length()) {
+            column = this.lines.get(line).length();
+        }
+
+        int index = 0;
+        for(int i = 0; i < line; i++) {
+            index += this.lines.get(i).length() + 1;
+        }
+        index += column;
         return TextPosition.of(line, column, index);
     }
 
-    public List<TextPosition> getLines() {
-        return this.lines;
+    public TextPosition getTextPositionFromIndex(int index) {
+        if(index < 0) {
+            index = 0;
+        } else if(index > this.content.length()) {
+            index = this.content.length();
+        }
+
+        int line = 0;
+        int column = 0;
+        int currentIndex = 0;
+        for(String lineContent : this.lines) {
+            if(currentIndex + lineContent.length() >= index) {
+                column = index - currentIndex;
+                break;
+            }
+            currentIndex += lineContent.length() + 1;
+            line++;
+        }
+        return TextPosition.of(line, column, index);
+    }
+
+    public int getLineCount() {
+        return this.lines.size();
     }
 }
