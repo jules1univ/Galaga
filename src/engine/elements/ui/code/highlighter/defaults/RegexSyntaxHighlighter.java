@@ -26,13 +26,13 @@ public final class RegexSyntaxHighlighter extends SyntaxHighlighter {
             boolean matched = false;
             for (RegexHighlightRule rule : rules) {
                 if (rule.pattern().matcher(token.text()).matches()) {
-                    highlightedTokens.add(new HighlightedToken(token.text(), rule.color()));
+                    highlightedTokens.add(new HighlightedToken(token, rule.color()));
                     matched = true;
                     break;
                 }
             }
             if (!matched) {
-                highlightedTokens.add(new HighlightedToken(token.text(), defaultColor));
+                highlightedTokens.add(new HighlightedToken(token, defaultColor));
             }
         }
         return highlightedTokens;

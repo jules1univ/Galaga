@@ -46,7 +46,11 @@ public class CodeSelection {
         return this.state.getText().getContent().substring(startIndex, endIndex);
     }
 
+    public TextPosition getStart() {
+        return this.start;
+    }
+
     public boolean isActive() {
-        return false;
+        return this.active;
     }
 }

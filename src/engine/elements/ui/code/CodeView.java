@@ -62,15 +62,15 @@ public class CodeView extends UIElement {
             char ch = this.state.getText().getContent().charAt(i);
             if (ch == '\n' || ch == ' ' || ch == '\t') {
                 if (!current.isEmpty()) {
-                    tokens.add(new HighlightedToken(current, Color.BLACK));
+                    tokens.add(new HighlightedToken(current, Color.BLACK, i - current.length(), i));
                     current = "";
                 }
-                tokens.add(new HighlightedToken(String.valueOf(ch), Color.BLACK));
+                tokens.add(new HighlightedToken(String.valueOf(ch), Color.BLACK, i, i + 1));
             } else {
                 current += ch;
             }
         }
-        
+
         return tokens;
     }
 
@@ -84,21 +84,46 @@ public class CodeView extends UIElement {
         float lineX = 0.f;
         float lineY = CodeState.LINE_SPACING + this.lineHeight;
 
+        TextPosition selStart = this.state.getSelection().getStart();
+        TextPosition selEnd = this.state.getCursor().getTextPosition();
+
+        if (selStart != null) {
+            if (selStart.index() > selEnd.index()) {
+                TextPosition temp = selStart;
+                selStart = selEnd;
+                selEnd = temp;
+            }
+        }
+
         this.view.beginSub();
         for (HighlightedToken token : tokens) {
-            if(token.text().equals("\n")) {
+            if (token.text().equals("\n")) {
                 lineX = 0.f;
                 lineY += this.lineHeight;
                 continue;
             }
 
-            if(token.text().equals("\t")) {
+            if (token.text().equals("\t")) {
                 lineX += CodeState.TEXT_SPACE_SIZE * 2;
                 continue;
             }
-            if(token.text().equals(" ")) {
+            if (token.text().equals(" ")) {
                 lineX += CodeState.TEXT_SPACE_SIZE;
                 continue;
+            }
+
+            if (selStart != null && token.startIndex() >= selStart.index()
+                    && token.endIndex() <= selEnd.index() + token.text().length()) {
+                String selectedText = token.text()
+                        .substring(Math.max(0, selStart.index() - token.startIndex()),
+                                Math.min(token.text().length(), selEnd.index() - token.startIndex()));
+
+                if (!selectedText.isEmpty()) {
+
+                    this.view.drawRect(Position.of(lineX, lineY - this.lineHeight + CodeState.LINE_SPACING),
+                            this.view.getTextSize(selectedText, this.font),
+                            new Color(192, 192, 192, 100));
+                }
             }
 
             this.view.drawText(token.text(), Position.of(lineX, lineY), token.color(), this.font);

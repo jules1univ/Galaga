@@ -18,6 +18,7 @@ public class CodeInput extends UIElement {
         if (Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
             if (!this.state.getSelection().isActive()) {
                 this.state.getSelection().enable();
+                this.state.getView().markDirty();
                 return;
             }
         }
@@ -25,7 +26,7 @@ public class CodeInput extends UIElement {
 
     private void handleSelectionUpdate() {
         if (this.state.getSelection().isActive()) {
-            if (!Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
+            if (!Application.getContext().getInput().isKeyPressedNoConsume(KeyEvent.VK_CONTROL)) {
                 this.state.getSelection().disable();
             }
             this.state.getView().markDirty();
