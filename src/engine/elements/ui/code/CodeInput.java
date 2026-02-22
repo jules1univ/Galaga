@@ -24,23 +24,23 @@ public class CodeInput extends UIElement {
         }
     }
 
-    private void handleSelectionUpdate() {
+    private void handleCursorMove() {
         if (this.state.getSelection().isActive()) {
-            if (!Application.getContext().getInput().isKeyPressedNoConsume(KeyEvent.VK_CONTROL)) {
+            if (!Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
                 this.state.getSelection().disable();
             }
-            this.state.getView().markDirty();
         }
+        this.state.getView().markDirty();
     }
 
     private void handleUpDown() {
         if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
             this.state.getCursor().moveLine(-1);
-            this.handleSelectionUpdate();
+            this.handleCursorMove();
             return;
         } else if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
             this.state.getCursor().moveLine(1);
-            this.handleSelectionUpdate();
+            this.handleCursorMove();
             return;
         }
     }
@@ -48,11 +48,11 @@ public class CodeInput extends UIElement {
     private void handleLeftRight() {
         if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_LEFT)) {
             this.state.getCursor().moveColumn(-1);
-            this.handleSelectionUpdate();
+            this.handleCursorMove();
             return;
         } else if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
             this.state.getCursor().moveColumn(1);
-            this.handleSelectionUpdate();
+            this.handleCursorMove();
             return;
         }
     }
@@ -95,15 +95,6 @@ public class CodeInput extends UIElement {
         }
 
         this.state.getText().insert('\n');
-        this.state.getView().markDirty();
-    }
-
-    public void handleTextTab() {
-        if (!Application.getContext().getInput().isKeyPressed(KeyEvent.VK_TAB)) {
-            return;
-        }
-
-        this.state.getText().insert('\t');
         this.state.getView().markDirty();
     }
 
@@ -182,7 +173,6 @@ public class CodeInput extends UIElement {
         handleTextEnter();
         handleTextDelete();
         handleTextNewLine();
-        handleTextTab();   
 
         handleUndoHistory();
         handleRedoHistory();

@@ -18,6 +18,7 @@ public class CodeSelection {
 
     public void disable() {
         this.active = false;
+        this.start = null;
     }
 
     public void replaceText(String newText) {

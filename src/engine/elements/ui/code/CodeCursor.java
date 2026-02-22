@@ -114,11 +114,14 @@ public class CodeCursor extends UIElement {
     private void updatePosition() {
         this.resetBlink();
 
-        String cuttedLine = this.state.getText().getLineContent(this.textPosition.line()).substring(0,
+        int line = this.textPosition.line() - this.state.getView().getScrollOffset();
+        String cuttedLine = this.state.getText().getLineContent(line).substring(0,
                 this.textPosition.column());
         float lineWidth = 0.f;
+
         if (!cuttedLine.isEmpty()) {
             cuttedLine = cuttedLine.replace("\t", " ".repeat(2));
+
             String[] parts = cuttedLine.split(" ", -1);
             for (int i = 0; i < parts.length; i++) {
                 String part = parts[i];
@@ -138,7 +141,7 @@ public class CodeCursor extends UIElement {
                 + lineWidth;
 
         float y = this.state.getEditor().getPosition().getY()
-                + (this.charSize.getHeight() + CodeState.LINE_SPACING) * this.textPosition.line()
+                + (this.charSize.getHeight() + CodeState.LINE_SPACING) * line
                 + this.charSize.getHeight()/2.f;
         this.position = Position.of(x, y);
     }

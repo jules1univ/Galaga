@@ -36,6 +36,10 @@ public class CodeView extends UIElement {
         this.isDirty = true;
     }
 
+    public int getScrollOffset() {
+        return this.scrollOffset;
+    }
+
     @Override
     public boolean init() {
         this.view = Renderer.ofSub(size);
@@ -56,18 +60,21 @@ public class CodeView extends UIElement {
 
         String current = "";
         int endLineOffset = this.state.getText()
-                .getTextPosition(this.scrollOffset + this.maxDisplayLines, Integer.MAX_VALUE).index();
+                .getTextPosition(this.scrollOffset + this.maxDisplayLines, Integer.MAX_VALUE).line();
 
-        for (int i = this.scrollOffset; i < endLineOffset; i++) {
-            char ch = this.state.getText().getContent().charAt(i);
-            if (ch == '\n' || ch == ' ' || ch == '\t') {
-                if (!current.isEmpty()) {
-                    tokens.add(new HighlightedToken(current, Color.BLACK, i - current.length(), i));
-                    current = "";
+        for (int lineIndex = this.scrollOffset; lineIndex < endLineOffset; lineIndex++) {
+            String line = this.state.getText().getLineContent(lineIndex) + "\n";
+            for (int i = 0; i < line.length(); i++) {
+                char ch = line.charAt(i);
+                if (ch == '\n' || ch == ' ' || ch == '\t') {
+                    if (!current.isEmpty()) {
+                        tokens.add(new HighlightedToken(current, Color.BLACK, i - current.length(), i));
+                        current = "";
+                    }
+                    tokens.add(new HighlightedToken(String.valueOf(ch), Color.BLACK, i, i + 1));
+                } else {
+                    current += ch;
                 }
-                tokens.add(new HighlightedToken(String.valueOf(ch), Color.BLACK, i, i + 1));
-            } else {
-                current += ch;
             }
         }
 
@@ -75,10 +82,9 @@ public class CodeView extends UIElement {
     }
 
     private void drawView() {
-
         this.scrollOffset = Math.max(0, this.state.getCursor().getLine()
                 - this.maxDisplayLines + CodeState.SCROLL_LINE_GAP);
-
+        
         List<HighlightedToken> tokens = this.state.getHighlighter().highlight(this.tokenize());
 
         float lineX = 0.f;

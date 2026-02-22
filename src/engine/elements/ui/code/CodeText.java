@@ -38,7 +38,6 @@ public class CodeText {
     public void insert(String newText, TextPosition start, TextPosition end) {
         String before = this.content.substring(0, start.index());
         String after = this.content.substring(end.index());
-
         this.setContent(before + newText + after);
         this.state.getCursor().setTextPosition(this.getTextPositionFromIndex(start.index() + newText.length()));
     }
@@ -71,33 +70,20 @@ public class CodeText {
     }
 
     public TextPosition getTextPosition(int line, int column) {
-        // line = Math.clamp(line, 0, this.lines.size() - 1);
-
-        // TextPosition linePos = this.lines.get(line);
-        // int lineStartIndex = linePos.index();
-
-        // int lineEndIndex = this.content.length();
-        // if (line + 1 < this.lines.size()) {
-        //     lineEndIndex = this.lines.get(line + 1).index();
-        // }
-        // int lineLength = lineEndIndex - lineStartIndex;
-
-        // column = Math.clamp(column, 0, lineLength);
-        // return TextPosition.of(line, column, lineStartIndex + column);
-        if(line < 0) {
+        if (line < 0) {
             line = 0;
-        } else if(line >= this.lines.size()) {
+        } else if (line >= this.lines.size()) {
             line = this.lines.size() - 1;
         }
 
-        if(column < 0) {
+        if (column < 0) {
             column = 0;
-        } else if(column > this.lines.get(line).length()) {
+        } else if (column > this.lines.get(line).length()) {
             column = this.lines.get(line).length();
         }
 
         int index = 0;
-        for(int i = 0; i < line; i++) {
+        for (int i = 0; i < line; i++) {
             index += this.lines.get(i).length() + 1;
         }
         index += column;
@@ -105,23 +91,23 @@ public class CodeText {
     }
 
     public TextPosition getTextPositionFromIndex(int index) {
-        if(index < 0) {
+        if (index < 0) {
             index = 0;
-        } else if(index > this.content.length()) {
+        } else if (index > this.content.length()) {
             index = this.content.length();
         }
 
         int line = 0;
         int column = 0;
-        int currentIndex = 0;
-        for(String lineContent : this.lines) {
-            if(currentIndex + lineContent.length() >= index) {
-                column = index - currentIndex;
-                break;
+        for (int i = 0; i < index; i++) {
+            if (this.content.charAt(i) == '\n') {
+                line++;
+                column = 0;
+            } else {
+                column++;
             }
-            currentIndex += lineContent.length() + 1;
-            line++;
         }
+
         return TextPosition.of(line, column, index);
     }
 
