@@ -23,18 +23,6 @@ import galaga.gscript.runtime.values.Value;
 public class GScript {
 
     public static void main(String[] args) {
-
-        // Interpreter interpreter = new Interpreter();
-        // interpreter.getContext().defineNative("print", (Map<String, Value> funcArgs)
-        // -> {
-        // for (Value val : funcArgs.values()) {
-        // System.out.println(val.getValue().toString());
-        // }
-        // return null;
-        // });
-        // interpreter.run(program);
-        // interpreter.callFunction("main");
-
         GScript gscript = new GScript();
         gscript.load("test", new File("./src/galaga/gscript/tests/main.gscript"));
 

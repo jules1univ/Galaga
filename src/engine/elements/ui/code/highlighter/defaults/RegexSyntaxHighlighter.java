@@ -30,30 +30,25 @@ public final class RegexSyntaxHighlighter extends SyntaxHighlighter {
             }
 
             List<HighlightedToken> tokens = new ArrayList<>();
-            String current = "";
-            for (int i = 0; i < line.length(); i++) {
-                char ch = line.charAt(i);
-                if (ch == '\n' || ch == ' ' || ch == '\t') {
-                    if (!current.isEmpty()) {
-                        Color color = this.defaultColor;
-                        for (RegexHighlightRule rule : this.rules) {
-                            if (rule.matches(current)) {
-                                color = rule.color();
-                                break;
-                            }
-                        }
-                        tokens.add(new HighlightedToken(current, color));
-                        current = "";
-                    }
-
-                    tokens.add(new HighlightedToken(String.valueOf(ch), this.defaultColor));
-                } else {
-                    current += ch;
+            String[] parts = line.split(" ", -1);
+            for (String part : parts) {
+                if(part.isEmpty()) {
+                    part = " ";
+                }else if(part.length() == 1 && part.charAt(0) == '\t') {
+                    part = " ".repeat(2);
                 }
+
+                Color color = this.defaultColor;
+                for (RegexHighlightRule rule : this.rules) {
+                    if (rule.matches(part)) {
+                        color = rule.color();
+                        break;
+                    }
+                }
+                tokens.add(new HighlightedToken(part, color));
+                tokens.add(new HighlightedToken(" ", this.defaultColor));
             }
-            if (!current.isEmpty()) {
-                tokens.add(new HighlightedToken(current, this.defaultColor));
-            }
+
             highlightedLines.add(tokens);
             this.cachedLines.put(line, tokens);
         }

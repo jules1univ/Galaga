@@ -94,7 +94,6 @@ public class CodeView extends UIElement {
                     
                     if(tokenPosition.isInRange(selectionStart, selectionEnd)) {
                         String cuttedText = token.text().substring(0, Math.min(token.text().length(), selectionEnd.index() - tokenPosition.index()));
-
                         this.view.drawRect(Position.of(lineX, lineY - this.lineHeight + CodeState.LINE_SPACING),
                                 this.view.getTextSize(cuttedText, this.font),
                                 new Color(192, 192, 192, 100));
