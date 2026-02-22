@@ -14,119 +14,123 @@ public class CodeInput extends UIElement {
         this.state = state;
     }
 
-    private void handleSelection() {
+    private boolean handleSelection() {
         if (Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
             if (!this.state.getSelection().isActive()) {
                 this.state.getSelection().enable();
-                this.state.getView().markDirty();
-                return;
+                return true;
             }
         }
+        return false;
     }
 
-    private void handleCursorMove() {
+    private boolean handleCursorMove() {
         if (this.state.getSelection().isActive()) {
             if (!Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
                 this.state.getSelection().disable();
             }
         }
-        this.state.getView().markDirty();
+        return true;
     }
 
-    private void handleUpDown() {
+    private boolean handleUpDown() {
         if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_UP)) {
             this.state.getCursor().moveLine(-1);
-            this.handleCursorMove();
-            return;
+            return this.handleCursorMove();
         } else if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_DOWN)) {
             this.state.getCursor().moveLine(1);
-            this.handleCursorMove();
-            return;
+            return this.handleCursorMove();
         }
+        return false;
     }
 
-    private void handleLeftRight() {
+    private boolean handleLeftRight() {
         if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_LEFT)) {
             this.state.getCursor().moveColumn(-1);
-            this.handleCursorMove();
-            return;
+            return this.handleCursorMove();
         } else if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_RIGHT)) {
             this.state.getCursor().moveColumn(1);
-            this.handleCursorMove();
-            return;
+            return this.handleCursorMove();
         }
+        return false;
     }
 
-    private void handleTextEnter() {
+    private boolean handleTextEnter() {
         if (!Application.getContext().getInput().isTyping()) {
-            return;
+            return false;
         }
 
         char ch = Application.getContext().getInput().getTypedChar();
+        int newIndex = -1;
         if (this.state.getSelection().isActive()) {
-            this.state.getSelection().replaceText(String.valueOf(ch));
+            newIndex = this.state.getSelection().replaceText(String.valueOf(ch));
             this.state.getSelection().disable();
         } else {
-            this.state.getText().insert(ch);
+            newIndex = this.state.getText().insert(ch);
         }
+        this.state.getCursor().setTextIndex(newIndex);
 
-        this.state.getView().markDirty();
+        return true;
     }
 
-    private void handleTextDelete() {
+    private boolean handleTextDelete() {
         if (!Application.getContext().getInput().isKeyPressed(KeyEvent.VK_BACK_SPACE, KeyEvent.VK_DELETE)) {
-            return;
+            return false;
         }
 
+        int newIndex = -1;
         if (this.state.getSelection().isActive()) {
-            this.state.getSelection().replaceText("");
+            newIndex = this.state.getSelection().replaceText("");
             this.state.getSelection().disable();
         } else {
-            this.state.getText().delete();
+            newIndex = this.state.getText().delete();
         }
+        this.state.getCursor().setTextIndex(newIndex);
 
-        this.state.getView().markDirty();
+        return true;
 
     }
 
-    private void handleTextNewLine() {
+    private boolean handleTextNewLine() {
         if (!Application.getContext().getInput().isKeyPressed(KeyEvent.VK_ENTER)) {
-            return;
+            return false;
         }
 
-        this.state.getText().insert('\n');
-        this.state.getView().markDirty();
+        this.state.getCursor().setTextIndex(this.state.getText().insert('\n'));
+        return true;
     }
 
-    private void handleUndoHistory() {
+    private boolean handleUndoHistory() {
         if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_Z)
                 && Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
             this.state.getHistory().undo();
-            this.state.getView().markDirty();
-            return;
+            return true;
         }
+        return false;
     }
 
-    private void handleRedoHistory() {
+    private boolean handleRedoHistory() {
         if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_Y)
                 && Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
             this.state.getHistory().redo();
-            this.state.getView().markDirty();
-            return;
+            return true;
         }
+        return false;
     }
 
-    private void handleCopy() {
+    private boolean handleCopy() {
         if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_C)
                 && Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
             String selectedText = this.state.getSelection().getText();
             if (!selectedText.isEmpty()) {
                 Application.getContext().getClipboard().set(selectedText);
             }
+            return true;
         }
+        return false;
     }
 
-    private void handleCut() {
+    private boolean handleCut() {
         if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_X)
                 && Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
             String selectedText = this.state.getSelection().getText();
@@ -137,25 +141,29 @@ public class CodeInput extends UIElement {
             if (this.state.getSelection().isActive()) {
                 this.state.getSelection().replaceText("");
                 this.state.getSelection().disable();
-                this.state.getView().markDirty();
             }
+
+            return true;
         }
+        return false;
     }
 
-    private void handlePaste() {
+    private boolean handlePaste() {
         if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_V)
                 && Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
             String text = Application.getContext().getClipboard().get();
             if (text == null || text.isEmpty()) {
-                return;
+                return false;
             }
 
-            this.state.getText().insert(text,
-                    this.state.getCursor().getTextPosition(),
-                    this.state.getCursor().getTextPosition());
+            this.state.getCursor().setTextIndex(
+                    this.state.getText().insert(text,
+                            this.state.getCursor().getTextPosition(),
+                            this.state.getCursor().getTextPosition()));
 
-            this.state.getView().markDirty();
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -165,21 +173,21 @@ public class CodeInput extends UIElement {
 
     @Override
     public void update(float dt) {
-        handleSelection();
+        boolean updated = handleSelection() ||
+                handleUpDown() ||
+                handleLeftRight() ||
+                handleTextEnter() ||
+                handleTextDelete() ||
+                handleTextNewLine() ||
+                handleUndoHistory() ||
+                handleRedoHistory() ||
+                handleCopy() ||
+                handleCut() ||
+                handlePaste();
 
-        handleUpDown();
-        handleLeftRight();
-
-        handleTextEnter();
-        handleTextDelete();
-        handleTextNewLine();
-
-        handleUndoHistory();
-        handleRedoHistory();
-
-        handleCopy();
-        handleCut();
-        handlePaste();
+        if (updated) {
+            this.state.getView().markDirty();
+        }
     }
 
     @Override

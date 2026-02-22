@@ -15,7 +15,7 @@ public class CodeState {
     public static final float LINE_SPACING = 4.f;
     public static final float LINE_NUMBER_PADDING = 0;
 
-    public static float TEXT_SPACE_SIZE = 2.f;
+    public static float TEXT_SPACE_SIZE = 10.f;
 
     public static final int SCROLL_LINE_GAP = 3;
 

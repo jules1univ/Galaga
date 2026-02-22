@@ -21,18 +21,15 @@ public class CodeSelection {
         this.start = null;
     }
 
-    public void replaceText(String newText) {
+    public int replaceText(String newText) {
         if (!this.active) {
-            return;
+            return 0;
         }
         TextPosition end = this.state.getCursor().getTextPosition();
 
-        this.state.getText().insert(newText, this.start, end);
-
-        this.state.getCursor()
-                .setTextPosition(this.state.getText().getTextPositionFromIndex(this.start.index() + newText.length()));
-
+        int index = this.state.getText().insert(newText, this.start, end);
         this.disable();
+        return index;
     }
 
     public String getText() {
@@ -48,7 +45,27 @@ public class CodeSelection {
     }
 
     public TextPosition getStart() {
+        if(!this.active) {
+            return null;
+        }
+
+        int index = this.state.getCursor().getTextPosition().index();
+        if (index < this.start.index()) {
+            return this.state.getCursor().getTextPosition();
+        }
         return this.start;
+    }
+
+    public TextPosition getEnd() {
+        if(!this.active) {
+            return null;
+        }
+
+        int index = this.state.getCursor().getTextPosition().index();
+        if (index < this.start.index()) {
+            return this.start;
+        }
+        return this.state.getCursor().getTextPosition();
     }
 
     public boolean isActive() {

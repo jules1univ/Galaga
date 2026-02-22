@@ -2,7 +2,6 @@ package engine.elements.ui.code;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.util.ArrayList;
 import java.util.List;
 
 import engine.Application;
@@ -55,87 +54,61 @@ public class CodeView extends UIElement {
         return true;
     }
 
-    private List<HighlightedToken> tokenize() {
-        List<HighlightedToken> tokens = new ArrayList<>();
-
-        String current = "";
-        int endLineOffset = this.state.getText()
-                .getTextPosition(this.scrollOffset + this.maxDisplayLines, Integer.MAX_VALUE).line();
-
-        for (int lineIndex = this.scrollOffset; lineIndex < endLineOffset; lineIndex++) {
-            String line = this.state.getText().getLineContent(lineIndex) + "\n";
-            for (int i = 0; i < line.length(); i++) {
-                char ch = line.charAt(i);
-                if (ch == '\n' || ch == ' ' || ch == '\t') {
-                    if (!current.isEmpty()) {
-                        tokens.add(new HighlightedToken(current, Color.BLACK, i - current.length(), i));
-                        current = "";
-                    }
-                    tokens.add(new HighlightedToken(String.valueOf(ch), Color.BLACK, i, i + 1));
-                } else {
-                    current += ch;
-                }
-            }
-        }
-
-        return tokens;
-    }
-
     private void drawView() {
         this.scrollOffset = Math.max(0, this.state.getCursor().getLine()
                 - this.maxDisplayLines + CodeState.SCROLL_LINE_GAP);
-        
-        List<HighlightedToken> tokens = this.state.getHighlighter().highlight(this.tokenize());
 
-        float lineX = 0.f;
-        float lineY = CodeState.LINE_SPACING + this.lineHeight;
+        List<List<HighlightedToken>> lines = this.state.getHighlighter().highlight(this.state.getText().getContent());
 
-        TextPosition selStart = this.state.getSelection().getStart();
-        TextPosition selEnd = this.state.getCursor().getTextPosition();
-
-        if (selStart != null) {
-            if (selStart.index() > selEnd.index()) {
-                TextPosition temp = selStart;
-                selStart = selEnd;
-                selEnd = temp;
-            }
-        }
+        TextPosition selectionStart = this.state.getSelection().getStart();
+        TextPosition selectionEnd = this.state.getSelection().getEnd();
 
         this.view.beginSub();
-        for (HighlightedToken token : tokens) {
-            if (token.text().equals("\n")) {
-                lineX = 0.f;
-                lineY += this.lineHeight;
-                continue;
-            }
 
-            if (token.text().equals("\t")) {
-                lineX += CodeState.TEXT_SPACE_SIZE * 2;
-                continue;
-            }
-            if (token.text().equals(" ")) {
-                lineX += CodeState.TEXT_SPACE_SIZE;
-                continue;
-            }
-
-            if (selStart != null && token.startIndex() >= selStart.index()
-                    && token.endIndex() <= selEnd.index() + token.text().length()) {
-                String selectedText = token.text()
-                        .substring(Math.max(0, selStart.index() - token.startIndex()),
-                                Math.min(token.text().length(), selEnd.index() - token.startIndex()));
-
-                if (!selectedText.isEmpty()) {
-
-                    this.view.drawRect(Position.of(lineX, lineY - this.lineHeight + CodeState.LINE_SPACING),
-                            this.view.getTextSize(selectedText, this.font),
-                            new Color(192, 192, 192, 100));
+        float lineY = CodeState.LINE_SPACING + this.lineHeight;
+        int index = 0;
+        for (List<HighlightedToken> line : lines) {
+            float lineX = 0.f;
+            for (HighlightedToken token : line) {
+                if (token.text().equals("\n")) {
+                    lineX = 0.f;
+                    lineY += this.lineHeight;
+                    index++;
+                    continue;
                 }
-            }
 
-            this.view.drawText(token.text(), Position.of(lineX, lineY), token.color(), this.font);
-            lineX += this.view.getTextSize(token.text(), this.font).getWidth();
+                if (token.text().equals("\t")) {
+                    lineX += CodeState.TEXT_SPACE_SIZE * 2;
+                    index++;
+                    continue;
+                }
+
+                if (token.text().equals(" ")) {
+                    lineX += CodeState.TEXT_SPACE_SIZE;
+                    index++;
+                    continue;
+                }
+
+                if (selectionStart != null  && selectionEnd != null) {
+                    TextPosition tokenPosition = this.state.getText().getTextPositionFromIndex(index);
+                    
+                    if(tokenPosition.isInRange(selectionStart, selectionEnd)) {
+                        String cuttedText = token.text().substring(0, Math.min(token.text().length(), selectionEnd.index() - tokenPosition.index()));
+
+                        this.view.drawRect(Position.of(lineX, lineY - this.lineHeight + CodeState.LINE_SPACING),
+                                this.view.getTextSize(cuttedText, this.font),
+                                new Color(192, 192, 192, 100));
+                    }
+                }
+
+                this.view.drawText(token.text(), Position.of(lineX, lineY), token.color(), this.font);
+                lineX += this.view.getTextSize(token.text(), this.font).getWidth();
+                index += token.text().length();
+            }
+            lineY += this.lineHeight;
+            index++;
         }
-        lineY += this.lineHeight;
+
         this.view.end();
     }
 

@@ -35,30 +35,29 @@ public class CodeText {
         return this.lines.get(line);
     }
 
-    public void insert(String newText, TextPosition start, TextPosition end) {
+    public int insert(String newText, TextPosition start, TextPosition end) {
         String before = this.content.substring(0, start.index());
         String after = this.content.substring(end.index());
         this.setContent(before + newText + after);
-        this.state.getCursor().setTextPosition(this.getTextPositionFromIndex(start.index() + newText.length()));
+
+        return before.length() + newText.length();
     }
 
-    public void insert(char ch) {
-        this.insert(String.valueOf(ch),
+    public int insert(char ch) {
+        return this.insert(String.valueOf(ch),
                 this.state.getCursor().getTextPosition(),
                 this.state.getCursor().getTextPosition());
     }
 
-    public void delete() {
+    public int delete() {
         if (this.state.getCursor().getTextPosition().index() == 0) {
-            return;
+            return -1;
         }
-
+        
         String before = this.content.substring(0, this.state.getCursor().getTextPosition().index() - 1);
         String after = this.content.substring(this.state.getCursor().getTextPosition().index());
         this.setContent(before + after);
-
-        this.state.getCursor().setTextPosition(this.getTextPositionFromIndex(
-                this.state.getCursor().getTextPosition().index() - 1));
+        return before.length();
     }
 
     public int getLineLength(int line) {

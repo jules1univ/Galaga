@@ -7,4 +7,8 @@ public record RegexHighlightRule(Pattern pattern, Color color) {
     public RegexHighlightRule(String regex, Color color) {
         this(Pattern.compile(regex), color);
     }
+
+    public boolean matches(String text) {
+        return this.pattern.matcher(text).matches();
+    }
 }

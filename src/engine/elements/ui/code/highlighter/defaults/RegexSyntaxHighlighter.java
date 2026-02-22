@@ -19,23 +19,45 @@ public final class RegexSyntaxHighlighter extends SyntaxHighlighter {
     }
 
     @Override
-    public List<HighlightedToken> highlight(List<HighlightedToken> tokens) {
-        List<HighlightedToken> highlightedTokens = new ArrayList<>();
-        for (HighlightedToken token : tokens) {
+    public List<List<HighlightedToken>> highlight(String content) {
+        String[] lines = content.split("\n", -1);
 
-            boolean matched = false;
-            for (RegexHighlightRule rule : rules) {
-                if (rule.pattern().matcher(token.text()).matches()) {
-                    highlightedTokens.add(new HighlightedToken(token, rule.color()));
-                    matched = true;
-                    break;
+        List<List<HighlightedToken>> highlightedLines = new ArrayList<>();
+        for (String line : lines) {
+            if (this.cachedLines.containsKey(line)) {
+                highlightedLines.add(this.cachedLines.get(line));
+                continue;
+            }
+
+            List<HighlightedToken> tokens = new ArrayList<>();
+            String current = "";
+            for (int i = 0; i < line.length(); i++) {
+                char ch = line.charAt(i);
+                if (ch == '\n' || ch == ' ' || ch == '\t') {
+                    if (!current.isEmpty()) {
+                        Color color = this.defaultColor;
+                        for (RegexHighlightRule rule : this.rules) {
+                            if (rule.matches(current)) {
+                                color = rule.color();
+                                break;
+                            }
+                        }
+                        tokens.add(new HighlightedToken(current, color));
+                        current = "";
+                    }
+
+                    tokens.add(new HighlightedToken(String.valueOf(ch), this.defaultColor));
+                } else {
+                    current += ch;
                 }
             }
-            if (!matched) {
-                highlightedTokens.add(new HighlightedToken(token, defaultColor));
+            if (!current.isEmpty()) {
+                tokens.add(new HighlightedToken(current, this.defaultColor));
             }
+            highlightedLines.add(tokens);
+            this.cachedLines.put(line, tokens);
         }
-        return highlightedTokens;
+        return highlightedLines;
     }
 
 }

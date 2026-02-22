@@ -41,6 +41,11 @@ public class CodeCursor extends UIElement {
         this.updatePosition();
     }
 
+    public void setTextIndex(int index) {
+        this.textPosition = this.state.getText().getTextPositionFromIndex(index);
+        this.updatePosition();
+    }
+
     public int getLine() {
         return this.textPosition.line();
     }
