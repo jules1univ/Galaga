@@ -24,6 +24,15 @@ public class CodeInput extends UIElement {
         return false;
     }
 
+    public boolean handleSelectionAll() {
+        if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_A)
+                && Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
+            this.state.getSelection().all();
+            return true;
+        }
+        return false;
+    }
+
     private boolean handleCursorMove() {
         if (this.state.getSelection().isActive()) {
             if (!Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
@@ -96,7 +105,14 @@ public class CodeInput extends UIElement {
             return false;
         }
 
-        this.state.getCursor().setTextIndex(this.state.getText().insert('\n'));
+        int newIndex = -1;
+        if (this.state.getSelection().isActive()) {
+            newIndex = this.state.getSelection().replaceText("\n");
+            this.state.getSelection().disable();
+        } else {
+            newIndex = this.state.getText().insert('\n');
+        }
+        this.state.getCursor().setTextIndex(newIndex);
         return true;
     }
 
@@ -174,6 +190,7 @@ public class CodeInput extends UIElement {
     @Override
     public void update(float dt) {
         boolean updated = handleSelection() ||
+                handleSelectionAll() ||
                 handleUpDown() ||
                 handleLeftRight() ||
                 handleTextEnter() ||

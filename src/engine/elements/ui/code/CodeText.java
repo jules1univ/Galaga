@@ -27,6 +27,33 @@ public class CodeText {
         return this.content;
     }
 
+
+    public String getContent(int index, int length) {
+        if (length == 0) {
+            return "";
+        }
+
+        if(index < 0) {
+            index = 0;
+        } else if (index > this.content.length()) {
+            index = this.content.length();
+        }
+
+        if(length < 0) {
+            length = 0;
+        } else if (index + length > this.content.length()) {
+            length = this.content.length() - index;
+        }
+
+        return this.content.substring(index, index + length);
+    }
+
+    public String getContent(TextPosition start, TextPosition end) {
+        int startIndex = Math.min(start.index(), end.index());
+        int endIndex = Math.max(start.index(), end.index());
+        return this.getContent(startIndex, endIndex - startIndex);
+    }
+
     public String getLineContent(int line) {
         if (line < 0 || line >= this.lines.size()) {
             return "";
@@ -67,6 +94,7 @@ public class CodeText {
 
         return this.lines.get(line).length();
     }
+
 
     public TextPosition getTextPosition(int line, int column) {
         if (line < 0) {

@@ -33,8 +33,9 @@ public final class RegexSyntaxHighlighter extends SyntaxHighlighter {
             String[] parts = line.split(" ", -1);
             for (String part : parts) {
                 if(part.isEmpty()) {
-                    part = " ";
-                }else if(part.length() == 1 && part.charAt(0) == '\t') {
+                    continue;
+                }else if(part.equals("\t"))
+                {
                     part = " ".repeat(2);
                 }
 
@@ -47,6 +48,10 @@ public final class RegexSyntaxHighlighter extends SyntaxHighlighter {
                 }
                 tokens.add(new HighlightedToken(part, color));
                 tokens.add(new HighlightedToken(" ", this.defaultColor));
+            }
+            
+            if(tokens.size() > 0) {
+                tokens.remove(tokens.size() - 1);
             }
 
             highlightedLines.add(tokens);

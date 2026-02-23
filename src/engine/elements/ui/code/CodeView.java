@@ -9,6 +9,7 @@ import engine.elements.ui.UIElement;
 import engine.elements.ui.code.highlighter.HighlightedToken;
 import engine.graphics.Renderer;
 import engine.utils.Position;
+import engine.utils.Size;
 
 public class CodeView extends UIElement {
 
@@ -62,7 +63,8 @@ public class CodeView extends UIElement {
         } else if (cursorLine >= this.scrollOffset + this.maxDisplayLines) {
             this.scrollOffset = cursorLine - this.maxDisplayLines + 1;
         }
-        this.scrollOffset = Math.clamp(scrollOffset, 0, Math.max(0, this.state.getText().getLineCount() - this.maxDisplayLines));
+        this.scrollOffset = Math.clamp(scrollOffset, 0,
+                Math.max(0, this.state.getText().getLineCount() - this.maxDisplayLines));
 
         List<List<HighlightedToken>> lines = this.state.getHighlighter().highlight(this.state.getText().getContent());
 
@@ -71,41 +73,51 @@ public class CodeView extends UIElement {
 
         this.view.beginSub();
 
-        float lineY = CodeState.LINE_SPACING + this.lineHeight;
         int index = 0;
+        float lineY = CodeState.LINE_SPACING + this.lineHeight;
+
         for (int i = this.scrollOffset; i < lines.size(); i++) {
-            List<HighlightedToken> line = lines.get(i);            
+
+            List<HighlightedToken> line = lines.get(i);
             float lineX = 0.f;
+
             for (HighlightedToken token : line) {
-                if (token.text().equals("\n")) {
-                    lineX = 0.f;
-                    lineY += this.lineHeight;
-                    index++;
-                    continue;
+                if (selectionStart != null && selectionEnd != null) {
+                    TextPosition tokenPosition = this.state.getText().getTextPositionFromIndex(index);
+                    if (tokenPosition.isInRange(selectionStart, selectionEnd)) {
+                        Size textSize = Size.zero();
+                        if (token.text().equals("\t") || token.text().equals(" ")) {
+                            int lineLength = this.state.getText().getLineLength(tokenPosition.line());
+                            if (lineLength > 0) {
+                                if (token.text().equals("\t")) {
+                                    textSize = Size.of(CodeState.TEXT_SPACE_SIZE * 2,
+                                            this.lineHeight - CodeState.LINE_SPACING);
+                                } else if (token.text().equals(" ")) {
+                                    textSize = Size.of(CodeState.TEXT_SPACE_SIZE,
+                                            this.lineHeight - CodeState.LINE_SPACING);
+                                }
+                            }
+                        } else {
+                            String cuttedText = this.state.getText().getContent(tokenPosition, selectionEnd);
+                            textSize = this.view.getTextSize(cuttedText, this.font);
+                        }
+
+                        if (!textSize.equals(Size.zero())) {
+                            this.view.drawRect(Position.of(lineX, lineY - this.lineHeight + CodeState.LINE_SPACING),
+                                    textSize,
+                                    new Color(192, 192, 192, 100));
+                        }
+                    }
                 }
 
                 if (token.text().equals("\t")) {
                     lineX += CodeState.TEXT_SPACE_SIZE * 2;
                     index++;
                     continue;
-                }
-
-                if (token.text().equals(" ")) {
+                } else if (token.text().equals(" ")) {
                     lineX += CodeState.TEXT_SPACE_SIZE;
                     index++;
                     continue;
-                }
-
-                if (selectionStart != null && selectionEnd != null) {
-                    TextPosition tokenPosition = this.state.getText().getTextPositionFromIndex(index);
-
-                    if (tokenPosition.isInRange(selectionStart, selectionEnd)) {
-                        String cuttedText = token.text().substring(0,
-                                Math.min(token.text().length(), selectionEnd.index() - tokenPosition.index()));
-                        this.view.drawRect(Position.of(lineX, lineY - this.lineHeight + CodeState.LINE_SPACING),
-                                this.view.getTextSize(cuttedText, this.font),
-                                new Color(192, 192, 192, 100));
-                    }
                 }
 
                 this.view.drawText(token.text(), Position.of(lineX, lineY), token.color(), this.font);

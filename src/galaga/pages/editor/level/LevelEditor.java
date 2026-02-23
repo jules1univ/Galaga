@@ -137,7 +137,7 @@ public class LevelEditor extends Page<GalagaPage> {
         iniHighlighter.addPattern("^[ \\t]*[a-zA-Z0-9_.-]+(?=\\s*=)", new Color(80, 160, 220));
         iniHighlighter.addPattern("=", Color.RED);
         iniHighlighter.addPattern("\"(\\\\.|[^\"])*\"", Color.YELLOW);
-        iniHighlighter.addPattern("\\b\\d+\\b", Color.MAGENTA);
+        iniHighlighter.addPattern("\\b\\d+\\b(\\.)?(\\d+)?", Color.MAGENTA);
         iniHighlighter.addPattern("(?<=\\=).*", new Color(200, 200, 200));
 
         this.levelCode = new CodeEditor(Position.zero(), Size.of(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT * 0.8f),

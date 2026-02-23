@@ -22,5 +22,10 @@ public record TextPosition(int line, int column, int index) {
     public TextPosition copy() {
         return new TextPosition(this.line, this.column, this.index);
     }
+
+    @Override
+    public String toString() {
+        return "column: " + this.column + ", line: " + this.line + ", index: " + this.index;
+    }
 }
 

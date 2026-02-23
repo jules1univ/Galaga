@@ -11,6 +11,12 @@ public class CodeSelection {
 
     }
 
+    public void all() {
+        this.start = TextPosition.of(0, 0, 0);
+        this.state.getCursor().setTextPosition(this.state.getText().getTextPositionFromIndex(Integer.MAX_VALUE));
+        this.active = true;
+    }
+
     public void enable() {
         this.active = true;
         this.start = this.state.getCursor().getTextPosition().copy();
@@ -25,9 +31,10 @@ public class CodeSelection {
         if (!this.active) {
             return 0;
         }
-        TextPosition end = this.state.getCursor().getTextPosition();
+        TextPosition selectionStart = this.getStart();
+        TextPosition selectionEnd = this.getEnd();
 
-        int index = this.state.getText().insert(newText, this.start, end);
+        int index = this.state.getText().insert(newText, selectionStart, selectionEnd);
         this.disable();
         return index;
     }
@@ -45,7 +52,7 @@ public class CodeSelection {
     }
 
     public TextPosition getStart() {
-        if(!this.active) {
+        if (!this.active) {
             return null;
         }
 
@@ -57,7 +64,7 @@ public class CodeSelection {
     }
 
     public TextPosition getEnd() {
-        if(!this.active) {
+        if (!this.active) {
             return null;
         }
 
