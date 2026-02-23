@@ -98,7 +98,8 @@ public class CodeView extends UIElement {
                                 }
                             }
                         } else {
-                            String cuttedText = this.state.getText().getContent(tokenPosition, selectionEnd);
+                            int endLength = Math.min(token.text().length(), selectionEnd.index() - tokenPosition.index());
+                            String cuttedText = this.state.getText().getContent(tokenPosition.index(), endLength);
                             textSize = this.view.getTextSize(cuttedText, this.font);
                         }
 
