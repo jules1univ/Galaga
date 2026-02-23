@@ -120,8 +120,8 @@ public class CodeCursor extends UIElement {
         this.resetBlink();
 
         int line = this.textPosition.line() - this.state.getView().getScrollOffset();
-        String cuttedLine = this.state.getText().getLineContent(line).substring(0,
-                this.textPosition.column());
+        String lineContent  =  this.state.getText().getLineContent(line);
+        String cuttedLine = lineContent.length() <= this.textPosition.column() ? lineContent : lineContent.substring(0, this.textPosition.column());
         float lineWidth = 0.f;
 
         if (!cuttedLine.isEmpty()) {

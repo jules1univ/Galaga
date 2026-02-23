@@ -48,15 +48,21 @@ public class CodeView extends UIElement {
 
         float charSize = Application.getContext().getRenderer().getMaxCharSize(this.font).getHeight();
 
-        this.maxDisplayLines = (int) Math.floor(this.size.getHeight() / charSize);
         this.lineHeight = charSize + CodeState.LINE_SPACING;
+        this.maxDisplayLines = (int) Math.floor(this.size.getHeight() / this.lineHeight);
 
         return true;
     }
 
     private void drawView() {
-        this.scrollOffset = Math.max(0, this.state.getCursor().getLine()
-                - this.maxDisplayLines + CodeState.SCROLL_LINE_GAP);
+
+        int cursorLine = this.state.getCursor().getLine();
+        if (cursorLine < this.scrollOffset) {
+            this.scrollOffset = cursorLine;
+        } else if (cursorLine >= this.scrollOffset + this.maxDisplayLines) {
+            this.scrollOffset = cursorLine - this.maxDisplayLines + 1;
+        }
+        this.scrollOffset = Math.clamp(scrollOffset, 0, Math.max(0, this.state.getText().getLineCount() - this.maxDisplayLines));
 
         List<List<HighlightedToken>> lines = this.state.getHighlighter().highlight(this.state.getText().getContent());
 
@@ -67,7 +73,8 @@ public class CodeView extends UIElement {
 
         float lineY = CodeState.LINE_SPACING + this.lineHeight;
         int index = 0;
-        for (List<HighlightedToken> line : lines) {
+        for (int i = this.scrollOffset; i < lines.size(); i++) {
+            List<HighlightedToken> line = lines.get(i);            
             float lineX = 0.f;
             for (HighlightedToken token : line) {
                 if (token.text().equals("\n")) {
@@ -89,11 +96,12 @@ public class CodeView extends UIElement {
                     continue;
                 }
 
-                if (selectionStart != null  && selectionEnd != null) {
+                if (selectionStart != null && selectionEnd != null) {
                     TextPosition tokenPosition = this.state.getText().getTextPositionFromIndex(index);
-                    
-                    if(tokenPosition.isInRange(selectionStart, selectionEnd)) {
-                        String cuttedText = token.text().substring(0, Math.min(token.text().length(), selectionEnd.index() - tokenPosition.index()));
+
+                    if (tokenPosition.isInRange(selectionStart, selectionEnd)) {
+                        String cuttedText = token.text().substring(0,
+                                Math.min(token.text().length(), selectionEnd.index() - tokenPosition.index()));
                         this.view.drawRect(Position.of(lineX, lineY - this.lineHeight + CodeState.LINE_SPACING),
                                 this.view.getTextSize(cuttedText, this.font),
                                 new Color(192, 192, 192, 100));
