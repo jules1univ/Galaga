@@ -166,8 +166,29 @@ public final class Renderer {
     public Renderer drawLine(Position start, Position end, Color color, float thickness) {
         this.g.setColor(color);
         Stroke oldStroke = this.g.getStroke();
-        this.g.setStroke(new java.awt.BasicStroke(thickness));
+        this.g.setStroke(new BasicStroke(thickness));
         this.g.drawLine(start.getIntX(), start.getIntY(), end.getIntX(), end.getIntY());
+        this.g.setStroke(oldStroke);
+        return this;
+    }
+
+
+
+    public Renderer drawWavyLine(Position start, Position end, Color color, float thickness, float amplitude, float wavelength) {
+        this.g.setColor(color);
+        Stroke oldStroke = this.g.getStroke();
+        this.g.setStroke(new BasicStroke(thickness));
+
+        float distance = start.distance(end);
+        float angle = (float)Math.atan2(end.getY() - start.getY(), end.getX() - start.getX());
+
+        for (float d = 0; d < distance; d += 1) {
+            float offset = (float)(Math.sin((d / wavelength) * 2 * Math.PI) * amplitude);
+            float x = start.getX() + (float)Math.cos(angle) * d - (float)Math.sin(angle) * offset;
+            float y = start.getY() + (float)Math.sin(angle) * d + (float)Math.cos(angle) * offset;
+            this.g.drawLine((int) x, (int) y, (int) x, (int) y);
+        }
+
         this.g.setStroke(oldStroke);
         return this;
     }
@@ -179,7 +200,7 @@ public final class Renderer {
     public Renderer drawRectOutline(Position position, Size size, int thickness, Color color) {
         this.g.setColor(color);
         Stroke oldStroke = this.g.getStroke();
-        this.g.setStroke(new java.awt.BasicStroke(thickness));
+        this.g.setStroke(new BasicStroke(thickness));
         this.g.drawRect(position.getIntX(), position.getIntY(), size.getIntWidth(), size.getIntHeight());
         this.g.setStroke(oldStroke);
         return this;
@@ -295,7 +316,7 @@ public final class Renderer {
         this.g.draw(curve);
 
         if (Application.DEBUG_MODE) {
-            this.g.setStroke(new java.awt.BasicStroke(1f, BasicStroke.CAP_BUTT,
+            this.g.setStroke(new BasicStroke(1f, BasicStroke.CAP_BUTT,
                     BasicStroke.JOIN_MITER, 10f, new float[] { 5f, 5f }, 0f));
             this.g.drawLine(start.getIntX(), start.getIntY(), control1.getIntX(), control1.getIntY());
             this.g.drawLine(control2.getIntX(), control2.getIntY(), end.getIntX(), end.getIntY());

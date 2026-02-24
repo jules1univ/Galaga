@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import engine.elements.ui.code.highlighter.HighlightedToken;
+import engine.elements.ui.code.highlighter.SyntaxHighlightResult;
 import engine.elements.ui.code.highlighter.SyntaxHighlighter;
 
 public final class RegexSyntaxHighlighter extends SyntaxHighlighter {
@@ -19,7 +20,7 @@ public final class RegexSyntaxHighlighter extends SyntaxHighlighter {
     }
 
     @Override
-    public List<List<HighlightedToken>> highlight(String content) {
+    public SyntaxHighlightResult highlight(String content) {
         String[] lines = content.split("\n", -1);
 
         List<List<HighlightedToken>> highlightedLines = new ArrayList<>();
@@ -67,7 +68,7 @@ public final class RegexSyntaxHighlighter extends SyntaxHighlighter {
             highlightedLines.add(tokens);
             this.cachedLines.put(line, tokens);
         }
-        return highlightedLines;
+        return new SyntaxHighlightResult(highlightedLines);
     }
 
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import engine.Application;
 import engine.elements.ui.UIElement;
 import engine.elements.ui.code.highlighter.HighlightedToken;
+import engine.elements.ui.code.highlighter.SyntaxHighlightResult;
 import engine.graphics.Renderer;
 import engine.utils.Position;
 import engine.utils.Size;
@@ -59,7 +60,8 @@ public class CodeView extends UIElement {
         int lineEndPlus = lineEnd + 1;
 
         String maxLineNumber = String.valueOf(lineEndPlus);
-        float maxLineNumberWidth = this.view.getTextSize("X".repeat(maxLineNumber.length()), this.font).getWidth() + CodeState.LINE_NUMBER_PADDING_LEFT;
+        float maxLineNumberWidth = this.view.getTextSize("X".repeat(maxLineNumber.length()), this.font).getWidth()
+                + CodeState.LINE_NUMBER_PADDING_LEFT;
 
         float viewY = CodeState.LINE_SPACING + this.lineHeight;
         for (int lineIndex = lineStart; lineIndex < lineEndPlus; lineIndex++) {
@@ -67,8 +69,8 @@ public class CodeView extends UIElement {
             String lineNumber = String.valueOf(lineIndex + 1);
             float lineNumberWidth = this.view.getTextSize("X".repeat(lineNumber.length()), this.font).getWidth();
 
-
-            this.view.drawText(lineNumber, Position.of(maxLineNumberWidth - lineNumberWidth, viewY), Color.GRAY, this.font);
+            this.view.drawText(lineNumber, Position.of(maxLineNumberWidth - lineNumberWidth, viewY), Color.GRAY,
+                    this.font);
             viewY += this.lineHeight;
         }
 
@@ -135,7 +137,9 @@ public class CodeView extends UIElement {
     }
 
     private void drawCode(int lineStart, int lineEnd, float lineNumberWidth) {
-        List<List<HighlightedToken>> lines = this.state.getHighlighter().highlight(this.state.getText().getContent());
+        SyntaxHighlightResult result = this.state.getHighlighter().highlight(this.state.getText().getContent());
+        List<List<HighlightedToken>> lines = result.lines();
+
         assert lines.size() == this.state.getText().getLineCount();
 
         float viewY = CodeState.LINE_SPACING + this.lineHeight;
@@ -149,12 +153,12 @@ public class CodeView extends UIElement {
             boolean switchSpace = false;
             for (HighlightedToken token : line) {
 
-               if (token.text().equals(" ")) {
+                if (token.text().equals(" ")) {
                     if (!firstToken && !switchSpace && !firstSpace) {
                         this.view.drawLine(
-                            Position.of(viewX, viewY - (this.lineHeight - CodeState.LINE_SPACING*2)),
-                            Position.of(viewX, viewY),
-                            Color.LIGHT_GRAY, 0.5f);
+                                Position.of(viewX, viewY - (this.lineHeight - CodeState.LINE_SPACING * 2)),
+                                Position.of(viewX, viewY),
+                                Color.LIGHT_GRAY, 0.5f);
                     }
 
                     firstSpace = false;
@@ -164,7 +168,38 @@ public class CodeView extends UIElement {
                 }
 
                 this.view.drawText(token.text(), Position.of(viewX, viewY), token.color(), this.font);
-                viewX += this.view.getTextSize(token.text(), this.font).getWidth();
+
+                Size tokenSize = this.view.getTextSize(token.text(), this.font);
+                switch (token.style().type()) {
+                    case UNDERLINE -> {
+                         this.view.drawLine(
+                                Position.of(viewX, viewY - CodeState.LINE_SPACING/ 2),
+                                Position.of(viewX + tokenSize.getWidth(), viewY - CodeState.LINE_SPACING / 2),
+                                token.style().color(), 1f);
+                    }
+                    case WAVY_UNDERLINE -> {
+                        this.view.drawWavyLine(
+                              Position.of(viewX, viewY - CodeState.LINE_SPACING/ 2),
+                                Position.of(viewX + tokenSize.getWidth(), viewY - CodeState.LINE_SPACING / 2),
+                                token.style().color(), 1.f, 1.f, 5.f);
+
+                    }
+                    case STRICKETHROUGH -> {
+                        this.view.drawLine(
+                                Position.of(viewX, viewY - CodeState.LINE_SPACING*2),
+                                Position.of(viewX + tokenSize.getWidth(), viewY - CodeState.LINE_SPACING*2),
+                                token.style().color(), 1.f);
+
+                    }
+                    case BOX -> {
+                        this.view.drawRectOutline(Position.of(viewX, viewY - this.lineHeight + CodeState.LINE_SPACING),
+                                tokenSize,
+                                1, token.style().color());
+                    }
+                    default -> {}
+                }
+
+                viewX += tokenSize.getWidth();
                 firstToken = true;
             }
             viewY += this.lineHeight;
@@ -187,7 +222,7 @@ public class CodeView extends UIElement {
         int lineEnd = Math.min(this.scrollOffset + this.maxDisplayLines, this.state.getText().getLineCount());
 
         this.view.beginSub();
-        
+
         float lineNumberWidth = this.drawLineNumbers(lineStart, lineEnd);
         this.drawSelection(lineStart, lineEnd, lineNumberWidth);
         this.drawCode(lineStart, lineEnd, lineNumberWidth);

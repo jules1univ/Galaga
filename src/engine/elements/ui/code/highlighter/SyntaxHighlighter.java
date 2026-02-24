@@ -12,5 +12,5 @@ public abstract class SyntaxHighlighter {
         this.defaultColor = defaultColor;
     }
 
-    public abstract List<List<HighlightedToken>> highlight(String content);
+    public abstract SyntaxHighlightResult highlight(String content);
 }
