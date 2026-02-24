@@ -10,7 +10,6 @@ import engine.elements.ui.code.highlighter.HighlightedToken;
 import engine.graphics.Renderer;
 import engine.utils.Position;
 import engine.utils.Size;
-import engine.utils.logger.Log;
 
 public class CodeView extends UIElement {
 
@@ -126,18 +125,31 @@ public class CodeView extends UIElement {
             List<HighlightedToken> line = lines.get(lineIndex);
             float viewX = 0.f;
 
+            boolean firstToken = false;
+            boolean firstSpace = true;
+            boolean switchSpace = false;
             for (HighlightedToken token : line) {
 
                 if (token.text().equals("\t")) {
                     viewX += CodeState.TEXT_SPACE_SIZE * 2;
                     continue;
                 } else if (token.text().equals(" ")) {
+                    if (!firstToken && !switchSpace && !firstSpace) {
+                        this.view.drawLine(
+                            Position.of(viewX, viewY - (this.lineHeight - CodeState.LINE_SPACING*2)),
+                            Position.of(viewX, viewY),
+                            Color.LIGHT_GRAY, 0.5f);
+                    }
+                    
+                    firstSpace = false;
+                    switchSpace = !switchSpace;
                     viewX += CodeState.TEXT_SPACE_SIZE;
                     continue;
                 }
 
                 this.view.drawText(token.text(), Position.of(viewX, viewY), token.color(), this.font);
                 viewX += this.view.getTextSize(token.text(), this.font).getWidth();
+                firstToken = true;
             }
             viewY += this.lineHeight;
         }
