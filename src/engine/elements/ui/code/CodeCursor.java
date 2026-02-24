@@ -126,33 +126,42 @@ public class CodeCursor extends UIElement {
         float lineWidth = 0.f;
 
         if (!cuttedLine.isEmpty()) {
-            String[] parts = cuttedLine.split(" ", -1);
-            for (int i = 0; i < parts.length; i++) {
-                String part = parts[i];
-                if (!part.isEmpty()) {
-                    lineWidth += Application.getContext().getRenderer()
-                            .getTextSize(part, this.font)
-                            .getWidth();
-                }
-                if (i < parts.length - 1) {
-                    lineWidth += CodeState.TEXT_SPACE_SIZE;
+            String token = "";
+            for (char ch : cuttedLine.toCharArray()) {
+                if (ch == ' ') {
+                    if (!token.isEmpty()) {
+                        lineWidth += Application.getContext().getRenderer()
+                                .getTextSize(token, this.font)
+                                .getWidth();
+                        token = "";
+                    }
+                    
+                    lineWidth  += CodeState.TEXT_SPACE_SIZE;
+                } else {
+                    token += ch;
                 }
             }
+
+            if (!token.isEmpty()) {
+                lineWidth += Application.getContext().getRenderer()
+                        .getTextSize(token, this.font)
+                        .getWidth();
+            }
         }
+    
 
-        float lineNumberWidth = Application.getContext().getRenderer()
-                .getTextSize("X".repeat(String.valueOf(this.state.getText().getLineCount()).length()), this.font).getWidth()
-                + CodeState.LINE_NUMBER_PADDING_LEFT
-                + CodeState.LINE_NUMBER_PADDING_RIGHT;
+    float lineNumberWidth = Application.getContext().getRenderer()
+            .getTextSize("X".repeat(String.valueOf(this.state.getText().getLineCount()).length()), this.font).getWidth()
+            + CodeState.LINE_NUMBER_PADDING_LEFT
+            + CodeState.LINE_NUMBER_PADDING_RIGHT;
 
-        float x = this.state.getEditor().getPosition().getX()
-                + lineNumberWidth
-                + lineWidth;
+    float x = this.state.getEditor().getPosition().getX()
+            + lineNumberWidth
+            + lineWidth;
 
-        float y = this.state.getEditor().getPosition().getY()
+    float y = this.state.getEditor().getPosition().getY()
                 + (this.charSize.getHeight() + CodeState.LINE_SPACING) * line
-                + this.charSize.getHeight() / 2.f;
-        this.position = Position.of(x, y);
+                + this.charSize.getHeight() / 2.f;this.position=Position.of(x,y);
     }
 
     @Override
