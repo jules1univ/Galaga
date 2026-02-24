@@ -64,21 +64,43 @@ public class CodeInput extends UIElement {
         return false;
     }
 
+    private void insertOrReplaceText(Character ch) {
+        int newIndex = -1;
+        if (this.state.getSelection().isActive()) {
+            if (ch == null) {
+                newIndex = this.state.getSelection().replaceText("");
+            } else {
+                newIndex = this.state.getSelection().replaceText(String.valueOf(ch));
+            }
+            this.state.getSelection().disable();
+        } else {
+            if (ch == null) {
+                newIndex = this.state.getText().delete();
+            } else {
+                newIndex = this.state.getText().insert(ch);
+            }
+        }
+        this.state.getCursor().setTextIndex(newIndex);
+    }
+
+    private boolean handleTextTab() {
+        if (Application.getContext().getInput().isKeyPressed(KeyEvent.VK_T)
+                && Application.getContext().getInput().isKeyDown(KeyEvent.VK_CONTROL)) {
+            this.insertOrReplaceText(' ');
+            this.insertOrReplaceText(' ');
+            return true;
+        }
+        return false;
+
+    }
+
     private boolean handleTextEnter() {
         if (!Application.getContext().getInput().isTyping()) {
             return false;
         }
 
         char ch = Application.getContext().getInput().getTypedChar();
-        int newIndex = -1;
-        if (this.state.getSelection().isActive()) {
-            newIndex = this.state.getSelection().replaceText(String.valueOf(ch));
-            this.state.getSelection().disable();
-        } else {
-            newIndex = this.state.getText().insert(ch);
-        }
-        this.state.getCursor().setTextIndex(newIndex);
-
+        this.insertOrReplaceText(ch);
         return true;
     }
 
@@ -86,16 +108,7 @@ public class CodeInput extends UIElement {
         if (!Application.getContext().getInput().isKeyPressed(KeyEvent.VK_BACK_SPACE, KeyEvent.VK_DELETE)) {
             return false;
         }
-
-        int newIndex = -1;
-        if (this.state.getSelection().isActive()) {
-            newIndex = this.state.getSelection().replaceText("");
-            this.state.getSelection().disable();
-        } else {
-            newIndex = this.state.getText().delete();
-        }
-        this.state.getCursor().setTextIndex(newIndex);
-
+        this.insertOrReplaceText(null);
         return true;
 
     }
@@ -105,14 +118,7 @@ public class CodeInput extends UIElement {
             return false;
         }
 
-        int newIndex = -1;
-        if (this.state.getSelection().isActive()) {
-            newIndex = this.state.getSelection().replaceText("\n");
-            this.state.getSelection().disable();
-        } else {
-            newIndex = this.state.getText().insert('\n');
-        }
-        this.state.getCursor().setTextIndex(newIndex);
+        this.insertOrReplaceText('\n');
         return true;
     }
 
@@ -193,6 +199,7 @@ public class CodeInput extends UIElement {
                 handleSelectionAll() ||
                 handleUpDown() ||
                 handleLeftRight() ||
+                handleTextTab() ||
                 handleTextEnter() ||
                 handleTextDelete() ||
                 handleTextNewLine() ||

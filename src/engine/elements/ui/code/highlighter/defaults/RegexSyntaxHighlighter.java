@@ -33,7 +33,7 @@ public final class RegexSyntaxHighlighter extends SyntaxHighlighter {
             if (!line.isEmpty()) {
                 String token = "";
                 for (char ch : line.toCharArray()) {
-                    if (ch == ' ' || ch == '\t') {
+                    if (ch == ' ') {
                         if (!token.isEmpty()) {
                             Color color = this.defaultColor;
                             for (RegexHighlightRule rule : this.rules) {

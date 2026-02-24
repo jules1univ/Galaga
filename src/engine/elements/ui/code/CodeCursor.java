@@ -126,8 +126,6 @@ public class CodeCursor extends UIElement {
         float lineWidth = 0.f;
 
         if (!cuttedLine.isEmpty()) {
-            cuttedLine = cuttedLine.replace("\t", " ".repeat(2));
-
             String[] parts = cuttedLine.split(" ", -1);
             for (int i = 0; i < parts.length; i++) {
                 String part = parts[i];
@@ -143,7 +141,7 @@ public class CodeCursor extends UIElement {
         }
 
         float lineNumberWidth = Application.getContext().getRenderer()
-                .getTextSize(String.valueOf(this.state.getText().getLineCount()), this.font).getWidth()
+                .getTextSize("X".repeat(String.valueOf(this.state.getText().getLineCount()).length()), this.font).getWidth()
                 + CodeState.LINE_NUMBER_PADDING_LEFT
                 + CodeState.LINE_NUMBER_PADDING_RIGHT;
 

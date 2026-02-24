@@ -99,7 +99,6 @@ public class CodeView extends UIElement {
                 }
 
                 int countSpaces = lineContent.length() - lineContent.replace(" ", "").length();
-                countSpaces += lineContent.length() - lineContent.replace("\t", "").length();
                 countSpaces = Math.max(0, countSpaces - 1);
 
                 Size lineSize = this.view.getTextSize(lineContent, this.font);
@@ -150,10 +149,7 @@ public class CodeView extends UIElement {
             boolean switchSpace = false;
             for (HighlightedToken token : line) {
 
-                if (token.text().equals("\t")) {
-                    viewX += CodeState.TEXT_SPACE_SIZE * 2;
-                    continue;
-                } else if (token.text().equals(" ")) {
+               if (token.text().equals(" ")) {
                     if (!firstToken && !switchSpace && !firstSpace) {
                         this.view.drawLine(
                             Position.of(viewX, viewY - (this.lineHeight - CodeState.LINE_SPACING*2)),

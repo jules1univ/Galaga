@@ -13,6 +13,9 @@ public class CodeText {
     }
 
     public void setContent(String content) {
+        content = content.replace("\r\n", "\n").replace("\r", "\n");
+        content = content.replace("\t", " ".repeat(2));
+        
         this.lines.clear();
 
         this.content = content;
