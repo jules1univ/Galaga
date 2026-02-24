@@ -55,7 +55,27 @@ public class CodeView extends UIElement {
         return true;
     }
 
-    private void drawSelection(int lineStart, int lineEnd) {
+    private float drawLineNumbers(int lineStart, int lineEnd) {
+        int lineEndPlus = lineEnd + 1;
+
+        String maxLineNumber = String.valueOf(lineEndPlus);
+        float maxLineNumberWidth = this.view.getTextSize("X".repeat(maxLineNumber.length()), this.font).getWidth() + CodeState.LINE_NUMBER_PADDING_LEFT;
+
+        float viewY = CodeState.LINE_SPACING + this.lineHeight;
+        for (int lineIndex = lineStart; lineIndex < lineEndPlus; lineIndex++) {
+
+            String lineNumber = String.valueOf(lineIndex + 1);
+            float lineNumberWidth = this.view.getTextSize("X".repeat(lineNumber.length()), this.font).getWidth();
+
+
+            this.view.drawText(lineNumber, Position.of(maxLineNumberWidth - lineNumberWidth, viewY), Color.GRAY, this.font);
+            viewY += this.lineHeight;
+        }
+
+        return maxLineNumberWidth + CodeState.LINE_NUMBER_PADDING_RIGHT;
+    }
+
+    private void drawSelection(int lineStart, int lineEnd, float lineNumberWidth) {
         TextPosition selectionStart = this.state.getSelection().getStart();
         TextPosition selectionEnd = this.state.getSelection().getEnd();
 
@@ -85,7 +105,7 @@ public class CodeView extends UIElement {
                 Size lineSize = this.view.getTextSize(lineContent, this.font);
                 lineSize.setWidth(lineSize.getWidth() + countSpaces * CodeState.TEXT_SPACE_SIZE);
 
-                float viewX = 0.f;
+                float viewX = lineNumberWidth;
                 if (lineIndex == selectionStart.line()) {
                     String beforeSelection = lineContent.substring(0,
                             selectionStart.column());
@@ -115,7 +135,7 @@ public class CodeView extends UIElement {
         }
     }
 
-    private void drawCode(int lineStart, int lineEnd) {
+    private void drawCode(int lineStart, int lineEnd, float lineNumberWidth) {
         List<List<HighlightedToken>> lines = this.state.getHighlighter().highlight(this.state.getText().getContent());
         assert lines.size() == this.state.getText().getLineCount();
 
@@ -123,7 +143,7 @@ public class CodeView extends UIElement {
         for (int lineIndex = lineStart; lineIndex < lineEnd; lineIndex++) {
 
             List<HighlightedToken> line = lines.get(lineIndex);
-            float viewX = 0.f;
+            float viewX = lineNumberWidth;
 
             boolean firstToken = false;
             boolean firstSpace = true;
@@ -140,7 +160,7 @@ public class CodeView extends UIElement {
                             Position.of(viewX, viewY),
                             Color.LIGHT_GRAY, 0.5f);
                     }
-                    
+
                     firstSpace = false;
                     switchSpace = !switchSpace;
                     viewX += CodeState.TEXT_SPACE_SIZE;
@@ -171,9 +191,10 @@ public class CodeView extends UIElement {
         int lineEnd = Math.min(this.scrollOffset + this.maxDisplayLines, this.state.getText().getLineCount());
 
         this.view.beginSub();
-
-        this.drawSelection(lineStart, lineEnd);
-        this.drawCode(lineStart, lineEnd);
+        
+        float lineNumberWidth = this.drawLineNumbers(lineStart, lineEnd);
+        this.drawSelection(lineStart, lineEnd, lineNumberWidth);
+        this.drawCode(lineStart, lineEnd, lineNumberWidth);
 
         this.view.end();
     }

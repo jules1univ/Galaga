@@ -13,7 +13,8 @@ public class CodeState {
     public static final float CURSOR_HEIGHT_MULTIPLIER = 0.8f;
 
     public static final float LINE_SPACING = 4.f;
-    public static final float LINE_NUMBER_PADDING = 0;
+    public static final float LINE_NUMBER_PADDING_LEFT = 5;
+    public static final float LINE_NUMBER_PADDING_RIGHT = 10;
 
     public static float TEXT_SPACE_SIZE = 10.f;
 

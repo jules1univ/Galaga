@@ -120,8 +120,9 @@ public class CodeCursor extends UIElement {
         this.resetBlink();
 
         int line = this.textPosition.line() - this.state.getView().getScrollOffset();
-        String lineContent  =  this.state.getText().getLineContent(line);
-        String cuttedLine = lineContent.length() <= this.textPosition.column() ? lineContent : lineContent.substring(0, this.textPosition.column());
+        String lineContent = this.state.getText().getLineContent(line);
+        String cuttedLine = lineContent.length() <= this.textPosition.column() ? lineContent
+                : lineContent.substring(0, this.textPosition.column());
         float lineWidth = 0.f;
 
         if (!cuttedLine.isEmpty()) {
@@ -141,13 +142,18 @@ public class CodeCursor extends UIElement {
             }
         }
 
+        float lineNumberWidth = Application.getContext().getRenderer()
+                .getTextSize(String.valueOf(this.state.getText().getLineCount()), this.font).getWidth()
+                + CodeState.LINE_NUMBER_PADDING_LEFT
+                + CodeState.LINE_NUMBER_PADDING_RIGHT;
+
         float x = this.state.getEditor().getPosition().getX()
-                + CodeState.LINE_NUMBER_PADDING
+                + lineNumberWidth
                 + lineWidth;
 
         float y = this.state.getEditor().getPosition().getY()
                 + (this.charSize.getHeight() + CodeState.LINE_SPACING) * line
-                + this.charSize.getHeight()/2.f;
+                + this.charSize.getHeight() / 2.f;
         this.position = Position.of(x, y);
     }
 
@@ -175,9 +181,9 @@ public class CodeCursor extends UIElement {
             renderer.drawRect(this.position, this.size, Color.WHITE);
         }
         renderer.drawRect(Position.of(
-            this.state.getEditor().getPosition().getX(),
-            this.position.getY()
-        ), Size.of(this.state.getEditor().getSize().getWidth(), this.size.getHeight()), new Color(255, 255, 255, 25));
+                this.state.getEditor().getPosition().getX(),
+                this.position.getY()), Size.of(this.state.getEditor().getSize().getWidth(), this.size.getHeight()),
+                new Color(255, 255, 255, 25));
     }
 
 }
