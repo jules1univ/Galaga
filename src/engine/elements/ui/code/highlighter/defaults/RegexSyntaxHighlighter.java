@@ -30,28 +30,38 @@ public final class RegexSyntaxHighlighter extends SyntaxHighlighter {
             }
 
             List<HighlightedToken> tokens = new ArrayList<>();
-            String[] parts = line.split(" ", -1);
-            for (String part : parts) {
-                if(part.isEmpty()) {
-                    continue;
-                }else if(part.equals("\t"))
-                {
-                    part = " ".repeat(2);
-                }
+            if (!line.isEmpty()) {
+                String token = "";
+                for (char ch : line.toCharArray()) {
+                    if (ch == ' ' || ch == '\t') {
+                        if (!token.isEmpty()) {
+                            Color color = this.defaultColor;
+                            for (RegexHighlightRule rule : this.rules) {
+                                if (rule.matches(token)) {
+                                    color = rule.color();
+                                    break;
+                                }
+                            }
+                            tokens.add(new HighlightedToken(token, color));
+                            token = "";
+                        }
 
-                Color color = this.defaultColor;
-                for (RegexHighlightRule rule : this.rules) {
-                    if (rule.matches(part)) {
-                        color = rule.color();
-                        break;
+                        tokens.add(new HighlightedToken(" ", this.defaultColor));
+                    } else {
+                        token += ch;
                     }
                 }
-                tokens.add(new HighlightedToken(part, color));
-                tokens.add(new HighlightedToken(" ", this.defaultColor));
-            }
-            
-            if(tokens.size() > 0) {
-                tokens.remove(tokens.size() - 1);
+
+                if (!token.isEmpty()) {
+                    Color color = this.defaultColor;
+                    for (RegexHighlightRule rule : this.rules) {
+                        if (rule.matches(token)) {
+                            color = rule.color();
+                            break;
+                        }
+                    }
+                    tokens.add(new HighlightedToken(token, color));
+                }
             }
 
             highlightedLines.add(tokens);

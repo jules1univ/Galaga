@@ -28,30 +28,26 @@ public class CodeText {
     }
 
 
-    public String getContent(int index, int length) {
-        if (length == 0) {
-            return "";
+    public String getContent(int from, int to) {
+        if (from < 0) {
+            from = 0;
+        } else if (from > this.content.length()) {
+            from = this.content.length();
         }
 
-        if(index < 0) {
-            index = 0;
-        } else if (index > this.content.length()) {
-            index = this.content.length();
+        if (to < 0) {
+            to = 0;
+        } else if (to > this.content.length()) {
+            to = this.content.length();
         }
 
-        if(length < 0) {
-            length = 0;
-        } else if (index + length > this.content.length()) {
-            length = this.content.length() - index;
-        }
-
-        return this.content.substring(index, index + length);
+        return this.content.substring(from, to);
     }
 
     public String getContent(TextPosition start, TextPosition end) {
         int startIndex = Math.min(start.index(), end.index());
         int endIndex = Math.max(start.index(), end.index());
-        return this.getContent(startIndex, endIndex - startIndex);
+        return this.getContent(startIndex, endIndex);
     }
 
     public String getLineContent(int line) {

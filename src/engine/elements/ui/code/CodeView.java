@@ -10,6 +10,7 @@ import engine.elements.ui.code.highlighter.HighlightedToken;
 import engine.graphics.Renderer;
 import engine.utils.Position;
 import engine.utils.Size;
+import engine.utils.logger.Log;
 
 public class CodeView extends UIElement {
 
@@ -55,6 +56,94 @@ public class CodeView extends UIElement {
         return true;
     }
 
+    private void drawSelection(int lineStart, int lineEnd) {
+        TextPosition selectionStart = this.state.getSelection().getStart();
+        TextPosition selectionEnd = this.state.getSelection().getEnd();
+
+        if (selectionStart == null || selectionEnd == null) {
+            return;
+        }
+
+        if (selectionStart.equals(selectionEnd)) {
+            return;
+        }
+
+        float viewY = CodeState.LINE_SPACING * 2;
+        for (int lineIndex = lineStart; lineIndex < lineEnd; lineIndex++) {
+
+            if (lineIndex >= selectionStart.line() && lineIndex <= selectionEnd.line()) {
+
+                String lineContent = this.state.getText().getLineContent(lineIndex);
+                if (lineContent.isEmpty()) {
+                    viewY += this.lineHeight;
+                    continue;
+                }
+
+                int countSpaces = lineContent.length() - lineContent.replace(" ", "").length();
+                countSpaces += lineContent.length() - lineContent.replace("\t", "").length();
+                countSpaces = Math.max(0, countSpaces - 1);
+
+                Size lineSize = this.view.getTextSize(lineContent, this.font);
+                lineSize.setWidth(lineSize.getWidth() + countSpaces * CodeState.TEXT_SPACE_SIZE);
+
+                float viewX = 0.f;
+                if (lineIndex == selectionStart.line()) {
+                    String beforeSelection = lineContent.substring(0,
+                            selectionStart.column());
+                    if (!beforeSelection.isEmpty()) {
+                        viewX += this.view.getTextSize(beforeSelection, this.font).getWidth();
+                    }
+                    lineSize.setWidth(lineSize.getWidth() - viewX);
+
+                    if (selectionStart.line() == selectionEnd.line()) {
+                        String inSelection = this.state.getText().getContent(selectionStart, selectionEnd);
+                        if (!inSelection.isEmpty()) {
+                            lineSize.setWidth(this.view.getTextSize(inSelection, this.font).getWidth());
+                        }
+                    }
+                } else if (lineIndex == selectionEnd.line()) {
+                    String beforeSelection = lineContent.substring(0,
+                            selectionEnd.column());
+
+                    if (!beforeSelection.isEmpty()) {
+                        lineSize.setWidth(this.view.getTextSize(beforeSelection, this.font).getWidth());
+                    }
+                }
+
+                this.view.drawRect(Position.of(viewX, viewY), lineSize, new Color(0, 120, 215, 100));
+            }
+            viewY += this.lineHeight;
+        }
+    }
+
+    private void drawCode(int lineStart, int lineEnd) {
+        List<List<HighlightedToken>> lines = this.state.getHighlighter().highlight(this.state.getText().getContent());
+        assert lines.size() == this.state.getText().getLineCount();
+
+        float viewY = CodeState.LINE_SPACING + this.lineHeight;
+        for (int lineIndex = lineStart; lineIndex < lineEnd; lineIndex++) {
+
+            List<HighlightedToken> line = lines.get(lineIndex);
+            float viewX = 0.f;
+
+            for (HighlightedToken token : line) {
+
+                if (token.text().equals("\t")) {
+                    viewX += CodeState.TEXT_SPACE_SIZE * 2;
+                    continue;
+                } else if (token.text().equals(" ")) {
+                    viewX += CodeState.TEXT_SPACE_SIZE;
+                    continue;
+                }
+
+                this.view.drawText(token.text(), Position.of(viewX, viewY), token.color(), this.font);
+                viewX += this.view.getTextSize(token.text(), this.font).getWidth();
+            }
+            viewY += this.lineHeight;
+        }
+
+    }
+
     private void drawView() {
 
         int cursorLine = this.state.getCursor().getLine();
@@ -66,68 +155,13 @@ public class CodeView extends UIElement {
         this.scrollOffset = Math.clamp(scrollOffset, 0,
                 Math.max(0, this.state.getText().getLineCount() - this.maxDisplayLines));
 
-        List<List<HighlightedToken>> lines = this.state.getHighlighter().highlight(this.state.getText().getContent());
-
-        TextPosition selectionStart = this.state.getSelection().getStart();
-        TextPosition selectionEnd = this.state.getSelection().getEnd();
+        int lineStart = this.scrollOffset;
+        int lineEnd = Math.min(this.scrollOffset + this.maxDisplayLines, this.state.getText().getLineCount());
 
         this.view.beginSub();
 
-        int index = 0;
-        float lineY = CodeState.LINE_SPACING + this.lineHeight;
-
-        for (int i = this.scrollOffset; i < lines.size(); i++) {
-
-            List<HighlightedToken> line = lines.get(i);
-            float lineX = 0.f;
-
-            for (HighlightedToken token : line) {
-                if (selectionStart != null && selectionEnd != null) {
-                    TextPosition tokenPosition = this.state.getText().getTextPositionFromIndex(index);
-                    if (tokenPosition.isInRange(selectionStart, selectionEnd)) {
-                        Size textSize = Size.zero();
-                        if (token.text().equals("\t") || token.text().equals(" ")) {
-                            int lineLength = this.state.getText().getLineLength(tokenPosition.line());
-                            if (lineLength > 0) {
-                                if (token.text().equals("\t")) {
-                                    textSize = Size.of(CodeState.TEXT_SPACE_SIZE * 2,
-                                            this.lineHeight - CodeState.LINE_SPACING);
-                                } else if (token.text().equals(" ")) {
-                                    textSize = Size.of(CodeState.TEXT_SPACE_SIZE,
-                                            this.lineHeight - CodeState.LINE_SPACING);
-                                }
-                            }
-                        } else {
-                            int endLength = Math.min(token.text().length(), selectionEnd.index() - tokenPosition.index());
-                            String cuttedText = this.state.getText().getContent(tokenPosition.index(), endLength);
-                            textSize = this.view.getTextSize(cuttedText, this.font);
-                        }
-
-                        if (!textSize.equals(Size.zero())) {
-                            this.view.drawRect(Position.of(lineX, lineY - this.lineHeight + CodeState.LINE_SPACING),
-                                    textSize,
-                                    new Color(192, 192, 192, 100));
-                        }
-                    }
-                }
-
-                if (token.text().equals("\t")) {
-                    lineX += CodeState.TEXT_SPACE_SIZE * 2;
-                    index++;
-                    continue;
-                } else if (token.text().equals(" ")) {
-                    lineX += CodeState.TEXT_SPACE_SIZE;
-                    index++;
-                    continue;
-                }
-
-                this.view.drawText(token.text(), Position.of(lineX, lineY), token.color(), this.font);
-                lineX += this.view.getTextSize(token.text(), this.font).getWidth();
-                index += token.text().length();
-            }
-            lineY += this.lineHeight;
-            index++;
-        }
+        this.drawSelection(lineStart, lineEnd);
+        this.drawCode(lineStart, lineEnd);
 
         this.view.end();
     }
