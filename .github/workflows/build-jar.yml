@@ -30,7 +30,7 @@ jobs:
       - name: Create SHA256 checksum
         run: sha256sum Galaga.jar > Galaga.sha256
 
-      - name: Upload fat JAR to release
+      - name: Upload to release
         uses: softprops/action-gh-release@v1
         with:
           files: |

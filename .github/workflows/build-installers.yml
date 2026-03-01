@@ -1,7 +1,9 @@
 name: Build Galaga Installers
-
-on: [push, pull_request]
-
+on:
+  release:
+    types: [created]
+permissions:
+  contents: write
 jobs:
   build:
     name: Build on ${{ matrix.os }}
@@ -123,8 +125,10 @@ jobs:
             --dest dist \
             --verbose
 
-      - name: Upload installer artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload to release
+        uses: softprops/action-gh-release@v1
         with:
-          name: ${{ matrix.artifact }}
-          path: pkg/dist/*.${{ matrix.installer }}
+          name: ${{ matrix.artifact }}.${{ matrix.installer }}
+          files: pkg/dist/*.${{ matrix.installer }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
