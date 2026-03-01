@@ -1,5 +1,9 @@
 name: Build Galaga
-on: [push, pull_request]
+on:
+  release:
+    types: [created]
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,8 +27,14 @@ jobs:
           echo "Main-Class: galaga.Galaga" > manifest.txt
           jar cfm Galaga.jar manifest.txt -C out .
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+      - name: Create SHA256 checksum
+        run: sha256sum Galaga.jar > Galaga.sha256
+
+      - name: Upload fat JAR to release
+        uses: softprops/action-gh-release@v1
         with:
-          name: Galaga
-          path: Galaga.jar
+          files: |
+            Galaga.jar
+            Galaga.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

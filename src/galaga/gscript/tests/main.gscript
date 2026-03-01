@@ -5,6 +5,8 @@ const HELLO = "test passed";
 native print(value);
 native len(list);
 
+
+// Test main
 fn main() {
     let localVar = globalVar + 5;
     print(localVar);
